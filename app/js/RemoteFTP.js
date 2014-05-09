@@ -433,7 +433,7 @@ var RemoteFTP = function(socket) {
 			console.log('RFTP:Local Connection:id='+data.cid);
 			sfc = new LFTPClass();
 			ftparray[data.cid] = sfc;
-			thisptr.connectedMessage(data.cid,"Local mode : connection sucuess",info['host'],info['path']);
+			thisptr.connectedMessage(data.cid,"Local mode : connection success",info['host'],info['path']);
 		} else {
 			console.log('RFTP:Remote Connection:id='+data.cid);
 			sfc = new SFTPClass();
@@ -450,7 +450,7 @@ var RemoteFTP = function(socket) {
 					thisptr.errorMessage(data.cid,"Connection Failed "+err);
 					return;
 				}
-				thisptr.connectedMessage(data.cid,"Remote mode : connection sucuess",info['host'],info['path']);
+				thisptr.connectedMessage(data.cid,"Remote mode : connection success",info['host'],info['path']);
 			}}(data));
 		}
 	}}(this));

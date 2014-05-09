@@ -40,6 +40,7 @@ function updateProjectList()
 
 function openProject(path)
 {
+	updateProjectList();
 	console.log(path);
 	window.open("editor.html?"+path,"_blank");// KVTools
 }
