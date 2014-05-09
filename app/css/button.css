@@ -1,0 +1,293 @@
+/* button - home menu*/
+.button_menu{
+	width:367px;
+	height:98px;
+	text-align:left;
+	margin-bottom:20px;
+	padding-left:25px;
+	font-size:22px;
+	background-image:url("../image/button_bg_menu.png");
+	background-repeat:no-repeat;
+}
+.button_menu:active{
+	background-image:url("../image/button_bg_menu_press.png");
+	background-repeat:no-repeat;
+}
+
+/* button - tool */
+.button_tool{
+	width:118px;
+	height:103px;
+	text-align:center;
+	margin-top:10px;
+	margin-right:5px;
+	padding-left:0px;
+	background-image:url("../image/button_bg_tool.png");
+}
+
+.button_tool:active{
+	background-image:url("../image/button_bg_tool_press.png");
+}
+
+/* button - open */
+.button_open{
+	width:165px;
+	height:101px;
+	margin-top:20px;
+	margin-left:10px;
+	text-align:center;
+	background-image:url("../image/button_bg_action.png");
+}
+
+.button_open:active{
+	background-image:url("../image/button_bg_action_press.png");
+}
+
+/* button - cancel */
+.button_cancel{
+	width:165px;
+	height:101px;
+	margin-top:20px;
+	margin-left:10px;
+	text-align:center;
+	background-image:url("../image/button_bg_action_red.png");
+}
+
+.button_cancel:active{
+	background-image:url("../image/button_bg_action_red_press.png");
+}
+
+/* button - cancel */
+#button_editmode{
+	position:absolute;
+	width:165px;
+	height:101px;
+	right:0px;
+	top:40px;
+	text-align:center;
+	background-image:url("../image/button_bg_action_red.png");
+}
+
+#button_editmode:active{
+	background-image:url("../image/button_bg_action_red_press.png");
+}
+
+/* button - cancel */
+#button_newfile{
+	position:absolute;
+	width:165px;
+	height:101px;
+	left:30px;
+	top:-162px;
+	text-align:center;
+	padding-bottom:28px;
+	background-image:url("../image/button_bg_action_red.png");
+}
+
+#button_newfile:active{
+	background-image:url("../image/button_bg_action_red_press.png");
+}
+
+
+
+/* button - delete */
+.button_delete{
+	background-image:url("");
+	height:35px;
+	margin-top:15px;
+	background-color:#660000;
+}
+
+.button_delete:active{
+
+}
+
+/* button - remotehost */
+.button_remotehost{
+	width:165px;
+	height:100px;
+	margin-top:20px;
+	margin-bottom:20px;
+	margin-right:10px;
+	text-align:center;
+	background-image:url("../image/button_bg_action_upper.png");
+	font-size:16px;
+}
+
+.button_remotehost:active{
+	background-image:url("../image/button_bg_action_upper_press.png");
+}
+
+/* button - home */
+.button_home{
+	width:165px;
+	height:100px;
+	margin-top:20px;
+	margin-left:10px;
+	text-align:center;
+	background-image:url("../image/button_bg_action.png");
+}
+
+.button_home:active{
+	background-image:url("../image/button_bg_action_press.png");
+}
+
+/* button - save */
+.button_save{
+	width:165px;
+	height:100px;
+	margin-top:20px;
+	margin-right:0px;
+	margin-left:0px;
+	text-align:center;
+	background-image:url("../image/button_bg_action.png");
+}
+
+.button_save:active{
+	background-image:url("../image/button_bg_action_press.png");
+}
+
+/* button - output */
+#button_output {
+	width:173px;
+	height:100px;
+	position:absolute;
+	top:-56px;
+	right:0px;
+	background-image:url("../image/button_bg_action_upper.png");
+}
+
+#button_output:active{
+	background-image:url("../image/button_bg_action_upper_press.png");
+}
+
+/* button - new */
+#button_new{
+	width:100px;
+	height:73px;
+	position:absolute;
+	top:20px;
+	left:240px;
+	background-image:url("../image/button_bg_action_upper_small.png");
+}
+
+#button_new:active{
+	background-image:url("../image/button_bg_action_upper_small_press.png");
+}
+
+/* bottom buttons in editor */
+.button_editor{
+	padding-bottom:28px;
+	font-size:18px;
+}
+
+#button_save_editor{
+	width:165px;
+	height:100px;
+	position:absolute;
+	left:180px;
+	top:40px;
+
+	text-align:center;
+	background-image:url("../image/button_bg_action.png");
+}
+
+#button_save_editor:active{
+	background-image:url("../image/button_bg_action_press.png");
+}
+
+/* button - stop */ 
+#button_stop{
+	width:165px;
+	height:100px;
+	position:absolute;
+	left:360px;
+	top:40px;
+	text-align:center;
+	background-image:url("../image/button_bg_action.png");
+}
+
+#button_stop:active{
+	background-image:url("../image/button_bg_action_press.png");
+}
+
+/* button - run */
+#button_run{
+	width:165px;
+	height:100px;
+	position:absolute;
+	left:0px;
+	top:40px;
+	text-align:center;
+	background-image:url("../image/button_bg_action.png");
+}
+
+#button_run:active{
+	background-image:url("../image/button_bg_action_press.png");
+}
+
+/* button - browsekey */
+.button_browsekey{
+	width:150px;
+	height:38px;
+	box-shadow:6px 6px 8px #111111;
+	border-radius:3px;
+	margin-left:0px;
+	margin-top:28px;
+	background-color:#852414;
+	font-family:sans-serif;
+	font-size:16px;
+}
+
+.button_browsekey:active{
+	box-shadow:0px 0px;
+}
+
+/* button - add */
+.button_add{
+	width:165px;
+	height:95px;
+	margin-top:12px;
+	margin-right:270px;
+	background-image:url("../image/button_bg_add.png");
+	background-repeat:no-repeat;
+}
+
+.button_add:active{
+	background-image:url("../image/button_bg_add_press.png");
+}
+
+.text_button_menu{
+	font-family:sans-serif;
+	position:relative;
+	top:-10px;
+	left:-2px;
+}
+
+.text_button_action{
+	font-family:sans-serif;
+	position:relative;
+	top:-14px;
+	left:-2px;
+}
+
+.text_button_right{
+	font-family:sans-serif;
+	margin-right:30px;
+	text-align:right;
+	font-size:20px;
+}
+
+.text_button_add{
+	position:relative;
+	font-family:sans-serif;
+	top:-14px;
+	left:-4px;
+}
+
+.text_recent{
+	font-family:sans-serif;
+	color:#fff;
+	text-align:left;
+	margin-bottom:5px;
+}

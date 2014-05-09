@@ -1,0 +1,71 @@
+.input_info{
+	text-align:left;
+	font-size:16px;
+	padding-left:10px;
+	margin-right:30px;
+}
+
+.text_label{
+	color:#fff;
+	font-size:16px;
+	margin-bottom:5px;
+}
+
+#input_hostname{
+	width:200px;
+}
+
+#input_id{
+	width:100px;
+}
+
+#input_password{
+	width:100px;
+}
+
+#input_key{
+	width:100px;
+}
+
+/* host browser */
+.hostbrowser{
+	margin:auto;
+	margin-left:45px;
+	margin-top:10px;
+	border:solid;
+	border-radius:20px;
+	border-width:12px;
+	border-color:#852414;
+	background-color:rgba(26,26,26,0.6);
+	width:500px;
+	min-width:500px;
+	height:300px;
+	overflow:auto;
+}
+
+.hostitem{
+	border:solid;
+	border-width:2px;
+	border-radius:5px;
+	border-color:transparent;
+	height:70px;
+}
+
+.hostlabel{
+	line-height:70px;
+	text-align:left;
+	font-size:18px;
+	color:#fff;
+	vertical-align:baseline;
+	padding-left:10px;
+	float:left;
+	width:380px;
+	margin-left:10px;
+}
+
+.buttons_remotehost{
+	text-align:center;
+	width:410px;
+	margin-left:460px;
+	margin-top:200px;
+}

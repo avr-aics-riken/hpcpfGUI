@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,user-scalable=yes">
+		<title>File Browser</title>
+		<link rel="stylesheet" href="css/base.css">
+		<link rel="stylesheet" href="css/button.css">
+		<link rel="stylesheet" href="css/filebrowser.css">
+		<script src="socket.io/socket.io.js"></script>
+		<script type="text/javascript" src="js/RemoteFTP.js"></script>
+		<script type="text/javascript" src="js/filebrowser.js"></script>
+	</head>
+	<body onload="bootstrap()">
+	<div class="header">
+		<div id="logo">HPC/PF</div>
+		<div id="version">Ver. 1.0</div>
+	</div>
+
+	<div class="title"><div class="text_title">File Browser</div>
+	</div>
+				
+
+	<div class="tab tab_filebrowser">
+	<div class="grp_alignright">
+		<button type="button" class="button_remotehost" onclick="registerRemoteHost()">Register<br>Remote host</button>
+	</div>
+		<div class="pane_left">
+			<!--div class="filepath">hirose@localhost:/home/hirose/</div-->
+			<div class="pane_grp">
+				<div class="select_host">
+					<select id="select_host_left">
+					<!--	<option class="option_host">localhost:/home/user1/</option>
+						<option class="option_host">user1@remotehost1:/home/user1/</option>
+						<option class="option_host">user2@remotehost2:/home/user2/</option>
+						<option class="option_host">user3@remotehost3:/home/user3/</option>
+						<option class="option_host">user4@remotehost4:/home/user4/</option>-->
+					</select>
+				</div>
+				<div class="filepath" id="leftPath">-</div>
+				<div class="filebrowser" id="leftFileList">
+					<!--<div class="fileitem" id="dir1" draggable="false"><div class="back"></div><p class="filelabel">..</p></div>
+					<div class="fileitem" id="dir2" draggable="true" ><div class="dir" ></div><p class="filelabel">dir1</p><button type="button" class="dustbox"></button></div>
+					<div class="fileitem" id="file1" draggable="true"><div class="file"></div><p class="filelabel">file1</p><button type="button" class="dustbox"></button></div>-->
+				</div>
+				<div class="actionmenu" id="actionmenu_left">
+					<div class="actionitem" id="copy_left"><p class="text_action">-> copy</p></div>
+					<div class="actionitem" id="move_left"><p class="text_action">-> move</p></div>
+					<div class="actionitem" id="extract_left"><p class="text_action">-> extract</p></div>
+					<div class="actionitem" id="compress_left"><p class="text_action">-> compress</p></div>
+				</div>
+				<div class="actionmenu" id="actionmenu_left_upload">
+					<div class="actionitem" id="upload_left"><p class="text_action">-> upload</p></div>
+				</div>
+				<div class="actionmenu" id="actionmenu_left_download">
+					<div class="actionitem" id="download_left"><p class="text_action">-> download</p></div>
+				</div>
+
+				<div class="actionmenu" id="actionmenu_left_none">
+					<div class="actionitem" id="none_left"><p class="text_action">-> X</p></div>
+				</div>
+
+				<div class="filepath" id="leftLog">-</div>
+
+			</div>
+		</div>
+
+		<div class="pane_right">
+			<div class="pane_grp">
+				<div class="select_host">
+					<select id="select_host_right">
+					<!--	<option class="option_host">localhost:/home/user1/</option>
+						<option class="option_host">user1@remotehost1:/home/user1/</option>
+						<option class="option_host">user2@remotehost2:/home/user2/</option>
+						<option class="option_host">user3@remotehost3:/home/user3/</option>
+						<option class="option_host">user4@remotehost4:/home/user4/</option>-->
+					</select>
+				</div>
+				<div class="actionmenu" id="actionmenu_right">
+					<div class="actionitem" id="copy_right"><p class="text_action">-> copy</p></div>
+					<div class="actionitem" id="move_right"><p class="text_action">-> move</p></div>
+					<div class="actionitem" id="extract_right"><p class="text_action">-> extract</p></div>
+					<div class="actionitem" id="compress_right"><p class="text_action">-> compress</p></div>
+				</div>
+
+				<div class="actionmenu" id="actionmenu_right_upload">
+					<div class="actionitem" id="upload_right"><p class="text_action">-> upload</p></div>
+				</div>
+				<div class="actionmenu" id="actionmenu_right_download">
+					<div class="actionitem" id="download_right"><p class="text_action">-> download</p></div>
+				</div>
+				<div class="actionmenu" id="actionmenu_right_none">
+					<div class="actionitem" id="none_right"><p class="text_action">-> X</p></div>
+				</div>
+				<div class="filepath" id="rightPath">-</div>
+				<div class="filebrowser" id="rightFileList">
+					<!--<div class="fileitem" id="dir1" draggable="false"><div class="back"></div><p class="filelabel">..</p></div>
+					<div class="fileitem" id="dir2" draggable="true" ><div class="dir" ></div><p class="filelabel">dir1</p><button type="button" class="dustbox"></button></div>
+					<div class="fileitem" id="file1" draggable="true"><div class="file"></div><p class="filelabel">file1</p><button type="button" class="dustbox"></button></button></div>-->
+				</div>
+				<div class="filepath" id="rightLog">-</div>
+			</div>
+		</div>
+
+	</div>
+	</body>
+</html>

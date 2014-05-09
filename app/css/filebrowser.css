@@ -1,0 +1,249 @@
+/* file browser */
+.filebrowser{
+	margin:auto;
+	margin-left:0px;
+	border-style:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#852414;
+	background-color:rgba(20,20,20,1.0);
+	width:400px;
+	min-width:400px;
+	height:580px;
+	overflow:auto;
+}
+
+.tab_filebrowser{
+	margin-top:-95px;
+}
+
+.fileitem{
+	border:solid;
+	border-width:2px;
+	border-radius:5px;
+	border-color:transparent;
+	height:70px;
+}
+
+.fileitem:active, .fileitem:focus .fileitem:checked{
+	border-color:red;
+}
+
+
+.filelabel{
+	line-height:70px;
+	text-align:left;
+	font-size:18px;
+	color:#fff;
+	vertical-align:top;
+	/* float:left; */
+	display:inline-block;
+	width:220px;
+	margin-left:10px;
+	/* text short name */
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.filelabel_short{
+	line-height:70px;
+	text-align:left;
+	font-size:16px;
+	display:inline-block;
+	color:#fff;
+	vertical-align:top;
+	float:left;
+	width:100px;
+	margin-left:5px;
+}
+
+.back{
+	width:65px;
+	height:65px;
+	float:left;
+	background-image:url("../image/icon_back.png");
+}
+
+.dir{
+	width:65px;
+	height:65px;
+	display:inline-block;
+	background-image:url("../image/icon_dir.png");
+}
+
+.file{
+	width:65px;
+	height:65px;
+	display:inline-block;
+	background-image:url("../image/icon_file.png");
+}
+
+.dustbox{
+	margin-right:0px;
+	width:65px;
+	height:65px;
+	background-image:url("../image/icon_dustbox.png");
+	z-index:100;
+	float:right;
+}
+.dustbox_ok{
+	margin-right:0px;
+	width:65px;
+	height:65px;
+	background-image:url("../image/icon_dustbox_ok.png");
+	z-index:100;
+	float:right;
+}
+
+.dustbox:active{
+}
+
+.select_host select{
+	width:410px;
+	height:30px;
+	padding-left:14px;
+	line-height:32px;
+	vertical-align:middle;
+	color:#fff;
+	font-size:16px;
+	font-family:sans-serif;
+	text-align:left;
+	background-color:transparent;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	appearance:none;
+
+	text-indent:9px;
+	text-overflow:'';
+
+	border:none;
+}
+
+.select_host {
+	padding-top:3px;
+	border-radius:3px;
+	border-style:solid;
+	border-width:2px;
+	border-color:#852414;
+	width:405px;
+	height:36px;
+	overflow:hidden;
+	margin-bottom:30px;
+	background:url("../image/button_bg_selector.png") no-repeat 370px 5px rgba(20,20,20,1.0);
+}
+
+.option_host{
+	color:#fff;
+	text-align:left;
+	background-color:rgba(20,20,20,1);
+}
+
+/* action menu */
+.actionmenu{
+	width:470px;
+	height:480px;
+	position:fixed;
+	z-index:100;
+	top:314px;
+	display:none;
+}
+
+.actionitem{
+	width:398px;
+	height:100px;
+	margin-top:0px;
+	margin-bottom:16px;
+	margin-left:4px;
+	margin-right:auto;
+	border-style:none;
+	background-image:url("../image/button_bg_fileaction.png");
+	background-repeat:no-repeat;
+}
+
+.actionitem_active{
+	width:398px;
+	height:100px;
+	margin-top:0px;
+	margin-bottom:16px;
+	margin-left:4px;
+	margin-right:auto;
+	border-style:none;
+	background-image:url("../image/button_bg_fileaction_press.png");
+	background-repeat:no-repeat;
+}
+
+.text_action{
+	width:360px;
+	text-align:left;
+	color:#fff;
+	font-size:30px;
+	font-family:sans-serif;
+	position:relative;
+	padding-top:32px;
+	padding-left:124px;
+}
+/* ----------------------- */
+
+
+.filepath{
+	font-size:18px;
+	color:#fff;
+	text-align:left;
+	margin-bottom:15px;
+}
+
+/* history browser */
+.historybrowser{
+	margin:auto;
+	margin-left:0px;
+	border:solid;
+	border-radius:20px;
+	border-width:12px;
+	border-color:#852414;
+	background-color:rgba(26,26,26,0.6);
+	width:400px;
+	min-width:400px;
+	height:412px;
+	overflow:scroll;
+}
+
+/* file dialog (popup) */
+.filedialog{
+	width:500px;
+	min-width:500px;
+	height:400px;
+	border-radius:2px;
+	border-width:2px;
+	border-color:#852414;
+	margin-left:60px;
+	padding:15px;
+	text-align:center;
+	background-color:rgba(20,20,20,1.0);
+	float:left;
+}
+.filepath_dialog{
+	font-family:sans-serif;
+	font-size:16px;
+	color:#fff;
+	text-align:left;
+	width:500px;
+	min-width:500px;
+	margin-left:60px;
+	margin-top:42px;
+	margin-bottom:30px;
+	/* selection */
+	-webkit-touch-callout:text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+.buttons_dialog{
+	margin-top:200px;
+}
+/*---------*/
+
+

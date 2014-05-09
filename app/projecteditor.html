@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,user-scalable=yes">
+		<title>Project Editor</title>
+		<link rel="stylesheet" href="css/base.css">
+		<link rel="stylesheet" href="css/button.css">
+		<link rel="stylesheet" href="css/filebrowser.css">
+		<link rel="stylesheet" href="css/fileeditor.css">
+		<script type="text/javascript" src=""></script>
+	</head>
+	<body>
+	<div class="header">
+		<div id="logo">HPC/PF</div>
+		<div id="version">Ver. 1.0</div>
+	</div>
+
+	<div class="title"><div class="text_title">Project Editor</div></div>
+	<div class="tab">
+		
+		<div class="pane_left pane_left_editor">
+			<div class="filepath" id="projdir_path">/home/hirose/project1</div>
+			<div class="filebrowser filebrowser_editor">
+				<div class="fileitem" id="dir1" draggable="false"><div class="dir"></div><p class="filelabel_short">dir1</p></div>
+				<div class="fileitem" id="dir2" draggable="false"><div class="dir"></div><p class="filelabel_short">dir2</p></div>
+				<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+				<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+				<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+				<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+				<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+				<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+				<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+				<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+			</div>
+		</div>
+		<div  class="pane_right pane_right_editor">
+			<div class="pane_grp">
+				<div class="filepath" id="current_file">filepath</div>
+				<textarea class="editor"></textarea>
+			</div>
+		</div>
+
+		<div class="grp_alignright">
+			<button type="button" class="button_run">
+				<span class="text_button_action">Run</span>
+			</button>
+			<button type="button" class="button_save">
+				<span class="text_button_action">Save</span>
+			</button>
+		</div>
+	</div>
+	</body>
+</html>

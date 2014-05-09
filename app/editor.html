@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Editor</title>
+	<link href="css/base.css" rel="stylesheet"/>
+	<link href="css/button.css" rel="stylesheet"/>
+	<link href="css/editor.css" rel="stylesheet"/>
+	<link href="css/filebrowser.css" rel="stylesheet"/>
+	<!--link href="css/flat-ui.css" rel="stylesheet"/-->
+</head>
+<body onload="boot();">
+<div class="title text_title">Project Editor</div>
+	<div id="menubtn">
+		<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
+		<button class="button_editor" id="button_save_editor" onclick="saveFile();">SAVE<br>(CTRL+S)</button>
+		<button class="button_editor" id="button_stop" onclick="procStop();">STOP<br>(CTRL+Q)</button>
+		<button class="button_editor"  onclick="modeChange(this.value);" value="vim" id="button_editmode">Vim Mode</button>
+	</div>
+
+	<nav class="navbar navbar-default" id="editorbar">
+    	<div class="filepath" id="filename">/home/user1/projects/work1/project1.pwf</a>
+		<label class="checkbox" for="checkbox1">
+	</nav>
+
+	<div id="showoutputarea">
+		<button id="button_output" onclick="showOutputArea();">Output</button>
+	</div>
+
+	<div id="filelist">
+<!--		<div class="fileitem" id="dir1" draggable="false"><div class="dir"></div><p class="filelabel_short">dir1</p></div>
+		<div class="fileitem" id="dir2" draggable="false"><div class="dir"></div><p class="filelabel_short">dir2</p></div>
+		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1aaaaaaaaaaaaaaa</p></div>
+		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
+		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>-->
+	</div>
+
+	<div>
+		<pre id="editor"></pre>
+	</div>
+	<div id="outputArea">
+		<pre id='stdout'></pre>
+	</div>
+	<div id="imageArea">
+		<img id="imageView"/>
+	</div>
+	<div id="shownewfilearea">
+		<button id="button_newfile" onclick="showNewFileArea();">New File</button>
+	</div>
+	<div id="newfileArea">
+		New file!<br><!--stdout:<br>-->
+		<input type="text" id="newfilename" class="input-newfile" placeholder="file name"/>
+		<button id="button_new" onclick="newFile(newfilename.value)">New!</button>
+	</div>
+
+	<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="js/editor.js"></script>
+</body>
+</html>

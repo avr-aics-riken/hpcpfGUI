@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,user-scalable=yes">
+		<title>Remote Host Registration</title>
+		<link rel="stylesheet" href="css/base.css">
+		<link rel="stylesheet" href="css/button.css">
+		<link rel="stylesheet" href="css/filebrowser.css">
+		<link rel="stylesheet" href="css/remotehost.css">
+		<script type="text/javascript" src="socket.io/socket.io.js"></script>
+		<script type="text/javascript" src="js/filedialog.js"></script>
+		<script type="text/javascript" src="js/remotehost.js"></script>
+	</head>
+	<body onload="boot()">
+	<div class="header">
+		<div id="logo">HPC/PF</div>
+		<div id="version">Ver. 1.0</div>
+	</div>
+
+	<div class="title"><div class="text_title">Register Remote host</div></div>
+	<div class="tab">
+		<div class="pane_top">
+			<div class="grp_floatleft">
+				<div class="text_label">Label</div>
+					<input id="input_label" class="input_info" placeholder="NAME" required ></input>
+				</div>
+				<div class="grp_floatleft">
+					<div class="text_label">HOST</div>
+					<input id="input_host" class="input_info" placeholder="localhost or name.host.jp.." required ></input>
+				</div>
+				<div class="grp_floatleft">
+					<div class="text_label">Path</div>
+					<input id="input_path" class="input_info" placeholder="/home/username/" required ></input>
+				</div>
+
+				<div id="idkey">
+					<div class="grp_floatleft">
+						<div class="text_label">ID</div>
+						<input id="input_id" class="input_info"  placeholder="username"></input>
+					</div>
+					<div class="grp_floatleft">
+						<div class="text_label">Password</div>
+						<input id="input_password" class="input_info" type="password"></input>
+					</div>
+					<div class="grp_floatleft">
+						<div class="text_label">KEY</div>
+						<input id="input_key" class="input_info"  placeholder="/home/username/.ssh/id_rsa"></input>
+					</div>
+					<div class="grp_alignleft">
+						<button type="button" class="button_browsekey" onclick="openfileDialog('/')">Browse</button>
+					</div>
+				</div>
+		</div>
+
+		<div class="text_label" id="error_output"></div>
+
+		<div class="pane_middle">
+			<button type="button" class="button_add" onclick="addBtn()"><span class="text_button_add">add</span></button>
+		</div>
+		<div class="grp_floatleft">
+			<div class="hostbrowser" id="regiterlist">
+				<div class="hostitem" draggable="false"><span class="hostlabel">user@host1</span><button type="button" class="dustbox"/></div>
+				<div class="hostitem" draggable="false"><span class="hostlabel">user@host2</span><button type="button" class="dustbox"/></div>
+				<div class="hostitem" draggable="false"><span class="hostlabel">user@host3</span><button type="button" class="dustbox"/></div>
+				<div class="hostitem" draggable="false"><span class="hostlabel">user@host4</span><button type="button" class="dustbox"/></div>
+				<div class="hostitem" draggable="false"><span class="hostlabel">user@host5</span><button type="button" class="dustbox"/></div>
+			</div>
+		</div>
+		<div class="buttons_remotehost">
+			<button type="button" class="button_open" onclick="openFileBrowser()">
+				<span class="text_button_action">File Browser</span>
+			</button>
+		</div>
+		<div class="popup_center">
+			<div class="pane_grp"><input class="filepath_dialog" id="projdir_path" value="localhost:/home/hirose/project1"/></div>
+			<div class="filebrowser filedialog" id="fbList"></div>
+			<div class="buttons_dialog">
+				<button type="button" class="button_open" onclick="open_selectedFile()">
+					<span class="text_button_action">Open</span>
+				</button>
+				<button type="button" class="button_cancel" onclick="closefileDialog()">
+					<span class="text_button_action">Cancel</span>
+				</button>
+			</div>
+		</div>
+	</div>
+	</body>
+</html>

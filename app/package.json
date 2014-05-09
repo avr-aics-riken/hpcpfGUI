@@ -1,0 +1,13 @@
+{
+  "name": "hpcpfGUI",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ptl_server.js"
+  },
+  "dependencies": {
+    "socket.io": "*",
+    "ansi_up":"*",
+    "ssh2":"*"
+  }
+}
