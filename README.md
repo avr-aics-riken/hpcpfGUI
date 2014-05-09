@@ -17,7 +17,7 @@ node.js : 0.10 or higher
 
 # Dependents
 
-- Socket.io ([http://socket.io][http://socket.io])
-- ssh2 ([https://github.com/mscdex/ssh2][https://github.com/mscdex/ssh2])
-- ansi_up ([https://github.com/drudru/ansi_up][https://github.com/drudru/ansi_up])
-- Ace ([http://ace.ajax.org/][http://ace.ajax.org/])
+- Socket.io (http://socket.io)
+- ssh2 (https://github.com/mscdex/ssh2)
+- ansi_up (https://github.com/drudru/ansi_up)
+- Ace (http://ace.ajax.org/)
