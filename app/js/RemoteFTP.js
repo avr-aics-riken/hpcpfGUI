@@ -258,8 +258,8 @@ var SFTPClass = function(){
 		remoteCopyFile(this.conn,srcpath,destpath,callback);
 	}
 	this.MoveFile = function(srcpath, destdir, callback){
-		console.log('Remote:MoveyFile>',srcpath,destpath);
-		remoteMoveFile(this.conn,srcpath,destpath,callback);
+		console.log('Remote:MoveyFile>',srcpath,destdir);
+		remoteMoveFile(this.conn,srcpath,destdir,callback);
 	}
 	this.ExtractFile = function(path,dir,callback){
 		console.log('Remote:ExtractFile>',path,dir);
