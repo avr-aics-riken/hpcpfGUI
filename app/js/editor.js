@@ -143,7 +143,7 @@ socket.on('showfile', function (data) {
 	if (data.type != "")
 		editor.getSession().setMode("ace/mode/"+data.type.toString());
 	
-	editor.setValue(data.str.toString(),-1);// set cursor the start
+	editor.session.setValue(data.str.toString(),-1);// set cursor the start
 	editor.session.getUndoManager().reset(true);
 	editor.session.getUndoManager().markClean();
 	ChangeEditor(false);
