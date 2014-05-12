@@ -2,11 +2,22 @@ var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
 var fs = require('fs');
 var http = require('http');
-
+var os = require('os');
 var util = require('./util');
 
+// MacOSX setting
 var KRENDER_CMD = __dirname+'/krender';
-var LUA_CMD     = __dirname+'/lua'
+var LUA_CMD     = __dirname+'/lua';
+
+if (os.platform() === 'linux'){ // Linux setting
+    KRENDER_CMD = __dirname+'/krender_linux';
+    LUA_CMD = 'lua'; // Use system command
+}else if (os.platform().indexOf('win') === 0){ // win setting
+    KRENDER_CMD = __dirname+'/krender_win';
+    LUA_CMD = './lua_win';
+}
+
+
 var SH_CMD = 'sh'
 
 var sesstionTable = {};
