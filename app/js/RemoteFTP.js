@@ -4,7 +4,51 @@ var fs = require('fs');
 var ssh2 = require('ssh2');
 var exec = require('child_process').exec;
 var path = require('path');
+var os = require('os');
 
+// default commands
+var cpFileCmd     = 'cp',
+	cpDirCmd     = 'cp -r',
+	mvCmd     = 'mv',
+	rmFileCmd = 'rm',
+	rmDirCmd  = 'rm -rf',
+	mkdirCmd  = 'mkdir',
+	tarCompressCmd = 'tar czvf',
+	tarExtractCmd  = 'tar xvf';
+
+if (os.platform === 'win32' || os.platform === 'win64') {
+	cpFileCmd     = 'copy';
+	cpDirCmd     = 'copy';
+	mvCmd     = 'move';
+	rmFileCmd = 'del';
+	rmDirCmd  = 'del';
+	mkdirCmd  = 'mkdir';
+	tarCompressCmd = './tar czvf';
+	tarExtractCmd  = './tar xvf';
+}
+/*
+// read from conf file version.
+var confFile = __dirname + '/../../conf/hpcpfGUI.conf';
+try {
+	console.log('confFile = ' + confFile);
+	var ostype = os.platform(),
+		file = fs.readFileSync(confFile),
+		data = JSON.parse(file);
+
+	if (data.cpFile      && data.cpFile[ostype])      { cpFileCmd      = data.cpFile[ostype]; }
+	if (data.cpDir       && data.cpDir[ostype])       { cpDirCmd       = data.cpDir[ostype]; }
+	if (data.mv          && data.mv[ostype])          { mvCmd          = data.mv[ostype]; }
+	if (data.rmFile      && data.rmFile[ostype])      { rmFileCmd      = data.rmFile[ostype]; }
+	if (data.rmDir       && data.rmDir[ostype])       { rmDirCmd       = data.rmFir[ostype]; }
+	if (data.mk          && data.mk[ostype])          { mkdirCmd       = data.mk[ostype]; }
+	if (data.tarCompress && data.tarCompress[ostype]) { tarCompressCmd = data.tarCompress[ostype]; }
+	if (data.tarExtract  && data.tarExtract[ostype])  { tarExtractCmd  = data.tarExtract[ostype]; }
+
+} catch (e) {
+	console.log('Not found conf file:' + confFile);
+	console.log('Use default setting.');
+}
+*/
 	
 var localCmd = function (cmd,callback){
 	var child = exec(cmd,
@@ -18,31 +62,32 @@ var localCmd = function (cmd,callback){
 			cb(error);
 	}}(callback));
 }
+
 var localCopyFile     = function(src,dst,callback) {
 	if (!fs.existsSync(src)){
 		console.log('not found path>'+src);
 		return;
 	}
-	 if (fs.lstatSync(src).isDirectory()) {
-		localCmd('cp -r "'+src+'" "'+dst+'"', callback);
-	 } else {
-		localCmd('cp "'+src+'" "'+dst+'"', callback);
-	 }
+	if (fs.lstatSync(src).isDirectory()) {
+		localCmd(cpDirCmd + ' "'+src+'" "'+dst+'"', callback);
+	} else {
+		localCmd(cpFileCmd + ' "'+src+'" "'+dst+'"', callback);
+	}
 }
-var localMoveFile     = function(src,dst,callback) { localCmd('mv "'+src+'" "'+dst+'"', callback);       }
+var localMoveFile     = function(src,dst,callback) { localCmd(mvCmd + ' "'+src+'" "'+dst+'"', callback);       }
 var localExtractFile  = function(srcpath,expath,callback){
 	var parentpath = path.dirname(srcpath);
 	var srcfile    = path.basename(srcpath);
 	expath = expath + (expath.charAt(expath.length-1) == '/' ? '' : '/');
-	console.log('CMD>'+'cd "'+parentpath+'";tar xvf "'+srcfile+'" -C "'+expath+'"');
-	localCmd('cd "'+parentpath+'";tar xvf "'+srcfile+'" -C "'+expath+'"',callback);
+	//console.log('CMD>'+'cd "'+parentpath+'";' + tarExtractCmd + ' "'+srcfile+'" -C "'+expath+'"');
+	localCmd('cd "'+parentpath+'";' + tarExtractCmd + ' "'+srcfile+'" -C "'+expath+'"',callback);
 }
 var localCompressFile = function(srcpath,cpath,callback){
 	var parentpath = path.dirname(srcpath);
 	var srcfile    = path.basename(srcpath);
 	cpath = cpath + (cpath.charAt(cpath.length-1) == '/' ? '' : '/');
-	//console.log('CMD>'+'cd "'+parentpath+'";pwd;tar czvf "'+cpath + srcfile+'.tar.gz" "'+srcfile+'"');
-	localCmd('cd "'+parentpath+'";tar czvf "'+cpath + srcfile+'.tar.gz" "'+srcfile+'"',callback);
+	//console.log('CMD>'+'cd "'+parentpath+'";pwd;' + tarCompressCmd + ' "'+cpath + srcfile+'.tar.gz" "'+srcfile+'"');
+	localCmd('cd "'+parentpath+'";' + tarCompressCmd + ' "' + cpath + srcfile+'.tar.gz" "'+srcfile+'"',callback);
 }
 var localDeleteFile   = function(path,callback){
 	if (!fs.existsSync(path)){
@@ -50,14 +95,18 @@ var localDeleteFile   = function(path,callback){
 		return;
 	}
 	if (fs.lstatSync(path).isDirectory()) {
-		localCmd('rm -rf "'+path+'"',callback);
+		localCmd(rmDirCmd + ' "'+path+'"',callback);
 	} else {
-		localCmd('rm "'+path+'"',callback);
+		localCmd(rmFileCmd + ' "'+path+'"',callback);
 	}
 }
-var localMakeDir      = function(path,callback)    { localCmd('mkdir "'+path+'"',callback);            }
+var localMakeDir      = function(path,callback)    { localCmd(mkdirCmd + ' "'+path+'"',callback);            }
 	
 //-----------------------------------------------------------------
+/*
+	Remote server is linux, macosx.
+	requires file commands.[cp,mv,tar,...]
+*/
 
 var remoteCmd = function(conn,cmd,callback){
 	conn.exec(cmd, function(cb){return function(err,stream){

@@ -69,3 +69,24 @@
 	margin-left:460px;
 	margin-top:200px;
 }
+
+.connecttest{
+	position: absolute;
+	left:470px;
+	border-radius:3px;
+	background-color: #f2ca21;
+	margin-top:8px;
+	margin-right:0px;
+	width:65px;
+	height:45px;
+	z-index:100;
+	float:right;
+}
+.connecttest_ok{
+	background-color: #0F0;
+}
+.connecttest_fail{
+	background-color: #F00;
+}
+
+

@@ -21,12 +21,12 @@ try {
 	var ostype = os.platform(),
 		file = fs.readFileSync(confFile),
 		data = JSON.parse(file);
-	portNumber        = data.port;
-	
 	console.log('OS = ' + ostype);
-	appCommandFXgen   = data.FXgen[ostype];
-	appCommandPDI     = data.PDI[ostype];
-	appCommandKVTools = data.KVTools[ostype];
+	
+	if (data.port    && data.port[ostype])    { portNumber        = data.port; }
+	if (data.FXgen   && data.FXgen[ostype])   { appCommandFXgen   = data.FXgen[ostype]; }
+	if (data.PDI     && data.PDI[ostype])     { appCommandPDI     = data.PDI[ostype]; }
+	if (data.KVTools && data.KVTools[ostype]) { appCommandKVTools = data.KVTools[ostype]; }
 	
 } catch (e) {
 	console.log('Not found conf file:' + confFile);

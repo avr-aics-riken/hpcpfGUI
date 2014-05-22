@@ -6,8 +6,8 @@ var os = require('os');
 var util = require('./util');
 
 // MacOSX setting
-var KRENDER_CMD = __dirname+'/krender';
-var LUA_CMD     = __dirname+'/lua';
+var KRENDER_CMD = __dirname+'/krender_mac';
+var LUA_CMD     = __dirname+'/lua_mac';
 
 if (os.platform() === 'linux'){ // Linux setting
     KRENDER_CMD = __dirname+'/krender_linux';
@@ -19,6 +19,7 @@ if (os.platform() === 'linux'){ // Linux setting
 
 
 var SH_CMD = 'sh'
+
 
 var sesstionTable = {};
 
