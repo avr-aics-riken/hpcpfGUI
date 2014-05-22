@@ -70,7 +70,7 @@ function openProject(path) {
 	"use strict";
 	updateProjectList();
 	console.log(path);
-	window.open("editor.html?" + path, "_blank");// KVTools
+	window.open("editor.html?" + path, "_blank");
 }
 
 function launchApp_FXgen() {
@@ -83,7 +83,8 @@ function launchApp_PDI() {
 }
 function launchApp_KVTools() {
 	"use strict";
-	window.open(location.hostname + ":8082", "_blank");// KVTools
+	//window.open(location.hostname + ":8082", "_blank");// KVTools
+	socket.emit('ptl_launchapp', {appname : 'KVTools'});
 }
 
 function newProject() {

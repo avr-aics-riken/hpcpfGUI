@@ -3,10 +3,35 @@ var exec = require('child_process').exec,
 	fs = require('fs'),
 	http = require('http'),
 	util = require('./util'),
+	os = require('os'),
 	editorevent = require('./editor_event'),
 	remotehostevent = require('./remotehost_event'),
 	filedialog = require('./js/filedialog'),
-	RemoteFTP = require('./js/RemoteFTP');
+	RemoteFTP = require('./js/RemoteFTP'),
+	
+	confFile = __dirname + '/../conf/hpcpfGUI.conf',
+	portNumber      = 8080,
+	appCommandFXgen = 'FXgen',
+	appCommandPDI   = 'pdi',
+	appCommandKVTools = 'kvtoolsa';
+	
+	console.log('confFile = ' + confFile);
+
+try {
+	var ostype = os.platform(),
+		file = fs.readFileSync(confFile),
+		data = JSON.parse(file)
+	portNumber        = data.port;
+	
+	console.log('OS = ' + ostype);
+	appCommandFXgen   = data.FXgen[ostype];
+	appCommandPDI     = data.PDI[ostype];
+	appCommandKVTools = data.KVTools[ostype];
+	
+} catch (e) {
+	console.log('Not found conf file:' + confFile);
+	console.log('Use default setting.');
+}
 
 //-------------------------------------
 // Server request logic
@@ -43,14 +68,14 @@ server.on('request', function (req, res) {
 			} else if (ext === "js" || ext === "json") {
 				res.writeHead(200, {'Content-Type': 'text/javascript', charaset: 'UTF-8'});
 			} else {
-				res.writeHead(200);//,{charaset:'UTF-8'});
+				res.writeHead(200);
 			}
 			res.end(data);
 		}); // fs.readFile
 	}
 });
-server.listen(8080);
-console.log('Server running on localhost:8080');
+server.listen(portNumber);
+console.log('Server running on localhost:' + portNumber);
 
 //---------------------------------------------------------------------------
 
@@ -61,10 +86,14 @@ function registerPTLEvent(socket) {
 		
 		var appcmd, child;
 		if (data.appname === 'FXgen') {
-			appcmd = 'open /Applications/FXgen.app';
+			appcmd = appCommandFXgen;
 		} else if (data.appname === 'PDI') {
-			appcmd = 'pdi';
+			appcmd = appCommandPDI;
+		} else if (data.appname === 'KVTools') {
+			appcmd = appCommandKVTools;
 		}
+		
+		console.log('CMD>' + appcmd, appCommandKVTools);
 		child = exec(appcmd, function (err, stdout, stderr) {
 			if (err) {
 				console.log(err);
