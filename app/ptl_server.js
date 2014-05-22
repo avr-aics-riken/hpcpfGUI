@@ -15,12 +15,12 @@ var exec = require('child_process').exec,
 	appCommandPDI   = 'pdi',
 	appCommandKVTools = 'kvtoolsa';
 	
-	console.log('confFile = ' + confFile);
 
 try {
+	console.log('confFile = ' + confFile);
 	var ostype = os.platform(),
 		file = fs.readFileSync(confFile),
-		data = JSON.parse(file)
+		data = JSON.parse(file);
 	portNumber        = data.port;
 	
 	console.log('OS = ' + ostype);
