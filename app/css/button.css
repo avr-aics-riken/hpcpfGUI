@@ -237,6 +237,7 @@
 	background-color:#852414;
 	font-family:sans-serif;
 	font-size:16px;
+
 }
 
 .button_browsekey:active{
@@ -267,6 +268,7 @@
 .text_button_action{
 	font-family:sans-serif;
 	position:relative;
+	font-size:22px;
 	top:-14px;
 	left:-2px;
 }

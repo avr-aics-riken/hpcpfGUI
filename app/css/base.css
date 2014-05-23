@@ -109,13 +109,14 @@ input{
 	font-size:24px;
 	margin-left:30px;
 	padding-left:10px;
-	vertical-align:middle;
 	text-align:left;
 	background-image:url("../image/header_bg_left.png");
 	background-repeat:no-repeat;
 	float:left;
 	width:337px;
 	height:37px;
+	line-height:37px;
+	vertical-align:middle;
 }
 
 #version{
@@ -229,6 +230,10 @@ input{
 	text-align:left;
 	float:left;
 
+}
+
+.grp_floatclear{
+	clear:both;
 }
 
 .grp_alignright{
