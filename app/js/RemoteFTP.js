@@ -25,8 +25,8 @@ if (os.platform().indexOf('win') === 0){ // win setting
 	rmFileCmd = 'del /Q';
 	rmDirCmd  = 'rd /q /s';
 	mkdirCmd  = 'mkdir';
-	tarCompressCmd = './tar czvf';
-	tarExtractCmd  = './tar xvf';
+	tarCompressCmd = 'tar.exe czvf';
+	tarExtractCmd  = 'tar.exe xvf';
 	
 	getRealPath = function (p) {
 		return path.join(process.cwd().split(':')[0] + ':', p);
@@ -89,15 +89,27 @@ var localExtractFile  = function(srcpath,expath,callback){
 	var parentpath = path.dirname(srcpath);
 	var srcfile    = path.basename(srcpath);
 	expath = expath + (expath.charAt(expath.length-1) == '/' ? '' : '/');
-	//console.log('CMD>'+'cd "'+parentpath+'";' + tarExtractCmd + ' "'+srcfile+'" -C "'+expath+'"');
-	localCmd('cd "'+parentpath+'";' + tarExtractCmd + ' "'+srcfile+'" -C "'+expath+'"',callback);
+	var cmdstr;
+	if (os.platform().indexOf('win') === 0){
+		cmdstr = tarExtractCmd + ' "' + getRealPath(parentpath + '/' + srcfile).split("\\").join("/") + '" -C "' + getRealPath(expath).split("\\").join("/") + '"';
+	} else {
+		cmdstr = 'cd "'+parentpath+'";' + tarExtractCmd + ' "' + getRealPath(srcfile) + '" -C "' + getRealPath(expath) + '"';
+	}
+	console.log(cmdstr);
+	localCmd(cmdstr, callback);
 }
 var localCompressFile = function(srcpath,cpath,callback){
 	var parentpath = path.dirname(srcpath);
 	var srcfile    = path.basename(srcpath);
 	cpath = cpath + (cpath.charAt(cpath.length-1) == '/' ? '' : '/');
-	//console.log('CMD>'+'cd "'+parentpath+'";pwd;' + tarCompressCmd + ' "'+cpath + srcfile+'.tar.gz" "'+srcfile+'"');
-	localCmd('cd "'+parentpath+'";' + tarCompressCmd + ' "' + cpath + srcfile+'.tar.gz" "'+srcfile+'"',callback);
+	var cmdstr;
+	if (os.platform().indexOf('win') === 0){
+		cmdstr = 'cd "' + getRealPath(parentpath) + '" & ' + __dirname + '/../' + tarCompressCmd + ' "' + getRealPath(cpath + srcfile).split("\\").join("/") +'.tar.gz" "' + srcfile + '"';
+	} else {
+		cmdstr = 'cd "'+parentpath+'";' + tarCompressCmd + ' "' + getRealPath(cpath + srcfile) +'.tar.gz" "'+getRealPath(srcfile)+'"';
+	}
+	console.log(cmdstr);
+	localCmd(cmdstr, callback);
 }
 var localDeleteFile   = function(path,callback){
 	if (!fs.existsSync(path)){
@@ -594,7 +606,7 @@ var RemoteFTP = function(socket) {
 			if (err)
 				thisptr.processedMessage(data.cid, err.toString());
 			else
-				thisptr.processedMessage(data.cid, 'Copyed');
+				thisptr.processedMessage(data.cid, 'Copied');
 		});
 	}}(this));
 
