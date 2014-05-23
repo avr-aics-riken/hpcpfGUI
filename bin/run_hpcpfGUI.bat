@@ -1,4 +1,4 @@
 GLSL_COMPILER=./glsl/glslc
 
-cd app
+cd ../app
 node ptl_server.js
