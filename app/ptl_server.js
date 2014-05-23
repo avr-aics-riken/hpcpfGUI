@@ -93,7 +93,7 @@ function registerPTLEvent(socket) {
 			appcmd = appCommandKVTools;
 		}
 		
-		console.log('CMD>' + appcmd, appCommandKVTools);
+		console.log('CMD>' + appcmd);
 		child = exec(appcmd, function (err, stdout, stderr) {
 			if (err) {
 				console.log(err);
