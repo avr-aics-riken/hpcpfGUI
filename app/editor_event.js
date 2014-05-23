@@ -14,7 +14,7 @@ if (os.platform() === 'linux'){ // Linux setting
     LUA_CMD = 'lua'; // Use system command
 }else if (os.platform().indexOf('win') === 0){ // win setting
     KRENDER_CMD = __dirname+'/krender_win';
-    LUA_CMD = './lua_win';
+    LUA_CMD = './lua.exe';
 }
 
 
