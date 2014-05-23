@@ -31,13 +31,11 @@ function makeNode(cap,hostname){
 	
 	var testbtn = document.createElement('button');
 	testbtn.setAttribute('class', "connecttest");
-	testbtn.innerHTML = 'Test';
 	newbtn.appendChild(testbtn);
 	var clickfunc = function(hostname){ return function(e){
 		e.stopPropagation();
 		this.classList.remove('connecttest_ok');
 		this.classList.remove('connecttest_fail');
-		this.innerHTML = 'Test';
 		e.target.removeEventListener(e.type, arguments.callee);// remove clickfunc
 		
 		console.log('connect test : ' + hostname);
@@ -47,7 +45,6 @@ function makeNode(cap,hostname){
 			var error_output = document.getElementById('error_output');
 			error_output.innerHTML = 'Connect Error' + data;
 			thisptr.classList.add('connecttest_fail');
-			thisptr.innerHTML = 'Fail';
 			testConnect.delete();
 			testConnect = null;
 			thisptr.addEventListener('click',clickfunc(hostname)); // add clickfunc
@@ -55,7 +52,6 @@ function makeNode(cap,hostname){
 		testConnect.on('processed', function(data){ console.log('Processed',data); });
 		testConnect.on('openDir',   function(thisptr,hostname){ return function(data){
 			thisptr.classList.add('connecttest_ok');
-			thisptr.innerHTML = 'OK';
 			testConnect.delete();
 			testConnect = null;
 			thisptr.addEventListener('click',clickfunc(hostname)); // add clickfunc

@@ -37,7 +37,7 @@
 	border-width:12px;
 	border-color:#852414;
 	background-color:rgba(26,26,26,0.6);
-	width:500px;
+	width:520px;
 	min-width:500px;
 	height:300px;
 	overflow:auto;
@@ -49,6 +49,8 @@
 	border-radius:5px;
 	border-color:transparent;
 	height:70px;
+	padding-top:auto;
+	padding-bottom:auto;
 }
 
 .hostlabel{
@@ -59,8 +61,13 @@
 	vertical-align:baseline;
 	padding-left:10px;
 	float:left;
-	width:380px;
+	width:330px;
 	margin-left:10px;
+	margin-bottom:auto;
+	height:65px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
 }
 
 .buttons_remotehost{
@@ -71,22 +78,35 @@
 }
 
 .connecttest{
-	position: absolute;
-	left:470px;
 	border-radius:3px;
-	background-color: #f2ca21;
-	margin-top:8px;
+	/*background-color: #f2ca21;*/
+	margin-top:auto;
+	margin-bottom:auto;
 	margin-right:0px;
-	width:65px;
-	height:45px;
+	width:95px;
+	height:65px;
 	z-index:100;
 	float:right;
+	background-image:url("../image/button_connect_test.png");
+}
+
+.connecttest:active{
+	background-image:url("../image/button_connect_test_press.png");
 }
 .connecttest_ok{
-	background-color: #0F0;
+	/*background-color: #0F0;*/
+	background-image:url("../image/button_connect_ok.png");
 }
+.connecttest_ok:active{
+	background-image:url("../image/button_connect_ok_press.png");
+}
+
 .connecttest_fail{
-	background-color: #F00;
+	/*background-color: #F00;*/
+	background-image:url("../image/button_connect_fail.png");
+}
+.connecttest_fail:active{
+	background-image:url("../image/button_connect_fail_press.png");
 }
 
 

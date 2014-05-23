@@ -81,6 +81,7 @@
 
 .dustbox{
 	margin-right:0px;
+	margin-top:auto;
 	width:65px;
 	height:65px;
 	background-image:url("../image/icon_dustbox.png");
