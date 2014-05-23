@@ -22,8 +22,8 @@ if (os.platform().indexOf('win') === 0){ // win setting
 	cpFileCmd = 'copy';
 	cpDirCmd  = 'copy';
 	mvCmd     = 'move';
-	rmFileCmd = 'del';
-	rmDirCmd  = 'del';
+	rmFileCmd = 'del /Q';
+	rmDirCmd  = 'rd /q /s';
 	mkdirCmd  = 'mkdir';
 	tarCompressCmd = './tar czvf';
 	tarExtractCmd  = './tar xvf';
