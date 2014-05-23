@@ -5,27 +5,34 @@ var ssh2 = require('ssh2');
 var exec = require('child_process').exec;
 var path = require('path');
 var os = require('os');
-
+		
 // default commands
-var cpFileCmd     = 'cp',
-	cpDirCmd     = 'cp -r',
+var cpFileCmd = 'cp',
+	cpDirCmd  = 'cp -r',
 	mvCmd     = 'mv',
 	rmFileCmd = 'rm',
 	rmDirCmd  = 'rm -rf',
 	mkdirCmd  = 'mkdir',
 	tarCompressCmd = 'tar czvf',
-	tarExtractCmd  = 'tar xvf';
+	tarExtractCmd  = 'tar xvf',
+	getRealPath = function(p) { return p; };
 
-if (os.platform === 'win32' || os.platform === 'win64') {
-	cpFileCmd     = 'copy';
-	cpDirCmd     = 'copy';
+if (os.platform().indexOf('win') === 0){ // win setting
+	console.log('Use Windows commands.');
+	cpFileCmd = 'copy';
+	cpDirCmd  = 'copy';
 	mvCmd     = 'move';
 	rmFileCmd = 'del';
 	rmDirCmd  = 'del';
 	mkdirCmd  = 'mkdir';
 	tarCompressCmd = './tar czvf';
 	tarExtractCmd  = './tar xvf';
+	
+	getRealPath = function (p) {
+		return path.join(process.cwd().split(':')[0] + ':', p);
+	};
 }
+
 /*
 // read from conf file version.
 var confFile = __dirname + '/../../conf/hpcpfGUI.conf';
@@ -68,13 +75,16 @@ var localCopyFile     = function(src,dst,callback) {
 		console.log('not found path>'+src);
 		return;
 	}
+	
 	if (fs.lstatSync(src).isDirectory()) {
-		localCmd(cpDirCmd + ' "'+src+'" "'+dst+'"', callback);
+		localCmd(cpDirCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
 	} else {
-		localCmd(cpFileCmd + ' "'+src+'" "'+dst+'"', callback);
+		localCmd(cpFileCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
 	}
 }
-var localMoveFile     = function(src,dst,callback) { localCmd(mvCmd + ' "'+src+'" "'+dst+'"', callback);       }
+var localMoveFile     = function(src,dst,callback) {
+	localCmd(mvCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
+}
 var localExtractFile  = function(srcpath,expath,callback){
 	var parentpath = path.dirname(srcpath);
 	var srcfile    = path.basename(srcpath);
@@ -95,12 +105,12 @@ var localDeleteFile   = function(path,callback){
 		return;
 	}
 	if (fs.lstatSync(path).isDirectory()) {
-		localCmd(rmDirCmd + ' "'+path+'"',callback);
+		localCmd(rmDirCmd + ' "' + getRealPath(path) + '"',callback);
 	} else {
-		localCmd(rmFileCmd + ' "'+path+'"',callback);
+		localCmd(rmFileCmd + ' "' + getRealPath(path) + '"',callback);
 	}
 }
-var localMakeDir      = function(path,callback)    { localCmd(mkdirCmd + ' "'+path+'"',callback);            }
+var localMakeDir      = function(path,callback)    { localCmd(mkdirCmd + ' "'+getRealPath(path)+'"',callback);            }
 	
 //-----------------------------------------------------------------
 /*
@@ -430,7 +440,6 @@ var ftparray = {};
 var RemoteFTP = function(socket) {
 	var cmd = {msg:'Server Connected.', id:socket.id};
 	socket.emit('RFTP:SocketConnected', JSON.stringify(cmd));
-	var sfc = null;
 	
 	this.socket = socket;
 	this.connectedMessage = function(cid,msg,host,initPath){
@@ -478,6 +487,7 @@ var RemoteFTP = function(socket) {
 		if (ftparray[data.cid])
 			ftparray[data.cid].delete();
 		
+		var sfc = null;
 		if (info['type'] == 'local') {
 			console.log('RFTP:Local Connection:id='+data.cid);
 			sfc = new LFTPClass();
@@ -486,7 +496,6 @@ var RemoteFTP = function(socket) {
 		} else {
 			console.log('RFTP:Remote Connection:id='+data.cid);
 			sfc = new SFTPClass();
-			ftparray[data.cid] = sfc;
 			
 			try {
 				info['privateKey'] = require('fs').readFileSync(info['privateKeyFile']);
@@ -494,13 +503,14 @@ var RemoteFTP = function(socket) {
 				thisptr.errorMessage(data.cid,"Failed read SSH key file:"+info['privateKeyFile']);
 				return;
 			}
-			sfc.Connect(info,function(data){ return function(err){
+			sfc.Connect(info,function(data,sfc){ return function(err){
 				if (err){
 					thisptr.errorMessage(data.cid,"Connection Failed "+err);
 					return;
 				}
 				thisptr.connectedMessage(data.cid,"Remote mode : connection success",info['host'],info['path']);
-			}}(data));
+				ftparray[data.cid] = sfc;
+			}}(data,sfc));
 		}
 	}}(this));
 	
