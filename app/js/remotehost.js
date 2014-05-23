@@ -33,15 +33,16 @@ function makeNode(cap,hostname){
 	testbtn.setAttribute('class', "connecttest");
 	testbtn.innerHTML = 'Test';
 	newbtn.appendChild(testbtn);
-	testbtn.addEventListener('click',function(hostname){ return function(e){
+	var clickfunc = function(hostname){ return function(e){
 		e.stopPropagation();
 		this.classList.remove('connecttest_ok');
 		this.classList.remove('connecttest_fail');
 		this.innerHTML = 'Test';
+		e.target.removeEventListener(e.type, arguments.callee);// remove clickfunc
 		
 		console.log('connect test : ' + hostname);
-		var testConnect = new RemoteFTP(socket, 'TestConnect', hostname);
-		testConnect.on('error',     function(thisptr){ return function(data){
+		var testConnect = new RemoteFTP(socket, 'TestConnect-' + hostname, hostname);
+		testConnect.on('error',     function(thisptr,hostname){ return function(data){
 			console.log('Connect Error',data);
 			var error_output = document.getElementById('error_output');
 			error_output.innerHTML = 'Connect Error' + data;
@@ -49,16 +50,19 @@ function makeNode(cap,hostname){
 			thisptr.innerHTML = 'Fail';
 			testConnect.delete();
 			testConnect = null;
-		}}(this));
+			thisptr.addEventListener('click',clickfunc(hostname)); // add clickfunc
+		}}(this, hostname));
 		testConnect.on('processed', function(data){ console.log('Processed',data); });
-		testConnect.on('openDir',   function(thisptr){ return function(data){
+		testConnect.on('openDir',   function(thisptr,hostname){ return function(data){
 			thisptr.classList.add('connecttest_ok');
 			thisptr.innerHTML = 'OK';
 			testConnect.delete();
 			testConnect = null;
-		}}(this));
+			thisptr.addEventListener('click',clickfunc(hostname)); // add clickfunc
+		}}(this, hostname));
 		testConnect.Connect();
-	}}(hostname));
+	}};
+	testbtn.addEventListener('click',clickfunc(hostname));
 	
 	newbtn.addEventListener('click', function(dust){ return function(e){
 		dust.setAttribute('class','dustbox');
