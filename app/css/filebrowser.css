@@ -18,11 +18,13 @@
 }
 
 .fileitem{
+	text-align:left;
 	border:solid;
 	border-width:2px;
 	border-radius:5px;
 	border-color:transparent;
 	height:70px;
+
 }
 
 .fileitem:active, .fileitem:focus .fileitem:checked{
@@ -56,12 +58,15 @@
 	float:left;
 	width:100px;
 	margin-left:5px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .back{
 	width:65px;
 	height:65px;
-	float:left;
+	display:inline-block;
 	background-image:url("../image/icon_back.png");
 }
 
@@ -224,7 +229,27 @@
 	background-color:rgba(20,20,20,1.0);
 	float:left;
 }
-.filepath_dialog{
+
+.filepath_filedialog{
+	font-family:sans-serif;
+	font-size:16px;
+	color:#fff;
+	text-align:left;
+	width:500px;
+	min-width:500px;
+	margin-left:60px;
+	margin-top:5px;
+	margin-bottom:5px;
+	/* selection */
+	-webkit-touch-callout:text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+.input_filedialog{
 	font-family:sans-serif;
 	font-size:16px;
 	color:#fff;

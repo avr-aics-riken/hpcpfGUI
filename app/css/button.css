@@ -43,6 +43,20 @@
 	background-image:url("../image/button_bg_action_press.png");
 }
 
+/* button - save */
+.button_save{
+	width:165px;
+	height:101px;
+	margin-top:20px;
+	margin-left:10px;
+	text-align:center;
+	background-image:url("../image/button_bg_action.png");
+}
+
+.button_save:active{
+	background-image:url("../image/button_bg_action_press.png");
+}
+
 /* button - cancel */
 .button_cancel{
 	width:165px;
