@@ -132,6 +132,7 @@ var localMakeDir      = function(path,callback)    { localCmd(mkdirCmd + ' "'+ge
 
 var remoteCmd = function(conn,cmd,callback){
 	conn.exec(cmd, function(cb){return function(err,stream){
+		console.log('REMOTE CMD>' + cmd);
 		if (err)
 			console.log(err);
 		stream.on('end', function() {
@@ -157,7 +158,13 @@ var remoteCompressFile = function(conn,srcpath,cpath,callback){
 	console.log('remoteCMD>'+'cd "'+parentpath+'";pwd;tar czvf "'+cpath + srcfile+'.tar.gz" "'+srcfile+'"');
 	remoteCmd(conn,'cd "'+parentpath+'";tar czvf "'+cpath + srcfile+'.tar.gz" "'+srcfile+'"',callback);
 }
-var remoteDeleteFile   = function(conn,path,callback)    { remoteCmd(conn, 'rm "'+path+'"',callback);                }
+var remoteDeleteFile   = function(conn,path,callback) {
+	remoteCmd(conn, 'rm "'+path+'"',callback);
+}
+var remoteDeleteDir = function(conn,path, callback) {
+	remoteCmd(conn, 'rm -rf "'+path+'"', callback);
+}
+
 var remoteMakeDir      = function(conn,path,callback)    { remoteCmd(conn, 'mkdir "'+path+'"',callback);             }
 
 //-----------------------------------------------------------------
@@ -265,7 +272,34 @@ var SFTPClass = function(){
 			return;
 		}
 		if (fs.lstatSync(local_path).isDirectory()) {
-			this.errorLog('Directory is not supported to transport.',callback);
+			
+			// directory upload process.
+			var tempDir = os.tmpdir();
+			console.log('TEMPDIR=' + tempDir);
+			
+			localCompressFile(local_path, tempDir, function (self, local_path, tar_path, callback) { return function () {
+				var localTempTar = tempDir + path.basename(local_path)+".tar.gz",
+					readStream = fs.createReadStream(localTempTar),
+					writedFile = tar_path + ".tar.gz",
+					writeStream = self.sftp.createWriteStream(writedFile);
+				writeStream.on('close',function(self, writedFile, callback) { return function () {
+					var tarDir = path.dirname(tar_path);
+					console.log( "- Dir file transferred Extract->" + tarDir);
+					
+					self.ExtractFile(writedFile, tarDir, function() {
+						console.log( "- Dir file extracted." );
+						// remove remote temp tars
+						self.DeleteFile(writedFile, function() {
+							// remove remote temp tars
+							localDeleteFile(localTempTar, function() {
+								if (callback)
+									callback();
+							});
+						});
+					});
+				}}(self, writedFile, callback));
+				readStream.pipe( writeStream );
+			}}(this, local_path, tar_path, callback));
 			return;
 		}
 		
@@ -274,7 +308,7 @@ var SFTPClass = function(){
 		var writeStream = this.sftp.createWriteStream(tar_path);
 
 		// what to do when transfer finishes
-		writeStream.on('close',function(self){ return function () {
+		writeStream.on('close',function(self) { return function () {
 			console.log( "- file transferred" );
 			//this.sftp.end(); // no need?
 			if (callback)
@@ -349,7 +383,13 @@ var SFTPClass = function(){
 		}
 
 		console.log('Remote:DeleteFile>',path);
-		remoteDeleteFile(this.conn,path,callback);
+		sftp.stat(path, function(self){ return function (err, stats) {
+			if (stats.isDirectory()) {
+				remoteDeleteDir(self.conn, path, callback);
+			} else {
+				remoteDeleteFile(self.conn, path, callback);
+			}
+		}}(this));
 	}
 
 	this.MakeDir = function(path, callback){
