@@ -326,30 +326,61 @@ var SFTPClass = function(){
 			return;
 		}
 
-		// download file
-		var writeStream = fs.createWriteStream(local_path);
-		var readStream = this.sftp.createReadStream(tar_path);
-		console.log('AAAAAAA',writeStream);
-		console.log('BBBBBBB',readStream);
-		console.log('CCCCCCC');
+		var downloadFile = function (self, local_path, tar_path, callback) {
+			var writeStream = fs.createWriteStream(local_path);
+			var readStream = self.sftp.createReadStream(tar_path);
 
-		// what to do when transfer finishes
-		readStream.on('close',function(self){ return function () {
-			console.log( "- file transferred" );
-			if (callback)
-				callback();
-		}}(this));
+			// what to do when transfer finishes
+			readStream.on('close', function () {
+				console.log( "- file transferred" );
+				if (callback)
+					callback();
+			});
 
-		// initiate transfer of file
-		readStream.on('error', function(thisptr,tar_path,callback){ return function(){
-			thisptr.errorLog('Faild to download. Failed to read file:'+tar_path,callback);
-			return;
-		}}(this,tar_path,callback));
-		writeStream.on('error', function(thisptr,local_path,callback){ return function(){
-			thisptr.errorLog('Faild to download. Failed to write file:'+local_path,callback);
-			return;
-		}}(this,local_path,callback));
-		readStream.pipe( writeStream );
+			// initiate transfer of file
+			readStream.on('error', function(thisptr,tar_path,callback){ return function(){
+				thisptr.errorLog('Faild to download. Failed to read file:'+tar_path,callback);
+				return;
+			}}(self,tar_path,callback));
+			writeStream.on('error', function(thisptr,local_path,callback){ return function(){
+				thisptr.errorLog('Faild to download. Failed to write file:'+local_path,callback);
+				return;
+			}}(self,local_path,callback));
+			readStream.pipe( writeStream );
+		};
+		
+		sftp.stat(tar_path, function(self, local_path, tar_path, callback){ return function (err, stats) {
+			if (stats.isDirectory()) {
+				// download dir
+				
+				var tempdir = path.dirname(tar_path) + '/hpcpftemp_directory';
+				self.MakeDir(tempdir, function(self, tempdir, callback) { return function () {
+					self.CompressFile(tar_path, tempdir, function (self, callback) { return function () {
+						console.log( "dir compress > " + tar_path + ' -> ' + tempdir);
+						var tarfile = tempdir + '/' + path.basename(tar_path) + '.tar.gz',
+							localTarfile = local_path + '-hpcpftemp.tar.gz';
+						console.log( "remote tar file = " + tarfile);
+						
+						downloadFile(self, localTarfile, tarfile, function (ltarfile) { return function () {
+							localExtractFile(ltarfile, path.dirname(ltarfile), function () {
+								console.log( "extracted > " + ltarfile );
+							
+								// delete tars
+								self.DeleteFile(tempdir, function () {
+									localDeleteFile(ltarfile, function () {
+										if (callback)
+											callback();
+									});
+								});
+							});
+						}}(localTarfile));
+					}}(self, callback));
+				}}(self, tempdir, callback));
+			} else {
+				// download file
+				downloadFile(self, local_path, tar_path, callback);
+			}
+		}}(this, local_path, tar_path, callback));
 	}
 	
 	this.CopyFile = function(srcpath, destpath, callback){
