@@ -109,9 +109,16 @@ function registerPTLEvent(socket) {
 	filedialog.SocketEvent(socket, 'homedlg');
 	filedialog.SocketEvent(socket, 'remotedlg');
 
+	var historyFile = "../conf/project_history.json";
+	
+	socket.on('reqUpdateProjectHistory', function (path) {
+		fs.readFile(historyFile, function (err, data) {
+			socket.emit('updateProjectHistory', data.toString());
+		});
+	});
+	
 	socket.on('registerProjectHistory', function (path) {
 		console.log("REGISTER_HISTORY:" + path);
-		var historyFile = "project_history.json";
 		fs.readFile(historyFile, function (err, data) {
 			var names = path.split("/"),
 				name = names[names.length - 1];

@@ -1,7 +1,8 @@
 var fs = require('fs')
+var regFile = '../conf/registered_host.json';
 
 function updateHostList(socket){
-	fs.readFile('./registered_host.json',function(socket){return function(err,filebuf){
+	fs.readFile(regFile,function(socket){return function(err,filebuf){
 		var host;
 		if (err){
 			console.log(err);
@@ -21,7 +22,7 @@ function registerEditorEvent(socket)
 {
 	socket.on('REMOTEHOST:DELHOST',function(data){
 		console.log("DEL>"+data.hostname);
-		fs.readFile('./registered_host.json',function(err,filebuf){
+		fs.readFile(regFile,function(err,filebuf){
 			if (err){
 				console.log(err);
 				return;
@@ -32,7 +33,7 @@ function registerEditorEvent(socket)
 				delete host[data.hostname];
 				
 				var jslist = JSON.stringify(host);
-				fs.writeFile('./registered_host.json', jslist,function(err){
+				fs.writeFile(regFile, jslist,function(err){
 					if (err){
 						console.log(err);
 						return;
@@ -44,7 +45,7 @@ function registerEditorEvent(socket)
 	});
 	socket.on('REMOTEHOST:REQHOSTINFO',function(data){
 		console.log("REQHOST>"+data.hostname);
-		fs.readFile('./registered_host.json',function(err,filebuf){
+		fs.readFile(regFile,function(err,filebuf){
 			var host;
 			if (err){
 				console.log(err);
@@ -70,7 +71,7 @@ function registerEditorEvent(socket)
 	socket.on('REMOTEHOST:AddHost',function(sdata){
 		var data = JSON.parse(sdata);
 		
-		fs.readFile('./registered_host.json',function(err,filebuf){
+		fs.readFile(regFile,function(err,filebuf){
 			var host
 			if (err){
 				console.log(err);
@@ -104,7 +105,7 @@ function registerEditorEvent(socket)
 			}
 			
 			var jslist = JSON.stringify(host);
-			fs.writeFile('./registered_host.json', jslist,function(err){
+			fs.writeFile(regFile, jslist,function(err){
 				if (err){
 					console.log(err);
 					return;

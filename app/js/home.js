@@ -14,27 +14,9 @@ socket.on('connect', function () { // 2
 //-------------
 // project history
 
-var xrequet = function (url, callback_online, callback_offline) {
-	"use strict";
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "project_history.json", true);
-	xhr.onreadystatechange = function () {
-		if (xhr.readyState === 4 && xhr.status === 200) { // online
-			if (callback_online) {
-				callback_online(this.responseText);
-			}
-		}
-		if (xhr.readyState === 4 && xhr.status === 0) { // offline
-			if (callback_offline) {
-				callback_offline(this.responseText);
-			}
-		}
-	};
-	xhr.send(null);
-};
-
-function updateProjectList() {
-	"use strict";
+socket.on('updateProjectHistory', function (data) {
+	console.log(data);
+	
 	function readProjectHistory(data) {
 		var proj = JSON.parse(data),
 			plist,
@@ -43,22 +25,29 @@ function updateProjectList() {
 			projectpath,
 			label,
 			i;
+		plist = document.getElementById("projectHistoryList");
+
+		// TODO remove list items
+		
 		for (i = 0; i < proj.length; i += 1) {
-			plist = document.getElementById("projectHistoryList");
 			newitem = document.getElementById("projectHistoryList_itemtemplate").cloneNode(true);
 			newitem.id = "";
-		
+
 			// setting new item
 			projectname = proj[i].name;//"PROJECT:01";
 			projectpath = proj[i].path;//"/Users/username/project01/";
-		
+
 			label = newitem.firstChild.nextSibling;
 			label.innerHTML = projectname;
 			newitem.path = projectpath;
 			plist.appendChild(newitem);
 		}
 	}
-	xrequet("project_history.json", readProjectHistory, readProjectHistory);
+	readProjectHistory(data);
+});
+
+function updateProjectList() {
+	socket.emit('reqUpdateProjectHistory','');
 }
 
 function bootstrap() {

@@ -548,7 +548,7 @@ var RemoteFTP = function(socket) {
 		
 		var rfile;
 		var regTable;
-		var regFilename = './registered_host.json';
+		var regFilename = '../conf/registered_host.json';
 		try {
 			rfile = fs.readFileSync(regFilename);
 			regTable = JSON.parse(rfile);
