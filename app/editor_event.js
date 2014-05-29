@@ -32,8 +32,9 @@ function registerEditorEvent(socket)
 	
 	socket.on('disconnect', function() {
 		console.log("[DISCONNECT] ID="+socket.id);
-		if (sesstionTable[socket.id].proc)
-			sesstionTable[socket.id].proc.kill();
+		if (sesstionTable[socket.id].proc) {
+			KillSpawn(sesstionTable[socket.id].proc);
+		}
 		delete sesstionTable[socket.id];
 	});
 	function updateFileList(path)
@@ -86,12 +87,25 @@ function registerEditorEvent(socket)
 			console.log('It\'s saved!');
 		});
 	});
+	function KillSpawn(sp){
+		if (os.platform() !== 'darwin') {
+			sp.kill();
+		} else {
+			var pid = sp.pid;
+			console.log('processID='+pid);
+			console.log('sh killthem.sh '+pid);
+			exec('sh killthem.sh '+pid, function(error, stdout, stderr) {
+				console.log('killed childs');
+				console.log(error, stdout, stderr);
+			});
+		}
+	}
 	socket.on('stop', function(data) {
 		var processspawn = sesstionTable[socket.id].proc;
 		if (!processspawn)
 			return;
 		console.log('kill');
-		processspawn.kill();
+		KillSpawn(processspawn);
 		sesstionTable[socket.id].proc = null;
 	});
 	socket.on('run', function(data) {
@@ -99,7 +113,7 @@ function registerEditorEvent(socket)
 		var processspawn = sesstionTable[socket.id].proc;
 		console.log("runFile>"+data.file);
 		if (processspawn) {
-			processspawn.kill();
+			KillSpawn(processspawn);
 			sesstionTable[socket.id].proc = null;
 		}
 		
