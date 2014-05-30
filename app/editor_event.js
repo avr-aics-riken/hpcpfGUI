@@ -88,9 +88,7 @@ function registerEditorEvent(socket)
 		});
 	});
 	function KillSpawn(sp){
-		if (os.platform() !== 'darwin') {
-			sp.kill();
-		} else {
+		if (os.platform() === 'darwin' || os.platform() === 'linux') {
 			var pid = sp.pid;
 			console.log('processID='+pid);
 			console.log('sh killthem.sh '+pid);
@@ -98,6 +96,8 @@ function registerEditorEvent(socket)
 				console.log('killed childs');
 				console.log(error, stdout, stderr);
 			});
+		} else {
+			sp.kill();
 		}
 	}
 	socket.on('stop', function(data) {
