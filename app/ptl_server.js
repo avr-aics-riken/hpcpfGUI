@@ -113,6 +113,9 @@ function registerPTLEvent(socket) {
 	
 	socket.on('reqUpdateProjectHistory', function (path) {
 		fs.readFile(historyFile, function (err, data) {
+			if (err) {
+			    return;
+			}
 			socket.emit('updateProjectHistory', data.toString());
 		});
 	});
