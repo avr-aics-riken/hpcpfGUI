@@ -88,6 +88,9 @@ function registerEditorEvent(socket)
 		});
 	});
 	function KillSpawn(sp){
+		if (!sp) {
+			return;
+		}
 		if (os.platform() === 'darwin' || os.platform() === 'linux') {
 			var pid = sp.pid;
 			console.log('processID='+pid);
@@ -97,7 +100,13 @@ function registerEditorEvent(socket)
 				console.log(error, stdout, stderr);
 			});
 		} else {
-			sp.kill();
+			var pid = sp.pid;
+			console.log('processID='+pid);
+			exec('TASKKILL /T /F /PID '+pid, function(error, stdout, stderr) {
+				console.log('killed childs');
+				console.log(error, stdout, stderr);
+			});
+
 		}
 	}
 	socket.on('stop', function(data) {
@@ -123,6 +132,8 @@ function registerEditorEvent(socket)
 			processspawn = spawn(LUA_CMD,[data.file],{cwd:srcdir});
 		}else if (ext === "sh" || ext === "pwf" || ext === "cwf") {
 			processspawn = spawn(SH_CMD,[data.file],{cwd:srcdir});
+		}else if (ext === "bat") {
+			processspawn = spawn(data.file,[],{cwd:srcdir});
 		} else if (ext === "scn"){
 			console.log("KR:"+KRENDER_CMD+" / scn path="+srcdir+data.file);
 			processspawn = spawn(KRENDER_CMD,[srcdir+data.file], function(err,stdout,stderr) {
