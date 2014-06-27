@@ -149,9 +149,9 @@
 .actionmenu{
 	width:470px;
 	height:480px;
-	position:fixed;
+	position:absolute;
 	z-index:100;
-	top:314px;
+	top:390px;
 	display:none;
 }
 
@@ -198,6 +198,8 @@
 	color:#fff;
 	text-align:left;
 	margin-bottom:15px;
+	overflow:auto;
+	word-break:break-all;
 }
 
 /* history browser */
