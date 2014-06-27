@@ -219,12 +219,16 @@ var LFTPClass = function(){
 			var lists = new Array();
 			if (list) {
 				for (var i=0; i<list.length; ++i) {
-					var stat = fs.statSync(path+list[i]);
-					if (stat && stat.isDirectory()) {
-						lists.push({filename:list[i], longname:"d"});
-					}else{
-						lists.push({filename:list[i], longname:"-"});
-					}
+                    try {
+					    var stat = fs.statSync(path+list[i]);
+					    if (stat && stat.isDirectory()) {
+						    lists.push({filename:list[i], longname:"d"});
+					    }else{
+						    lists.push({filename:list[i], longname:"-"});
+					    }
+                    } catch (e) {
+                        console.log('Failed stat:'+list[i]);
+                    }
 				}
 			}
 			if (callback)
