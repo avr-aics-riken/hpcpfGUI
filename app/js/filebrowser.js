@@ -61,7 +61,8 @@ function addItemDragEvents(tar, side, filepath, my_rftp, ano_rftp){
 	// add drag event
 	tar.addEventListener('dragstart', function(fpath, othersideActionMenu){ return function(e) {
 		e.dataTransfer.effectAllowed = 'move';
-		e.dataTransfer.setData('text/json', JSON.stringify({path:fpath}));
+		//e.dataTransfer.setData('text/json', JSON.stringify({path:fpath}));
+        e.dataTransfer.setData('text', JSON.stringify({path:fpath}));
 		
 		var am = document.getElementById(othersideActionMenu);
 		am.style.display = "block";
@@ -94,7 +95,8 @@ function addItemDropEvents(tar, dropcallback){
 		if (e.stopPropagation) {
 			e.stopPropagation(); // Stops some browsers from redirecting.
 		}
-		var sjson = e.dataTransfer.getData('text/json');
+		//var sjson = e.dataTransfer.getData('text/json');
+		var sjson = e.dataTransfer.getData('text');
 		//console.log('droped:'+sjson);
 		var data = null;
 		try{

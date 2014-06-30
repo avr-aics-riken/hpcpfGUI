@@ -4,15 +4,15 @@ var fs = require('fs');
 // Utility functions
 //-------------------------------------
 function getFiles(dir, list){
-	try {
-		var files = fs.readdirSync(dir);
-		if (!files)
-			return;
-		if (dir.substr(dir.length - 1) != "/")
-			dir += "/";
-		for(var i in files){
-			if (!files.hasOwnProperty(i)) continue;
-			var name = dir+files[i];
+	var files = fs.readdirSync(dir);
+	if (!files)
+		return;
+	if (dir.substr(dir.length - 1) != "/")
+		dir += "/";
+	for(var i in files){
+		if (!files.hasOwnProperty(i)) continue;
+		var name = dir+files[i];
+		try {
 			if (fs.statSync(name).isDirectory()){
 				//getFiles(name,list);
 				console.log(name)
@@ -23,10 +23,9 @@ function getFiles(dir, list){
 				console.log(name)
 				list.push({"name":files[i],"type":"file","path":name});
 			}
+		} catch(e){
+			console.log("not found dir:"+dir);
 		}
-	} catch(e){
-		list = [];
-		console.log("not found dir:"+dir);
 	}
 }
 
