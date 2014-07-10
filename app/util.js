@@ -4,7 +4,13 @@ var fs = require('fs');
 // Utility functions
 //-------------------------------------
 function getFiles(dir, list){
-	var files = fs.readdirSync(dir);
+	var files;
+	try {
+		files = fs.readdirSync(dir);
+	} catch (e) {
+		list = {};
+		return;
+	}
 	if (!files)
 		return;
 	if (dir.substr(dir.length - 1) != "/")
