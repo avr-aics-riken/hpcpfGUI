@@ -27,8 +27,12 @@ end
 --- Remote(ssh) commands
 
 local function sshCmd(user, server, key, cmd, disableErr)
-    local sshcmd = 'ssh -i '.. key .. ' ' .. user ..'@'.. server .. ' "' .. cmd ..'"' .. (disableErr and ' 2>/dev/null' or '')
-    --print('CMD>' .. sshcmd)
+	local nullDev = '/dev/null'
+	if (getPlatform() == 'Windows') then
+		disableErr = false
+	end
+    local sshcmd = 'ssh -i '.. key .. ' ' .. user ..'@'.. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
+	--print('CMD>' .. sshcmd)
     local handle = io.popen(sshcmd)
     local result = handle:read("*a")
     --print('OUT>' .. result)
