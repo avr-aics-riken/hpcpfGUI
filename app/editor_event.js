@@ -6,15 +6,18 @@ var os = require('os');
 var util = require('./util');
 
 // MacOSX setting
-var KRENDER_CMD = __dirname+'/krender_mac';
-var LUA_CMD     = __dirname+'/lua_mac';
+var KRENDER_CMD = __dirname + '/krender_mac',
+	LUA_CMD     = __dirname + '/lua_mac',
+	TAR_CMD     = 'tar';
 
 if (os.platform() === 'linux'){ // Linux setting
-    KRENDER_CMD = __dirname+'/krender_linux';
+    KRENDER_CMD = __dirname + '/krender_linux';
     LUA_CMD = 'lua'; // Use system command
+	TAR_CMD = 'tar';
 }else if (os.platform().indexOf('win') === 0){ // win setting
-    KRENDER_CMD = __dirname+'/krender.exe';
-    LUA_CMD = __dirname+'/lua.exe';
+    KRENDER_CMD = __dirname + '/krender.exe';
+    LUA_CMD = __dirname + '/lua.exe';
+	TAR_CMD = __dirname + '/tar.exe';
 }
 
 
@@ -126,10 +129,11 @@ function registerEditorEvent(socket)
 			sesstionTable[socket.id].proc = null;
 		}
 		
-		var ext = util.getExtention(data.file);
+		var ext = util.getExtention(data.file), lualibpath;
 		console.log("EXT="+ext);
 		if (ext === "lua" || ext === "pwl" || ext === "cwl") {
-			processspawn = spawn(LUA_CMD,[data.file],{cwd:srcdir});
+			lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
+			processspawn = spawn(LUA_CMD,['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', data.file],{cwd:srcdir});
 		}else if (ext === "sh" || ext === "pwf" || ext === "cwf") {
 			processspawn = spawn(SH_CMD,[data.file],{cwd:srcdir});
 		}else if (ext === "bat") {
