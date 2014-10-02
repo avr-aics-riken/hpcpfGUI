@@ -142,7 +142,7 @@ var remoteCmd = function(conn,cmd,callback){
 	}}(callback));
 }
 	
-var remoteCopyFile     = function(conn,src,dst,callback) { remoteCmd(conn, 'cp "'+src+'" "'+dst+'"', callback);        }
+var remoteCopyFile     = function(conn,src,dst,callback) { remoteCmd(conn, 'cp -Rf "'+src+'" "'+dst+'"', callback);        }
 var remoteMoveFile     = function(conn,src,dst,callback) { remoteCmd(conn, 'mv "'+src+'" "'+dst+'"', callback);        }
 var remoteExtractFile  = function(conn,srcpath,expath,callback){
 	var parentpath = path.dirname(srcpath);
