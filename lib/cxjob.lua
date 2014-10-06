@@ -1,26 +1,44 @@
 
-local cxjob = {}
+--[[
+	USAGE:
+	local cxjob = require('cxjob')
 
+	local jobmgr = cxjob.new(
+	      'username',
+	      'to_sshkey_path',
+	      'server_address')
+
+	  or
+
+	local jobmgr = cxjob.new(
+	      {username = 'username',
+	       sshkey   = 'to_sshkey_path',
+	       server   = 'server_address'})
+--]]
+
+local cxjob = {}
 
 local function getJobInfo(server)
     local info = {
-        'k.aics.riken.jp' = {
+        ["k.aics.riken.jp"] = {
             submitCmd = 'pjsub',
+	    submitIDRow = 6,
             delCmd = 'pjdel',
-            statCmd = 'pjstat'
-            statStateColumn = 0,
-            statStateRow = 0,
+            statCmd = 'pjstat',
+            statStateColumn = 6,
+            statStateRow = 4,
             jobEndFunc = function(t)
                 -- TODO: 'END'
                 return false
             end,
         },
-        'ff01.j-focus.jp' = {
+        ["ff01.j-focus.jp"] = {
             submitCmd = 'fjsub',
+	    submitIDRow = 4,
             delCmd = 'fjdel',
-            statCmd = 'fjstat'
-            statStateColumn = 0,
-            statStateRow = 0,
+            statCmd = 'fjstat',
+            statStateColumn = 5,
+            statStateRow = 4,
             jobEndFunc = function (t)
                 if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
                 else return false end
@@ -30,9 +48,19 @@ local function getJobInfo(server)
     return info[server]
 end
 
-function cxjob.new(usrname, sshkey, server)
+
+function cxjob.new(username_or_table, sshkey, server)
+    local username
+    if type(username_or_table) == 'table' then
+        username = username_or_table.user
+        sshkey   = username_or_table.sshkey
+        server   = username_or_table.server
+    else
+        username = username_or_table -- this is username.
+    end
+
     local inst = {
-        user   = usrname,
+        user   = username,
         sshkey = sshkey,
         server = server
     }
@@ -175,8 +203,8 @@ end
 
 function cxjob:remoteJobSubmit(jobdata)
     local cmdTarget = 'cd ' .. jobdata.targetpath ..';'
-    local cmdSubmit = cmdTarget ..  self.submitCmd .. ' ' .. jobdata.job
-	--print(cmdSubmit)
+    local cmdSubmit = cmdTarget ..  self.jobinfo.submitCmd .. ' ' .. jobdata.job
+    print(cmdSubmit)
     local cmdret = sshCmd(self.user, self.server, self.sshkey, cmdSubmit, true)
     local jobid = parseJobID(self.jobinfo, cmdret)
     jobdata.id = jobid
@@ -198,7 +226,7 @@ function cxjob:remoteJobStat(jobdata)
     local cmdStat = self.jobinfo.statCmd .. ' ' .. (jobdata.id and jobdata.id or '')
 	--print(cmdStat)
     local cmdret  = sshCmd(self.user, self.server, self.sshkey, cmdStat, true)
-    local jobstat = parseJobStat(self.jobinof, cmdret, jobdata.id)
+    local jobstat = parseJobStat(self.jobinfo, cmdret, jobdata.id)
 	--print('JOB ST = ' .. jobstat)
     return jobstat
 end
