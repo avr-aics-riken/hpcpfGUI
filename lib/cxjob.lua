@@ -11,7 +11,8 @@ local function getJobInfo(server)
             statStateColumn = 0,
             statStateRow = 0,
             jobEndFunc = function(t)
-                
+                -- TODO: 'END'
+                return false
             end,
         },
         'ff01.j-focus.jp' = {
