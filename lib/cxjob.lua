@@ -72,10 +72,10 @@ end
 function cxjob:uploadFile(localfile, remotefile)
     if (not remotefile) then remotefile = "./" end
     local scpcmd = 'scp -i '.. self.sshkey .. ' ' .. localfile .. ' ' .. self.user ..'@'.. self.server .. ':' .. remotefile;
-    --print('CMD>' .. scpcmd)
+    print('CMD>' .. scpcmd)
     local handle = io.popen(scpcmd)
     local result = handle:read("*a")
-    --print('OUT>' .. result)
+    print('OUT>' .. result)
     handle:close()
     return result
 end
@@ -83,10 +83,10 @@ end
 function cxjob:downloadFile(remotefile, localfile)
     if (not localfile) then localfile = "./" end
     local scpcmd = 'scp -i '.. self.sshkey .. ' ' .. self.user ..'@'.. self.server .. ':' .. remotefile ..  ' ' .. localfile;
-    --print('CMD>' .. scpcmd)
+    print('CMD>' .. scpcmd)
     local handle = io.popen(scpcmd)
     local result = handle:read("*a")
-    --print('OUT>' .. result)
+    print('OUT>' .. result)
     handle:close()
     return result
 end
@@ -117,26 +117,26 @@ local function sshCmd(user, server, key, cmd, disableErr)
 end
 
 function cxjob:remoteExtractFile(filepath, varbose)
-    local option = verbose and 'xvf' or 'xf'
+    local option = (verbose == true) and 'xvf' or 'xf'
     local cmd = 'tar ' .. option .. ' ' .. filepath
+    print(cmd)
     return sshCmd(self.user, self.server, self.sshkey, cmd)
 end
 
 function cxjob:remoteCompressFile(srcfile, tarfile, verbose)
-    local option = verbose and 'czvf' or 'czf'
+    local option = (verbose == true) and 'czvf' or 'czf'
     local cmd = 'tar ' .. option .. ' ' .. tarfile .. ' ' .. srcfile
+    print(cmd)
     return sshCmd(self.user, self.server, self.sshkey, cmd)
 end
 
 function cxjob:sendFile(localfile, remotefile)
-    local option = verbose and 'czvf' or 'czf'
     local fromfile = localfile
     local tofile = self.user .. '@' .. self.server .. ':' .. remotefile
     return scpCmd(self.user, self.server, self.sshkey, fromfile, tofile)
 end
 
 function cxjob:getFile(localfile, remotefile)
-    local option = verbose and 'czvf' or 'czf'
     local fromfile = self.user .. '@' .. self.server .. ':' .. remotefile
     local tofile = localfile
     return scpCmd(self.user, self.server, self.sshkey, fromfile, tofile)
@@ -243,7 +243,7 @@ end
 
 function cxjob:remoteJobDel(jobdata)
 	if jobdata == nil or jobdata.id == nil then
-    	print('[Error] job or job.id is invalid')
+    	print('[Error] job or job.id is invalid (remoteJobDel)')
         debug.traceback()
 		return
 	end
@@ -254,7 +254,7 @@ end
 
 function cxjob:remoteJobStat(jobdata)
     if jobdata == nil or jobdata.id == nil then
-        print('[Error] job or job.id is invalid')
+        print('[Error] job or job.id is invalid (remoteJobStat)')
         debug.traceback()
         return
     end

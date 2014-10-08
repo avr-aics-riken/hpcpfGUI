@@ -101,12 +101,11 @@ end
 function dxjob:SubmitAndWait(remoteCasePath)
     while #self.m_jobque > 0 or #self.m_submitque > 0 do
         -- check ended job
-		for i = 1, #self.m_submitque do
+		for i = #self.m_submitque, 1, -1 do
 		    local v = self.m_submitque[i]
 		    if self.m_jobmgr:remoteJobStat(v) == 'END' then
 		        self.m_doneque[#self.m_doneque + 1] = v
 				table.remove(self.m_submitque, i)
-				i = i - 1
 		    end
 		    sleep(1) -- wait
 		end

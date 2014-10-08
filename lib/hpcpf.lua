@@ -26,7 +26,7 @@ end
 function compressFile(srcname, tarname, verbose, opt)
     local tarcmd
     local optcmd = opt and opt or ''
-    local option = verbose and '-czvf' or '-czf'
+    local option = (verbose == true) and '-czvf' or '-czf'
     if (getPlatform() == 'Windows') then
         local TAR_CMD = HPCPF_BIN_DIR .. '/tar.exe'
         tarcmd =  TAR_CMD .. ' ' .. optcmd .. ' ' .. option .. ' ' .. tarname .. ' ' .. srcname
@@ -34,6 +34,7 @@ function compressFile(srcname, tarname, verbose, opt)
         local TAR_CMD = 'tar'
         tarcmd =  TAR_CMD .. ' ' .. optcmd .. ' ' .. option .. ' ' .. tarname .. ' ' .. srcname
     end
+    print(tarcmd)
     local handle = io.popen(tarcmd)
     local result = handle:read("*a")
     handle:close()
@@ -51,6 +52,7 @@ function extractFile(tarname, verbose, opt)
         local TAR_CMD = 'tar'
         tarcmd =  TAR_CMD .. ' ' .. optcmd .. ' '.. option .. ' ' .. tarname
     end
+    print(tarcmd)
     local handle = io.popen(tarcmd)
     local result = handle:read("*a")
     handle:close()
