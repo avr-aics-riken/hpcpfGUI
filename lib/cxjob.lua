@@ -93,6 +93,14 @@ end
 
 
 --- Remote(ssh) commands
+local function scpCmd(user, server, key, fromfile, tofile)
+    local scpcmd = 'scp -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
+    print(scpcmd)
+    local handle = io.popen(scpcmd)
+    local result = handle:read("*a")
+    handle:close()
+    return result
+end
 
 local function sshCmd(user, server, key, cmd, disableErr)
 	local nullDev = '/dev/null'
@@ -120,9 +128,24 @@ function cxjob:remoteCompressFile(srcfile, tarfile, verbose)
     return sshCmd(self.user, self.server, self.sshkey, cmd)
 end
 
+function cxjob:sendFile(localfile, remotefile)
+    local option = verbose and 'czvf' or 'czf'
+    local fromfile = localfile
+    local tofile = self.user .. '@' .. self.server .. ':' .. remotefile
+    return scpCmd(self.user, self.server, self.sshkey, fromfile, tofile)
+end
+
+function cxjob:getFile(localfile, remotefile)
+    local option = verbose and 'czvf' or 'czf'
+    local fromfile = self.user .. '@' .. self.server .. ':' .. remotefile
+    local tofile = localfile
+    return scpCmd(self.user, self.server, self.sshkey, fromfile, tofile)
+end
+
+
 function cxjob:remoteDeleteFile(filename)
-	-- TODO
-	print('not implemented yet!')
+	local cmd = 'rm -f ' .. filename
+    return sshCmd(self.user, self.server, self.sshkey, cmd)
 end
 
 function cxjob:remoteMoveFile(fromFile, toFile)
@@ -136,8 +159,8 @@ function cxjob:remoteCopyFile(fromFile, toFile)
 end
 
 function cxjob:remoteMakeDir(dirpath)
-	-- TODO
-	print('not implemented yet!')
+    local cmd = 'mkdir ' .. dirpath
+    return sshCmd(self.user, self.server, self.sshkey, cmd)
 end
 
 function cxjob:remoteDeleteDir(dirname)
@@ -201,9 +224,15 @@ local function parseJobStat(conf, cmdret, jobid)
 	end
 end
 
-function cxjob:remoteJobSubmit(jobdata)
-    local cmdTarget = 'cd ' .. jobdata.targetpath ..';'
-    local cmdSubmit = cmdTarget ..  self.jobinfo.submitCmd .. ' ' .. jobdata.job
+function cxjob:remoteJobSubmit(jobdata, pathtojob, jobsh)
+    local jobpath = pathtojob and pathtojob or ''
+	if jobdata == nil then
+		print('Invalid argument: remoteJobSubmit')
+        debug.traceback()
+		return;
+	end
+    local cmdTarget = 'cd ' .. jobpath .. '/' .. jobdata.path ..';'
+    local cmdSubmit = cmdTarget ..  self.jobinfo.submitCmd .. ' ' .. jobsh
     print(cmdSubmit)
     local cmdret = sshCmd(self.user, self.server, self.sshkey, cmdSubmit, true)
     local jobid = parseJobID(self.jobinfo, cmdret)
@@ -213,8 +242,9 @@ function cxjob:remoteJobSubmit(jobdata)
 end
 
 function cxjob:remoteJobDel(jobdata)
-	if (not jobdata.id) then
-		print('[Error] job id is invalid')
+	if jobdata == nil or jobdata.id == nil then
+    	print('[Error] job or job.id is invalid')
+        debug.traceback()
 		return
 	end
     local cmdDel = self.jobinfo.delCmd .. ' ' .. jobdata.id
@@ -223,6 +253,12 @@ function cxjob:remoteJobDel(jobdata)
 end
 
 function cxjob:remoteJobStat(jobdata)
+    if jobdata == nil or jobdata.id == nil then
+        print('[Error] job or job.id is invalid')
+        debug.traceback()
+        return
+    end
+
     local cmdStat = self.jobinfo.statCmd .. ' ' .. (jobdata.id and jobdata.id or '')
 	--print(cmdStat)
     local cmdret  = sshCmd(self.user, self.server, self.sshkey, cmdStat, true)

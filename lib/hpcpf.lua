@@ -23,15 +23,16 @@ end
 
 -- File/Dir Utility fuctions
 
-function compressFile(srcname, tarname, verbose)
+function compressFile(srcname, tarname, verbose, opt)
     local tarcmd
-    local option = verbose and 'czvf' or 'czf'
+    local optcmd = opt and opt or ''
+    local option = verbose and '-czvf' or '-czf'
     if (getPlatform() == 'Windows') then
         local TAR_CMD = HPCPF_BIN_DIR .. '/tar.exe'
-        tarcmd =  TAR_CMD .. ' ' .. option .. ' ' .. tarname .. ' ' .. srcname
+        tarcmd =  TAR_CMD .. ' ' .. optcmd .. ' ' .. option .. ' ' .. tarname .. ' ' .. srcname
     else
         local TAR_CMD = 'tar'
-        tarcmd =  TAR_CMD .. ' ' .. option .. ' ' .. tarname .. ' ' .. srcname
+        tarcmd =  TAR_CMD .. ' ' .. optcmd .. ' ' .. option .. ' ' .. tarname .. ' ' .. srcname
     end
     local handle = io.popen(tarcmd)
     local result = handle:read("*a")
@@ -39,15 +40,16 @@ function compressFile(srcname, tarname, verbose)
     return result
 end
 
-function extractFile(tarname, verbose)
+function extractFile(tarname, verbose, opt)
     local tarcmd
-    local option = verbose and 'xvf' or 'xf'
+    local optcmd = opt and opt or ''
+    local option = verbose and '-xvf' or '-xf'
     if (getPlatform() == 'Windows') then
         local TAR_CMD = HPCPF_BIN_DIR .. '/tar.exe'
-        tarcmd =  TAR_CMD .. ' ' .. option .. ' ' .. tarname
+        tarcmd =  TAR_CMD .. ' ' .. optcmd .. ' '.. option .. ' ' .. tarname
     else
         local TAR_CMD = 'tar'
-        tarcmd =  TAR_CMD .. ' ' .. option .. ' ' .. tarname
+        tarcmd =  TAR_CMD .. ' ' .. optcmd .. ' '.. option .. ' ' .. tarname
     end
     local handle = io.popen(tarcmd)
     local result = handle:read("*a")
@@ -139,12 +141,24 @@ end
 
 --- execution for CASE
  
-local s_base_path="./"
+local s_base_path=""
 function setBasePath(dir)
     s_base_path = dir
 end
 function getBasePath()
     return s_base_path 
+end
+
+
+function execmd(command)
+    local handle = io.popen(command,"r")
+    local content = handle:read("*all")
+    handle:close()
+    return content
+end
+
+function getCurrentDir()
+    return execmd('pwd'):gsub('\n','')
 end
 
 function executeCASE(casename,...)
@@ -153,11 +167,12 @@ function executeCASE(casename,...)
     local cf = loadfile('./'..casename..'/case.cwl');
     if (cf == nil) then
         print("Can't find Case work flow:"..casename)
+        print("or can't find " .. casename..'/case.cwl')
     else
         print("--- Start CASE: "..casename.." ---")
-        setBasePath('./'..casename..'/')
+        setBasePath('/' .. casename)
         cf(args_table) 
-        setBasePath('./')
+        setBasePath('')
         print("--- End   CASE: "..casename.." ---")
     end
 end
