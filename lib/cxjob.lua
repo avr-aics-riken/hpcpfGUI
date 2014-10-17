@@ -18,7 +18,7 @@
 
 local cxjob = {}
 
-local function getJobInfo(server)
+local function getServerInfo(server)
     local info = {
         ["k.aics.riken.jp"] = {
             submitCmd = 'pjsub',
@@ -64,7 +64,7 @@ function cxjob.new(username_or_table, sshkey, server)
         sshkey = sshkey,
         server = server
     }
-    inst.jobinfo = getJobInfo(server)
+    inst.jobinfo = getServerInfo(server)
     setmetatable(inst, {__index = cxjob})
     return inst;
 end
