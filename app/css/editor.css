@@ -35,6 +35,22 @@ body {
 #imageView {
 	margin:auto;
 }
+#launchButtonArea {
+	position:absolute;
+	top:210px;
+	left:240px;
+	right:10px;
+	bottom:190px;
+	z-index:15;
+	padding:auto;
+	color: #f00;
+	background-color: #8b8b8b;
+	border-radius: 4px;
+	text-align:center;
+	overflow:scroll;
+	visibility: hidden;
+	opacity: 0;
+}
 #editorbar {
 	position:absolute;
 	left:10px;
@@ -139,6 +155,13 @@ body {
 	visibility: hidden;
 	opacity: 0;
 	resize:both;
+}
+#launchapparea {
+	position:absolute;
+	top:80px;
+	right:400px;
+	z-index:20;
+	margin:0px;
 }
 #stdout{
 	background-color:rgba(219, 219, 219, 0.8);

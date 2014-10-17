@@ -29,6 +29,21 @@
 	background-image:url("../image/button_bg_tool_press.png");
 }
 
+/* button - editor - launchapp */
+.button_editor_launchapp{
+	width:165px;
+	height:101px;
+	text-align:center;
+	margin-top:10px;
+	margin-right:5px;
+	padding-left:0px;
+	background-image:url("../image/button_bg_action_red.png");
+}
+
+.button_editor_launchapp:active{
+	background-image:url("../image/button_bg_action_red_press.png");
+}
+
 /* button - open */
 .button_open{
 	width:165px;

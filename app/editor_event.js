@@ -26,7 +26,40 @@ var SH_CMD = 'sh'
 
 var sesstionTable = {};
 
-function registerEditorEvent(socket)
+// find launchApp name from extension
+function findLaunchApp(appExtensions, ext) {
+	"use strict";
+	var name;
+	var appNames = [];
+	for (name in appExtensions) {
+		if (appExtensions[name].indexOf(ext) >= 0) {
+			appNames.push(name);
+		}
+	}
+	if (appNames.length > 0) {
+		return appNames;
+	}
+	return null;
+}
+
+// get editable type or empty string
+function getEditTypeByExtension(ext) {
+	"use strict";
+	if (ext === "lua" || ext === "scn" || ext === "pwl" || ext === "cwl") {
+		return "lua";
+	} else if (ext === "sh" || ext === "pwf" || ext === "cwf") {
+		return "sh";
+	} else if (ext === "json" || ext === "pif" || ext === "cif") {
+		return "json";
+	} else if (ext === "frag") {
+		return "glsl";
+	} else if (ext === "jpg" || ext === "tga" || ext === "png") {
+		return "image";
+	}
+	return "";
+}
+
+function registerEditorEvent(socket, appCommands, appExtensions)
 {
 	var def_srcdir = __dirname;// + '/work/'
 	console.log('Working Dir='+def_srcdir);
@@ -58,29 +91,34 @@ function registerEditorEvent(socket)
 		var srcdir = sesstionTable[socket.id].dir;
 		updateFileList(srcdir);
 	});
+	socket.on('reqSelectFile', function(data) {
+		var srcdir = sesstionTable[socket.id].dir;
+		var ext = util.getExtention(data);
+		var launchAppNames = findLaunchApp(appExtensions, ext);
+		if (launchAppNames) {
+			socket.emit('showfile_launchbutton', launchAppNames, srcdir, data);
+		} else {
+			socket.emit('fileopen', data.substr(2));
+		}
+	});
 	socket.on('reqFileOpen', function(data) {
 		var srcdir = sesstionTable[socket.id].dir;
 		var ext = util.getExtention(data);
+		var editType = getEditTypeByExtension(ext);
 		var filebuf = fs.readFileSync(srcdir+data);
-		if (ext === "lua" || ext === "scn" || ext === "pwl" || ext === "cwl")
-			socket.emit('showfile',{str:filebuf.toString(), type:"lua"});
-		else if (ext === "sh" || ext === "pwf" || ext === "cwf")
-			socket.emit('showfile',{str:filebuf.toString(), type:"sh"});
-		else if (ext === "json" || ext === "pif" || ext === "cif")
-			socket.emit('showfile',{str:filebuf.toString(), type:"json"});
-		else if (ext === "frag")
-			socket.emit('showfile',{str:filebuf.toString(), type:"glsl"});
-		else if (ext === "jpg" || ext === "tga" || ext === "png"){
+		
+		if (editType === "image") {
 			var prefix;
-				if      (ext==="jpg") prefix = 'data:image/jpeg;base64,';
-				else if (ext==="tga") prefix = 'data:image/tga;base64,';
-				else if (ext==="png") prefix = 'data:image/png;base64,';
-				var base64 = new Buffer(filebuf, 'binary').toString('base64');
-				var imgdata = prefix + base64;
-				//socket.send(data);
-				socket.emit('showfile_image',imgdata);
-		}else
-			socket.emit('showfile',{str:filebuf.toString(), type:""});
+			if      (ext==="jpg") prefix = 'data:image/jpeg;base64,';
+			else if (ext==="tga") prefix = 'data:image/tga;base64,';
+			else if (ext==="png") prefix = 'data:image/png;base64,';
+			var base64 = new Buffer(filebuf, 'binary').toString('base64');
+			var imgdata = prefix + base64;
+			//socket.send(data);
+			socket.emit('showfile_image',imgdata);
+		} else {
+			socket.emit('showfile',{str:filebuf.toString(), type:editType});
+		}
 	});
 	socket.on('reqFileSave', function(data) {
 		//console.log(data.file);

@@ -45,6 +45,7 @@ function modeChange(modename){
 		$('button_editmode').innerHTML = "Vim Mode";
 	}
 }
+
 //-------------------------------
 
 function boot(){
@@ -73,17 +74,27 @@ function ChangeEditor(state){
 	else
 		$('filename').innerHTML = openedfile + (state == true ? " *" : "" ) ;
 }
-function fileopen(filename){
+function fileopen(filename, forceEdit){
 	editor.setReadOnly(false);
 	saveFile();
-	if (openedfile == filename)
-		return;
+	
+	if (!forceEdit) {
+		if (openedfile == filename) {
+			console.log("fileopen : same file");
+			return;
+		}
+	}
 	
 	openedfile = filename;
 	console.log("Open:"+filename);
 	editor.setValue("");// clear
 	ChangeEditor(false);
 	socket.emit('reqFileOpen',"./"+filename);
+}
+function fileselect(filename) {
+	"use strict";
+	console.log("fileselect : " + filename);
+	socket.emit('reqSelectFile', "./"+filename);
 }
 function diropen(dirname)
 {
@@ -126,6 +137,11 @@ function showNewFileArea(){
 	sfilearea = !sfilearea;
 }
 
+function launchApp(name, file) {
+	"use strict";
+	socket.emit('ptl_launchapp', {appname : name, file : file});
+}
+
 var soutputarea = false;
 function showOutputArea(forceshow){
 	if (forceshow || !soutputarea) {
@@ -149,6 +165,8 @@ socket.on('showfile', function (data) {
 	ChangeEditor(false);
 	$('imageArea').className = 'fadeOut';
 	$('imageView').src = "";
+	$('launchButtonArea').className = 'fadeOut';
+	$('launchButtonView').src = "";
 });
 socket.on('showfile_image', function (data) {
 	editor.setReadOnly(true);
@@ -156,6 +174,42 @@ socket.on('showfile_image', function (data) {
 	console.log("show_image");
 	$('imageArea').className = 'fadeIn';
 	$('imageView').src = data;
+	$('launchButtonArea').className = 'fadeOut';
+	$('launchButtonView').src = "";
+});
+socket.on('showfile_launchbutton', function (appnames, dir, filename) {
+	var apparea,
+		name,
+		button,
+		i;
+	console.log('showfile_launchbutton');
+	editor.setReadOnly(true);
+	ChangeEditor(false);
+	$('launchButtonArea').className = 'fadeIn';
+	
+	// create launch app buttons
+	apparea = document.getElementById("launchButtonView");
+	while (apparea.firstChild) {
+		apparea.removeChild(apparea.firstChild);
+	}
+	for (i in appnames) {
+		name = appnames[i];
+		button = document.createElement("button");
+		button.setAttribute('type', 'button');
+		button.setAttribute('class', 'button_editor_launchapp');
+		button.setAttribute('onclick', 'launchApp("' +name+ '","' + dir+filename.substr(2) +'")');
+		button.innerHTML = "Open " + name;
+		apparea.appendChild(button);
+	}
+	// create edit button
+	button = document.createElement("button");
+	button.setAttribute('type', 'button');
+	button.setAttribute('class', 'button_editor_launchapp');
+	button.setAttribute('onclick', 'fileopen("'+filename.substr(2)+'", true);');
+	button.innerHTML = "Edit text";
+	apparea.appendChild(button);
+	openedfile = filename.substr(2);
+	ChangeEditor(false);
 });
 socket.on('stdout', function (data) {
 	var s = $('stdout')
@@ -197,7 +251,7 @@ socket.on('updatefilelist', function(jsonlist){
 		filelabel.innerHTML = list[i].name;
 		newbtn.appendChild(filelabel);
 		if (list[i].type == "file")
-			newbtn.setAttribute('onclick','fileopen("'+list[i].name+'")');
+			newbtn.setAttribute('onclick','fileselect("'+list[i].name+'")');
 		else // dir
 			newbtn.setAttribute('onclick','diropen("'+list[i].path+'")');
 		/*<div class="fileitem" id="dir2" draggable="false"><div class="dir"></div><p class="filelabel_short">dir2</p></div>
@@ -207,6 +261,11 @@ socket.on('updatefilelist', function(jsonlist){
 		ls.appendChild(document.createElement('br'));
 	}
 });
+socket.on('fileopen', function(data) {
+	console.log("fileopen : " + data);
+	fileopen(data);
+});
+
 function clearOutput() {
 	//$('stderr').innerHTML = '';
 	$('stdout').innerHTML = '';

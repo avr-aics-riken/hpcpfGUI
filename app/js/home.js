@@ -25,13 +25,18 @@ socket.on('updateProjectHistory', function (data) {
 			projectpath,
 			label,
 			i;
-		plist = document.getElementById("projectHistoryList");
+		var plist = document.getElementById("projectHistoryList");
+		var hitem = document.getElementById("historyitem");
 
-		// TODO remove list items
+		// remove list items
+		while (hitem) {
+			plist.removeChild(hitem);
+			hitem = document.getElementById("historyitem");
+		}
 		
 		for (i = 0; i < proj.length; i += 1) {
 			newitem = document.getElementById("projectHistoryList_itemtemplate").cloneNode(true);
-			newitem.id = "";
+			newitem.id = "historyitem";
 
 			// setting new item
 			projectname = proj[i].name;//"PROJECT:01";
@@ -50,9 +55,30 @@ function updateProjectList() {
 	socket.emit('reqUpdateProjectHistory','');
 }
 
+//-------------
+// app launch
+
+socket.on('updateLaunchButtons', function(appnames) {
+	var paneleft = document.getElementById("button_menus");
+	for (var i in appnames) {
+		var name = appnames[i];
+		var button = document.createElement("button");
+		button.setAttribute('type', 'button');
+		button.setAttribute('class', 'button_tool');
+		button.setAttribute('onclick', 'launchApp("' +name+ '")');
+		button.innerHTML = '<span class="text_button_menu">' +name+ '</span>';
+		paneleft.appendChild(button);
+	}
+});
+
+function updateLaunchButtons() {
+	socket.emit('reqUpdateLaunchButtons','');
+}
+
 function bootstrap() {
 	"use strict";
 	updateProjectList();
+	updateLaunchButtons();
 }
 
 function openProject(path) {
@@ -62,18 +88,9 @@ function openProject(path) {
 	window.open("editor.html?" + path, "_blank");
 }
 
-function launchApp_FXgen() {
+function launchApp(name) {
 	"use strict";
-	socket.emit('ptl_launchapp', {appname : 'FXgen'});
-}
-function launchApp_PDI() {
-	"use strict";
-	socket.emit('ptl_launchapp', {appname : 'PDI'});
-}
-function launchApp_KVTools() {
-	"use strict";
-	//window.open(location.hostname + ":8082", "_blank");// KVTools
-	socket.emit('ptl_launchapp', {appname : 'KVTools'});
+	socket.emit('ptl_launchapp', {appname : name, args:[]});
 }
 
 function newProject() {
@@ -131,4 +148,3 @@ function open_selectedFile() {
 	registerProjectHistory(tarPath);
 	openProject(tarPath);
 }
-

@@ -11,9 +11,8 @@ var exec = require('child_process').exec,
 	
 	confFile = __dirname + '/../conf/hpcpfGUI.conf',
 	portNumber      = 8080,
-	appCommandFXgen = 'FXgen',
-	appCommandPDI   = 'pdi',
-	appCommandKVTools = 'kvtoolsa';
+	appCommands = {},   // app name to launch path
+	appExtensions = {}; // app name to extension list
 	
 
 try {
@@ -23,11 +22,22 @@ try {
 		data = JSON.parse(file);
 	console.log('OS = ' + ostype);
 	
-	if (data.port    && data.port[ostype])    { portNumber        = data.port; }
-	if (data.FXgen   && data.FXgen[ostype])   { appCommandFXgen   = data.FXgen[ostype]; }
-	if (data.PDI     && data.PDI[ostype])     { appCommandPDI     = data.PDI[ostype]; }
-	if (data.KVTools && data.KVTools[ostype]) { appCommandKVTools = data.KVTools[ostype]; }
-	
+	if (data.port) { portNumber        = data.port; }
+	for (var name in data) {
+		if (name !== "port") {
+			appCommands[name] = data[name][ostype];
+			if ("extension" in data[name]) {
+				var extensions = data[name]["extension"].split(';');
+				// exclude dot and asterisk
+				for (var i in extensions) {
+					extensions[i] = extensions[i].split('.').join("");
+					extensions[i] = extensions[i].split('*').join("");
+					extensions[i] = extensions[i].split(' ').join("");
+				}
+				appExtensions[name] = extensions;
+			}
+		}
+	}
 } catch (e) {
 	console.log('Not found conf file:' + confFile);
 	console.log('Use default setting.');
@@ -83,14 +93,14 @@ function registerPTLEvent(socket) {
 	"use strict";
 	socket.on('ptl_launchapp', function (data) {
 		console.log("ptl_launchapp:" + data.appname);
+		console.log("ptl_launchapp file:" + data.file);
 		
 		var appcmd, child;
-		if (data.appname === 'FXgen') {
-			appcmd = appCommandFXgen;
-		} else if (data.appname === 'PDI') {
-			appcmd = appCommandPDI;
-		} else if (data.appname === 'KVTools') {
-			appcmd = appCommandKVTools;
+		if (data.appname in appCommands) {
+			appcmd = appCommands[data.appname];
+		}
+		if (data.file) {
+			appcmd = appcmd + " " + data.file;
 		}
 		
 		console.log('CMD>' + appcmd);
@@ -120,11 +130,21 @@ function registerPTLEvent(socket) {
 		});
 	});
 	
+	socket.on('reqUpdateLaunchButtons', function() {
+		var appnames = [];
+		var name;
+		for (name in appCommands) {
+			appnames.push(name);
+		}
+		socket.emit('updateLaunchButtons', appnames);
+	});
+	
 	socket.on('registerProjectHistory', function (path) {
 		console.log("REGISTER_HISTORY:" + path);
 		fs.readFile(historyFile, function (err, data) {
 			var names = path.split("/"),
 				name = names[names.length - 1];
+			var i;
 			console.log("ProjName=" + name);
 			if (err) {
 				console.log('Error: ' + err);
@@ -132,6 +152,12 @@ function registerPTLEvent(socket) {
 				data.push({"name": name, "path": path});
 			} else {
 				data = JSON.parse(data);
+				// remove same entry
+				for (i = data.length-1; i >= 0; --i) {
+					if (data[i].name === name && data[i].path === path) {
+						data.splice(i, 1);
+					}
+				}
 				data.splice(0, 0, {"name": name, "path": path}); // Add first
 			}
 			data  = JSON.stringify(data);
@@ -152,7 +178,7 @@ io.sockets.on('connection', function (socket) {
 	console.log("[CONNECT] ID=" + socket.id);
 
 	RemoteFTP(socket);
-	editorevent.registerEditorEvent(socket);
+	editorevent.registerEditorEvent(socket, appCommands, appExtensions);
 	remotehostevent.registerEditorEvent(socket);
 	registerPTLEvent(socket);
 });
