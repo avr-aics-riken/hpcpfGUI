@@ -99,9 +99,7 @@ end
 
 --- Remote(ssh) commands
 local function scpCmd(user, server, key, fromfile, tofile)
-    local scpcmd = 'scp -B -v -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
-    --local scpcmd = 'scp -B -v ' .. fromfile .. ' ' .. tofile
-    
+    local scpcmd = 'scp  -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
     print(scpcmd)
     local handle = io.popen(scpcmd)
     local result = handle:read("*a")
@@ -124,7 +122,7 @@ local function sshCmd(user, server, key, cmd, disableErr)
     return result
 end
 
-function cxjob:remoteExtractFile(filepath, varbose)
+function cxjob:remoteExtractFile(filepath, verbose)
     local option = (verbose == true) and 'xvf' or 'xf'
     local cmd = 'tar ' .. option .. ' ' .. filepath
     print(cmd)
