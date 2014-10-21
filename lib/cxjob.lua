@@ -19,31 +19,36 @@
 local cxjob = {}
 
 local function getServerInfo(server)
+    local focusSetting = {
+        submitCmd = 'fjsub',
+        submitIDRow = 4,
+        delCmd = 'fjdel',
+        statCmd = 'fjstat',
+        statStateColumn = 5,
+        statStateRow = 4,
+        jobEndFunc = function (t)
+        if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
+        else return false end
+        end,
+    }
+    local kSetting = {
+        submitCmd = 'pjsub',
+        submitIDRow = 6,
+        delCmd = 'pjdel',
+        statCmd = 'pjstat',
+        statStateColumn = 6,
+        statStateRow = 4,
+        jobEndFunc = function(t)
+            -- TODO: 'END'
+            return false
+        end,
+    }
     local info = {
-        ["k.aics.riken.jp"] = {
-            submitCmd = 'pjsub',
-	    submitIDRow = 6,
-            delCmd = 'pjdel',
-            statCmd = 'pjstat',
-            statStateColumn = 6,
-            statStateRow = 4,
-            jobEndFunc = function(t)
-                -- TODO: 'END'
-                return false
-            end,
-        },
-        ["ff01.j-focus.jp"] = {
-            submitCmd = 'fjsub',
-	    submitIDRow = 4,
-            delCmd = 'fjdel',
-            statCmd = 'fjstat',
-            statStateColumn = 5,
-            statStateRow = 4,
-            jobEndFunc = function (t)
-                if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
-                else return false end
-            end,
-        }
+        ["k.aics.riken.jp"] = kSetting,
+        ["ff01.j-focus.jp"] = focusSetting,
+        ["ff02.j-focus.jp"] = focusSetting,
+        ["ff01"] = focusSetting,
+        ["ff02"] = focusSetting,
     }
     return info[server]
 end
@@ -94,10 +99,13 @@ end
 
 --- Remote(ssh) commands
 local function scpCmd(user, server, key, fromfile, tofile)
-    local scpcmd = 'scp -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
+    local scpcmd = 'scp -B -v -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
+    --local scpcmd = 'scp -B -v ' .. fromfile .. ' ' .. tofile
+    
     print(scpcmd)
     local handle = io.popen(scpcmd)
     local result = handle:read("*a")
+    print(result)
     handle:close()
     return result
 end

@@ -160,7 +160,14 @@ function execmd(command)
 end
 
 function getCurrentDir()
-    return execmd('pwd'):gsub('\n','')
+    local pwdcmd
+    if (getPlatform() == 'Windows') then
+        pwdcmd = 'cd'
+    else
+        pwdcmd = 'pwd'
+    end
+    
+    return execmd(pwdcmd):gsub('\n','')
 end
 
 function executeCASE(casename,...)
