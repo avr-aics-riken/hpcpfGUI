@@ -16,7 +16,7 @@
 }
 
 body{
-	background-color:#292929;
+	background-color:#ffffff;
 	font-family:sans-serif;
 	min-width:800px;
 
@@ -33,6 +33,7 @@ body{
 button{
 	border-style:none;
 	color:#fff;
+    font-weight:bolder;
 	font-size:22px;
 }
 
@@ -45,13 +46,14 @@ input{
 	font-size:16px;
 	padding-left:10px;
 	font-family:sans-serif;
+    font-weight:bold;
 	text-align:left;
 	border-radius:2px;
 	border-width:2px;
-	border-color:#852414;
+	border-color:#72ca2a;
 	border-style:solid;
 	padding:5px 15px;
-	background-color:rgba(20,20,20,1.0);
+	background-color:#4d4d4d;
 
 }
 
@@ -80,9 +82,9 @@ input{
 	border-color:#000;
 	*/
 
-	-moz-box-shadow:0 0px 4px 4px #852414 inset;
-	-webkit-box-shadow:0 0px 4px 4px #852414 inset;
-	box-shadow:0 0px 4px 4px #852414 inset;
+	-moz-box-shadow:0 0px 4px 4px #000 inset;
+	-webkit-box-shadow:0 0px 4px 4px #000 inset;
+	box-shadow:0 0px 4px 4px #000 inset;
 
 }
 
@@ -90,45 +92,44 @@ input{
 	border-style:solid;
 	border-radius:0px;
 	border-color:transparent;
-	background-color:#852414;
+	background-color:#000;
 }
 
 /* classes */
 
 /* header */
 .header{
-	background-color:#292929;
-	padding-top:20px;
-	color:#de2905;
+	background-color:#f4f2e9;
+	padding-top:10px;
+	color:#72ca2a;
 	width:100%;
 	min-width:1024px;
 	overflow:hidden;
 }
 
 #logo{
-	font-size:24px;
-	margin-left:30px;
-	padding-left:10px;
+	margin-left:20px;
+    margin-top:0px;
+    margin-bottom:10px;
 	text-align:left;
-	background-image:url("../image/header_bg_left.png");
+	background-image:url("../image/hpcpf_logo.png");
 	background-repeat:no-repeat;
 	float:left;
-	width:337px;
-	height:37px;
-	line-height:37px;
+	width:180px;
+	height:54px;
 	vertical-align:middle;
 }
 
 #version{
-	font-size:24px;
-	margin-right:30px;
-	padding-right:10px;
-	vertical-align:middle;
-	text-align:right;
-	background-image:url("../image/header_bg_right.png");
+	font-size:22px;
+    font-weight:bolder;
+    margin-top:28px;
+    margin-left:-8px;
+	vertical-align:bottom;
+	text-align:left;
 	background-repeat:no-repeat;
-	float:right;
-	width:337px;
+	float:left;
+	width:100px;
 	height:37px;
 	line-height:37px;
 }
@@ -149,7 +150,7 @@ input{
 
 /* title */
 .title{
-	color:#fff;
+	color:#72ca2a;
 	text-align:left;
 	width:92%;
 	height:75px;
@@ -158,10 +159,11 @@ input{
 
 .text_title{
 	font-family:sans-serif;
-	font-size:22px;
+	font-size:20px;
+    font-weight:600;
 	margin-top:40px;
 	margin-left:40px;
-	padding-top:25px;
+	padding-top:30px;
 	padding-left:40px;
 	background-image:url("../image/button_bg_menu_press.png");
 	background-repeat:no-repeat;
@@ -169,6 +171,12 @@ input{
 	height:65px;
 }
 
+.text_recent{
+	font-family:sans-serif;
+	color:#4d4d4d;
+	text-align:left;
+	margin-bottom:5px;
+}
 
 
 /* pane */
@@ -217,11 +225,11 @@ input{
 	z-index:102;
 	top:100px;
 	position:fixed;
-	background-color:#292929;
+	background-color:#4d4d4d;
 	border:solid;
 	border-radius:20px;
 	border-width:12px;
-	border-color:#571700;
+	border-color:#72ca2a;
 	box-shadow:8px 15px 26px #111111;
 	display:none;
 }
@@ -247,6 +255,27 @@ input{
 }
 
 
+/* tool button area */
+.launcherline_home {
+    border: 4px solid;
+    border-color:#4d4d4d;
+    border-radius: 25px;
+    margin-top:22px;
+    margin-bottom:32px;
+}
+
+.launcherline {
+    border: 4px solid;
+    border-color:#4d4d4d;
+    border-radius: 25px;
+}
+
+.toolarea {
+    width: 615px;
+    text-align:left;
+    margin-left:50px;
+
+}
 
 
 

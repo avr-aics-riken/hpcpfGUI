@@ -12,6 +12,11 @@
 	<!--link href="css/flat-ui.css" rel="stylesheet"/-->
 </head>
 <body onload="boot();">
+	<div class="header">
+		<div id="logo"></div>
+		<div id="version">Ver.1.1</div>
+	</div>
+
 <div class="title text_title">Project Editor</div>
 	<div id="menubtn">
 		<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
@@ -60,7 +65,7 @@
 	<div id="newfileArea">
 		New file!<br><!--stdout:<br>-->
 		<input type="text" id="newfilename" class="input-newfile" placeholder="file name"/>
-		<button id="button_new" onclick="newFile(newfilename.value)">New!</button>
+		<button id="button_new" onclick="newFile(newfilename.value)"></button>
 	</div>
 
 	<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>

@@ -6,10 +6,16 @@
 }
 
 .text_label{
-	color:#fff;
-	font-size:16px;
 	margin-bottom:5px;
+	color:#4d4d4d;
+	font-size:16px;
+    font-weight:bolder;
 	height:24px;
+    line-height:24px;
+}
+
+#error_output{
+    margin-top:10px;
 }
 
 #input_hostname{
@@ -36,8 +42,8 @@
 	border:solid;
 	border-radius:20px;
 	border-width:12px;
-	border-color:#852414;
-	background-color:rgba(26,26,26,0.6);
+	border-color:#72ca2a;
+	background-color:#4d4d4d;
 	width:550px;
 	min-width:550px;
 	height:300px;
@@ -80,7 +86,6 @@
 
 .connecttest{
 	border-radius:3px;
-	/*background-color: #f2ca21;*/
 	margin-top:auto;
 	margin-bottom:auto;
 	margin-right:0px;
@@ -95,7 +100,6 @@
 	background-image:url("../image/button_connect_test_press.png");
 }
 .connecttest_ok{
-	/*background-color: #0F0;*/
 	background-image:url("../image/button_connect_ok.png");
 }
 .connecttest_ok:active{
@@ -103,7 +107,6 @@
 }
 
 .connecttest_fail{
-	/*background-color: #F00;*/
 	background-image:url("../image/button_connect_fail.png");
 }
 .connecttest_fail:active{

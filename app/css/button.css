@@ -1,4 +1,8 @@
 /* button - home menu*/
+#button_menus{
+    padding-top:12px;
+}
+
 .button_menu{
 	width:367px;
 	height:98px;
@@ -21,8 +25,10 @@
 	text-align:center;
 	margin-top:10px;
 	margin-right:5px;
+    padding-top:0px;
 	padding-left:0px;
 	background-image:url("../image/button_bg_tool.png");
+	background-repeat:no-repeat;
 }
 
 .button_tool:active{
@@ -79,11 +85,11 @@
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
-	background-image:url("../image/button_bg_action_red.png");
+	background-image:url("../image/button_bg_action_cancel.png");
 }
 
 .button_cancel:active{
-	background-image:url("../image/button_bg_action_red_press.png");
+	background-image:url("../image/button_bg_action_cancel_press.png");
 }
 
 /* button - cancel */
@@ -94,11 +100,13 @@
 	right:0px;
 	top:40px;
 	text-align:center;
-	background-image:url("../image/button_bg_action_red.png");
+	background-image:url("../image/button_bg_action_green.png");
+    color:#fff;
+    font-weight:bolder;
 }
 
 #button_editmode:active{
-	background-image:url("../image/button_bg_action_red_press.png");
+	background-image:url("../image/button_bg_action_green_press.png");
 }
 
 /* button - cancel */
@@ -106,15 +114,18 @@
 	position:absolute;
 	width:165px;
 	height:101px;
-	left:30px;
+	left:24px;
 	top:-162px;
 	text-align:center;
 	padding-bottom:28px;
-	background-image:url("../image/button_bg_action_red.png");
+	background-image:url("../image/button_bg_action_green.png");
+    color:#fff;
+    font-weight:600;
+    font-size:18px;
 }
 
 #button_newfile:active{
-	background-image:url("../image/button_bg_action_red_press.png");
+	background-image:url("../image/button_bg_action_green_press.png");
 }
 
 
@@ -140,6 +151,8 @@
 	margin-right:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_upper.png");
+    color:#fff;
+    font-weight:bolder;
 	font-size:16px;
 }
 
@@ -184,6 +197,8 @@
 	top:-56px;
 	right:0px;
 	background-image:url("../image/button_bg_action_upper.png");
+    font-size:18px;
+    font-weight:600;
 }
 
 #button_output:active{
@@ -197,17 +212,18 @@
 	position:absolute;
 	top:20px;
 	left:240px;
-	background-image:url("../image/button_bg_action_upper_small.png");
+	background-image:url("../image/button_bg_action_upper_new.png");
 }
 
 #button_new:active{
-	background-image:url("../image/button_bg_action_upper_small_press.png");
+	background-image:url("../image/button_bg_action_upper_new_press.png");
 }
 
 /* bottom buttons in editor */
 .button_editor{
 	padding-bottom:28px;
 	font-size:18px;
+    font-weight:600;
 }
 
 #button_save_editor{
@@ -263,9 +279,11 @@
 	border-radius:3px;
 	margin-left:0px;
 	margin-top:28px;
-	background-color:#852414;
+	background-color:#72ca2a;
 	font-family:sans-serif;
 	font-size:16px;
+    color:#fff;
+    font-weight:bolder;
 
 }
 
@@ -288,17 +306,32 @@
 }
 
 .text_button_menu{
+    font-size:18px;
+    font-weight:600;
 	font-family:sans-serif;
 	position:relative;
 	top:-10px;
+	left:18px;
+    color:#72ca2a;
+}
+
+.text_button_tool{
+    font-size:18px;
+	font-family:sans-serif;
+    font-weight:600;
+    color:#fff;
+	position:relative;
+	top:-14px;
 	left:-2px;
 }
 
 .text_button_action{
 	font-family:sans-serif;
 	position:relative;
-	font-size:22px;
-	top:-14px;
+	font-size:18px;
+    font-weight:600;
+    color:#fff;
+	top:-18px;
 	left:-2px;
 }
 
@@ -312,13 +345,10 @@
 .text_button_add{
 	position:relative;
 	font-family:sans-serif;
+    font-weight:bolder;
+    color:#fff;
 	top:-14px;
 	left:-4px;
 }
 
-.text_recent{
-	font-family:sans-serif;
-	color:#fff;
-	text-align:left;
-	margin-bottom:5px;
-}
+

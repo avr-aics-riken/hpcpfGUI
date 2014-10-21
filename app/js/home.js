@@ -60,15 +60,32 @@ function updateProjectList() {
 
 socket.on('updateLaunchButtons', function(appnames) {
 	var paneleft = document.getElementById("button_menus");
+    
+    var toolarea = document.createElement("div");
+    toolarea.setAttribute('class', 'toolarea');
+    var line = document.createElement("div");
+    line.setAttribute('class', 'launcherline_home');
+    toolarea.appendChild(line);
+
 	for (var i in appnames) {
 		var name = appnames[i];
 		var button = document.createElement("button");
 		button.setAttribute('type', 'button');
 		button.setAttribute('class', 'button_tool');
 		button.setAttribute('onclick', 'launchApp("' +name+ '")');
-		button.innerHTML = '<span class="text_button_menu">' +name+ '</span>';
-		paneleft.appendChild(button);
+		button.innerHTML = '<span class="text_button_tool">' +name+ '</span>';
+        toolarea.appendChild(button);
 	}
+	for (var i in appnames) {
+		var name = appnames[i];
+		var button = document.createElement("button");
+		button.setAttribute('type', 'button');
+		button.setAttribute('class', 'button_tool');
+		button.setAttribute('onclick', 'launchApp("' +name+ '")');
+		button.innerHTML = '<span class="text_button_tool">' +name+ '</span>';
+        toolarea.appendChild(button);
+	}
+    paneleft.appendChild(toolarea);
 });
 
 function updateLaunchButtons() {

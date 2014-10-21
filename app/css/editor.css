@@ -5,20 +5,19 @@ body {
 #editor {
 	margin: 0px;
 	position:absolute;
-	top:210px;
-	left:240px;
+	top:235px;
+	left:260px;
 	right:10px;
 	bottom:190px;
 	border-style:solid;
 	border-radius:2px;
 	border-width:3px;
-	border-color:#852414;
-	/*background-color:rgba(20,20,20,1.0);*/
+	border-color:#72ca2a;
 
 }
 #imageArea {
 	position:absolute;
-	top:210px;
+	top:235px;
 	left:240px;
 	right:10px;
 	bottom:190px;
@@ -37,7 +36,7 @@ body {
 }
 #launchButtonArea {
 	position:absolute;
-	top:210px;
+	top:235px;
 	left:240px;
 	right:10px;
 	bottom:190px;
@@ -54,8 +53,8 @@ body {
 #editorbar {
 	position:absolute;
 	left:10px;
-	right:210px;
-	top:164px;
+	right:235px;
+	top:194px;
 	height:20px;
 	margin-top:2px;
 	padding:10px;
@@ -77,17 +76,17 @@ body {
 #filelist {
 	margin: 0px;
 	position:absolute;
-	top:210px;
+	top:235px;
 	left:10px;
 	bottom:190px;
 	overflow:scroll;
 	border-style:solid;
 	border-radius:2px;
 	border-width:3px;
-	border-color:#852414;
-	background-color:rgba(20,20,20,1.0);
+	border-color:#72ca2a;
+	background-color:#292929;
 
-	width:200px;
+	width:220px;
 }
 #shownewfilearea {
 	margin: 0px;
@@ -105,7 +104,7 @@ body {
 	z-index:20;
 	padding: 6px 6px 6px 6px;
 	color: #fff;
-	background-color:#571700; 
+	background-color:#72ca2a; 
 	border-radius: 5px;
 	visibility: hidden;
 	opacity: 0;
@@ -114,7 +113,7 @@ body {
 	position:absolute;
 	top:30px;
 	width:200px;
-	background-color:#d0d0d0;
+	background-color:#4d4d4d;
 	border-style:none;
 	line-height:38px;
 	border-radius:5px;
@@ -147,7 +146,7 @@ body {
 }
 #outputArea {
 	position:absolute;
-	top:210px;
+	top:235px;
 	right:10px;
 	bottom:10px;
 	z-index:20;
