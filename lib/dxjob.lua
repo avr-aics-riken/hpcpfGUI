@@ -45,7 +45,7 @@ function dxjob:GenerateBootSh()
 		print(v.path, v.name, v.job)
 		local bootsh = v.path .. 'boot.sh'
 		print('write: '.. bootsh)
-		local f = io.open(bootsh, "w")
+		local f = io.open(bootsh, "wb")
 		if f == nil then
 			print('faild write:' .. bootsh)
 		else
@@ -66,19 +66,30 @@ end
 function getDirAndName(fullpath)
 	local str = string.reverse(fullpath)
 	local placenum = string.find(str, "/")
-	print(placenum);
+	if placenum == nil then
+		placenum = string.find(str, "\\")
+	end
 	local name = string.sub(str, 0, placenum-1):reverse()
 	local dirpath = string.sub(str, placenum):reverse()
 	return dirpath, name
 end
 
+function gettempTarFile()
+	if getPlatform() == 'Windows' then
+		return '..' .. os.tmpname() .. 'tar.gz'
+	else
+		return os.tmpname() .. '.tar.gz'
+	end
+end
+
 function dxjob:SendDir(localdir)
 	print('PATH='..localdir)
-	local temptar = os.tmpname()..'.tar.gz'
+	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
 	local dirpath, casename = getDirAndName(localdir)
 	compressFile(casename, temptar, true, '-C '..dirpath) -- compress
 	self.m_jobmgr:sendFile(temptar, 'HPCPF_case.tar.gz')        -- send
+	deleteFile(temptar)                                         -- delete localtar file
 	self.m_jobmgr:remoteExtractFile('HPCPF_case.tar.gz', true)  -- extract
 	self.m_jobmgr:remoteDeleteFile ('HPCPF_case.tar.gz')        -- delete temp file
 end
@@ -87,7 +98,7 @@ function dxjob:GetDir(remotedir, basedir)
 	print('get:'..remotedir)
 	local remotetarfile = 'HPCPF_case.tar.gz'
 	self.m_jobmgr:remoteCompressFile(remotedir, remotetarfile, true)
-	local temptar = os.tmpname()..'.tar.gz'
+	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
 	self.m_jobmgr:getFile(temptar, remotetarfile)        -- get
 	
