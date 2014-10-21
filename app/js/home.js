@@ -1,5 +1,4 @@
-var console, io, FileDialog,
-	socket = io.connect(),
+var socket = io.connect(),
 	filedialog = new FileDialog('homedlg', true, true);
 
 socket.on('connect', function () { // 2
