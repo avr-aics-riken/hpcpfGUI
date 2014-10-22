@@ -198,7 +198,7 @@ socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 		button.setAttribute('type', 'button');
 		button.setAttribute('class', 'button_editor_launchapp');
 		button.setAttribute('onclick', 'launchApp("' +name+ '","' + dir+filename.substr(2) +'")');
-		button.innerHTML = "Open " + name;
+		button.innerHTML = "<span class='text_button_launchapp'>Open " + name + "</span>";
 		apparea.appendChild(button);
 	}
 	// create edit button
@@ -206,7 +206,7 @@ socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 	button.setAttribute('type', 'button');
 	button.setAttribute('class', 'button_editor_launchapp');
 	button.setAttribute('onclick', 'fileopen("'+filename.substr(2)+'", true);');
-	button.innerHTML = "Edit text";
+	button.innerHTML = "<span class='text_button_launchapp'>Edit text</span>";
 	apparea.appendChild(button);
 	openedfile = filename.substr(2);
 	ChangeEditor(false);

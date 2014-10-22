@@ -154,6 +154,16 @@ body {
 	visibility: hidden;
 	opacity: 0;
 	resize:both;
+
+   	-webkit-touch-callout: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text; 
+
+
+
 }
 #launchapparea {
 	position:absolute;

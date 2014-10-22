@@ -75,15 +75,6 @@ socket.on('updateLaunchButtons', function(appnames) {
 		button.innerHTML = '<span class="text_button_tool">' +name+ '</span>';
         toolarea.appendChild(button);
 	}
-	for (var i in appnames) {
-		var name = appnames[i];
-		var button = document.createElement("button");
-		button.setAttribute('type', 'button');
-		button.setAttribute('class', 'button_tool');
-		button.setAttribute('onclick', 'launchApp("' +name+ '")');
-		button.innerHTML = '<span class="text_button_tool">' +name+ '</span>';
-        toolarea.appendChild(button);
-	}
     paneleft.appendChild(toolarea);
 });
 

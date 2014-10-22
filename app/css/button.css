@@ -26,9 +26,16 @@
 	margin-top:10px;
 	margin-right:5px;
     padding-top:0px;
-	padding-left:0px;
+	padding-left:2px;
+    padding-right:10px;
+    padding-bottom:0px;
 	background-image:url("../image/button_bg_tool.png");
 	background-repeat:no-repeat;
+
+    -webkit-text-overflow:ellipsis;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
 }
 
 .button_tool:active{
@@ -41,13 +48,20 @@
 	height:101px;
 	text-align:center;
 	margin-top:10px;
+	padding-left:2px;
+    padding-right:10px;
 	margin-right:5px;
-	padding-left:0px;
-	background-image:url("../image/button_bg_action_red.png");
+	background-image:url("../image/button_bg_action_green.png");
+    font-size:18px;
+    font-weight:600;
+    -webkit-text-overflow:ellipsis;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
 }
 
 .button_editor_launchapp:active{
-	background-image:url("../image/button_bg_action_red_press.png");
+	background-image:url("../image/button_bg_action_green_press.png");
 }
 
 /* button - open */
@@ -319,10 +333,19 @@
     font-size:18px;
 	font-family:sans-serif;
     font-weight:600;
-    color:#fff;
 	position:relative;
 	top:-14px;
-	left:-2px;
+    left:4px;
+}
+
+.text_button_launchapp{
+    font-size:18px;
+	font-family:sans-serif;
+    font-weight:600;
+    margin-right:18px;
+	position:relative;
+	top:-14px;
+    left:6px;
 }
 
 .text_button_action{
