@@ -1,19 +1,19 @@
 
 --[[
-	USAGE:
-	local cxjob = require('cxjob')
+    USAGE:
+    local cxjob = require('cxjob')
 
-	local jobmgr = cxjob.new(
-	      'username',
-	      'to_sshkey_path',
-	      'server_address')
+    local jobmgr = cxjob.new(
+          'username',
+          'to_sshkey_path',
+          'server_address')
 
-	  or
+      or
 
-	local jobmgr = cxjob.new(
-	      {username = 'username',
-	       sshkey   = 'to_sshkey_path',
-	       server   = 'server_address'})
+    local jobmgr = cxjob.new(
+          {username = 'username',
+           sshkey   = 'to_sshkey_path',
+           server   = 'server_address'})
 --]]
 
 local cxjob = {}
@@ -54,12 +54,13 @@ local function getServerInfo(server)
 end
 
 
-function cxjob.new(username_or_table, sshkey, server)
+function cxjob.new(username_or_table, sshkey, server, workdir)
     local username
     if type(username_or_table) == 'table' then
         username = username_or_table.user
         sshkey   = username_or_table.sshkey
         server   = username_or_table.server
+        workdir  = username_or_table.workpath
     else
         username = username_or_table -- this is username.
     end
@@ -67,8 +68,17 @@ function cxjob.new(username_or_table, sshkey, server)
     local inst = {
         user   = username,
         sshkey = sshkey,
-        server = server
+        server = server,
+        workdir = workdir 
     }
+    if inst.workdir == nil then
+        inst.workdir = ""
+    else
+        if string.sub(inst.workdir, inst.workdir:len()) ~= '/' then
+            inst.workdir = inst.workdir .. '/'
+        end
+    end
+
     inst.jobinfo = getServerInfo(server)
     setmetatable(inst, {__index = cxjob})
     return inst;
@@ -76,7 +86,7 @@ end
 
 function cxjob:uploadFile(localfile, remotefile)
     if (not remotefile) then remotefile = "./" end
-    local scpcmd = 'scp -i '.. self.sshkey .. ' ' .. localfile .. ' ' .. self.user ..'@'.. self.server .. ':' .. remotefile;
+    local scpcmd = 'scp -i '.. self.sshkey .. ' ' .. localfile .. ' ' .. self.user ..'@'.. self.server .. ':' .. self.workdir .. remotefile;
     print('CMD>' .. scpcmd)
     local handle = io.popen(scpcmd)
     local result = handle:read("*a")
@@ -87,7 +97,7 @@ end
 
 function cxjob:downloadFile(remotefile, localfile)
     if (not localfile) then localfile = "./" end
-    local scpcmd = 'scp -i '.. self.sshkey .. ' ' .. self.user ..'@'.. self.server .. ':' .. remotefile ..  ' ' .. localfile;
+    local scpcmd = 'scp -i '.. self.sshkey .. ' ' .. self.user ..'@'.. self.server .. ':' .. self.workdir .. remotefile ..  ' ' .. localfile;
     print('CMD>' .. scpcmd)
     local handle = io.popen(scpcmd)
     local result = handle:read("*a")
@@ -109,12 +119,12 @@ local function scpCmd(user, server, key, fromfile, tofile)
 end
 
 local function sshCmd(user, server, key, cmd, disableErr)
-	local nullDev = '/dev/null'
-	if (getPlatform() == 'Windows') then
-		disableErr = false
-	end
+    local nullDev = '/dev/null'
+    if (getPlatform() == 'Windows') then
+        disableErr = nil
+    end
     local sshcmd = 'ssh -i '.. key .. ' ' .. user ..'@'.. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
-	--print('CMD>' .. sshcmd)
+    --print('CMD>' .. sshcmd)
     local handle = io.popen(sshcmd)
     local result = handle:read("*a")
     --print('OUT>' .. result)
@@ -123,45 +133,55 @@ local function sshCmd(user, server, key, cmd, disableErr)
 end
 
 function cxjob:remoteExtractFile(filepath, verbose)
-    local option = (verbose == true) and 'xvf' or 'xf'
-    local cmd = 'tar ' .. option .. ' ' .. filepath
+    local option = (verbose == true) and '-xvf' or '-xf'
+    local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. filepath
+    print(cmd)
+    return sshCmd(self.user, self.server, self.sshkey, cmd)
+end
+
+function cxjob:remoteCompressNewerFile(srcfile, tarfile, newdate, verbose)
+    newdate = '2014-10-23 20\:00\:00'
+    local newer = '--newer ' .. newdate .. ' '
+    local option = (verbose == true) and '-czvf' or '-czf'
+    option = newer .. option
+    local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. tarfile .. ' ' .. srcfile
     print(cmd)
     return sshCmd(self.user, self.server, self.sshkey, cmd)
 end
 
 function cxjob:remoteCompressFile(srcfile, tarfile, verbose)
-    local option = (verbose == true) and 'czvf' or 'czf'
-    local cmd = 'tar ' .. option .. ' ' .. tarfile .. ' ' .. srcfile
+    local option = (verbose == true) and '-czvf' or '-czf'
+    local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. tarfile .. ' ' .. srcfile
     print(cmd)
     return sshCmd(self.user, self.server, self.sshkey, cmd)
 end
 
 function cxjob:sendFile(localfile, remotefile)
     local fromfile = localfile
-    local tofile = self.user .. '@' .. self.server .. ':' .. remotefile
+    local tofile = self.user .. '@' .. self.server .. ':' .. self.workdir .. remotefile
     return scpCmd(self.user, self.server, self.sshkey, fromfile, tofile)
 end
 
 function cxjob:getFile(localfile, remotefile)
-    local fromfile = self.user .. '@' .. self.server .. ':' .. remotefile
+    local fromfile = self.user .. '@' .. self.server .. ':' .. self.workdir .. remotefile
     local tofile = localfile
     return scpCmd(self.user, self.server, self.sshkey, fromfile, tofile)
 end
 
 
 function cxjob:remoteDeleteFile(filename)
-	local cmd = 'rm -f ' .. filename
+    local cmd = 'rm -f ' .. self.workdir .. filename
     return sshCmd(self.user, self.server, self.sshkey, cmd)
 end
 
 function cxjob:remoteMoveFile(fromFile, toFile)
-	-- TODO
-	print('not implemented yet!')
+    -- TODO
+    print('not implemented yet!')
 end
 
 function cxjob:remoteCopyFile(fromFile, toFile)
-	-- TODO
-	print('not implemented yet!')
+    -- TODO
+    print('not implemented yet!')
 end
 
 function cxjob:remoteMakeDir(dirpath)
@@ -170,15 +190,15 @@ function cxjob:remoteMakeDir(dirpath)
 end
 
 function cxjob:remoteDeleteDir(dirname)
-	-- TODO
-	print('not implemented yet!')
+    -- TODO
+    print('not implemented yet!')
 end
 
 
 local function split(str, delim)
     local result,pat,lastPos = {},"(.-)" .. delim .. "()",1
     for part, pos in string.gmatch(str, pat) do
-    	--print(pos, part)
+        --print(pos, part)
         table.insert(result, part); lastPos = pos
     end
     table.insert(result, string.sub(str, lastPos))
@@ -189,55 +209,55 @@ local function statSplit(res)
     local t = split(res, '\n')
     local statTable = {}
     for i,v in pairs(t) do
-    	local ss = string.gmatch(v,"[^%s]+")
-		local statColumn = {}
-		for k in ss do
-			statColumn[#statColumn + 1] = k;
-		end
-		statTable[#statTable+1] = statColumn
+        local ss = string.gmatch(v,"[^%s]+")
+        local statColumn = {}
+        for k in ss do
+            statColumn[#statColumn + 1] = k;
+        end
+        statTable[#statTable+1] = statColumn
     end
     return statTable
 end
 
 
 local function parseJobID(conf, cmdret)
-	local t = split(cmdret, ' ')
+    local t = split(cmdret, ' ')
     return t[conf.submitIDRow]
 end
 
 local function parseJobStat(conf, cmdret, jobid)
-	local t = statSplit(cmdret)
-	--[[
-	print('===============')
-	for i,j in pairs(t) do
-		io.write(i .. ',')
-		for k,w in pairs(j) do
-			io.write(k .. ':　' .. w .. ' ')
-		end
-		io.write('\n')
-	end
-	print('===============')
-	--]]
+    local t = statSplit(cmdret)
+    --[[
+    print('===============')
+    for i,j in pairs(t) do
+        io.write(i .. ',')
+        for k,w in pairs(j) do
+            io.write(k .. ':　' .. w .. ' ')
+        end
+        io.write('\n')
+    end
+    print('===============')
+    --]]
     if conf.jobEndFunc(t) then
-	--if (t[1][1] == 'Invalid' and t[1][2] == 'job') then -- END 
-		return 'END'
-	end
-	
-	if (#t >= conf.statStateColumn and #(t[conf.statStateColumn]) >= conf.statStateRow) then
-		return t[conf.statStateColumn][conf.statStateRow];
-	else
-		return 'END' -- not found job
-	end
+    --if (t[1][1] == 'Invalid' and t[1][2] == 'job') then -- END 
+        return 'END'
+    end
+    
+    if (#t >= conf.statStateColumn and #(t[conf.statStateColumn]) >= conf.statStateRow) then
+        return t[conf.statStateColumn][conf.statStateRow];
+    else
+        return 'END' -- not found job
+    end
 end
 
 function cxjob:remoteJobSubmit(jobdata, pathtojob, jobsh)
     local jobpath = pathtojob and pathtojob or ''
-	if jobdata == nil then
-		print('Invalid argument: remoteJobSubmit')
+    if jobdata == nil then
+        print('Invalid argument: remoteJobSubmit')
         debug.traceback()
-		return;
-	end
-    local cmdTarget = 'cd ' .. jobpath .. '/' .. jobdata.path ..';'
+        return;
+    end
+    local cmdTarget = 'cd ' .. self.workdir .. jobpath .. '/' .. jobdata.path ..';'
     local cmdSubmit = cmdTarget ..  self.jobinfo.submitCmd .. ' ' .. jobsh
     print(cmdSubmit)
     local cmdret = sshCmd(self.user, self.server, self.sshkey, cmdSubmit, true)
@@ -248,13 +268,13 @@ function cxjob:remoteJobSubmit(jobdata, pathtojob, jobsh)
 end
 
 function cxjob:remoteJobDel(jobdata)
-	if jobdata == nil or jobdata.id == nil then
-    	print('[Error] job or job.id is invalid (remoteJobDel)')
+    if jobdata == nil or jobdata.id == nil then
+        print('[Error] job or job.id is invalid (remoteJobDel)')
         debug.traceback()
-		return
-	end
+        return
+    end
     local cmdDel = self.jobinfo.delCmd .. ' ' .. jobdata.id
-	--print(cmdDel)
+    --print(cmdDel)
     local cmdret  = sshCmd(self.user, self.server, self.sshkey, cmdDel, true)
 end
 
@@ -266,13 +286,12 @@ function cxjob:remoteJobStat(jobdata)
     end
 
     local cmdStat = self.jobinfo.statCmd .. ' ' .. (jobdata.id and jobdata.id or '')
-	--print(cmdStat)
+    --print(cmdStat)
     local cmdret  = sshCmd(self.user, self.server, self.sshkey, cmdStat, true)
     local jobstat = parseJobStat(self.jobinfo, cmdret, jobdata.id)
-	--print('JOB ST = ' .. jobstat)
+    --print('JOB ST = ' .. jobstat)
     return jobstat
 end
 
 return cxjob
-
 

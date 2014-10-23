@@ -15,6 +15,7 @@ function dxjob.new(targetConf)
 		m_doneque   = {}, -- ended job
 		m_maxsubmitnum = 5,
 		m_targetconf = targetConf,
+		m_jobstartdate = "",
     }
     inst.m_jobmgr = cxjob.new(targetConf)
 
@@ -97,7 +98,16 @@ end
 function dxjob:GetDir(remotedir, basedir)
 	print('get:'..remotedir)
 	local remotetarfile = 'HPCPF_case.tar.gz'
-	self.m_jobmgr:remoteCompressFile(remotedir, remotetarfile, true)
+	--self.m_jobmgr:remoteCompressFile(remotedir, remotetarfile, true)
+	local newdate = self.m_jobstartdate
+	
+	-- TODO: newer date
+	--print('NEWDATE:',newdate)
+	--if newdate == '' then
+		self.m_jobmgr:remoteCompressFile(remotedir, remotetarfile, true)
+	--else
+	--	self.m_jobmgr:remoteCompressNewerFile(remotedir, remotetarfile, newdate, true)
+	--end
 	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
 	self.m_jobmgr:getFile(temptar, remotetarfile)        -- get
@@ -110,6 +120,7 @@ end
 
 
 function dxjob:SubmitAndWait(remoteCasePath)
+	self.m_jobstartdate = os.date('20%y-%m-%d %H:%M:%S')
     while #self.m_jobque > 0 or #self.m_submitque > 0 do
         -- check ended job
 		for i = #self.m_submitque, 1, -1 do
