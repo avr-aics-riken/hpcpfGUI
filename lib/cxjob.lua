@@ -123,7 +123,6 @@ function cxjob:remoteExtractFile(filepath, verbose)
 end
 
 function cxjob:remoteCompressNewerFile(srcfile, tarfile, newdate, verbose)
-    newdate = '2014-10-23 20\:00\:00'
     local newer = '--newer ' .. newdate .. ' '
     local option = (verbose == true) and '-czvf' or '-czf'
     option = newer .. option
