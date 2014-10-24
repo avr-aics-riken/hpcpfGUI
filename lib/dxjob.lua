@@ -102,12 +102,12 @@ function dxjob:GetDir(remotedir, basedir)
 	local newdate = self.m_jobstartdate
 	
 	-- TODO: newer date
-	--print('NEWDATE:',newdate)
-	--if newdate == '' then
+	print('NEWDATE:',newdate)
+	if newdate == '' then
 		self.m_jobmgr:remoteCompressFile(remotedir, remotetarfile, true)
-	--else
-	--	self.m_jobmgr:remoteCompressNewerFile(remotedir, remotetarfile, newdate, true)
-	--end
+	else
+		self.m_jobmgr:remoteCompressNewerFile(remotedir, remotetarfile, newdate, true)
+	end
 	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
 	self.m_jobmgr:getFile(temptar, remotetarfile)        -- get
