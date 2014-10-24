@@ -50,7 +50,7 @@ function dxjob:GenerateBootSh()
 		if f == nil then
 			print('faild write:' .. bootsh)
 		else
-			local str = self.m_targetconf.bootsh;
+			local str = self.m_jobmgr:getBootSh() --self.m_targetconf.bootsh;
 			-- replace template
 			str = str:gsub("JOB.NODE", v.node)
 			str = str:gsub("JOB.CORE", v.core)

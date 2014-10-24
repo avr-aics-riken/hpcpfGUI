@@ -18,39 +18,18 @@
 
 local cxjob = {}
 
+local envconf = require('envconf')
+if envconf == nil then
+    print("[Error] Can't load envconf.lua")
+    return nil
+end
+    
 local function getServerInfo(server)
-    local focusSetting = {
-        submitCmd = 'fjsub',
-        submitIDRow = 4,
-        delCmd = 'fjdel',
-        statCmd = 'fjstat',
-        statStateColumn = 5,
-        statStateRow = 4,
-        jobEndFunc = function (t)
-        if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
-        else return false end
-        end,
-    }
-    local kSetting = {
-        submitCmd = 'pjsub',
-        submitIDRow = 6,
-        delCmd = 'pjdel',
-        statCmd = 'pjstat',
-        statStateColumn = 6,
-        statStateRow = 4,
-        jobEndFunc = function(t)
-            -- TODO: 'END'
-            return false
-        end,
-    }
-    local info = {
-        ["k.aics.riken.jp"] = kSetting,
-        ["ff01.j-focus.jp"] = focusSetting,
-        ["ff02.j-focus.jp"] = focusSetting,
-        ["ff01"] = focusSetting,
-        ["ff02"] = focusSetting,
-    }
-    return info[server]
+    local si = envconf.getServerInfo(server)
+    if (si == nil) then
+        print("[Error] Can't find ServerInfo:", server)
+    end
+    return si
 end
 
 
@@ -82,6 +61,10 @@ function cxjob.new(username_or_table, sshkey, server, workdir)
     inst.jobinfo = getServerInfo(server)
     setmetatable(inst, {__index = cxjob})
     return inst;
+end
+
+function cxjob:getBootSh()
+    return self.jobinfo.bootsh;
 end
 
 function cxjob:uploadFile(localfile, remotefile)
@@ -140,7 +123,6 @@ function cxjob:remoteExtractFile(filepath, verbose)
 end
 
 function cxjob:remoteCompressNewerFile(srcfile, tarfile, newdate, verbose)
-    newdate = '2014-10-23 20\:00\:00'
     local newer = '--newer ' .. newdate .. ' '
     local option = (verbose == true) and '-czvf' or '-czf'
     option = newer .. option
