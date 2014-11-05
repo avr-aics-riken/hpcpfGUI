@@ -1,6 +1,7 @@
 var exec = require('child_process').exec,
 	spawn = require('child_process').spawn,
 	fs = require('fs'),
+	path = require('path'),
 	http = require('http'),
 	util = require('./util'),
 	os = require('os'),
@@ -100,7 +101,7 @@ function registerPTLEvent(socket) {
 			appcmd = appCommands[data.appname];
 		}
 		if (data.file) {
-			appcmd = appcmd + " " + data.file;
+			appcmd = appcmd + " " + path.normalize(data.file);
 		}
 		
 		console.log('CMD>' + appcmd);
