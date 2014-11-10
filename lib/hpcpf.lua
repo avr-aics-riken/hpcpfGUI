@@ -180,7 +180,10 @@ function executeCASE(casename,...)
     else
         print("--- Start CASE: "..casename.." ---")
         setBasePath('/' .. casename)
-        cf(args_table) 
+        local oldPackgePath = package.path
+        package.path = "./" .. casename .. "/?.lua;" .. oldPackgePath
+        cf(args_table)
+        package.path = oldPackgePath
         setBasePath('')
         print("--- End   CASE: "..casename.." ---")
     end

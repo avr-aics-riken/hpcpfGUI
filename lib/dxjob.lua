@@ -44,8 +44,21 @@ end
 function dxjob:GenerateBootSh()
 	for i,v in pairs(self.m_jobque) do
 		print(v.path, v.name, v.job)
-		local bootsh = v.path .. 'boot.sh'
-		print('write: '.. bootsh)
+		if (v.path == nil) then
+			print('[Error] not found job.path')
+			return
+		end
+		
+		local placenum = string.find(v.path, "/")
+		if placenum == nil then
+			placenum = string.find(v.path, "\\")
+		end
+		if (placenum == nil or placenum ~= v.path:len()) then
+			v.path = v.path .. "/"
+		end
+		
+		local bootsh = '.' .. getBasePath() .. '/' .. v.path .. 'boot.sh'
+		print('write: ' .. bootsh)
 		local f = io.open(bootsh, "wb")
 		if f == nil then
 			print('faild write:' .. bootsh)
@@ -70,9 +83,33 @@ function getDirAndName(fullpath)
 	if placenum == nil then
 		placenum = string.find(str, "\\")
 	end
+	if placenum == fullpath:len() then
+		str = string.sub(str, 0, placenum - 1)
+		placenum = string.find(str, "/")
+		if placenum == nil then
+			placenum = string.find(str, "\\")
+		end		
+	end
 	local name = string.sub(str, 0, placenum-1):reverse()
 	local dirpath = string.sub(str, placenum):reverse()
 	return dirpath, name
+end
+
+function getRelativeCasePath()
+	local p = getBasePath()
+	if (p == "") then
+		local uppath
+		local casename
+		local caseDir = getCurrentDir()
+		uppath, casename = getDirAndName(caseDir)
+		return casename
+	else
+		local projDir = getCurrentDir()
+		local uppath
+		local projname
+		uppath, projname = getDirAndName(projDir)
+		return projname .. p
+	end
 end
 
 function gettempTarFile()
