@@ -21,6 +21,12 @@ function getPlatform()
     end
 end
 
+
+-- force buffer flush function
+if getPlatform() == 'Windows' then
+    orgPrint = print
+    print = function(...) orgPrint(...) io.stdout:flush() end
+end
 -- File/Dir Utility fuctions
 
 function compressFile(srcname, tarname, verbose, opt)
@@ -208,7 +214,9 @@ end
 --- Sleep
 function sleep(n)
     if getPlatform() == 'Windows' then
-        os.execute("timeout /NOBREAK /T " .. tonumber(n) .. ' > nul')
+        --os.execute("timeout /NOBREAK /T " .. math.floor(tonumber(n)) .. ' > nul')
+        local cmd = HPCPF_BIN_DIR .. '/sleeper.exe ' .. math.floor(n)
+        os.execute(cmd)
     else
         os.execute("sleep " .. tonumber(n))
     end

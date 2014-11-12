@@ -17,6 +17,7 @@ local focusSetting = {
 #SBATCH -J JOB.NAME
 #SBATCH -o stdout.%J.log
 #SBATCH -e stderr.%J.log
+#SBATCH -p ye001uta3m
 sh JOB.JOB
 ]]      
 }
