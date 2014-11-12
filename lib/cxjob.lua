@@ -64,7 +64,7 @@ function cxjob.new(username_or_table, sshkey, server, workdir)
         print('OVERRIDE:',inst.jobinfo.server)
         inst.server = inst.jobinfo.server -- override
     end
-    
+
     setmetatable(inst, {__index = cxjob})
     return inst;
 end
@@ -129,7 +129,7 @@ function cxjob:remoteExtractFile(filepath, verbose)
 end
 
 function cxjob:remoteCompressNewerFile(srcfile, tarfile, newdate, verbose)
-    local newer = '--newer \\"' .. newdate .. '\\" '
+    local newer = '' -- '--newer \\"' .. newdate .. '\\" '
     local option = (verbose == true) and '-czvf' or '-czf'
     option = newer .. option
     local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. tarfile .. ' ' .. srcfile
