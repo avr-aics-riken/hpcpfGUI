@@ -1,7 +1,7 @@
 local focusSetting = {
-    submitCmd = 'fjsub',
+    submitCmd = 'sbatch',
     submitIDRow = 4,
-    delCmd = 'fjdel',
+    delCmd = 'scancel',
     statCmd = 'fjstat',
     statStateColumn = 5,
     statStateRow = 4,
@@ -17,7 +17,6 @@ local focusSetting = {
 #SBATCH -J JOB.NAME
 #SBATCH -o stdout.%J.log
 #SBATCH -e stderr.%J.log
-#SBATCH -p ye001uta3m
 sh JOB.JOB
 ]]      
 }
