@@ -59,6 +59,12 @@ function cxjob.new(username_or_table, sshkey, server, workdir)
     end
 
     inst.jobinfo = getServerInfo(server)
+
+    if (inst.jobinfo ~= nil and inst.jobinfo.server ~= nil) then
+        print('OVERRIDE:',inst.jobinfo.server)
+        inst.server = inst.jobinfo.server -- override
+    end
+    
     setmetatable(inst, {__index = cxjob})
     return inst;
 end
