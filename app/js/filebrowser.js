@@ -232,6 +232,26 @@ function bootstrap()
 	getHostList();
 }
 
+/// @param target L or R for existence check
+function withConfirm(target, src, dest, doFunction) {
+	"use strict";
+	//console.log("src::"+ src);
+	//console.log("dst::"+dest);
+	target.ExistsFile(target.GetDir(), src, function(exists) {
+		// if file is existed, show confirm dialog
+		if (exists) {
+			showConfirm(function(confirm) {
+				if (confirm) {
+					doFunction(src, dest);
+				}
+				hiddenConfirm();
+			});
+		} else {
+			doFunction(src, dest);
+		}
+	});
+}
+
 function startFileList(nameA,nameB)
 {
 	if (nameA == "" || nameB == "")
@@ -268,7 +288,9 @@ function startFileList(nameA,nameB)
 		{name:'copy_left',func:function(L,R){ return function(data){
 			console.log('copy_left',data,L,R);
 			if (L.host == R.host) {
-				L.CopyFile(data.path, L.GetDir()+getFilename(data.path));
+				withConfirm(L, data.path, L.GetDir()+getFilename(data.path), function(src, dest) {
+					L.CopyFile(src, dest);
+				});
 			}else{
 				showmsgA('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -276,7 +298,9 @@ function startFileList(nameA,nameB)
 		{name:'move_left',func:function(L,R){ return function(data){
 			console.log('move_left',data);
 			if (L.host == R.host) {
-				L.MoveFile(data.path, L.GetDir()+getFilename(data.path));
+				withConfirm(L, data.path, L.GetDir()+getFilename(data.path), function(src, dest) {
+					L.MoveFile(src, dest);
+				});
 			}else{
 				showmsgA('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -292,7 +316,9 @@ function startFileList(nameA,nameB)
 		{name:'compress_left',func:function(L,R){ return function(data){
 			console.log('compress_left',data);
 			if (L.host == R.host) {
-				L.CompressFile(data.path, L.GetDir());
+				withConfirm(L, data.path + ".tar.gz", L.GetDir(), function(src, dest) {
+					L.CompressFile(data.path, L.GetDir());
+				});
 			}else{
 				showmsgA('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -302,8 +328,11 @@ function startFileList(nameA,nameB)
 			if (L.host != 'localhost' && R.host == 'localhost') {
 				var fname = data.path.split('/');
 				fname = fname[fname.length-1];
-				if (fname != '')
-					L.UploadFile(data.path, L.GetDir()+fname);
+				if (fname != '') {
+					withConfirm(L, data.path, L.GetDir()+fname, function(src, dest) {
+						L.UploadFile(src, dest);
+					});
+				}
 			}else{
 				showmsgB('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -313,8 +342,11 @@ function startFileList(nameA,nameB)
 			if (L.host == 'localhost' && R.host != 'localhost') {
 				var fname = data.path.split('/');
 				fname = fname[fname.length-1];
-				if (fname != '')
-					R.DonwloadFile(data.path, L.GetDir()+fname);
+				if (fname != '') {
+					withConfirm(L, data.path, L.GetDir()+fname, function(src, dest) {
+						R.DonwloadFile(src, dest);
+					});
+				}
 			}else{
 				showmsgB('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -323,7 +355,9 @@ function startFileList(nameA,nameB)
 		{name:'copy_right',func:function(L,R){ return function(data){
 			console.log('copy_right',data,L,R);
 			if (L.host == R.host) {
-				R.CopyFile(data.path, R.GetDir()+getFilename(data.path));
+				withConfirm(R, data.path, R.GetDir()+getFilename(data.path), function(src, dest) {
+					R.CopyFile(src, dest);
+				});
 			}else{
 				showmsgB('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -331,7 +365,9 @@ function startFileList(nameA,nameB)
 		{name:'move_right',func:function(L,R){ return function(data){
 			console.log('move_right',data);
 			if (L.host == R.host) {
-				R.MoveFile(data.path, R.GetDir()+getFilename(data.path));
+				withConfirm(R, data.path, R.GetDir()+getFilename(data.path), function(src, dest) {
+					R.MoveFile(src, dest);
+				});
 			}else{
 				showmsgB('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -347,7 +383,9 @@ function startFileList(nameA,nameB)
 		{name:'compress_right',func:function(L,R){ return function(data){
 			console.log('compress_right',data);
 			if (L.host == R.host) {
-				R.CompressFile(data.path, R.GetDir());
+				withConfirm(R, data.path + ".tar.gz", R.GetDir(), function(src, dest) {
+					R.CompressFile(data.path, R.GetDir());
+				});
 			}else{
 				showmsgB('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -358,8 +396,11 @@ function startFileList(nameA,nameB)
 				var fname = data.path.split('/');
 				fname = fname[fname.length-1];
 				console.log('fname='+R.GetDir()+fname);
-				if (fname != '')
-					R.UploadFile(data.path, R.GetDir()+fname);
+				if (fname != '') {
+					withConfirm(R, data.path, R.GetDir()+fname, function(src, dest) {
+						R.UploadFile(src, dest);
+					});
+				}
 			}else{
 				showmsgB('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -370,8 +411,11 @@ function startFileList(nameA,nameB)
 				var fname = data.path.split('/');
 				fname = fname[fname.length-1];
 				console.log('fname='+R.GetDir()+fname);
-				if (fname != '')
-					L.DonwloadFile(data.path, R.GetDir()+fname);
+				if (fname != '') {
+					withConfirm(R, data.path, R.GetDir()+fname, function(src, dest) {
+						L.DonwloadFile(src, dest);
+					});
+				}
 			}else{
 				showmsgB('Not supported host type:'+L.host+' and '+R.host);
 			}
@@ -504,3 +548,36 @@ function startFileList(nameA,nameB)
 		rftpB.Connect();
 	}
 } // bootstrap
+
+/// hidden overwrite-confirm dialog
+function hiddenConfirm(callback) {
+	var save = document.getElementById('button_save'),
+		cancel = document.getElementById('button_cancel');
+	
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("confirm_dialog").style.visibility = "hidden";
+}
+
+/// show overwrite-confirm dialog
+function showConfirm(callback) {
+	var save = document.getElementById('button_save'),
+		cancel = document.getElementById('button_cancel');
+	
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("confirm_dialog").style.visibility = "visible";
+
+	function savefunc() {
+		callback(true);
+		save.removeEventListener("click", savefunc, true);
+		cancel.removeEventListener("click", cancelfunc, true);
+	}
+	function cancelfunc() {
+		callback(false);
+		save.removeEventListener("click", savefunc, true);
+		cancel.removeEventListener("click", cancelfunc, true);
+	}
+	save.addEventListener("click", savefunc, true);
+	cancel.addEventListener("click", cancelfunc, true);
+}
+
+

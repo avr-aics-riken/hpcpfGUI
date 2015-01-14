@@ -20,7 +20,7 @@ var cpFileCmd = 'cp',
 if (os.platform().indexOf('win') === 0){ // win setting
 	console.log('Use Windows commands.');
 	cpFileCmd = 'copy';
-	cpDirCmd  = 'copy';
+	cpDirCmd  = 'xcopy /s /R /Y /I';
 	mvCmd     = 'move';
 	rmFileCmd = 'del /Q';
 	rmDirCmd  = 'rd /q /s';
@@ -85,6 +85,17 @@ var localCopyFile     = function(src,dst,callback) {
 var localMoveFile     = function(src,dst,callback) {
 	localCmd(mvCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
 }
+var localExistsFile = function(src, dstFileList, callback) {
+	var baseName = path.basename(src),
+		i = 0;
+	console.log("baseName:" + baseName);
+	for (i = 0; i < dstFileList.length; ++i) {
+		if (dstFileList[i].filename === baseName) {
+			return true;
+		}
+	}
+	return false;
+}
 var localExtractFile  = function(srcpath,expath,callback){
 	var parentpath = path.dirname(srcpath);
 	var srcfile    = path.basename(srcpath);
@@ -130,7 +141,7 @@ var localMakeDir      = function(path,callback)    { localCmd(mkdirCmd + ' "'+ge
 	requires file commands.[cp,mv,tar,...]
 */
 
-var remoteCmd = function(conn,cmd,callback){
+var remoteCmd = function(conn,cmd,callback,dataCallback){
 	conn.exec(cmd, function(cb){return function(err,stream){
 		console.log('REMOTE CMD>' + cmd);
 		if (err)
@@ -139,11 +150,18 @@ var remoteCmd = function(conn,cmd,callback){
 			if (callback)
 				callback(err);
 		});
+		stream.on('data', function(data) {
+			dataCallback(data);
+		});
 	}}(callback));
 }
 	
 var remoteCopyFile     = function(conn,src,dst,callback) { remoteCmd(conn, 'cp -Rf "'+src+'" "'+dst+'"', callback);        }
 var remoteMoveFile     = function(conn,src,dst,callback) { remoteCmd(conn, 'mv "'+src+'" "'+dst+'"', callback);        }
+var remoteExistsFile     = function(src,dstFileList,callback) {
+	console.log("remoteExistsFile");
+	return localExistsFile(src, dstFileList, callback);
+}
 var remoteExtractFile  = function(conn,srcpath,expath,callback){
 	var parentpath = path.dirname(srcpath);
 	var srcfile    = path.basename(srcpath);
@@ -196,6 +214,10 @@ var LFTPClass = function(){
 	this.MoveFile = function(srcpath, destpath, callback){
 		console.log('local:MoveyFile>',srcpath,destpath);
 		localMoveFile(srcpath,destpath,callback);
+	}
+	this.ExistsFile = function(srcpath, dstFileList, callback){
+		console.log('local:ExistsFile>', srcpath);
+		return localExistsFile(srcpath, dstFileList, callback);
 	}
 	this.ExtractFile = function(path,dir,callback){
 		console.log('local:ExtractFile>',path,dir);
@@ -400,6 +422,10 @@ var SFTPClass = function(){
 	this.MoveFile = function(srcpath, destdir, callback){
 		console.log('Remote:MoveyFile>',srcpath,destdir);
 		remoteMoveFile(this.conn,srcpath,destdir,callback);
+	}
+	this.ExistsFile = function(srcpath, dstFileList, callback){
+		console.log('Remote:ExistsFile>',srcpath);
+		return remoteExistsFile(srcpath, dstFileList, callback);
 	}
 	this.ExtractFile = function(path,dir,callback){
 		console.log('Remote:ExtractFile>',path,dir);
@@ -698,6 +724,23 @@ var RemoteFTP = function(socket) {
 				thisptr.processedMessage(data.cid, 'Moved');
 		});
 	}}(this));
+	
+	socket.on('RFTP:ExistsFile', function(thisptr) { return function(sdata) {
+		var data = JSON.parse(sdata),
+			fc = getFC(data.cid);
+		if (!fc)
+			return;
+		
+		fc.OpenDir(data.path, function(list, err){
+			var existed = fc.ExistsFile(data.srcpath, list);
+			socket.emit('RFTP:Existed', JSON.stringify({
+				cid:data.cid,
+				srcpath:data.srcpath,
+				path:data.path,
+				existed: existed
+			}));
+		});
+	}}(this));
 
 	socket.on('RFTP:ExtractFile', function(thisptr){ return function(sdata){
 		var data = JSON.parse(sdata);
@@ -770,7 +813,7 @@ var RemoteFTP = function(socket, cid, hostname){
 	this.id = socket.id;
 	this.tarDir = '';
 	this.host = '';
-	this.cid = cid;
+	this.cid = cid; // connection id (string)
 	this.hostname = hostname;
 	
 	this.GetDir = function()
@@ -804,6 +847,15 @@ var RemoteFTP = function(socket, cid, hostname){
 	}
 	this.MoveFile = function(srcpath, destpath){
 		this.socket.emit('RFTP:MoveFile',JSON.stringify({srcpath:srcpath, destpath:destpath, cid:this.cid}));
+	}
+	this.ExistsFile = function(targetdir, srcpath, callback) {
+		this.socket.once('RFTP:Existed', function(sdata) {
+			var data = JSON.parse(sdata);
+			if (data.srcpath === srcpath) {
+				callback(data.existed);
+			}
+		});
+		this.socket.emit('RFTP:ExistsFile', JSON.stringify({srcpath:srcpath, path:targetdir, cid:this.cid}));
 	}
 	this.ExtractFile = function(path, destdir){
 		this.socket.emit('RFTP:ExtractFile',JSON.stringify({path:path, destdir:destdir, cid:this.cid}));
