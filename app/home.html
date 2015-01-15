@@ -20,33 +20,40 @@
 	</div>
 	<div class="tab">
 		<div class="pane_left" id="button_menus">
-			<button type="button" class="button_menu" onclick="newProject()"><span class="text_button_menu">New Project</span></button><br>
 			<button type="button" class="button_menu" onclick="registerRemoteHost()"> <span class="text_button_menu">Register host</span></button><br>
 			<button type="button" class="button_menu" onclick="openFileBrowser()"><span class="text_button_menu">File Browser</span></button><br>
 			<button type="button" class="button_menu" onclick="openKDB()"> <span class="text_button_menu">Knowledge DB</span></button><br>
 		</div>
 		<div class="pane_right">
-			<div class="text_recent">Recent Project</div>
-			<div class="historybrowser" id="projectHistoryList">
-				<div style="display:none">
-					<div class="fileitem" id="projectHistoryList_itemtemplate" draggable="false" onclick="openProject(this.path)" ><div class="dir"></div><p class="filelabel" id="label">project1</p></div>
-				</div>
-			</div>
-			<div class="grp_alignright">
-				<button type="button" class="button_open" onclick="openfileDialog('/')">
-					<span class="text_button_action">Browse</span>
-				</button>
-			</div>
+			<button type="button" class="button_menu" onclick="newProject()"><span class="text_button_menu">New Project</span></button><br>
+			<button type="button" class="button_menu" onclick="openProjectArchive()"><span class="text_button_menu">Open Project Archive</span></button><br>
+			<button type="button" class="button_menu" onclick="showProjectDialog()"><span class="text_button_menu">Open Project</span></button><br>
+			<button type="button" class="button_menu" onclick="openRecentProject()"><span class="text_button_menu">Open Recent Project</span></button><br>
 		</div>
 	</div>
 
-	<div class="popup_center">
-		<div class="pane_grp"><input class="input_filedialog" id="projdir_path" value="localhost:/home/hirose/project1"/></div>
-		<div class="filebrowser filedialog" id="fbList">
-		<!--	<div class="fileitem" id="dir1" draggable="false" onclick="select_targetDir()"><div class="back"></div><p class="filelabel">..</p></div>
-			<div class="fileitem" id="dir2" draggable="false" onclick="select_targetDir()"><div class="dir"></div><p class="filelabel">dir1</p></div>-->
-			<!--<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel">file1</p></div>-->
+	<div class="popup_center" id="recent_project">
+		<div class="text_recent">Recent Project</div>
+		<div class="historybrowser" id="projectHistoryList">
+			<div style="display:none">
+				<div class="fileitem" id="projectHistoryList_itemtemplate" draggable="false" onclick="openProject(this.path)" ><div class="dir"></div><p class="filelabel" id="label">project1</p></div>
+			</div>
 		</div>
+		<div class="historybrowser_buttons">
+			<button type="button" class="button_open" onclick="openfileDialog('/')">
+				<span class="text_button_action">Browse</span>
+			</button>
+			<button type="button" class="button_cancel" onclick="closeRecentProject()">
+				<span class="text_button_action">Cancel</span>
+			</button>
+		</div>
+	</div>
+		
+	<div class="popup_center" id="file_dialog">
+		<div class="pane_grp">
+			<input class="input_filedialog" id="projdir_path" value="localhost:/"/>
+		</div>
+		<div class="filebrowser filedialog" id="fbList"></div>
 		<div class="buttons_dialog">
 			<button type="button" class="button_open" onclick="open_selectedFile()">
 				<span class="text_button_action">Open</span>
@@ -56,5 +63,7 @@
 			</button>
 		</div>
 	</div>
+		
+	<div class="popup_background" id="popup_background"></div>
 </body>
 </html>

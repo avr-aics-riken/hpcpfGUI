@@ -57,6 +57,7 @@ function updateProjectList() {
 //-------------
 // app launch
 
+/*
 socket.on('updateLaunchButtons', function(appnames) {
 	var paneleft = document.getElementById("button_menus");
     
@@ -81,11 +82,12 @@ socket.on('updateLaunchButtons', function(appnames) {
 function updateLaunchButtons() {
 	socket.emit('reqUpdateLaunchButtons','');
 }
+*/
 
 function bootstrap() {
 	"use strict";
 	updateProjectList();
-	updateLaunchButtons();
+	//updateLaunchButtons();
 }
 
 function openProject(path) {
@@ -103,6 +105,28 @@ function launchApp(name) {
 function newProject() {
 	"use strict";
 	// TODO
+}
+
+function openProjectArchive() {
+	"use strict";
+	openfileDialog('/');
+}
+
+function showProjectDialog() {
+	"use strict";
+	openfileDialog('/');
+}
+
+function openRecentProject() {
+	"use strict";
+	document.getElementById("recent_project").style.display = "block";
+	document.getElementById('popup_background').style.visibility = "visible";
+}
+
+function closeRecentProject() {
+	"use strict";
+	document.getElementById("recent_project").style.display = "none";
+	document.getElementById('popup_background').style.visibility = "hidden";
 }
 
 function registerRemoteHost() {
@@ -130,26 +154,23 @@ function registerProjectHistory(path) {
 }
 
 //-----------------------------------
-var tarPath;
 function openfileDialog(path) {
 	"use strict";
-	tarPath = path;
-	var i, c;
-	i = document.getElementsByClassName("popup_center")[0];
-	i.style.display = "block";
-
-	c = document.getElementById('projdir_path');
-	c.value = path;
+	document.getElementById("file_dialog").style.display = "block";
+	document.getElementById('projdir_path').value = path;
+	document.getElementById('popup_background').style.visibility = "visible";
 	filedialog.FileList(path);
 }
+
 function closefileDialog() {
 	"use strict";
-	var i = document.getElementsByClassName("popup_center")[0];
-	i.style.display = "none";
+	document.getElementById("file_dialog").style.display = "none";
+	document.getElementById('popup_background').style.visibility = "hidden";
 }
 
 function open_selectedFile() {
 	"use strict";
+	var tarPath = document.getElementById('projdir_path').value;
 	console.log("OPENPATH:" + tarPath);
 	closefileDialog();
 	registerProjectHistory(tarPath);

@@ -173,9 +173,11 @@ input{
 
 .text_recent{
 	font-family:sans-serif;
-	color:#4d4d4d;
+	font-size:24px;
+	color:#fff;
 	text-align:left;
-	margin-bottom:5px;
+	margin-left:50px;
+	margin-top:20px;
 }
 
 
@@ -277,5 +279,17 @@ input{
 
 }
 
+.popup_background {
+	min-height: 100%;
+	min-width: 1024px;
+	width: 100%;
+	height: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	visibility: hidden;
+	background-color:#CCCCCC;
+	opacity: 0;
+}
 
 

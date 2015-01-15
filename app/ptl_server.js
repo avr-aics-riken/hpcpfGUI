@@ -131,6 +131,7 @@ function registerPTLEvent(socket) {
 		});
 	});
 	
+	/*
 	socket.on('reqUpdateLaunchButtons', function() {
 		var appnames = [];
 		var name;
@@ -139,6 +140,7 @@ function registerPTLEvent(socket) {
 		}
 		socket.emit('updateLaunchButtons', appnames);
 	});
+	*/
 	
 	socket.on('registerProjectHistory', function (path) {
 		console.log("REGISTER_HISTORY:" + path);

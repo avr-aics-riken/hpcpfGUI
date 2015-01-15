@@ -211,17 +211,23 @@
 
 /* history browser */
 .historybrowser{
-	margin:auto;
-	margin-left:0px;
+	width:500px;
+	min-width:500px;
+	height:430px;
 	border:solid;
 	border-radius:20px;
 	border-width:12px;
 	border-color:#72ca2a;
+	margin-top:30px;
+	margin-left:60px;
+	padding:15px;
 	background-color:#292929;
-	width:400px;
-	min-width:400px;
-	height:412px;
+	float:left;
 	overflow:scroll;
+}
+
+.historybrowser_buttons{
+	margin-top:300px;
 }
 
 /* file dialog (popup) */
