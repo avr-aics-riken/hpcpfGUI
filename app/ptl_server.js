@@ -10,8 +10,9 @@ var exec = require('child_process').exec,
 	filedialog = require('./js/filedialog'),
 	RemoteFTP = require('./js/RemoteFTP'),
 	
-	confFile = __dirname + '/../conf/hpcpfGUI.conf',
+	confFile = path.resolve(__dirname, '../conf/hpcpfGUI.conf'),
 	portNumber      = 8080,
+	projectBasePath = "",
 	appCommands = {},   // app name to launch path
 	appExtensions = {}; // app name to extension list
 	
@@ -25,7 +26,13 @@ try {
 	
 	if (data.port) { portNumber        = data.port; }
 	for (var name in data) {
-		if (name !== "port") {
+		if (name === "project_base") {
+			projectBasePath = data.project_base;
+			if (util.isRelative(projectBasePath)) {
+				projectBasePath = path.resolve(path.join(__dirname, ".."), projectBasePath);
+			}
+			console.log("project base:" + projectBasePath);
+		} else if (name !== "port") {
 			appCommands[name] = data[name][ostype];
 			if ("extension" in data[name]) {
 				var extensions = data[name]["extension"].split(';');

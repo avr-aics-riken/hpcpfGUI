@@ -1,4 +1,5 @@
-var fs = require('fs');
+var fs = require('fs'),
+	path = require('path');
 
 //-------------------------------------
 // Utility functions
@@ -47,6 +48,12 @@ function getExtention(fileName) {
 	return ret.toString().toLowerCase();
 }
 
+function isRelative(p) {
+	var normal = path.normalize(p),
+		absolute = path.resolve(p);
+	return normal != absolute;
+}
 
 module.exports.getExtention = getExtention;
 module.exports.getFiles = getFiles;
+module.exports.isRelative = isRelative;
