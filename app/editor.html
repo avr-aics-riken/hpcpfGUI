@@ -8,68 +8,157 @@
 	<link href="css/base.css" rel="stylesheet"/>
 	<link href="css/button.css" rel="stylesheet"/>
 	<link href="css/editor.css" rel="stylesheet"/>
+	<link href="css/editor_info_mode.css" rel="stylesheet"/>
+	<link href="css/editor_exe_mode.css" rel="stylesheet"/>
+	<link href="css/editor_edit_mode.css" rel="stylesheet"/>
 	<link href="css/filebrowser.css" rel="stylesheet"/>
-	<!--link href="css/flat-ui.css" rel="stylesheet"/-->
 </head>
-<body onload="boot();">
+<body>
 	<div class="header">
 		<div id="logo"></div>
 		<div id="version">Ver.1.1</div>
 	</div>
-
-<div class="title text_title">Project Editor</div>
-	<div id="menubtn">
-		<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
-		<button class="button_editor" id="button_save_editor" onclick="saveFile();">SAVE<br>(CTRL+S)</button>
-		<button class="button_editor" id="button_stop" onclick="procStop();">STOP<br>(CTRL+Q)</button>
-		<button class="button_editor"  onclick="modeChange(this.value);" value="vim" id="button_editmode">Vim Mode</button>
-	</div>
-
-	<nav class="navbar navbar-default" id="editorbar">
-    	<div class="filepath" id="filename">-</a>
-		<label class="checkbox" for="checkbox1">
-	</nav>
-
-	<div id="showoutputarea">
-		<button id="button_output" onclick="showOutputArea();">Output</button>
-	</div>
-
-	<div id="filelist">
-<!--		<div class="fileitem" id="dir1" draggable="false"><div class="dir"></div><p class="filelabel_short">dir1</p></div>
-		<div class="fileitem" id="dir2" draggable="false"><div class="dir"></div><p class="filelabel_short">dir2</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1aaaaaaaaaaaaaaa</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>-->
-	</div>
-
-	<div>
-		<pre id="editor"></pre>
-	</div>
-	<div id="outputArea">
-		<pre id='stdout'></pre>
-	</div>
-	<div id="imageArea">
-		<img id="imageView"/>
-	</div>
-	<div id="launchButtonArea">
-		<span id="launchButtonView"/>
-	</div>
-	<div id="shownewfilearea">
-		<button id="button_newfile" onclick="showNewFileArea();">New File</button>
-	</div>
-	<div id="newfileArea">
-		New file!<br><!--stdout:<br>-->
-		<input type="text" id="newfilename" class="input-newfile" placeholder="file name"/>
-		<button id="button_new" onclick="newFile(newfilename.value)"></button>
-	</div>
+	<div class="title text_title">Project Editor</div>
+	
+	<!--------------------------- Info Mode --------------------------------->
+	<span id="info_mode" style="display:none">
+		<div class="execute_area">
+			<button class="button_execute" onclick="executeProject();">Execute</button>
+		</div>
+		<div class="change_mode_area">
+			<button class="button_change_mode" disabled onclick="showInfoMode();">Info Mode</button>
+			<button class="button_change_mode" onclick="showExeMode();">EXE Mode</button>
+			<button class="button_change_mode" onclick="showEditMode();">Edit Mode</button>
+		</div>
+		<div class="project_title">
+			Project:
+			<span id="project_title_text" class="project_title_text">
+				Project Title
+			</span>
+		</div>
+		<div class="info_area">
+			<div class="info_text_area">
+				<div class="info_title">
+					Description:
+					<div class="info_text" id="info_description">
+						<!--project description-->
+					</div>
+				</div>
+				<div class="info_title">
+					Workflow:
+					<div class="info_text" id="info_workflow">
+						<!--<a class="info_link" href="#">workflow files</a>-->
+					</div>
+				</div>
+				<div class="info_title">
+					Case:
+					<div class="info_text" id="info_case">
+						<!--<a class="info_link" href="#">case files</a>-->
+					</div>
+				</div>
+				<div class="info_title">
+					KDB:
+					<div class="info_text" id="info_kdb_url">
+						<!--<a class="info_link" href="#">KDB URL</a>-->
+					</div>
+					<div class="info_text">
+						changed:
+						<span class="info_text" id="info_kdb_change">
+							<!--KDB changes-->
+						</san>
+					</div>
+					<div class="info_text">
+						details:
+						<span class="info_text" id="info_kdb_detail_of_change">
+							<!--KDB detail of change-->
+						</span>
+					</div>
+				</div>
+				<div class="info_title">
+					Log:
+					<div class="info_text" id="info_log">
+						<!--<a class="info_link" href="#">log files</a>-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</span>
+	
+	<!--------------------------- EXE Mode --------------------------------->
+	<span id="exe_mode" style="display:none">
+		<div class="execute_area">
+			<button class="button_execute" onclick="executeProject();">Execute</button>
+			<button class="button_execute" onclick="executeProject();">Stop</button>
+		</div>
+		<div class="change_mode_area">
+			<button class="button_change_mode" onclick="showInfoMode();">Info Mode</button>
+			<button class="button_change_mode" disabled onclick="showExeMode();">EXE Mode</button>
+			<button class="button_change_mode" onclick="showEditMode();">Edit Mode</button>
+		</div>
+		<div class="project_title">
+			Project:
+			<span class="project_title_text">
+				Project Title
+			</span>
+		</div>
+		<div class="info_area">
+			<div class="info_text_area">
+				<div class="info_title">
+					Log Area
+				</div>
+			</div>
+		</div>
+	</span>
+	
+	<!--------------------------- Edit Mode --------------------------------->
+	<span id="edit_mode" style="display:block">
+		<div class="execute_area">
+			<button class="button_execute" onclick="executeProject();">Execute</button>
+		</div>
+		<div id="menubtn">
+			<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
+			<button class="button_editor" id="button_save_editor" onclick="saveFile();">SAVE<br>(CTRL+S)</button>
+			<button class="button_editor" id="button_stop" onclick="procStop();">STOP<br>(CTRL+Q)</button>
+			<button class="button_editor"  onclick="modeChange(this.value);" value="vim" id="button_editmode">Vim Mode</button>
+		</div>
+		<nav class="navbar navbar-default" id="editorbar">
+			<div class="filepath" id="filename">-</a>
+			<label class="checkbox" for="checkbox1">
+		</nav>
+		<div class="change_mode_area">
+			<button class="button_change_mode" onclick="showInfoMode();">Info Mode</button>
+			<button class="button_change_mode" onclick="showExeMode();">EXE Mode</button>
+			<button class="button_change_mode" disabled onclick="showEditMode();">Edit Mode</button>
+		</div>
+		<div id="filelist"></div>
+		<div>
+			<pre id="editor"></pre>
+		</div>
+		<div id="outputArea">
+			<pre id='stdout'></pre>
+		</div>
+		<div id="imageArea">
+			<img id="imageView"/>
+		</div>
+		<div id="launchButtonArea">
+			<span id="launchButtonView"/>
+		</div>
+		<div id="shownewfilearea">
+			<button id="button_newfile" onclick="showNewFileArea();">New File</button>
+		</div>
+		<div id="newfileArea">
+			New file!<br><!--stdout:<br>-->
+			<input type="text" id="newfilename" class="input-newfile" placeholder="file name"/>
+			<button id="button_new" onclick="newFile(newfilename.value)"></button>
+		</div>
+	</span>
+	<!------------------------------------------------------------------------------>
 
 	<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="js/editor.js"></script>
+	<script type="text/javascript" src="js/editor_info_mode.js"></script>
+	<script type="text/javascript" src="js/editor_exe_mode.js"></script>
+	<script type="text/javascript" src="js/editor_edit_mode.js"></script>
 </body>
 </html>

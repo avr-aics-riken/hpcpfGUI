@@ -4,6 +4,7 @@ var fs = require('fs');
 var http = require('http');
 var os = require('os');
 var util = require('./util');
+var path = require('path');
 
 // MacOSX setting
 var KRENDER_CMD = __dirname + '/krender_mac',
@@ -128,6 +129,21 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			console.log('It\'s saved!');
 		});
 	});
+	
+	socket.on('reqUpdateInformation', function() {
+		var pifFile = path.join(sesstionTable[socket.id].dir, "pif.json"),
+			pifData,
+			pifStr;
+		console.log("reqUpdateInformation:" + pifFile);
+		if (pifFile && fs.existsSync(pifFile)) {
+			console.log("reqUpdateInformation exists");
+			pifData = fs.readFileSync(pifFile);
+			pifStr = JSON.parse(pifData);
+			//console.log(pifStr);
+			socket.emit('updateInformation', JSON.stringify(pifStr));
+		}
+	});
+	
 	function KillSpawn(sp){
 		if (!sp) {
 			return;
@@ -147,7 +163,6 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 				console.log('killed childs');
 				console.log(error, stdout, stderr);
 			});
-
 		}
 	}
 	socket.on('stop', function(data) {

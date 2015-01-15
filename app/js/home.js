@@ -54,40 +54,9 @@ function updateProjectList() {
 	socket.emit('reqUpdateProjectHistory','');
 }
 
-//-------------
-// app launch
-
-/*
-socket.on('updateLaunchButtons', function(appnames) {
-	var paneleft = document.getElementById("button_menus");
-    
-    var toolarea = document.createElement("div");
-    toolarea.setAttribute('class', 'toolarea');
-    var line = document.createElement("div");
-    line.setAttribute('class', 'launcherline_home');
-    toolarea.appendChild(line);
-
-	for (var i in appnames) {
-		var name = appnames[i];
-		var button = document.createElement("button");
-		button.setAttribute('type', 'button');
-		button.setAttribute('class', 'button_tool');
-		button.setAttribute('onclick', 'launchApp("' +name+ '")');
-		button.innerHTML = '<span class="text_button_tool">' +name+ '</span>';
-        toolarea.appendChild(button);
-	}
-    paneleft.appendChild(toolarea);
-});
-
-function updateLaunchButtons() {
-	socket.emit('reqUpdateLaunchButtons','');
-}
-*/
-
 function bootstrap() {
 	"use strict";
 	updateProjectList();
-	//updateLaunchButtons();
 }
 
 function openProject(path) {
@@ -146,14 +115,11 @@ function openKDB() {
 	window.open("http://www.cenav.org/kdb/", "_blank");
 }
 
-//----------------------------------
-
 function registerProjectHistory(path) {
 	"use strict";
 	socket.emit("registerProjectHistory", path);
 }
 
-//-----------------------------------
 function openfileDialog(path) {
 	"use strict";
 	document.getElementById("file_dialog").style.display = "block";

@@ -219,6 +219,40 @@
 	background-image:url("../image/button_bg_action_upper_press.png");
 }
 
+/* button - change mode */
+.button_change_mode {
+	width:173px;
+	height:100px;
+	position:relative;
+	top:-56px;
+	background-image:url("../image/button_bg_action_upper.png");
+	font-size:18px;
+	font-weight:600;
+}
+
+.button_change_mode:active{
+	background-image:url("../image/button_bg_action_upper_press.png");
+}
+
+.button_change_mode:disabled{
+	background-image:url("../image/button_bg_action_upper_press.png");
+}
+
+/* button - execute */
+.button_execute {
+	width:100px;
+	height:50px;
+	position:relative;
+	top:-56px;
+	background-image:url("../image/button_rect.png");
+	font-size:18px;
+	font-weight:600;
+}
+
+.button_execute:active{
+	background-image:url("../image/button_rect_press.png");
+}
+
 /* button - new */
 #button_new{
 	width:100px;

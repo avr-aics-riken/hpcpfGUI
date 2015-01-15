@@ -131,17 +131,6 @@ function registerPTLEvent(socket) {
 		});
 	});
 	
-	/*
-	socket.on('reqUpdateLaunchButtons', function() {
-		var appnames = [];
-		var name;
-		for (name in appCommands) {
-			appnames.push(name);
-		}
-		socket.emit('updateLaunchButtons', appnames);
-	});
-	*/
-	
 	socket.on('registerProjectHistory', function (path) {
 		console.log("REGISTER_HISTORY:" + path);
 		fs.readFile(historyFile, function (err, data) {
@@ -167,7 +156,6 @@ function registerPTLEvent(socket) {
 			fs.writeFileSync(historyFile, data, 'utf8');
 		});
 	});
-
 }
 
 

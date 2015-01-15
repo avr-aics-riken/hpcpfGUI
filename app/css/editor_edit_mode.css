@@ -1,7 +1,7 @@
 body {
 	overflow: hidden;
 }
-
+  
 #editor {
 	margin: 0px;
 	position:absolute;
@@ -160,7 +160,10 @@ body {
 	-khtml-user-select: text;
 	-moz-user-select: text;
 	-ms-user-select: text;
-	user-select: text;
+	user-select: text; 
+
+
+
 }
 
 #stdout{
@@ -173,7 +176,8 @@ body {
 	margin:0px;
 /*	height:500px;*/
 	overflow:scroll;
-}
+
+  }
 
 td {
 	text-align: left;

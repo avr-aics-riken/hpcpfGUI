@@ -180,7 +180,6 @@ input{
 	margin-top:20px;
 }
 
-
 /* pane */
 .pane_left{
 	float:left;
@@ -210,8 +209,6 @@ input{
 	width:940px;
 	margin:auto;
 }
-
-
 
 .pane_grp{
 	text-align:left;
@@ -256,29 +253,6 @@ input{
 	text-align:left;
 }
 
-
-/* tool button area */
-.launcherline_home {
-    border: 4px solid;
-    border-color:#4d4d4d;
-    border-radius: 25px;
-    margin-top:22px;
-    margin-bottom:32px;
-}
-
-.launcherline {
-    border: 4px solid;
-    border-color:#4d4d4d;
-    border-radius: 25px;
-}
-
-.toolarea {
-    width: 615px;
-    text-align:left;
-    margin-left:50px;
-
-}
-
 .popup_background {
 	min-height: 100%;
 	min-width: 1024px;
@@ -290,6 +264,14 @@ input{
 	visibility: hidden;
 	background-color:#CCCCCC;
 	opacity: 0;
+}
+
+.change_mode_area {
+	position:absolute;
+	top:170px;
+	right:10px;
+	z-index:20;
+	margin:0px;
 }
 
 
