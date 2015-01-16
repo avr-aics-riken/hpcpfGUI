@@ -21,8 +21,8 @@
 	<div class="title text_title">Project Editor</div>
 	
 	<!--------------------------- Info Mode --------------------------------->
-	<span id="info_mode" style="display:none">
-		<div class="execute_area">
+	<span id="info_mode" style="display:block">
+		<div class="execute_button_area">
 			<button class="button_execute" onclick="executeProject();">Execute</button>
 		</div>
 		<div class="change_mode_area">
@@ -32,7 +32,7 @@
 		</div>
 		<div class="project_title">
 			Project:
-			<span id="project_title_text" class="project_title_text">
+			<span id="info_project_title_text" class="project_title_text">
 				Project Title
 			</span>
 		</div>
@@ -86,7 +86,7 @@
 	
 	<!--------------------------- EXE Mode --------------------------------->
 	<span id="exe_mode" style="display:none">
-		<div class="execute_area">
+		<div class="execute_button_area">
 			<button class="button_execute" onclick="executeProject();">Execute</button>
 			<button class="button_execute" onclick="executeProject();">Stop</button>
 		</div>
@@ -97,13 +97,13 @@
 		</div>
 		<div class="project_title">
 			Project:
-			<span class="project_title_text">
+			<span id="exe_project_title_text" class="project_title_text">
 				Project Title
 			</span>
 		</div>
-		<div class="info_area">
-			<div class="info_text_area">
-				<div class="info_title">
+		<div class="exe_area">
+			<div class="exe_log_area">
+				<div class="exe_log">
 					Log Area
 				</div>
 			</div>
@@ -111,8 +111,8 @@
 	</span>
 	
 	<!--------------------------- Edit Mode --------------------------------->
-	<span id="edit_mode" style="display:block">
-		<div class="execute_area">
+	<span id="edit_mode" style="display:none">
+		<div class="execute_button_area">
 			<button class="button_execute" onclick="executeProject();">Execute</button>
 		</div>
 		<div id="menubtn">

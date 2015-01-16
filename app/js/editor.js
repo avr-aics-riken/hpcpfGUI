@@ -54,3 +54,8 @@ function executeProject() {
 	"use strict";
 	showExeMode();
 }
+
+function setProjectName(name) {
+	$('info_project_title_text').innerHTML = name;
+	$('exe_project_title_text').innerHTML = name;
+}

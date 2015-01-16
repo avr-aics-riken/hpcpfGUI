@@ -135,6 +135,7 @@ function launchApp(name, file) {
 	socket.emit('ptl_launchapp', {appname : name, file : file});
 }
 
+/*
 var soutputarea = false;
 function showOutputArea(forceshow){
 	if (forceshow || !soutputarea) {
@@ -145,6 +146,7 @@ function showOutputArea(forceshow){
 		soutputarea = false;
 	}
 }
+*/
 
 socket.on('connect', function() {
 	"use strict";
@@ -267,13 +269,17 @@ socket.on('fileopen', function(data) {
 	fileopen(data);
 });
 
+/*
 function clearOutput() {
 	//$('stderr').innerHTML = '';
 	$('stdout').innerHTML = '';
 }
+*/
+
+/*
 function procRun() {
 	clearOutput();
-	showOutputArea(true);
+	//showOutputArea(true);
 	// run client side
 	//var src = editor.getValue();
 	//Lua.execute(src);
@@ -283,10 +289,14 @@ function procRun() {
 		return;
 	socket.emit('run',{file:openedfile});
 }
+*/
+
+/*
 function procStop() {
 	console.log("STOP");
 	socket.emit('stop');
 }
+*/
 
 function getFileList()
 {

@@ -1,12 +1,5 @@
-.execute_area {
-	position:absolute;
-	top:200px;
-	right:600px;
-	z-index:20;
-	margin:0px;
-}
 
-.info_area {
+.exe_area {
 	position:relative;
 	overflow:hidden;
 	left: 10%;
@@ -19,19 +12,11 @@
 	border:solid;
 	border-radius:5px;
 	border-width:5px;
-	border-color:#72ca2a;
-	background-color:#f4f2e9;
+	border-color:#000;
+	background-color:#444;
 }
 
-.project_title {
-	position:relative;
-	margin-top:30px;
-	text-align:center;
-	font-size:30px;
-	font-family:sans-serif;
-}
-
-.info_text_area {
+.exe_log_area {
 	position:relative;
 	overflow:hidden;
 	left: 10%;
@@ -41,19 +26,20 @@
 	height:auto;
 }
 
-.info_title {
-	position:relative;
-	margin-left:50px;
-	margin-bottom:20px;
-	font-size:30px;
-	font-family:sans-serif;
-}
-
-.info_text {
+.exe_log {
+	color: #eee;
 	position:relative;
 	margin-top:5px;
 	margin-bottom:5px;
 	margin-left:30px;
-	font-size:24px;
+	font-size:16px;
 	font-family:sans-serif;
+	user-select: auto;
+	
+	-webkit-touch-callout: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
 }

@@ -175,6 +175,22 @@ body {
 	overflow:scroll;
 }
 
+.project_title {
+	position:relative;
+	margin-top:30px;
+	text-align:center;
+	font-size:30px;
+	font-family:sans-serif;
+}
+
+.execute_button_area {
+	position:absolute;
+	top:200px;
+	right:600px;
+	z-index:20;
+	margin:0px;
+}
+
 td {
 	text-align: left;
 	vertical-align: top;

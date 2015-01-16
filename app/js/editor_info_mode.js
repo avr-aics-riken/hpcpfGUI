@@ -17,7 +17,7 @@ socket.on('updateInformation', function(data) {
 		if ("project_info" in elem) {
 			elem = elem.project_info;
 			if ("name_hr" in elem) {
-				$('project_title_text').innerHTML = elem.name_hr;
+				setProjectName(elem.name_hr); // editor.js
 			}
 			if ("description_hr" in elem) {
 				$('info_description').innerHTML = elem.description_hr;
