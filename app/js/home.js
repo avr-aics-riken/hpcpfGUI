@@ -50,6 +50,14 @@ socket.on('updateProjectHistory', function (data) {
 	readProjectHistory(data);
 });
 
+socket.on('openProjectDialog', function (data) {
+	if (data) {
+		openfileDialog(data);
+	} else {
+		openfileDialog('/');
+	}
+});
+
 function updateProjectList() {
 	socket.emit('reqUpdateProjectHistory','');
 }
@@ -83,7 +91,7 @@ function openProjectArchive() {
 
 function showProjectDialog() {
 	"use strict";
-	openfileDialog('/');
+	socket.emit('reqOpenProjectDialog');
 }
 
 function openRecentProject() {

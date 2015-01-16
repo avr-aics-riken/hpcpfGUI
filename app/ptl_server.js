@@ -138,6 +138,13 @@ function registerPTLEvent(socket) {
 		});
 	});
 	
+	socket.on('reqOpenProjectDialog', function () {
+		var basepath = path.relative('/', projectBasePath);
+		basepath = '/' + basepath.split('\\').join("/");
+		console.log("reqOpenProjectDialog:" + basepath);
+		socket.emit('openProjectDialog', basepath);
+	});
+	
 	socket.on('registerProjectHistory', function (path) {
 		console.log("REGISTER_HISTORY:" + path);
 		fs.readFile(historyFile, function (err, data) {

@@ -6,7 +6,7 @@ if (typeof window === 'undefined') { // Node.js
 		{
 			var list=[];
 			util.getFiles(path, list);
-			if (list.length != 0)
+			//if (list.length != 0)
 				socket.emit(name+':fbUpdateList', JSON.stringify(list));
 		}
 
@@ -19,11 +19,11 @@ if (typeof window === 'undefined') { // Node.js
 
 } else {
 
-	var tarPath = "";
 	var FileDialog = function(name,ignoreDotFile,dir_only){
 		this.name = name;
 		this.ignoreDotFile = ignoreDotFile;
 		this.dir_only = dir_only;
+		this.tarPath = "";
 	}
 	
 	FileDialog.prototype.registerSocketEvent = function(socket){
@@ -40,6 +40,7 @@ if (typeof window === 'undefined') { // Node.js
 	{
 		//this.dispPath(path);
 		console.log("FB:"+path);
+		this.tarPath = path;
 		this.socket.emit(this.name+":fb:reqFileList",path);
 	}
 
@@ -65,7 +66,7 @@ if (typeof window === 'undefined') { // Node.js
 			return uppath;
 		}
 		
-		function makeUpNode()
+		function makeUpNode(path)
 		{
 			var newbtn = document.createElement('div');
 			newbtn.setAttribute('class', "fileitem");
@@ -78,7 +79,7 @@ if (typeof window === 'undefined') { // Node.js
 			filelabel.setAttribute('class', "filelabel");
 			filelabel.innerHTML = "..";
 			newbtn.appendChild(filelabel);
-			var upath = getUpDir(tarPath);
+			var upath = getUpDir(path);
 			console.log("UPATH="+upath);
 			newbtn.setAttribute('onclick','openfileDialog("'+upath+'")');
 			return newbtn;
@@ -106,7 +107,7 @@ if (typeof window === 'undefined') { // Node.js
 		ls.innerHTML = ''; // clear
 
 		// up dir
-		var unode = makeUpNode();
+		var unode = makeUpNode(this.tarPath);
 		ls.appendChild (unode);
 
 		var list = JSON.parse(jsonlist);
