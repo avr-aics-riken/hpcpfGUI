@@ -129,6 +129,25 @@ function registerPTLEvent(socket) {
 
 	var historyFile = "../conf/project_history.json";
 	
+	socket.on('reqCreateNewProject', function (name) {
+		var newpath = "";
+		if (fs.existsSync(projectBasePath)) {
+			newpath = path.join(projectBasePath, name);
+			if (path.join(newpath, '..') === projectBasePath) {
+				if (!fs.existsSync(newpath)) {
+					try {
+						fs.mkdirSync(newpath);
+						newpath = path.relative('/', newpath);
+						newpath = '/' + newpath.split(path.sep).join("/");
+						socket.emit('createNewProject', newpath);
+					} catch(e) {
+						console.log(e);
+					}
+				}
+			}
+		}
+	});
+	
 	socket.on('reqUpdateProjectHistory', function (path) {
 		fs.readFile(historyFile, function (err, data) {
 			if (err) {
@@ -140,7 +159,7 @@ function registerPTLEvent(socket) {
 	
 	socket.on('reqOpenProjectDialog', function () {
 		var basepath = path.relative('/', projectBasePath);
-		basepath = '/' + basepath.split('\\').join("/");
+		basepath = '/' + basepath.split(path.sep).join("/");
 		console.log("reqOpenProjectDialog:" + basepath);
 		socket.emit('openProjectDialog', basepath);
 	});

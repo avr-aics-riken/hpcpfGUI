@@ -1,0 +1,32 @@
+#new_project {
+	position:relative;
+	min-height: 100px;
+	min-width: 1024px;
+	width: 100%;
+	position: relative;
+	top: 0;
+	left: 0;
+	z-index:20;
+	padding: 6px 6px 6px 6px;
+	color: #fff;
+	background-color:#72ca2a; 
+	border-radius: 5px;
+	display:none;
+	opacity: 1;
+}
+
+.new_project_content {
+	position:relative;
+	left:60%;
+}
+
+.input-newproject{
+	position:absolute;
+	top:30px;
+	width:200px;
+	background-color:#4d4d4d;
+	border-style:none;
+	line-height:38px;
+	border-radius:5px;
+	color:#aaa;
+}

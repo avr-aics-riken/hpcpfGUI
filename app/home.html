@@ -7,6 +7,7 @@
 		<link rel="icon" href="favicon.gif" type="image/gif">
 		<title>Home</title>
 		<link rel="stylesheet" href="css/base.css">
+		<link rel="stylesheet" href="css/home.css">
 		<link rel="stylesheet" href="css/button.css">
 		<link rel="stylesheet" href="css/filebrowser.css">
 		<script src="/socket.io/socket.io.js"></script>
@@ -18,6 +19,14 @@
 		<div id="logo"></div>
 		<div id="version">Ver.1.1</div>
 	</div>
+
+	<div id="new_project">
+		<div class="new_project_content">
+			New Project!<br><!--stdout:<br>-->
+			<input type="text" id="newprojectname" class="input-newproject" placeholder="project name"/>
+			<button id="button_new" onclick="newProject(newprojectname.value)"></button>
+		</div>
+	</div>
 	<div class="tab">
 		<div class="pane_left" id="button_menus">
 			<button type="button" class="button_menu" onclick="registerRemoteHost()"> <span class="text_button_menu">Register host</span></button><br>
@@ -25,10 +34,10 @@
 			<button type="button" class="button_menu" onclick="openKDB()"> <span class="text_button_menu">Knowledge DB</span></button><br>
 		</div>
 		<div class="pane_right">
-			<button type="button" class="button_menu" onclick="newProject()"><span class="text_button_menu">New Project</span></button><br>
-			<button type="button" class="button_menu" onclick="openProjectArchive()"><span class="text_button_menu">Open Project Archive</span></button><br>
+			<button type="button" class="button_menu" onclick="showNewProjectDialog()"><span class="text_button_menu">New Project</span></button><br>
+			<button type="button" class="button_menu" onclick="showProjectArchiveDialog()"><span class="text_button_menu">Open Project Archive</span></button><br>
 			<button type="button" class="button_menu" onclick="showProjectDialog()"><span class="text_button_menu">Open Project</span></button><br>
-			<button type="button" class="button_menu" onclick="openRecentProject()"><span class="text_button_menu">Open Recent Project</span></button><br>
+			<button type="button" class="button_menu" onclick="showRecentProjectDialog()"><span class="text_button_menu">Open Recent Project</span></button><br>
 		</div>
 	</div>
 
@@ -43,7 +52,7 @@
 			<button type="button" class="button_open" onclick="openfileDialog('/')">
 				<span class="text_button_action">Browse</span>
 			</button>
-			<button type="button" class="button_cancel" onclick="closeRecentProject()">
+			<button type="button" class="button_cancel" onclick="closeRecentProjectDialog()">
 				<span class="text_button_action">Cancel</span>
 			</button>
 		</div>
