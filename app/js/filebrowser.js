@@ -137,7 +137,6 @@ function showRenameBox(filelabel, fpath, ftp) {
 	//console.log("left:"+bounds.left);
 	//console.log("top:"+bounds.top);
 	background.style.visibility = "visible";
-	background.addEventListener('click', closeRenameBox);
 	
 	function renamefunc(e) {
 		var keyCode,
@@ -153,8 +152,6 @@ function showRenameBox(filelabel, fpath, ftp) {
 		if (keyCode == 13) { // Enter
 			if (document.getElementById('rename_box_container').style.display === "block") {
 				if (fpath !== ftp.GetDir()+newname) {
-					console.log("src:"+ftp.GetDir()+getFilename(fpath));
-					console.log("dst:"+ftp.GetDir()+newname);
 					withConfirm(ftp, ftp.GetDir()+newname, ftp.GetDir()+newname, function(src, dest) {
 						ftp.MoveFile(ftp.GetDir()+getFilename(fpath), dest);
 					});
@@ -167,6 +164,10 @@ function showRenameBox(filelabel, fpath, ftp) {
 			renameBox.removeEventListener('keydown', renamefunc);
 		}
 	}
+	background.addEventListener('click', function() {
+		closeRenameBox();
+		renameBox.removeEventListener('keydown', renamefunc);
+	});
 	// connect rename event
 	renameBox.addEventListener('keydown', renamefunc);
 }
@@ -190,18 +191,14 @@ function makeNode(name,type,filepath, rftp, argftp,side, another_rftp)
 	filelabel.innerHTML = name;
 	newbtn.appendChild(filelabel);
 	
+	console.log("makenode:"+filepath);
 	function renameboxfunc(e) {
-		console.log("renameboxfunc");
+		console.log("renameboxfunc:" + filepath);
 		closeRenameBox();
-		if (side == "left") {
-			console.log("left:" + filepath);
-			showRenameBox(filelabel, filepath, rftp);
-		} else {
-			console.log("right:" + filepath);
-			showRenameBox(filelabel, filepath, rftp);
-		}
+		showRenameBox(filelabel, filepath, rftp);
 		e.stopPropagation();
 	}
+	filelabel.removeEventListener('click', renameboxfunc);
 	filelabel.addEventListener('click', renameboxfunc);
 	
 	var dustbtn = document.createElement('button');
