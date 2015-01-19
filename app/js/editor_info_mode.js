@@ -12,6 +12,8 @@ socket.on('updateInformation', function(data) {
 		elemKdb,
 		i;
 	//console.log(info);
+	$('info_text_area').style.display = "block";
+	$('info_opened_text_area').style.display = "none";
 	if ("hpcpf" in info) {
 		elem = info.hpcpf;
 		if ("project_info" in elem) {
@@ -57,13 +59,22 @@ socket.on('updateInformation', function(data) {
 
 socket.on('openFile', function (data) {
 	"use strict";
-	$('info_text_area').innerHTML = "<pre>"+data+"</pre>";
+	$('info_back_button_area').style.display = "block";
+	$('info_text_area').style.display = "none";
+	$('info_opened_text_area').style.display = "block";
+	$('info_opened_text_area').innerHTML = "<pre>"+data+"</pre>";
 });
 
 function showFile(file) {
 	"use strict";
 	console.log("showFile:" + file);
 	socket.emit('reqOpenFile', file);
+}
+
+function backToInfo() {
+	"use strict";
+	$('info_back_button_area').style.display = "none";
+	socket.emit('reqUpdateInformation');
 }
 
 function createInfoLink(str, isURL, isCase) {

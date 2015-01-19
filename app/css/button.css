@@ -253,6 +253,21 @@
 	background-image:url("../image/button_rect_press.png");
 }
 
+/* button - back */
+.button_back {
+	width:100px;
+	height:50px;
+	position:relative;
+	top:0px;
+	background-image:url("../image/button_rect.png");
+	font-size:18px;
+	font-weight:600;
+}
+
+.button_back:active{
+	background-image:url("../image/button_rect_press.png");
+}
+
 /* button - new */
 #button_new{
 	width:100px;

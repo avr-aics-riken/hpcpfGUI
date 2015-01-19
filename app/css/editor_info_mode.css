@@ -31,6 +31,15 @@
 	height:auto;
 }
 
+.info_back_button_area {
+	position:relative;
+	overflow:hidden;
+	float: left;
+	width:80%;
+	height:auto;
+	display:none;
+}
+
 .info_title {
 	position:relative;
 	margin-left:50px;
