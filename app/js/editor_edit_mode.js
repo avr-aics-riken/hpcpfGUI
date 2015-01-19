@@ -213,18 +213,6 @@ socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 	ChangeEditor(false);
 });
 
-socket.on('stdout', function (data) {
-	var s = $('stdout')
-	s.innerHTML += data.toString();
-	s.scrollTop = s.scrollHeight;
-});
-
-socket.on('stderr', function (data) {
-	var s = $('stdout')
-	s.innerHTML += data.toString();
-	s.scrollTop = s.scrollHeight;
-});
-
 socket.on('updatefilelist', function(jsonlist){
 	var ls = $('filelist');
 	console.log("update filelist");
@@ -269,14 +257,6 @@ socket.on('fileopen', function(data) {
 	fileopen(data);
 });
 
-/*
-function clearOutput() {
-	//$('stderr').innerHTML = '';
-	$('stdout').innerHTML = '';
-}
-*/
-
-/*
 function procRun() {
 	clearOutput();
 	//showOutputArea(true);
@@ -289,32 +269,12 @@ function procRun() {
 		return;
 	socket.emit('run',{file:openedfile});
 }
-*/
-
-/*
 function procStop() {
 	console.log("STOP");
 	socket.emit('stop');
 }
-*/
 
 function getFileList()
 {
 	socket.emit('reqFileList');
-}
-
-function getWorkingPath() {
-	"use strict";
-	var addrs = location.href.split("?");
-	if (addrs) {
-		if (addrs.length>1) {
-			var argstr = addrs[1];
-			var args = argstr.split("&");
-			console.log(args.length);
-			if (args.length > 0) {
-				return args[0];
-			}
-		}
-	}
-	return "";
 }

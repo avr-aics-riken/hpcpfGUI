@@ -27,7 +27,7 @@ try {
 	if (data.port) { portNumber        = data.port; }
 	for (var name in data) {
 		if (name === "project_base") {
-			projectBasePath = data.project_base;
+			projectBasePath = path.normalize(data.project_base);
 			if (util.isRelative(projectBasePath)) {
 				projectBasePath = path.resolve(path.join(__dirname, ".."), projectBasePath);
 			}

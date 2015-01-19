@@ -112,6 +112,65 @@ function addItemDropEvents(tar, dropcallback){
 	
 }
 
+function closeRenameBox() {
+	var container = document.getElementById('rename_box_container'),
+		renameBox = document.getElementById('rename_box'),
+		background = document.getElementById('popup_background');
+	container.style.display = "none";
+	renameBox.value = "";
+	background.style.visibility = "hidden";
+	background.removeEventListener(closeRenameBox);
+}
+
+function showRenameBox(filelabel, fpath, ftp) {
+	var container = document.getElementById('rename_box_container'),
+		renameBox = document.getElementById('rename_box'),
+		bounds = filelabel.getBoundingClientRect(),
+		background = document.getElementById('popup_background');
+	container.style.display = "block";
+	container.style.position = "absolute";
+	container.style.left = ""+bounds.left+"px";
+	container.style.top  = ""+(bounds.top+20)+"px";
+	container.style.zIndex = 20;
+	renameBox.value = filelabel.innerHTML;
+	renameBox.focus();
+	//console.log("left:"+bounds.left);
+	//console.log("top:"+bounds.top);
+	background.style.visibility = "visible";
+	background.addEventListener('click', closeRenameBox);
+	
+	function renamefunc(e) {
+		var keyCode,
+			newname = renameBox.value;
+		if (e) {
+			keyCode = e.keyCode;
+			e.stopPropagation();
+		} else {
+			keyCode = window.event.keyCode;
+			window.event.returnValue = false;
+			window.event.cancelBubble = true;
+		}
+		if (keyCode == 13) { // Enter
+			if (document.getElementById('rename_box_container').style.display === "block") {
+				if (fpath !== ftp.GetDir()+newname) {
+					console.log("src:"+ftp.GetDir()+getFilename(fpath));
+					console.log("dst:"+ftp.GetDir()+newname);
+					withConfirm(ftp, ftp.GetDir()+newname, ftp.GetDir()+newname, function(src, dest) {
+						ftp.MoveFile(ftp.GetDir()+getFilename(fpath), dest);
+					});
+				}
+				closeRenameBox();
+				renameBox.removeEventListener('keydown', renamefunc);
+			}
+		} else if (keyCode == 27) { // Esc
+			closeRenameBox();
+			renameBox.removeEventListener('keydown', renamefunc);
+		}
+	}
+	// connect rename event
+	renameBox.addEventListener('keydown', renamefunc);
+}
+
 function makeNode(name,type,filepath, rftp, argftp,side, another_rftp)
 {
 //	<div class="fileitem" id="dir2" draggable="true" ><div class="dir" ></div><p class="filelabel">dir1</p><button type="button" class="dustbox"></button></div>
@@ -130,6 +189,21 @@ function makeNode(name,type,filepath, rftp, argftp,side, another_rftp)
 	filelabel.setAttribute('class', "filelabel");
 	filelabel.innerHTML = name;
 	newbtn.appendChild(filelabel);
+	
+	function renameboxfunc(e) {
+		console.log("renameboxfunc");
+		closeRenameBox();
+		if (side == "left") {
+			console.log("left:" + filepath);
+			showRenameBox(filelabel, filepath, rftp);
+		} else {
+			console.log("right:" + filepath);
+			showRenameBox(filelabel, filepath, rftp);
+		}
+		e.stopPropagation();
+	}
+	filelabel.addEventListener('click', renameboxfunc);
+	
 	var dustbtn = document.createElement('button');
 	dustbtn.setAttribute('class','dustbox');
 	dustbtn.setAttribute('type','button');
@@ -429,7 +503,7 @@ function startFileList(nameA,nameB)
 			addItemDropEvents(itm, menus[i].func);
 		}
 	}
-	
+
 	if (newConnectA){
 		function showmsgA(msg){
 			console.log('ConnectionA>'+msg);

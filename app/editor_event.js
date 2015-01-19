@@ -102,6 +102,23 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			socket.emit('fileopen', data.substr(2));
 		}
 	});
+	
+	socket.on('reqOpenFile', function (relativePath) {
+		var srcdir = sesstionTable[socket.id].dir,
+			filepath = path.join(srcdir, path.normalize(relativePath)),
+			file;
+		try {
+			console.log('reqOpenFile:'+filepath);
+			if (fs.existsSync(filepath) && fs.statSync(filepath).isFile()) {
+				file = fs.readFileSync(filepath).toString();
+				//console.log(file);
+				socket.emit('openFile', file);
+			}
+		} catch(e) {
+			console.log(e);
+		}
+	});
+	
 	socket.on('reqFileOpen', function(data) {
 		var srcdir = sesstionTable[socket.id].dir;
 		var ext = util.getExtention(data);

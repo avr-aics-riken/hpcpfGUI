@@ -11,7 +11,10 @@ socket.on('connect', function () {
 			var args = argstr.split("&");
 			console.log(args.length);
 			if (args.length > 0) {
-				setWorkingPath(args[0]);
+				args = args[0].split("#");
+				if (args.length > 0) {
+					setWorkingPath(args[0]);
+				}
 			}
 		}
 	}
@@ -53,6 +56,7 @@ function showEditMode() {
 function executeProject() {
 	"use strict";
 	showExeMode();
+	runWorkflow();
 }
 
 function setProjectName(name) {
