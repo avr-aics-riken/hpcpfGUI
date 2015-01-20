@@ -1,6 +1,31 @@
 var socket = io.connect(),
 	filedialog = new FileDialog('homedlg', true, true);
 
+// ------ app launch ----------------------------------------------------
+socket.on('updateLaunchButtons', function(appnames) {
+	var paneleft = document.getElementById("button_menus");
+	var toolarea = document.createElement("div");
+	toolarea.setAttribute('class', 'toolarea');
+	var line = document.createElement("div");
+	line.setAttribute('class', 'launcherline_home');
+	toolarea.appendChild(line);
+
+	for (var i in appnames) {
+		var name = appnames[i];
+		var button = document.createElement("button");
+		button.setAttribute('type', 'button');
+		button.setAttribute('class', 'button_tool');
+		button.setAttribute('onclick', 'launchApp("' +name+ '")');
+		button.innerHTML = '<span class="text_button_tool">' +name+ '</span>';
+		toolarea.appendChild(button);
+	}
+	paneleft.appendChild(toolarea);
+});
+function updateLaunchButtons() {
+	socket.emit('reqUpdateLaunchButtons','');
+}
+// ---------------------------------------------------------------------
+
 socket.on('connect', function () { // 2
 	"use strict";
 	console.log('connected');
@@ -8,6 +33,9 @@ socket.on('connect', function () { // 2
 		console.log(data);
 	});
 	filedialog.registerSocketEvent(socket);
+	
+	// no use in current version
+	// updateLaunchButtons();
 });
 
 //-------------

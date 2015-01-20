@@ -189,6 +189,16 @@ function registerPTLEvent(socket) {
 			fs.writeFileSync(historyFile, data, 'utf8');
 		});
 	});
+	
+	// no use function on home
+	socket.on('reqUpdateLaunchButtons', function() {
+		var appnames = [];
+		var name;
+		for (name in appCommands) {
+			appnames.push(name);
+		}
+		socket.emit('updateLaunchButtons', appnames);
+	});
 }
 
 
