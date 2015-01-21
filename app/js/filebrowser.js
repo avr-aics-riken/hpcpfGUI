@@ -152,7 +152,7 @@ function showRenameBox(filelabel, fpath, ftp) {
 		if (keyCode == 13) { // Enter
 			if (document.getElementById('rename_box_container').style.display === "block") {
 				if (fpath !== ftp.GetDir()+newname) {
-					withConfirm(ftp, ftp.GetDir()+newname, ftp.GetDir()+newname, function(src, dest) {
+					withExistWarning(ftp, ftp.GetDir()+newname, ftp.GetDir()+newname, function(src, dest) {
 						ftp.MoveFile(ftp.GetDir()+getFilename(fpath), dest);
 					});
 				}
@@ -316,6 +316,20 @@ function withConfirm(target, src, dest, doFunction) {
 					doFunction(src, dest);
 				}
 				hiddenConfirm();
+			});
+		} else {
+			doFunction(src, dest);
+		}
+	});
+}
+
+function withExistWarning(target, src, dest, doFunction) {
+	"use strict";
+	target.ExistsFile(target.GetDir(), src, function(exists) {
+		// if file is existed, show confirm dialog
+		if (exists) {
+			showExistWarning(function() {
+				hiddenExistWarning();
 			});
 		} else {
 			doFunction(src, dest);
@@ -649,6 +663,26 @@ function showConfirm(callback) {
 	}
 	save.addEventListener("click", savefunc, true);
 	cancel.addEventListener("click", cancelfunc, true);
+}
+
+/// hidden exist warning dialog
+function hiddenExistWarning(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("exist_warning_dialog").style.visibility = "hidden";
+}
+
+/// show same file/directory exists dialog
+function showExistWarning(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("exist_warning_dialog").style.visibility = "visible";
+
+	function okfunc() {
+		callback();
+		save.removeEventListener("click", okfunc, true);
+	}
+	ok.addEventListener("click", okfunc, true);
 }
 
 

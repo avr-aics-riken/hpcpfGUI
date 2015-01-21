@@ -318,6 +318,18 @@
 	background-color:#444444;
 }
 
+#exist_warning_dialog {
+	top: 50%;
+	left: 50%;
+	width: 400px;
+	height: 200px;
+	margin-top:-100px;
+	margin-left:-200px;
+	position: fixed;
+	visibility: hidden;
+	background-color:#444444;
+}
+
 #confirm_message {
 	transform: translateY(50%);
 	font-family:sans-serif;
