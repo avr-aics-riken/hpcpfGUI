@@ -77,12 +77,14 @@
 	background-image:url("../image/icon_dir.png");
 }
 
+/*
 .file{
 	width:65px;
 	height:65px;
 	display:inline-block;
 	background-image:url("../image/icon_file.png");
 }
+*/
 
 .dustbox{
 	margin-right:0px;

@@ -213,6 +213,7 @@ socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 	ChangeEditor(false);
 });
 
+/*
 socket.on('updatefilelist', function(jsonlist){
 	var ls = $('filelist');
 	console.log("update filelist");
@@ -220,10 +221,10 @@ socket.on('updatefilelist', function(jsonlist){
 	var list = JSON.parse(jsonlist);
 	for(var i in list) {
 		//console.log(list[i]);
-		/*var newbtn = document.createElement('button');
-		newbtn.setAttribute('class','btn btn-info btn-wide btnsize');
-		newbtn.setAttribute('onclick','fileopen("'+list[i]+'")');
-		newbtn.innerHTML = list[i];*/
+		//var newbtn = document.createElement('button');
+		//newbtn.setAttribute('class','btn btn-info btn-wide btnsize');
+		//newbtn.setAttribute('onclick','fileopen("'+list[i]+'")');
+		//newbtn.innerHTML = list[i];
 		
 		var newbtn = document.createElement('div');
 		newbtn.setAttribute('class', "fileitem");
@@ -244,13 +245,14 @@ socket.on('updatefilelist', function(jsonlist){
 			newbtn.setAttribute('onclick','fileselect("'+list[i].name+'")');
 		else // dir
 			newbtn.setAttribute('onclick','diropen("'+list[i].path+'")');
-		/*<div class="fileitem" id="dir2" draggable="false"><div class="dir"></div><p class="filelabel_short">dir2</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1aaaaaaaaaaaaaaa</p></div>*/
+		//<div class="fileitem" id="dir2" draggable="false"><div class="dir"></div><p class="filelabel_short">dir2</p></div>
+		//<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1aaaaaaaaaaaaaaa</p></div>
 		
 		ls.appendChild (newbtn);
 		ls.appendChild(document.createElement('br'));
 	}
 });
+*/
 
 socket.on('fileopen', function(data) {
 	console.log("fileopen : " + data);

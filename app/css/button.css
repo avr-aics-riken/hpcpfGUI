@@ -253,6 +253,22 @@
 	background-image:url("../image/button_rect_press.png");
 }
 
+/* button - browse */
+.button_browse {
+	width:100px;
+	height:auto;
+	position:relative;
+	top:0px;
+	background-image:url("../image/button_rect.png");
+	font-size:18px;
+	font-weight:600;
+	z-index:30;
+}
+
+.button_browse:active{
+	background-image:url("../image/button_rect_press.png");
+}
+
 /* button - back */
 .button_back {
 	width:100px;

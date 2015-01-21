@@ -1,0 +1,162 @@
+
+/*
+
+html,body{
+  margin:0;
+  padding:0;
+  height: 100%;
+}
+
+body {
+  font-family: source-sans-pro, sans-serif;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  color: #F0F1F1;
+  background: #4A4D4E;
+}
+*/
+
+.settingitem {*/
+	display: flex;
+	display: -webkit-flex;
+	margin-top:5px;
+	margin-bottom:5px;
+	flex-direction: row;
+}
+.itemlabel {
+	width: 80px;
+}
+
+#dirpath {
+	margin-right:10px;
+	width:90%;
+	z-index:30;
+}
+
+#filename {
+	width: 220px;
+}
+
+#soundname {
+	width: 320px;
+}
+
+#playbtn {
+	width: 100px;
+	height:30px;
+}
+
+#playinfo {
+	margin: 10px;
+}
+
+#errormsg {
+	color: #F00;
+	margin: 5px;
+}
+#hintmsg {
+	color: #CCC;
+	font-size: 0.5em;
+	margin: 5px;
+}
+
+#filelist {
+	margin: 0px;
+	position:absolute;
+	overflow:scroll;
+	border-style:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#72ca2a;
+	background-color:#4d4d4d;
+
+	top:290px;
+	left:10px;
+	width:350px;
+	bottom:10px;
+}
+
+.fileitem{
+	display: flex;
+	display: -webkit-flex;
+	flex-direction: row;
+}
+
+.filelabel{
+	margin: 5px 0px 0px 10px;
+}
+
+.nodesizer{
+	margin: 5px 0px 0px 10px;
+}
+
+.file {
+	margin: 8px 0px 0px 10px;
+	font-size: 12px;
+	border-top: 0.2em solid #cbcbcb;
+	position: relative;
+	width: 1em;
+	height: 2em;
+	border-right: 0.2em solid #cbcbcb;
+	border-bottom: 0.2em solid #cbcbcb;
+}
+.file::before {
+	bottom: -0.2em;
+	left: -0.5em;
+	position: absolute;
+	width: 0.5em;
+	height: 1.72em;
+	border-left: 0.2em solid #cbcbcb;
+	border-bottom: 0.2em solid #cbcbcb;
+	content: "";
+}
+.file::after {
+	top: -0.2em;
+	left: -0.50em;
+	position: absolute;
+	border-right: 0.5em solid #cbcbcb;
+	border-top: 0.5em solid transparent;
+	content: "";
+}
+
+.dir {
+	margin: 8px 0px 0px 10px;
+	font-size: 12px;
+	width: 2em;
+	height: 1.5em;
+	background: #cbcbcb;
+	border-radius: 0.2em;
+	position: relative;
+}
+.dir::before {
+	position:absolute;
+	content: "";
+	bottom: 1.0em;
+	right: 1.1em;
+	width:0.8em;
+	height:0.7em;
+	border-radius: 0.2em;
+	background: #cbcbcb;
+}
+
+.arrowleft {
+	margin: 10px 0px 0px 20px;
+	background: #cbcbcb;
+	font-size: 8px;
+	position: relative;
+	width: 1em;
+	height: 1em;
+	margin-right: -0.7em;
+}
+.arrowleft::before {
+	bottom: -0.66666666em;
+	right: 0.8em;
+	position: absolute;
+	border-right: 1.2em solid #cbcbcb;
+	border-top: 1.2em solid rgba(44, 44, 44, 0);
+	border-bottom: 1.2em solid rgba(44, 44, 44, 0);
+	content: "";
+}

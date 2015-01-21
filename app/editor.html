@@ -11,7 +11,8 @@
 	<link href="css/editor_info_mode.css" rel="stylesheet"/>
 	<link href="css/editor_exe_mode.css" rel="stylesheet"/>
 	<link href="css/editor_edit_mode.css" rel="stylesheet"/>
-	<link href="css/filebrowser.css" rel="stylesheet"/>
+	<!--link href="css/filebrowser.css" rel="stylesheet"/-->
+	<link href="css/backfire.css" rel="stylesheet"/>
 </head>
 <body>
 	<div class="header">
@@ -120,22 +121,36 @@
 		<div class="execute_button_area">
 			<button class="button_execute" onclick="executeProject();">Execute</button>
 		</div>
-		<div id="menubtn">
+		<!--div id="menubtn">
 			<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
 			<button class="button_editor" id="button_save_editor" onclick="saveFile();">SAVE<br>(CTRL+S)</button>
 			<button class="button_editor" id="button_stop" onclick="procStop();">STOP<br>(CTRL+Q)</button>
 			<button class="button_editor"  onclick="modeChange(this.value);" value="vim" id="button_editmode">Vim Mode</button>
-		</div>
-		<nav class="navbar navbar-default" id="editorbar">
+		</div-->
+		<!--nav class="navbar navbar-default" id="editorbar">
 			<div class="filepath" id="filename">-</a>
 			<label class="checkbox" for="checkbox1">
-		</nav>
+		</nav-->
 		<div class="change_mode_area">
 			<button class="button_change_mode" onclick="showInfoMode();">Info Mode</button>
 			<button class="button_change_mode" onclick="showExeMode();">EXE Mode</button>
 			<button class="button_change_mode" disabled onclick="showEditMode();">Edit Mode</button>
 		</div>
+		
+		<div id="playinfo">
+			<!--div class="itemlabel">Directory:</div-->
+			<div class="settingitem">
+				<input type="text" id="dirpath" placeholder="input file">
+				<button class="button_browse" id="openbtn">Browse</button>
+			</div>
+			<div class="settingitem">
+				<input type="text" id="filename" placeholder="input name" value="image%06d.jpg">
+				<!--div class="itemlabel">File:</div-->
+				<!--div id="hintmsg">連番ファイルでimage000001.jpgから始まる場合は "image%06d.jpg"と設定する</div-->
+			</div>
+		</div>
 		<div id="filelist"></div>
+
 		<div>
 			<pre id="editor"></pre>
 		</div>
@@ -148,14 +163,14 @@
 		<div id="launchButtonArea">
 			<span id="launchButtonView"/>
 		</div>
-		<div id="shownewfilearea">
+		<!--div id="shownewfilearea">
 			<button id="button_newfile" onclick="showNewFileArea();">New File</button>
-		</div>
-		<div id="newfileArea">
-			New file!<br><!--stdout:<br>-->
+		</div-->
+		<!--div id="newfileArea">
+			New file!<br>
 			<input type="text" id="newfilename" class="input-newfile" placeholder="file name"/>
 			<button id="button_new" onclick="newFile(newfilename.value)"></button>
-		</div>
+		</div-->
 	</span>
 	<!------------------------------------------------------------------------------>
 
@@ -165,5 +180,7 @@
 	<script type="text/javascript" src="js/editor_info_mode.js"></script>
 	<script type="text/javascript" src="js/editor_exe_mode.js"></script>
 	<script type="text/javascript" src="js/editor_edit_mode.js"></script>
+	<script type="text/javascript" src="js/backfire_filedialog.js"></script>
+	<script type="text/javascript" src="js/backfire_client.js"></script>
 </body>
 </html>

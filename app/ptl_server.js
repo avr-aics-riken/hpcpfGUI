@@ -8,6 +8,7 @@ var exec = require('child_process').exec,
 	editorevent = require('./editor_event'),
 	remotehostevent = require('./remotehost_event'),
 	filedialog = require('./js/filedialog'),
+	backfire_filedialog = require('./js/backfire_filedialog'),
 	RemoteFTP = require('./js/RemoteFTP'),
 	
 	confFile = path.resolve(__dirname, '../conf/hpcpfGUI.conf'),
@@ -15,7 +16,6 @@ var exec = require('child_process').exec,
 	projectBasePath = "",
 	appCommands = {},   // app name to launch path
 	appExtensions = {}; // app name to extension list
-	
 
 try {
 	console.log('confFile = ' + confFile);
@@ -126,6 +126,7 @@ function registerPTLEvent(socket) {
 	
 	filedialog.SocketEvent(socket, 'homedlg');
 	filedialog.SocketEvent(socket, 'remotedlg');
+	backfire_filedialog.SocketEvent(socket, 'opendlg');
 
 	var historyFile = "../conf/project_history.json";
 	
