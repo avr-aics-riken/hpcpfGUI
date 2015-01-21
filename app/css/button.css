@@ -18,6 +18,19 @@
 	background-repeat:no-repeat;
 }
 
+.button_menu_bottom {
+	width:165px;
+	height:101px;
+	margin-top:20px;
+	margin-left:10px;
+	text-align:center;
+	background-image:url("../image/button_bg_action_cancel.png");
+}
+.button_menu_bottom:active{
+	background-image:url("../image/button_bg_action_cancel_press.png");
+	background-repeat:no-repeat;
+}
+
 /* button - tool */
 .button_tool{
 	width:118px;
@@ -255,7 +268,7 @@
 
 /* button - browse */
 .button_browse {
-	width:100px;
+	width:80px;
 	height:auto;
 	position:relative;
 	top:0px;
@@ -271,7 +284,7 @@
 
 /* button - back */
 .button_back {
-	width:100px;
+	width:80px;
 	height:50px;
 	position:relative;
 	top:0px;
@@ -288,9 +301,9 @@
 #button_new{
 	width:100px;
 	height:73px;
-	position:absolute;
-	top:20px;
-	left:240px;
+	position:relative;
+	top:0px;
+	left:0px;
 	background-image:url("../image/button_bg_action_upper_new.png");
 }
 
@@ -392,6 +405,16 @@
 	top:-10px;
 	left:18px;
     color:#72ca2a;
+}
+
+.text_button_menu_bottom {
+    font-size:18px;
+    font-weight:600;
+	font-family:sans-serif;
+	position:relative;
+	top:-14px;
+	left:0px;
+    color:#4d4d4d;
 }
 
 .text_button_tool{
