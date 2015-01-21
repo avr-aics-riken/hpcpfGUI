@@ -60,6 +60,7 @@ function executeProject() {
 }
 
 function setProjectName(name) {
+	"use strict";
 	$('info_project_title_text').innerHTML = name;
 	$('exe_project_title_text').innerHTML = name;
 }

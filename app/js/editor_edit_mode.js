@@ -150,7 +150,8 @@ function showOutputArea(forceshow){
 
 socket.on('connect', function() {
 	"use strict";
-	getFileList();
+	setupSeparator();
+	//getFileList();
 });
 
 socket.on('showfile', function (data) {
@@ -279,4 +280,32 @@ function procStop() {
 function getFileList()
 {
 	socket.emit('reqFileList');
+}
+
+function setupSeparator() {
+	var separator = document.getElementById('separator'),
+		dragging = false;
+	separator.onmousedown = function(e) {
+		dragging = true;
+	};
+	document.onmouseup = function(e) {
+		dragging = false;
+	};
+	document.onmousemove = function(e) {
+		var filelist,
+			editor,
+			left = window.pageXOffset || document.documentElement.scrollLeft,
+			pos;
+		if (dragging) {
+			filelist = document.getElementById('filelist');
+			editor = document.getElementById('editor');
+			console.log(left + e.clientX);
+			pos = left + e.clientX;
+			if (pos > 50 && pos < (document.documentElement.clientWidth  - 50)) {
+				separator.style.left = pos + 'px';
+				filelist.style.width = (pos - 18) + 'px';
+				editor.style.left = (pos + 8) + 'px';
+			}
+		}
+	};
 }
