@@ -199,7 +199,9 @@ if (typeof window === 'undefined') { // Node.js
 					this.makeFilelist(ls, listitem.child, level + 1);
 				}
 			} else if (type === "file") {
-				newbtn.setAttribute('onclick', 'clickFile("' + path + '")');
+				newbtn.addEventListener('click', (function (fileDialog) {
+					clickFile(fileDialog, path);
+				})(this));
 				ls.appendChild(newbtn);
 			}
 		};

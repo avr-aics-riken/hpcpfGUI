@@ -151,6 +151,7 @@ function showOutputArea(forceshow){
 socket.on('connect', function() {
 	"use strict";
 	setupSeparator();
+	setupFileDialog();
 	//getFileList();
 });
 
@@ -308,4 +309,38 @@ function setupSeparator() {
 			}
 		}
 	};
+}
+
+function setupFileDialog() {
+	"use strict";
+	var openbtn = document.getElementById('openbtn'),
+		errormsg = document.getElementById('errormsg');
+	
+	var fd = new FileDialog('opendlg', document.getElementById("filelist"), true, false);
+	fd.registerSocketEvent(socket);
+	
+	socket.on('connect', function () {
+		console.log('connected');
+		socket.on('event', function (data) {
+			console.log(data);
+		});
+		socket.on('showError', function (data) {
+			//console.log('Err:', data)
+			errormsg.innerHTML = data;
+		});
+	});
+
+	openbtn.onclick = function () {
+		fd.FileList('/Users/Public/');
+	};
+}
+
+function clickDir(fd, path) {
+	document.getElementById('dirpath').value = path;
+	fd.FileList(path);
+}
+
+function clickFile(fd, path) {
+	var fl = path.split("/");
+	document.getElementById('filename').value = fl[fl.length - 1];
 }
