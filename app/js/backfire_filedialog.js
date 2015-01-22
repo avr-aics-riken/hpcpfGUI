@@ -3,12 +3,16 @@
 
 if (typeof window === 'undefined') { // Node.js
 	var fs = require('fs'),
+		path = require('path'),
 		Filedialog = {
 			SocketEvent: function (socket, name) {
 				'use strict';
+				var workpath = "";
+				
 				function getFiles(dir, list) {
 					var files = fs.readdirSync(dir),
 						name,
+						relativePath,
 						i,
 						dom,
 						childlist;
@@ -21,11 +25,12 @@ if (typeof window === 'undefined') { // Node.js
 					for (i in files) {
 						if (files.hasOwnProperty(i)) {
 							name = dir + files[i];
+							relativePath = path.relative(workpath, name).split(path.sep).join('/');
 							try {
 								if (fs.statSync(name).isDirectory()) {
 									//getFiles(name,list);
 									//console.log(name);
-									dom = {"name": files[i], "type": "dir", "path": name, "extract": false, "child": null};
+									dom = {"name": files[i], "type": "dir", "path": relativePath, "extract": false, "child": null};
 									list.push(dom);
 
 									// recursive dir
@@ -38,7 +43,7 @@ if (typeof window === 'undefined') { // Node.js
 									}
 								} else if (files[i].substring(0, 1) !== '.') {
 									//console.log(name);
-									list.push({"name": files[i], "type": "file", "path": name});
+									list.push({"name": files[i], "type": "file", "path": relativePath});
 								}
 							} catch (err) {
 								console.log("not found dir:" + dir, err);
@@ -46,10 +51,17 @@ if (typeof window === 'undefined') { // Node.js
 						}
 					}
 				}
-				function updateFileList(path) {
-					var list = [];
+				function updateFileList(relativePath) {
+					var list = [],
+						absolutePath;
+					if (workpath.length == 0) {
+						console.log("project path error");
+						return;
+					}
 					try {
-						getFiles(path, list);
+						absolutePath = path.join(workpath, relativePath);
+						console.log("updateFileList:" + absolutePath);
+						getFiles(absolutePath, list);
 						socket.emit(name + ':FileDialogUpdateList', JSON.stringify(list));
 					} catch (e) {
 						console.log("Failed getfile");
@@ -59,6 +71,9 @@ if (typeof window === 'undefined') { // Node.js
 				socket.on(name + ':FileDialogReqFileList', function (data) {
 					console.log('PATH=' + data);
 					updateFileList(data);
+				});
+				socket.on('setWorkingPath', function(data){
+					workpath = data.path;
 				});
 			}
 		};
@@ -98,10 +113,10 @@ if (typeof window === 'undefined') { // Node.js
 			socket.on(this.name + ':FileDialogReqExtractDir', extractFunc(this));
 		};
 
-		FileDialog.prototype.FileList = function (path) {
+		FileDialog.prototype.FileList = function (relativePath) {
 			this.tarDir = path;
-			console.log("Filelist:" + path);
-			this.socket.emit(this.name + ":FileDialogReqFileList", path);
+			console.log("Filelist:" + relativePath);
+			this.socket.emit(this.name + ":FileDialogReqFileList", relativePath);
 		};
 
 		function getUpDir(path) { // fix me beautiful
@@ -153,7 +168,7 @@ if (typeof window === 'undefined') { // Node.js
 		
 		FileDialog.prototype.makeNode = function (ls, listitem, level) {
 			var name    = listitem.name,
-				path    = listitem.path,
+				relativePath    = listitem.path,
 				type    = listitem.type,
 				extract = listitem.extract,
 				newbtn    = document.createElement('div'),
@@ -179,8 +194,8 @@ if (typeof window === 'undefined') { // Node.js
 			newbtn.appendChild(filelabel);
 			if (type === "dir") {
 				//newbtn.setAttribute('onclick', 'clickDir("' + path + '")');
-				newbtn.addEventListener('click', (function (path, listitem, fileDialog) { return function () {
-					console.log('Extract Dir:' + path);
+				newbtn.addEventListener('click', (function (relativePath, listitem, fileDialog) { return function () {
+					console.log('Extract Dir:' + relativePath);
 					listitem.extract = !listitem.extract;
 					
 					/* TODO
@@ -192,15 +207,16 @@ if (typeof window === 'undefined') { // Node.js
 					*/
 					
 					fileDialog.refleshFileList();
-				}; }(path, listitem, this)));
+				}; }(relativePath, listitem, this)));
 				ls.appendChild(newbtn);
 				
 				if (extract) {
 					this.makeFilelist(ls, listitem.child, level + 1);
 				}
 			} else if (type === "file") {
-				newbtn.addEventListener('click', (function (fileDialog) {
-					clickFile(fileDialog, path);
+				newbtn.addEventListener('click', (function (fileDialog) { return function() {
+						clickFile(fileDialog, relativePath);
+					}
 				})(this));
 				ls.appendChild(newbtn);
 			}

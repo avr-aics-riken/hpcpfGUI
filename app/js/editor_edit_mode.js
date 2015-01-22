@@ -77,13 +77,13 @@ function fileopen(filename, forceEdit){
 	console.log("Open:"+filename);
 	editor.setValue("");// clear
 	ChangeEditor(false);
-	socket.emit('reqFileOpen',"./"+filename);
+	socket.emit('reqFileOpen', filename);
 }
 
-function fileselect(filename) {
+function fileselect(path) {
 	"use strict";
-	console.log("fileselect : " + filename);
-	socket.emit('reqSelectFile', "./"+filename);
+	console.log("fileselect : " + path);
+	socket.emit('reqSelectFile', path);
 }
 
 function diropen(dirname)
@@ -107,27 +107,31 @@ function saveFile(){
 	if (!edited)
 		return;
 	console.log("Save:"+openedfile);
-	socket.emit('reqFileSave',{file:"./"+openedfile, data:editor.getValue()});
+	socket.emit('reqFileSave',{file: openedfile, data:editor.getValue()});
 	ChangeEditor(false);
 }
 
-function newFile(fname){
+function newFile(fd, fname){
+	console.log("newfile:" + fname);
 	if (fname == "")
 		return;
 	console.log(fname);
 	$('newfilename').value = ''
-	socket.emit('reqFileSave',{file:"./"+fname, data:''});
-	getFileList();
+	
+	socket.emit('reqFileSave',{file: fname, data:''});
+	
+	fd.FileList(fname);
+	
+	//getFileList();
 }
 
-var sfilearea = false;
-
 function showNewFileArea(){
-	if (!sfilearea)
-		$('newfileArea').className = 'fadeIn';
-	else
+	console.log("showNewFileArea:" + $('newfileArea').className);
+	if ($('newfileArea').className === 'fadeIn') {
 		$('newfileArea').className = 'fadeOut';
-	sfilearea = !sfilearea;
+	} else {
+		$('newfileArea').className = 'fadeIn';
+	}
 }
 
 function launchApp(name, file) {
@@ -200,7 +204,9 @@ socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 		button = document.createElement("button");
 		button.setAttribute('type', 'button');
 		button.setAttribute('class', 'button_editor_launchapp');
-		button.setAttribute('onclick', 'launchApp("' +name+ '","' + dir+filename.substr(2) +'")');
+		button.onclick = function() {
+			launchApp(name, dir+filename);
+		}
 		button.innerHTML = "<span class='text_button_launchapp'>Open " + name + "</span>";
 		apparea.appendChild(button);
 	}
@@ -208,10 +214,12 @@ socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 	button = document.createElement("button");
 	button.setAttribute('type', 'button');
 	button.setAttribute('class', 'button_editor_launchapp');
-	button.setAttribute('onclick', 'fileopen("'+filename.substr(2)+'", true);');
+	button.onclick = function() {
+		fileopen(filename, true);
+	}
 	button.innerHTML = "<span class='text_button_launchapp'>Edit text</span>";
 	apparea.appendChild(button);
-	openedfile = filename.substr(2);
+	openedfile = filename;
 	ChangeEditor(false);
 });
 
@@ -313,8 +321,7 @@ function setupSeparator() {
 
 function setupFileDialog() {
 	"use strict";
-	var openbtn = document.getElementById('openbtn'),
-		errormsg = document.getElementById('errormsg');
+	var errormsg = document.getElementById('errormsg');
 	
 	var fd = new FileDialog('opendlg', document.getElementById("filelist"), true, false);
 	fd.registerSocketEvent(socket);
@@ -329,9 +336,11 @@ function setupFileDialog() {
 			errormsg.innerHTML = data;
 		});
 	});
-
-	openbtn.onclick = function () {
-		fd.FileList('/Users/Public/');
+	
+	fd.FileList('/');
+	
+	$('button_new').onclick = function() {
+		newFile(fd, $('newfilename').value)
 	};
 }
 
@@ -341,6 +350,8 @@ function clickDir(fd, path) {
 }
 
 function clickFile(fd, path) {
-	var fl = path.split("/");
+	var fl;
+	fileselect(path);
+	fl = path.split("/");
 	document.getElementById('filename').value = fl[fl.length - 1];
 }

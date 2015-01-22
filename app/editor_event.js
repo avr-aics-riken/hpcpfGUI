@@ -93,13 +93,18 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		updateFileList(srcdir);
 	});
 	socket.on('reqSelectFile', function(data) {
-		var srcdir = sesstionTable[socket.id].dir;
-		var ext = util.getExtention(data);
-		var launchAppNames = findLaunchApp(appExtensions, ext);
-		if (launchAppNames) {
-			socket.emit('showfile_launchbutton', launchAppNames, srcdir, data);
-		} else {
-			socket.emit('fileopen', data.substr(2));
+		var srcdir = sesstionTable[socket.id].dir,
+			ext = util.getExtention(data),
+			launchAppNames = findLaunchApp(appExtensions, ext),
+			relativePath = "";
+		
+		relativePath = data;
+		if (relativePath.slice(0, 2) !== "..") {
+			if (launchAppNames) {
+				socket.emit('showfile_launchbutton', launchAppNames, srcdir, relativePath);
+			} else {
+				socket.emit('fileopen', relativePath);
+			}
 		}
 	});
 	
@@ -120,22 +125,29 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 	});
 	
 	socket.on('reqFileOpen', function(data) {
-		var srcdir = sesstionTable[socket.id].dir;
-		var ext = util.getExtention(data);
-		var editType = getEditTypeByExtension(ext);
-		var filebuf = fs.readFileSync(srcdir+data);
+		var srcdir = sesstionTable[socket.id].dir,
+			ext = util.getExtention(data),
+			editType = getEditTypeByExtension(ext),
+			absolutePath = path.join(srcdir, data);
+			filebuf = null;
 		
-		if (editType === "image") {
-			var prefix;
-			if      (ext==="jpg") prefix = 'data:image/jpeg;base64,';
-			else if (ext==="tga") prefix = 'data:image/tga;base64,';
-			else if (ext==="png") prefix = 'data:image/png;base64,';
-			var base64 = new Buffer(filebuf, 'binary').toString('base64');
-			var imgdata = prefix + base64;
-			//socket.send(data);
-			socket.emit('showfile_image',imgdata);
+		if (fs.existsSync(absolutePath)) {
+			filebuf = fs.readFileSync(absolutePath);
+			if (editType === "image") {
+				var prefix;
+				if      (ext==="jpg") prefix = 'data:image/jpeg;base64,';
+				else if (ext==="tga") prefix = 'data:image/tga;base64,';
+				else if (ext==="png") prefix = 'data:image/png;base64,';
+				var base64 = new Buffer(filebuf, 'binary').toString('base64');
+				var imgdata = prefix + base64;
+				//socket.send(data);
+				socket.emit('showfile_image',imgdata);
+			} else {
+				socket.emit('showfile',{str:filebuf.toString(), type:editType});
+			}
 		} else {
-			socket.emit('showfile',{str:filebuf.toString(), type:editType});
+			console.log(data);
+			console.error("no such file or directory: " + absolutePath);
 		}
 	});
 	socket.on('reqFileSave', function(data) {

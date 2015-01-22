@@ -2,6 +2,19 @@ body {
 	overflow: hidden;
 }
 
+.fadeIn {
+	visibility: visible !important;
+	opacity: 1 !important;
+	-webkit-transition: visibility 0s linear 0s, opacity 0.5s linear;
+	transition: visibility 0s linear 0s, opacity 0.5s linear;
+}
+.fadeOut {
+	visibility: hidden !important;
+	opacity: 0 !important;
+	-webkit-transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+	transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+}
+
 .project_title {
 	position:relative;
 	margin-top:30px;

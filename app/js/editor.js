@@ -2,6 +2,14 @@ var socket = io.connect();
 
 socket.on('connect', function () {
 	"use strict";
+	setupWorkingPath();
+	console.log('connected');
+	socket.on('event', function (data) {
+		console.log(data);
+	});
+});
+
+function getWorkingPath() {
 	var url = location.href;
 	console.log(url);
 	var addrs = url.split("?");
@@ -13,21 +21,19 @@ socket.on('connect', function () {
 			if (args.length > 0) {
 				args = args[0].split("#");
 				if (args.length > 0) {
-					setWorkingPath(args[0]);
+					return args[0];
 				}
 			}
 		}
 	}
-	console.log('connected');
-	socket.on('event', function (data) {
-		console.log(data);
-	});
-});
+	return "/Users/Public/";
+}
 
 function $(id){ return document.getElementById(id); }
 
-function setWorkingPath(path) {
+function setupWorkingPath() {
 	"use strict";
+	var path = getWorkingPath();
 	socket.emit('setWorkingPath',{path:path});
 }
 

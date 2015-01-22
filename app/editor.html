@@ -141,7 +141,7 @@
 			<!--div class="itemlabel">Directory:</div-->
 			<div class="settingitem">
 				<input type="text" id="dirpath" placeholder="input file">
-				<button class="button_browse" id="openbtn">Browse</button>
+				<!--button class="button_browse" id="openbtn">Browse</button-->
 			</div>
 			<div class="settingitem">
 				<input type="text" id="filename" placeholder="input name" value="image%06d.jpg">
@@ -165,14 +165,14 @@
 		<div id="launchButtonArea">
 			<span id="launchButtonView"/>
 		</div>
-		<!--div id="shownewfilearea">
+		<div id="shownewfilearea">
 			<button id="button_newfile" onclick="showNewFileArea();">New File</button>
-		</div-->
-		<!--div id="newfileArea">
+		</div>
+		<div id="newfileArea">
 			New file!<br>
 			<input type="text" id="newfilename" class="input-newfile" placeholder="file name"/>
-			<button id="button_new" onclick="newFile(newfilename.value)"></button>
-		</div-->
+			<button id="button_new"></button>
+		</div>
 	</span>
 	<!------------------------------------------------------------------------------>
 
@@ -183,6 +183,5 @@
 	<script type="text/javascript" src="js/editor_exe_mode.js"></script>
 	<script type="text/javascript" src="js/editor_edit_mode.js"></script>
 	<script type="text/javascript" src="js/backfire_filedialog.js"></script>
-	<script type="text/javascript" src="js/backfire_client.js"></script>
 </body>
 </html>
