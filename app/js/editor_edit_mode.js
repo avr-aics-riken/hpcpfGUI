@@ -365,8 +365,11 @@ function setupFileDialog() {
 }
 
 function clickDir(fd, path) {
+	changeDir(fd, path);
+}
+
+function changeDir(fd, path) {
 	document.getElementById('dirpath').value = path;
-	fd.FileList(path);
 }
 
 function clickFile(fd, path) {

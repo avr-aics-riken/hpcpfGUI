@@ -143,7 +143,7 @@ if (typeof window === 'undefined') { // Node.js
 		}
 	
 		//--------------
-		FileDialog.prototype.makeFilelist = function (ls, list, level) {
+		FileDialog.prototype.makeFilelist = function (ls, list, level, parentDir) {
 			var skip, i, newbtn;
 			for (i in list) {
 				if (list.hasOwnProperty(i)) {
@@ -160,13 +160,13 @@ if (typeof window === 'undefined') { // Node.js
 					}
 
 					if (!skip) {
-						this.makeNode(ls, list[i], level);
+						this.makeNode(ls, list[i], level,  parentDir + '/');
 					}
 				}
 			}
 		};
 		
-		FileDialog.prototype.makeNode = function (ls, listitem, level) {
+		FileDialog.prototype.makeNode = function (ls, listitem, level, parentDir) {
 			var name    = listitem.name,
 				relativePath    = listitem.path,
 				type    = listitem.type,
@@ -205,17 +205,19 @@ if (typeof window === 'undefined') { // Node.js
 						
 					}
 					*/
+					clickDir(fileDialog, '/' + relativePath + '/');
 					
 					fileDialog.refleshFileList();
 				}; }(relativePath, listitem, this)));
 				ls.appendChild(newbtn);
 				
 				if (extract) {
-					this.makeFilelist(ls, listitem.child, level + 1);
+					this.makeFilelist(ls, listitem.child, level + 1, '/' + relativePath);
 				}
 			} else if (type === "file") {
 				newbtn.addEventListener('click', (function (fileDialog) { return function() {
 						clickFile(fileDialog, relativePath);
+						changeDir(fileDialog, parentDir);
 					}
 				})(this));
 				ls.appendChild(newbtn);
@@ -224,7 +226,7 @@ if (typeof window === 'undefined') { // Node.js
 		
 		FileDialog.prototype.refleshFileList = function () {
 			this.domElement.innerHTML = ''; // clear
-			this.makeFilelist(this.domElement, this.filelist, 0);
+			this.makeFilelist(this.domElement, this.filelist, 0, '');
 		};
 
 		FileDialog.prototype.updateDirlist = function (jsonlist) {

@@ -330,13 +330,15 @@
 
 .button_change_mode:disabled{
 	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - execute */
 .button_execute {
 	width:140px;
 	height:70px;
-	position:relative;
+	position:absolute;
 	top:-56px;
 	background-image:url("../image/button_bg_action_play.png");
 	font-size:18px;
