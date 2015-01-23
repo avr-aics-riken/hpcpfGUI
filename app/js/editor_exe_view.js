@@ -30,6 +30,7 @@ function stopProject() {
 	"use strict";
 	console.log("stop");
 	socket.emit('stop');
+	showExeView();
 }
 
 function clearOutput() {

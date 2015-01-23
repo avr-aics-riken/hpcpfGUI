@@ -37,31 +37,53 @@ function setupWorkingPath() {
 	socket.emit('setWorkingPath',{path:path});
 }
 
-function showInfoMode() {
+function hideNewNameArea() {
+	var i = 0,
+		ids = ['newfileArea', 'newdirArea', 'renameArea'];
+	for (i = 0; i < ids.length; ++i) {
+		var classNames = $(ids[i]).className.split(' ');
+		classNames[1] = 'fadeOut';
+		$(ids[i]).className = classNames.join(' ');
+	}
+}
+
+function hideEditArea() {
+	$('imageArea').className = 'fadeOut';
+	$('imageView').src = "";
+	$('launchButtonArea').className = 'fadeOut';
+	$('launchButtonView').src = "";
+}
+
+function showInfoView() {
 	"use strict";
 	$("info_mode").style.display = "block";
 	$("exe_mode").style.display = "none";
 	$("edit_mode").style.display = "none";
+	hideEditArea();
+	hideNewNameArea();
 	socket.emit('reqUpdateInformation');
 }
 
-function showExeMode() {
+function showExeView() {
 	"use strict";
 	$("info_mode").style.display = "none";
 	$("exe_mode").style.display = "block";
 	$("edit_mode").style.display = "none";
+	hideEditArea();
+	hideNewNameArea();
 }
 
-function showEditMode() {
+function showEditView() {
 	"use strict";
 	$("info_mode").style.display = "none";
 	$("exe_mode").style.display = "none";
 	$("edit_mode").style.display = "block";
+	hideNewNameArea();
 }
 
 function executeProject() {
 	"use strict";
-	showExeMode();
+	showExeView();
 	runWorkflow();
 }
 

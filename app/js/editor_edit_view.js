@@ -208,10 +208,9 @@ socket.on('showfile_image', function (data) {
 	editor.setReadOnly(true);
 	ChangeEditor(false);
 	console.log("show_image");
+	hideEditArea();
 	$('imageArea').className = 'fadeIn';
 	$('imageView').src = data;
-	$('launchButtonArea').className = 'fadeOut';
-	$('launchButtonView').src = "";
 });
 
 socket.on('showfile_launchbutton', function (appnames, dir, filename) {
@@ -395,6 +394,7 @@ function setupFileDialog() {
 
 function clickDir(fd, path) {
 	changeDir(fd, path);
+	hideNewNameArea();
 }
 
 function changeDir(fd, path) {
@@ -406,4 +406,5 @@ function clickFile(fd, path) {
 	fileselect(path);
 	fl = path.split("/");
 	document.getElementById('filename').value = fl[fl.length - 1];
+	showEditView();
 }
