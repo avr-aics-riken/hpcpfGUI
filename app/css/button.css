@@ -19,17 +19,20 @@
 }
 
 .button_menu_bottom {
-	width:165px;
+	width:200px;
 	height:101px;
 	margin-top:40px;
 	margin-bottom:20px;
 	margin-left:10px;
 	text-align:center;
-	background-image:url("../image/button_bg_action_cancel.png");
+	background-image:url("../image/button_bg_action_menu.png");
+	background-size: contain;
+	background-repeat:no-repeat;
 }
 .button_menu_bottom:active{
-	background-image:url("../image/button_bg_action_cancel_press.png");
+	background-image:url("../image/button_bg_action_menu_press.png");
 	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - tool */
@@ -137,27 +140,99 @@
 	background-image:url("../image/button_bg_action_green_press.png");
 }
 
-/* button - cancel */
+/* button - newfile */
 #button_newfile{
 	position:absolute;
-	width:165px;
-	height:101px;
-	left:24px;
-	top:-162px;
+	width:90px;
+	height:60px;
+	left:90px;
+	top:-80px;
 	text-align:center;
-	padding-bottom:28px;
-	background-image:url("../image/button_bg_action_green.png");
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 	color:#fff;
-	font-weight:600;
-	font-size:18px;
+	font-weight:300;
+	font-size:14px;
 }
 
 #button_newfile:active{
-	background-image:url("../image/button_bg_action_green_press.png");
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
+/* button - newdir */
+#button_newdir {
+	position:absolute;
+	width:90px;
+	height:60px;
+	left:5px;
+	top:-80px;
+	text-align:center;
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:14px;
+}
 
+#button_newdir:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
 
+/* button - rename */
+#button_rename {
+	position:absolute;
+	width:90px;
+	height:60px;
+	left:175px;
+	top:-80px;
+	text-align:center;
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:14px;
+}
+
+#button_rename:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - delete */
+#button_delete {
+	position:absolute;
+	width:90px;
+	height:60px;
+	left:260px;
+	top:-80px;
+	text-align:center;
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:14px;
+}
+
+#button_delete:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+<!--
 /* button - delete */
 .button_delete{
 	background-image:url("");
@@ -169,6 +244,7 @@
 .button_delete:active{
 
 }
+-->
 
 /* button - remotehost */
 .button_remotehost{
@@ -254,17 +330,42 @@
 
 /* button - execute */
 .button_execute {
-	width:100px;
-	height:50px;
+	width:140px;
+	height:70px;
 	position:relative;
 	top:-56px;
-	background-image:url("../image/button_rect.png");
+	background-image:url("../image/button_bg_action_play.png");
 	font-size:18px;
 	font-weight:600;
+	background-repeat:no-repeat;
+	background-size: contain;
+	margin-left:auto;
+	margin-right:auto;
 }
 
 .button_execute:active{
-	background-image:url("../image/button_rect_press.png");
+	background-image:url("../image/button_bg_action_play_press.png");
+	background-repeat:no-repeat;
+}
+
+/* button - edit */
+.button_edit {
+	width:140px;
+	height:70px;
+	position:relative;
+	top:-56px;
+	background-image:url("../image/button_bg_action_edit.png");
+	font-size:18px;
+	font-weight:600;
+	background-repeat:no-repeat;
+	background-size: contain;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.button_edit:active{
+	background-image:url("../image/button_bg_action_edit_press.png");
+	background-repeat:no-repeat;
 }
 
 /* button - browse */

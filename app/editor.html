@@ -24,7 +24,7 @@
 	<!--------------------------- Info Mode --------------------------------->
 	<span id="info_mode" style="display:block">
 		<div class="execute_button_area">
-			<button class="button_execute" onclick="executeProject();">Execute</button>
+			<button class="button_execute" onclick="executeProject();"></button>
 		</div>
 		<div class="change_mode_area">
 			<button class="button_change_mode" disabled onclick="showInfoMode();">Info Mode</button>
@@ -93,8 +93,8 @@
 	<!--------------------------- EXE Mode --------------------------------->
 	<span id="exe_mode" style="display:none">
 		<div class="execute_button_area">
-			<button class="button_execute" onclick="executeProject();">Execute</button>
-			<button class="button_execute" onclick="executeProject();">Stop</button>
+			<button class="button_execute" onclick="executeProject();"></button>
+			<button class="button_edit" onclick="executeProject();">Stop</button>
 		</div>
 		<div class="change_mode_area">
 			<button class="button_change_mode" onclick="showInfoMode();">Info Mode</button>
@@ -119,7 +119,7 @@
 	<!--------------------------- Edit Mode --------------------------------->
 	<span id="edit_mode" style="display:none">
 		<div class="execute_button_area">
-			<button class="button_execute" onclick="executeProject();">Execute</button>
+			<button class="button_execute" onclick="executeProject();"></button>
 		</div>
 		<!--div id="menubtn">
 			<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
@@ -166,7 +166,16 @@
 			<span id="launchButtonView"/>
 		</div>
 		<div id="shownewfilearea">
+			<button id="button_newdir" onclick="showNewFileArea();">New<br>Directory</button>
+		</div>
+		<div id="shownewfilearea">
 			<button id="button_newfile" onclick="showNewFileArea();">New File</button>
+		</div>
+		<div id="shownewfilearea">
+			<button id="button_rename" onclick="showNewFileArea();">Rename</button>
+		</div>
+		<div id="shownewfilearea">
+			<button id="button_delete" onclick="showNewFileArea();">Delete</button>
 		</div>
 		<div id="newfileArea">
 			New file!<br>
