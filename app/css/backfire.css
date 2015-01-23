@@ -1,31 +1,12 @@
 
-/*
-
-html,body{
-  margin:0;
-  padding:0;
-  height: 100%;
-}
-
-body {
-  font-family: source-sans-pro, sans-serif;
-  position: relative;
-  -webkit-font-smoothing: antialiased;
-}
-
-body {
-  color: #F0F1F1;
-  background: #4A4D4E;
-}
-*/
-
-.settingitem {*/
+.settingitem {
 	display: flex;
 	/*display: -webkit-flex;*/
 	margin-top:5px;
 	margin-bottom:5px;
 	/*flex-direction: row;*/
 }
+
 .itemlabel {
 	width: 80px;
 }

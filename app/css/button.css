@@ -1,6 +1,6 @@
 /* button - home menu*/
 #button_menus{
-    padding-top:12px;
+	padding-top:12px;
 }
 
 .button_menu{
@@ -21,7 +21,8 @@
 .button_menu_bottom {
 	width:165px;
 	height:101px;
-	margin-top:20px;
+	margin-top:40px;
+	margin-bottom:20px;
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_cancel.png");
@@ -38,17 +39,17 @@
 	text-align:center;
 	margin-top:10px;
 	margin-right:5px;
-    padding-top:0px;
+	padding-top:0px;
 	padding-left:2px;
-    padding-right:10px;
-    padding-bottom:0px;
+	padding-right:10px;
+	padding-bottom:0px;
 	background-image:url("../image/button_bg_tool.png");
 	background-repeat:no-repeat;
 
-    -webkit-text-overflow:ellipsis;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    overflow:hidden;
+	-webkit-text-overflow:ellipsis;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	overflow:hidden;
 }
 
 .button_tool:active{
@@ -62,15 +63,15 @@
 	text-align:center;
 	margin-top:10px;
 	padding-left:2px;
-    padding-right:10px;
+	padding-right:10px;
 	margin-right:5px;
 	background-image:url("../image/button_bg_action_green.png");
-    font-size:18px;
-    font-weight:600;
-    -webkit-text-overflow:ellipsis;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    overflow:hidden;
+	font-size:18px;
+	font-weight:600;
+	-webkit-text-overflow:ellipsis;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	overflow:hidden;
 }
 
 .button_editor_launchapp:active{
@@ -128,8 +129,8 @@
 	top:40px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_green.png");
-    color:#fff;
-    font-weight:bolder;
+	color:#fff;
+	font-weight:bolder;
 }
 
 #button_editmode:active{
@@ -146,9 +147,9 @@
 	text-align:center;
 	padding-bottom:28px;
 	background-image:url("../image/button_bg_action_green.png");
-    color:#fff;
-    font-weight:600;
-    font-size:18px;
+	color:#fff;
+	font-weight:600;
+	font-size:18px;
 }
 
 #button_newfile:active{
@@ -178,8 +179,8 @@
 	margin-right:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_upper.png");
-    color:#fff;
-    font-weight:bolder;
+	color:#fff;
+	font-weight:bolder;
 	font-size:16px;
 }
 
@@ -224,8 +225,8 @@
 	top:-56px;
 	right:0px;
 	background-image:url("../image/button_bg_action_upper.png");
-    font-size:18px;
-    font-weight:600;
+	font-size:18px;
+	font-weight:600;
 }
 
 #button_output:active{
@@ -315,7 +316,7 @@
 .button_editor{
 	padding-bottom:28px;
 	font-size:18px;
-    font-weight:600;
+	font-weight:600;
 }
 
 #button_save_editor{
@@ -374,8 +375,8 @@
 	background-color:#72ca2a;
 	font-family:sans-serif;
 	font-size:16px;
-    color:#fff;
-    font-weight:bolder;
+	color:#fff;
+	font-weight:bolder;
 
 }
 
@@ -398,50 +399,50 @@
 }
 
 .text_button_menu{
-    font-size:18px;
-    font-weight:600;
+	font-size:18px;
+	font-weight:600;
 	font-family:sans-serif;
 	position:relative;
 	top:-10px;
 	left:18px;
-    color:#72ca2a;
+	color:#72ca2a;
 }
 
 .text_button_menu_bottom {
-    font-size:18px;
-    font-weight:600;
+	font-size:18px;
+	font-weight:600;
 	font-family:sans-serif;
 	position:relative;
 	top:-14px;
 	left:0px;
-    color:#4d4d4d;
+	color:#4d4d4d;
 }
 
 .text_button_tool{
-    font-size:18px;
+	font-size:18px;
 	font-family:sans-serif;
-    font-weight:600;
+	font-weight:600;
 	position:relative;
 	top:-14px;
-    left:4px;
+	left:4px;
 }
 
 .text_button_launchapp{
-    font-size:18px;
+	font-size:18px;
 	font-family:sans-serif;
-    font-weight:600;
-    margin-right:18px;
+	font-weight:600;
+	margin-right:18px;
 	position:relative;
 	top:-14px;
-    left:6px;
+	left:6px;
 }
 
 .text_button_action{
 	font-family:sans-serif;
 	position:relative;
 	font-size:18px;
-    font-weight:600;
-    color:#fff;
+	font-weight:600;
+	color:#fff;
 	top:-18px;
 	left:-2px;
 }
@@ -456,8 +457,8 @@
 .text_button_add{
 	position:relative;
 	font-family:sans-serif;
-    font-weight:bolder;
-    color:#fff;
+	font-weight:bolder;
+	color:#fff;
 	top:-14px;
 	left:-4px;
 }
