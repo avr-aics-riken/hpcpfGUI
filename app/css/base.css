@@ -102,7 +102,7 @@ input{
 	padding-top:10px;
 	color:#72ca2a;
 	width:100%;
-	min-width:1024px;
+	min-width:800px;
 	overflow:hidden;
 }
 
@@ -136,7 +136,7 @@ input{
 /* tab */
 .tab{
 	text-align:center;
-	width:1024px;
+	width:800px;
 	min-width:300px;
 	height:300px;
 	margin-left:auto;
@@ -182,19 +182,19 @@ input{
 /* pane */
 .pane_left{
 	float:left;
-	width:470px;
+	width:380px;
 	text-align:center;
 	margin-right:10px;
 	margin-left:auto;
-	padding-left:30px;
+	padding-left:10px;
 }
 
 .pane_right{
 	margin-left:10px;
 	margin-right:auto;
-	padding-left:30px;
+	padding-left:10px;
 	float:right;
-	width:470px;
+	width:380px;
 	text-align:center;
 	
 }
@@ -214,22 +214,32 @@ input{
 }
 
 .popup_center{
+	min-width: 800px;
+	width: 100%;
+	height: auto;
+	position: fixed;
+	top: 100px;
+	left: 0;
+	
 	text-align:center;
-	width:840px;
-	height:590px;
-	margin:auto;
-	margin-left:8%;
 	padding:0px;
 	z-index:102;
-	top:100px;
-	position:fixed;
+	display:none;
+	width:100%;
+}
+
+.popup_content{
+	min-width: 600px;
+	max-width:800px;
+	margin-left:auto;
+	margin-right:auto;
+	
 	background-color:#4d4d4d;
 	border:solid;
 	border-radius:20px;
 	border-width:12px;
 	border-color:#72ca2a;
 	box-shadow:8px 15px 26px #111111;
-	display:none;
 }
 
 /* layout group */
@@ -254,7 +264,7 @@ input{
 
 .popup_background {
 	min-height: 100%;
-	min-width: 1024px;
+	min-width: 800px;
 	width: 100%;
 	height: auto;
 	position: fixed;

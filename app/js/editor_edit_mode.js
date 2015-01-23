@@ -303,17 +303,23 @@ function setupSeparator() {
 	document.onmousemove = function(e) {
 		var filelist,
 			editor,
+			launchButtonArea,
+			imageArea,
 			left = window.pageXOffset || document.documentElement.scrollLeft,
 			pos;
 		if (dragging) {
 			filelist = document.getElementById('filelist');
 			editor = document.getElementById('editor');
+			launchButtonArea = document.getElementById('launchButtonArea');
+			imageArea = document.getElementById('imageArea');
 			console.log(left + e.clientX);
 			pos = left + e.clientX;
 			if (pos > 50 && pos < (document.documentElement.clientWidth  - 50)) {
 				separator.style.left = pos + 'px';
 				filelist.style.width = (pos - 18) + 'px';
 				editor.style.left = (pos + 8) + 'px';
+				launchButtonArea.style.left = editor.style.left;
+				imageArea.style.left = editor.style.left;
 			}
 		}
 	};

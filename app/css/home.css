@@ -1,7 +1,7 @@
 #new_project {
 	position:relative;
 	min-height: 100px;
-	min-width: 1024px;
+	min-width: 800px;
 	width: 100%;
 	position: relative;
 	top: 0;
@@ -9,8 +9,7 @@
 	z-index:20;
 	padding: 6px 6px 6px 6px;
 	color: #fff;
-	background-color:#72ca2a; 
-	border-radius: 5px;
+	background-color:#72ca2a;
 	display:none;
 	opacity: 1;
 	text-align:center;
@@ -34,15 +33,13 @@
 .pane_bottom {
 	position:relative;
 	min-height: 100px;
-	min-width: 1024px;
+	min-width: 800px;
 	width: 100%;
 	top: 0px;
 	left: 0;
 	z-index:20;
-	padding: 6px 6px 6px 6px;
 	color: #fff;
-	background-color:#4d4d4d; 
-	border-radius: 5px;
+	background-color:#4d4d4d;
 	opacity: 1;
 	
 	text-align:center;

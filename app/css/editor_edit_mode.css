@@ -24,10 +24,10 @@
 
 #imageArea {
 	position:absolute;
-	top:235px;
-	left:240px;
+	top:290px;
+	left:375px;
 	right:10px;
-	bottom:190px;
+	bottom:10px;
 	z-index:15;
 	padding:auto;
 	color: #f00;
@@ -43,10 +43,10 @@
 }
 #launchButtonArea {
 	position:absolute;
-	top:235px;
-	left:240px;
+	top:290px;
+	left:375px;
 	right:10px;
-	bottom:190px;
+	bottom:10px;
 	z-index:15;
 	padding:auto;
 	color: #f00;

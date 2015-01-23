@@ -45,34 +45,38 @@
 	</div>
 
 	<div class="popup_center" id="recent_project">
-		<div class="text_recent">Recent Project</div>
-		<div class="historybrowser" id="projectHistoryList">
-			<div style="display:none">
-				<div class="fileitem" id="projectHistoryList_itemtemplate" draggable="false" onclick="openProject(this.path)" ><div class="dir"></div><p class="filelabel" id="label">project1</p></div>
+		<div class="popup_content">
+			<div class="text_recent">Recent Project</div>
+			<div class="historybrowser" id="projectHistoryList">
+				<div style="display:none">
+					<div class="fileitem" id="projectHistoryList_itemtemplate" draggable="false" onclick="openProject(this.path)" ><div class="dir"></div><p class="filelabel" id="label">project1</p></div>
+				</div>
 			</div>
-		</div>
-		<div class="historybrowser_buttons">
-			<button type="button" class="button_open" onclick="openfileDialog('/')">
-				<span class="text_button_action">Browse</span>
-			</button>
-			<button type="button" class="button_cancel" onclick="closeRecentProjectDialog()">
-				<span class="text_button_action">Cancel</span>
-			</button>
+			<div class="historybrowser_buttons">
+				<button type="button" class="button_open" onclick="openfileDialog('/')">
+					<span class="text_button_action">Browse</span>
+				</button>
+				<button type="button" class="button_cancel" onclick="closeRecentProjectDialog()">
+					<span class="text_button_action">Cancel</span>
+				</button>
+			</div>
 		</div>
 	</div>
 		
 	<div class="popup_center" id="file_dialog">
-		<div class="pane_grp">
-			<input class="input_filedialog" id="projdir_path" value="localhost:/"/>
-		</div>
-		<div class="filebrowser filedialog" id="fbList"></div>
-		<div class="buttons_dialog">
-			<button type="button" class="button_open" onclick="open_selectedFile()">
-				<span class="text_button_action">Open</span>
-			</button>
-			<button type="button" class="button_cancel" onclick="closefileDialog()">
-				<span class="text_button_action">Cancel</span>
-			</button>
+		<div class="popup_content">
+			<div class="pane_grp">
+				<input class="input_filedialog" id="projdir_path" value="localhost:/"/>
+			</div>
+			<div class="filebrowser filedialog" id="fbList"></div>
+			<div class="buttons_dialog">
+				<button type="button" class="button_open" onclick="open_selectedFile()">
+					<span class="text_button_action">Open</span>
+				</button>
+				<button type="button" class="button_cancel" onclick="closefileDialog()">
+					<span class="text_button_action">Cancel</span>
+				</button>
+			</div>
 		</div>
 	</div>
 		
