@@ -12,6 +12,8 @@ editor.on('change',	function changeInput() {
 
 document.addEventListener('keypress', function(e){
 	//console.log(e.keyCode);
+	// window.navigator.platform.match("Mac") ==> e.metaKey is commandKey
+	
 	if (e.keyCode == 18 && e.ctrlKey){ // R + ctrl
 		saveFile();
 		procRun();
@@ -24,6 +26,27 @@ document.addEventListener('keypress', function(e){
 	if (e.keyCode == 19 && e.ctrlKey){ // S + ctrl
 		saveFile();
 		return false;
+	}
+});
+
+document.addEventListener('keydown', function(e) {
+	if (window.navigator.platform.match("Win")) {
+		if (e.keyCode == 82 && e.ctrlKey){ // R + ctrl
+			saveFile();
+			procRun();
+			e.preventDefault();
+			return false;
+		}
+		if (e.keyCode == 81 && e.ctrlKey){ // Q + ctrl
+			procStop();
+			e.preventDefault();
+			return false;
+		}
+		if (e.keyCode == 83 && e.ctrlKey){ // S + ctrl
+			saveFile();
+			e.preventDefault();
+			return false;
+		}
 	}
 });
 
