@@ -404,17 +404,21 @@
 }
 
 /* button - new */
-#button_new{
+.button_new{
 	width:100px;
-	height:73px;
-	position:relative;
-	top:0px;
-	left:0px;
+	height:60px;
+	position:absolute;
+	top:25px;
+	right:-10px;
 	background-image:url("../image/button_bg_action_upper_new.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
-#button_new:active{
+.button_new:active{
 	background-image:url("../image/button_bg_action_upper_new_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* bottom buttons in editor */

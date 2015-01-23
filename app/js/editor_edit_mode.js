@@ -119,18 +119,25 @@ function newFile(fd, fname){
 	$('newfilename').value = ''
 	
 	socket.emit('reqFileSave',{file: fname, data:''});
-	
 	fd.FileList(fname);
-	
-	//getFileList();
 }
 
-function showNewFileArea(){
-	console.log("showNewFileArea:" + $('newfileArea').className);
-	if ($('newfileArea').className === 'fadeIn') {
-		$('newfileArea').className = 'fadeOut';
+function newDirectory(fd, dirname) {
+}
+
+function renameFileOrDirectory(fd, name) {
+}
+
+function showNewNameArea(id){
+	var classNames = $(id).className.split(' ');
+	console.log("showNewNameArea:" + $(id).className);
+	if (classNames[1] === 'fadeIn') {
+		classNames[1] = 'fadeOut';
+		$(id).className = classNames.join(' ');
 	} else {
-		$('newfileArea').className = 'fadeIn';
+		classNames = $(id).className.split(' ');
+		classNames[1] = 'fadeIn';
+		$(id).className = classNames.join(' ');
 	}
 }
 
@@ -346,8 +353,14 @@ function setupFileDialog() {
 	
 	fd.FileList('/');
 	
-	$('button_new').onclick = function() {
-		newFile(fd, $('newfilename').value)
+	$('button_newfile_done').onclick = function() {
+		newFile(fd, $('newfilename').value);
+	};
+	$('button_newdir_done').onclick = function() {
+		newDirectory(fd, $('newdirname').value);
+	};
+	$('button_rename_done').onclick = function() {
+		renameFileOrDirectory(fd, $('renamefilename').value);
 	};
 }
 

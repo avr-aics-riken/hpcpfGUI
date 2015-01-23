@@ -123,18 +123,18 @@
 	  width:180px;
   }
 
-#shownewfilearea {
+.shownewfilearea {
 	margin: 0px;
 	position:absolute;
 	left:10px;
 	bottom:10px;
 }
-#newfileArea {
+
+.newNameArea {
 	position:absolute;
-	left:10px;
-	/*top:915px;*/
-	bottom:175px;
-	width:330px;
+	left:20px;
+	bottom:80px;
+	width:320px;
 	height:80px;
 	z-index:20;
 	padding: 6px 6px 6px 6px;
@@ -144,7 +144,8 @@
 	visibility: hidden;
 	opacity: 0;
 }
-.input-newfile{
+
+.inputNewNameBox {
 	position:absolute;
 	top:30px;
 	width:200px;

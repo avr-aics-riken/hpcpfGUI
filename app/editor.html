@@ -155,18 +155,18 @@
 			<div id="filelist_container">
 				<div id="filelist"></div>
 			</div>
-			<div id="filebutton_conainer">
-				<div id="shownewfilearea">
-					<button id="button_newdir" onclick="showNewFileArea();">New<br>Directory</button>
+			<div id="filebutton_conainer" class="filebutton_conainer">
+				<div class="shownewfilearea">
+					<button id="button_newdir" onclick="showNewNameArea('newdirArea');">New<br>Directory</button>
 				</div>
-				<div id="shownewfilearea">
-					<button id="button_newfile" onclick="showNewFileArea();">New File</button>
+				<div class="shownewfilearea">
+					<button id="button_newfile" onclick="showNewNameArea('newfileArea');">New File</button>
 				</div>
-				<div id="shownewfilearea">
-					<button id="button_rename" onclick="showNewFileArea();">Rename</button>
+				<div class="shownewfilearea">
+					<button id="button_rename" onclick="showNewNameArea('renameArea');">Rename</button>
 				</div>
-				<div id="shownewfilearea">
-					<button id="button_delete" onclick="showNewFileArea();">Delete</button>
+				<div class="shownewfilearea">
+					<button id="button_delete" onclick="showNewNameArea();">Delete</button>
 				</div>
 			</div>
 		</div>
@@ -185,10 +185,20 @@
 		<div id="launchButtonArea">
 			<span id="launchButtonView"/>
 		</div>
-		<div id="newfileArea">
+		<div id="newfileArea" class="newNameArea" >
 			New file!<br>
-			<input type="text" id="newfilename" class="input-newfile" placeholder="file name"/>
-			<button id="button_new"></button>
+			<input type="text" id="newfilename" class="inputNewNameBox" placeholder="file name"/>
+			<button class="button_new" id="button_newfile_done"></button>
+		</div>
+		<div id="newdirArea" class="newNameArea">
+			New directory!<br>
+			<input type="text" id="newdirname" class="inputNewNameBox" placeholder="directory name"/>
+			<button class="button_new" id="button_newdir_done"></button>
+		</div>
+		<div id="renameArea" class="newNameArea">
+			Rename selected<br>
+			<input type="text" id="renamefilename" class="inputNewNameBox" placeholder="rename"/>
+			<button class="button_new" id="button_rename_done"></button>
 		</div>
 	</span>
 	<!------------------------------------------------------------------------------>
