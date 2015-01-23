@@ -1,8 +1,9 @@
 
 .settingitem {
+	position:relative;
 	display: flex;
 	/*display: -webkit-flex;*/
-	margin-top:5px;
+	margin-top:45px;
 	margin-bottom:5px;
 	/*flex-direction: row;*/
 }
@@ -12,13 +13,29 @@
 }
 
 #dirpath {
-	margin-right:10px;
-	width:90%;
+	width:100%;
 	z-index:30;
 }
 
 #filename {
-	width: 220px;
+	position:relative;
+	padding-top:10px;
+	width:80%;
+	right: 0;
+	left: 0;
+	border:0px;
+}
+
+.filename_border {
+	position:relative;
+	width:90%;
+	padding-top:10px;
+	margin-left: auto;
+	margin-right: auto;
+	border-top:0px;
+	border-left:0px;
+	border-right:0px;
+	border-bottom: 0.2em solid white;
 }
 
 #soundname {
@@ -44,6 +61,7 @@
 	margin: 5px;
 }
 
+/*
 #filelist {
 	margin: 0px;
 	position:absolute;
@@ -59,8 +77,9 @@
 	width:350px;
 	bottom:10px;
 }
+*/
 
-.fileitem{
+.fileitem {
 	display: flex;
 	display: -webkit-flex;
 	flex-direction: row;

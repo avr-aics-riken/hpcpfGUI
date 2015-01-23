@@ -140,36 +140,13 @@
 	background-image:url("../image/button_bg_action_green_press.png");
 }
 
-/* button - newfile */
-#button_newfile{
-	position:absolute;
-	width:90px;
-	height:60px;
-	left:90px;
-	top:-80px;
-	text-align:center;
-	padding-bottom:15px;
-	background-image:url("../image/button_bg_action.png");
-	background-repeat:no-repeat;
-	background-size: contain;
-	color:#fff;
-	font-weight:300;
-	font-size:14px;
-}
-
-#button_newfile:active{
-	background-image:url("../image/button_bg_action_press.png");
-	background-repeat:no-repeat;
-	background-size: contain;
-}
-
 /* button - newdir */
 #button_newdir {
 	position:absolute;
 	width:90px;
 	height:60px;
-	left:5px;
-	top:-80px;
+	left:-5px;
+	top:-50px;
 	text-align:center;
 	padding-bottom:15px;
 	background-image:url("../image/button_bg_action.png");
@@ -186,13 +163,36 @@
 	background-size: contain;
 }
 
+/* button - newfile */
+#button_newfile{
+	position:absolute;
+	width:90px;
+	height:60px;
+	left:80px;
+	top:-50px;
+	text-align:center;
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:14px;
+}
+
+#button_newfile:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
 /* button - rename */
 #button_rename {
 	position:absolute;
 	width:90px;
 	height:60px;
-	left:175px;
-	top:-80px;
+	left:165px;
+	top:-50px;
 	text-align:center;
 	padding-bottom:15px;
 	background-image:url("../image/button_bg_action.png");
@@ -214,8 +214,8 @@
 	position:absolute;
 	width:90px;
 	height:60px;
-	left:260px;
-	top:-80px;
+	left:250px;
+	top:-50px;
 	text-align:center;
 	padding-bottom:15px;
 	background-image:url("../image/button_bg_action.png");
@@ -311,17 +311,21 @@
 
 /* button - change mode */
 .button_change_mode {
-	width:173px;
-	height:100px;
+	width:150px;
+	height:80px;
 	position:relative;
 	top:-56px;
 	background-image:url("../image/button_bg_action_upper.png");
-	font-size:18px;
-	font-weight:600;
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:16px;
+	font-weight:300;
 }
 
 .button_change_mode:active{
 	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_change_mode:disabled{

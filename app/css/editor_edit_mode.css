@@ -12,6 +12,49 @@
 	bottom:10px;
 }
 
+#filelistArea {
+	margin: 0px;
+	position:absolute;
+	/*
+	overflow:scroll;
+	*/
+	border-style:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#72ca2a;
+	background-color:#4d4d4d;
+	
+	top:290px;
+	left:10px;
+	width:350px;
+	bottom:10px;
+}
+
+#filelist_conainer {
+	position:absolute;
+	height: 800px;
+}
+
+#filelist {
+	margin: 0px;
+	position:absolute;
+	overflow:scroll;
+	/*
+	border-style:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#72ca2a;
+	
+	top:290px;
+	left:10px;
+	bottom:10px;
+	*/
+	background-color:#4d4d4d;
+	top:50px;
+	width:350px;
+	bottom: 70px;
+}
+
 #separator {
 	background-color:transparent;
 	position:absolute;

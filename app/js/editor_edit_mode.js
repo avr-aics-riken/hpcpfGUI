@@ -309,14 +309,15 @@ function setupSeparator() {
 			pos;
 		if (dragging) {
 			filelist = document.getElementById('filelist');
+			filelistArea = document.getElementById('filelistArea');
 			editor = document.getElementById('editor');
 			launchButtonArea = document.getElementById('launchButtonArea');
 			imageArea = document.getElementById('imageArea');
-			console.log(left + e.clientX);
 			pos = left + e.clientX;
-			if (pos > 50 && pos < (document.documentElement.clientWidth  - 50)) {
+			if (pos > 170 && pos < (document.documentElement.clientWidth  - 50)) {
 				separator.style.left = pos + 'px';
 				filelist.style.width = (pos - 18) + 'px';
+				filelistArea.style.width = filelist.style.width;
 				editor.style.left = (pos + 8) + 'px';
 				launchButtonArea.style.left = editor.style.left;
 				imageArea.style.left = editor.style.left;

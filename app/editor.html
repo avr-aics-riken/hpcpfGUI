@@ -140,16 +140,36 @@
 		<div id="playinfo">
 			<!--div class="itemlabel">Directory:</div-->
 			<div class="settingitem">
-				<input type="text" id="dirpath" placeholder="input file">
+				<input type="text" id="dirpath" placeholder="Directory Path">
 				<!--button class="button_browse" id="openbtn">Browse</button-->
 			</div>
-			<div class="settingitem">
-				<input type="text" id="filename" placeholder="input name" value="image%06d.jpg">
-				<!--div class="itemlabel">File:</div-->
-				<!--div id="hintmsg">連番ファイルでimage000001.jpgから始まる場合は "image%06d.jpg"と設定する</div-->
+			<div class="settingitem">			</div>
+		</div>
+		<div id="filelistArea">
+			<div id="filenameArea">
+				<input type="text" id="filename" placeholder="File Name:" value="">
+				<div class="filename_border"></div>
+			</div>
+			<!--div class="itemlabel">File:</div-->
+			<!--div id="hintmsg">連番ファイルでimage000001.jpgから始まる場合は "image%06d.jpg"と設定する</div-->
+			<div id="filelist_container">
+				<div id="filelist"></div>
+			</div>
+			<div id="filebutton_conainer">
+				<div id="shownewfilearea">
+					<button id="button_newdir" onclick="showNewFileArea();">New<br>Directory</button>
+				</div>
+				<div id="shownewfilearea">
+					<button id="button_newfile" onclick="showNewFileArea();">New File</button>
+				</div>
+				<div id="shownewfilearea">
+					<button id="button_rename" onclick="showNewFileArea();">Rename</button>
+				</div>
+				<div id="shownewfilearea">
+					<button id="button_delete" onclick="showNewFileArea();">Delete</button>
+				</div>
 			</div>
 		</div>
-		<div id="filelist"></div>
 
 		<div id="separator"></div>
 		
@@ -164,18 +184,6 @@
 		</div>
 		<div id="launchButtonArea">
 			<span id="launchButtonView"/>
-		</div>
-		<div id="shownewfilearea">
-			<button id="button_newdir" onclick="showNewFileArea();">New<br>Directory</button>
-		</div>
-		<div id="shownewfilearea">
-			<button id="button_newfile" onclick="showNewFileArea();">New File</button>
-		</div>
-		<div id="shownewfilearea">
-			<button id="button_rename" onclick="showNewFileArea();">Rename</button>
-		</div>
-		<div id="shownewfilearea">
-			<button id="button_delete" onclick="showNewFileArea();">Delete</button>
 		</div>
 		<div id="newfileArea">
 			New file!<br>
