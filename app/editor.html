@@ -8,9 +8,9 @@
 	<link href="css/base.css" rel="stylesheet"/>
 	<link href="css/button.css" rel="stylesheet"/>
 	<link href="css/editor.css" rel="stylesheet"/>
-	<link href="css/editor_info_mode.css" rel="stylesheet"/>
-	<link href="css/editor_exe_mode.css" rel="stylesheet"/>
-	<link href="css/editor_edit_mode.css" rel="stylesheet"/>
+	<link href="css/editor_info_view.css" rel="stylesheet"/>
+	<link href="css/editor_exe_view.css" rel="stylesheet"/>
+	<link href="css/editor_edit_view.css" rel="stylesheet"/>
 	<!--link href="css/filebrowser.css" rel="stylesheet"/-->
 	<link href="css/backfire.css" rel="stylesheet"/>
 </head>
@@ -21,23 +21,87 @@
 	</div>
 	<div class="title text_title">Project Editor</div>
 	
-	<!--------------------------- Info Mode --------------------------------->
+	<div class="execute_button_area">
+		<button class="button_execute" onclick="executeProject();"></button>
+		<button class="button_edit" onclick="executeProject();">Stop</button>
+	</div>
+	<div class="change_mode_area">
+		<button class="button_change_mode" onclick="showInfoMode();">Info View</button>
+		<button class="button_change_mode" onclick="showExeMode();">EXE View</button>
+		<button class="button_change_mode" onclick="showEditMode();">Edit View</button>
+	</div>
+	
+	<!--------------------------- menus / browser --------------------------------->
+	<div id="playinfo">
+		<!--div class="itemlabel">Directory:</div-->
+		<div class="settingitem">
+			<input type="text" id="dirpath" placeholder="Directory Path">
+			<!--button class="button_browse" id="openbtn">Browse</button-->
+		</div>
+	</div>
+	<div id="filelistArea">
+		<div id="filenameArea">
+			<input type="text" id="filename" placeholder="File Name:" value="">
+			<div class="filename_border"></div>
+		</div>
+		<!--div class="itemlabel">File:</div-->
+		<!--div id="hintmsg">連番ファイルでimage000001.jpgから始まる場合は "image%06d.jpg"と設定する</div-->
+		<div id="filelist_container">
+			<div id="filelist"></div>
+		</div>
+		<div id="filebutton_conainer" class="filebutton_conainer">
+			<div class="shownewfilearea">
+				<button id="button_newdir" onclick="showNewNameArea('newdirArea');">New<br>Directory</button>
+			</div>
+			<div class="shownewfilearea">
+				<button id="button_newfile" onclick="showNewNameArea('newfileArea');">New File</button>
+			</div>
+			<div class="shownewfilearea">
+				<button id="button_rename" onclick="showNewNameArea('renameArea');">Rename</button>
+			</div>
+			<div class="shownewfilearea">
+				<button id="button_delete" onclick="showNewNameArea();">Delete</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="separator"></div>
+
+	<div id="outputArea">
+		<pre id='stdout'></pre>
+	</div>
+	<div id="imageArea">
+		<img id="imageView"/>
+	</div>
+
+	<div id="launchButtonArea">
+		<span id="launchButtonView"/>
+	</div>
+	<div id="newfileArea" class="newNameArea" >
+		New file!<br>
+		<input type="text" id="newfilename" class="inputNewNameBox" placeholder="file name"/>
+		<button class="button_new" id="button_newfile_done"></button>
+	</div>
+	<div id="newdirArea" class="newNameArea">
+		New directory!<br>
+		<input type="text" id="newdirname" class="inputNewNameBox" placeholder="directory name"/>
+		<button class="button_new" id="button_newdir_done"></button>
+	</div>
+	<div id="renameArea" class="newNameArea">
+		Rename selected<br>
+		<input type="text" id="renamefilename" class="inputNewNameBox" placeholder="rename"/>
+		<button class="button_new" id="button_rename_done"></button>
+	</div>
+
+	<!--------------------------- Info view --------------------------------->
 	<span id="info_mode" style="display:block">
-		<div class="execute_button_area">
-			<button class="button_execute" onclick="executeProject();"></button>
-		</div>
-		<div class="change_mode_area">
-			<button class="button_change_mode" disabled onclick="showInfoMode();">Info Mode</button>
-			<button class="button_change_mode" onclick="showExeMode();">EXE Mode</button>
-			<button class="button_change_mode" onclick="showEditMode();">Edit Mode</button>
-		</div>
-		<div class="project_title">
-			Project:
-			<span id="info_project_title_text" class="project_title_text">
-				Project Title
-			</span>
-		</div>
-		<div class="info_area">
+		<div id="info_area" class="info_area">
+			<div class="project_title">
+				Project:
+				<span id="info_project_title_text" class="project_title_text">
+					Project Title
+				</span>
+			</div>
 			<div class="info_back_button_area" id="info_back_button_area">
 				<button class="button_back" onclick="backToInfo();">Back</button>
 			</div>
@@ -90,24 +154,15 @@
 		</div>
 	</span>
 	
-	<!--------------------------- EXE Mode --------------------------------->
+	<!--------------------------- EXE view --------------------------------->
 	<span id="exe_mode" style="display:none">
-		<div class="execute_button_area">
-			<button class="button_execute" onclick="executeProject();"></button>
-			<button class="button_edit" onclick="executeProject();">Stop</button>
-		</div>
-		<div class="change_mode_area">
-			<button class="button_change_mode" onclick="showInfoMode();">Info Mode</button>
-			<button class="button_change_mode" disabled onclick="showExeMode();">EXE Mode</button>
-			<button class="button_change_mode" onclick="showEditMode();">Edit Mode</button>
-		</div>
-		<div class="project_title">
-			Project:
-			<span id="exe_project_title_text" class="project_title_text">
-				Project Title
-			</span>
-		</div>
-		<div class="exe_area">
+		<div id="exe_area" class="exe_area">
+			<div class="project_title_log">
+				Project:
+				<span id="exe_project_title_text" class="project_title_text">
+					Project Title
+				</span>
+			</div>
 			<div class="exe_log_area">
 				<div class="exe_log" id="exe_log">
 					Log Area
@@ -116,11 +171,8 @@
 		</div>
 	</span>
 	
-	<!--------------------------- Edit Mode --------------------------------->
+	<!--------------------------- Edit view --------------------------------->
 	<span id="edit_mode" style="display:none">
-		<div class="execute_button_area">
-			<button class="button_execute" onclick="executeProject();"></button>
-		</div>
 		<!--div id="menubtn">
 			<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
 			<button class="button_editor" id="button_save_editor" onclick="saveFile();">SAVE<br>(CTRL+S)</button>
@@ -131,83 +183,23 @@
 			<div class="filepath" id="filename">-</a>
 			<label class="checkbox" for="checkbox1">
 		</nav-->
-		<div class="change_mode_area">
-			<button class="button_change_mode" onclick="showInfoMode();">Info Mode</button>
-			<button class="button_change_mode" onclick="showExeMode();">EXE Mode</button>
-			<button class="button_change_mode" disabled onclick="showEditMode();">Edit Mode</button>
-		</div>
-		
-		<div id="playinfo">
-			<!--div class="itemlabel">Directory:</div-->
-			<div class="settingitem">
-				<input type="text" id="dirpath" placeholder="Directory Path">
-				<!--button class="button_browse" id="openbtn">Browse</button-->
-			</div>
-		</div>
-		<div id="filelistArea">
-			<div id="filenameArea">
-				<input type="text" id="filename" placeholder="File Name:" value="">
-				<div class="filename_border"></div>
-			</div>
-			<!--div class="itemlabel">File:</div-->
-			<!--div id="hintmsg">連番ファイルでimage000001.jpgから始まる場合は "image%06d.jpg"と設定する</div-->
-			<div id="filelist_container">
-				<div id="filelist"></div>
-			</div>
-			<div id="filebutton_conainer" class="filebutton_conainer">
-				<div class="shownewfilearea">
-					<button id="button_newdir" onclick="showNewNameArea('newdirArea');">New<br>Directory</button>
-				</div>
-				<div class="shownewfilearea">
-					<button id="button_newfile" onclick="showNewNameArea('newfileArea');">New File</button>
-				</div>
-				<div class="shownewfilearea">
-					<button id="button_rename" onclick="showNewNameArea('renameArea');">Rename</button>
-				</div>
-				<div class="shownewfilearea">
-					<button id="button_delete" onclick="showNewNameArea();">Delete</button>
-				</div>
-			</div>
-		</div>
 
-		<div id="separator"></div>
-		
 		<div>
 			<pre id="editor"></pre>
 		</div>
-		<div id="outputArea">
-			<pre id='stdout'></pre>
-		</div>
-		<div id="imageArea">
-			<img id="imageView"/>
-		</div>
-		<div id="launchButtonArea">
-			<span id="launchButtonView"/>
-		</div>
-		<div id="newfileArea" class="newNameArea" >
-			New file!<br>
-			<input type="text" id="newfilename" class="inputNewNameBox" placeholder="file name"/>
-			<button class="button_new" id="button_newfile_done"></button>
-		</div>
-		<div id="newdirArea" class="newNameArea">
-			New directory!<br>
-			<input type="text" id="newdirname" class="inputNewNameBox" placeholder="directory name"/>
-			<button class="button_new" id="button_newdir_done"></button>
-		</div>
-		<div id="renameArea" class="newNameArea">
-			Rename selected<br>
-			<input type="text" id="renamefilename" class="inputNewNameBox" placeholder="rename"/>
-			<button class="button_new" id="button_rename_done"></button>
+
+		<div id="exeViewArea">
 		</div>
 	</span>
 	<!------------------------------------------------------------------------------>
 
+
 	<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="js/editor.js"></script>
-	<script type="text/javascript" src="js/editor_info_mode.js"></script>
-	<script type="text/javascript" src="js/editor_exe_mode.js"></script>
-	<script type="text/javascript" src="js/editor_edit_mode.js"></script>
+	<script type="text/javascript" src="js/editor_info_view.js"></script>
+	<script type="text/javascript" src="js/editor_exe_view.js"></script>
+	<script type="text/javascript" src="js/editor_edit_view.js"></script>
 	<script type="text/javascript" src="js/backfire_filedialog.js"></script>
 </body>
 </html>

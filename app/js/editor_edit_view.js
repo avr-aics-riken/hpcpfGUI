@@ -335,11 +335,15 @@ function setupSeparator() {
 			editor,
 			launchButtonArea,
 			imageArea,
+			exeArea,
+			infoArea,
 			left = window.pageXOffset || document.documentElement.scrollLeft,
 			pos;
 		if (dragging) {
 			filelist = document.getElementById('filelist');
 			filelistArea = document.getElementById('filelistArea');
+			exeArea = document.getElementById('exe_area');
+			infoArea = document.getElementById('info_area');
 			editor = document.getElementById('editor');
 			launchButtonArea = document.getElementById('launchButtonArea');
 			imageArea = document.getElementById('imageArea');
@@ -351,6 +355,8 @@ function setupSeparator() {
 				editor.style.left = (pos + 8) + 'px';
 				launchButtonArea.style.left = editor.style.left;
 				imageArea.style.left = editor.style.left;
+				exeArea.style.left = editor.style.left;
+				infoArea.style.left = editor.style.left;
 			}
 		}
 	};

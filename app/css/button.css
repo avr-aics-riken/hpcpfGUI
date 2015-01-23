@@ -338,7 +338,7 @@
 .button_execute {
 	width:140px;
 	height:70px;
-	position:absolute;
+	position:relative;
 	top:-56px;
 	background-image:url("../image/button_bg_action_play.png");
 	font-size:18px;
@@ -359,7 +359,7 @@
 	width:140px;
 	height:70px;
 	position:relative;
-	top:-56px;
+	top:-86px;
 	background-image:url("../image/button_bg_action_edit.png");
 	font-size:18px;
 	font-weight:600;

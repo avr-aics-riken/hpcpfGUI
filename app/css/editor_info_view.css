@@ -1,13 +1,21 @@
 .info_area {
+	position:absolute;
+	top:290px;
+	left:375px;
+	right:10px;
+	bottom:10px;
+	
+	/*
 	position:relative;
-	overflow:hidden;
-	left: 10%;
-	float: left;
 	margin-top:30px;
 	width:80%;
 	min-width:800px;
 	height:auto;
 	min-height:800px;
+	float: left;
+	left: 10%;
+	*/
+	overflow:hidden;
 	border:solid;
 	border-radius:5px;
 	border-width:5px;
