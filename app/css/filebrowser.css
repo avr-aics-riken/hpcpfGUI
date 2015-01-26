@@ -7,8 +7,8 @@
 	border-width:3px;
 	border-color:#72ca2a;
 	background-color:#292929;
-	width:380px;
-	min-width:380px;
+	width:400px;
+	min-width:400px;
 	height:580px;
 	overflow:auto;
 }
@@ -25,15 +25,6 @@
 	border-color:transparent;
 	height:70px;
 
-}
-
-
-.pane_left {
-	padding-left:15px;
-}
-
-.pane_right {
-	padding-right:15px;
 }
 
 .fileitem:active, .fileitem:focus, .fileitem:checked{
@@ -149,11 +140,11 @@
 	border-style:solid;
 	border-width:2px;
 	border-color:#72ca2a;
-	width:380px;
+	width:400px;
 	height:36px;
 	overflow:hidden;
 	margin-bottom:30px;
-	background:url("../image/button_bg_selector.png") no-repeat 345px 5px rgba(20,20,20,1.0);
+	background:url("../image/button_bg_selector.png") no-repeat 355px 5px rgba(20,20,20,1.0);
     background-color:#4d4d4d;
 }
 
