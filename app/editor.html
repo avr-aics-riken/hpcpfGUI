@@ -29,17 +29,28 @@
 		<button class="button_change_mode" onclick="showExeView();">Log</button>
 	</div>
 	
+	<div id="confirm_area">
+	</div>
+	<div id="exist_warning_dialog">
+		<div id="confirm_message">
+			<p>The name of file or directory already exists.</p>
+			<div id="confirm_button">
+				<button id="button_ok" type="button">OK</button>
+			</div>
+		</div>
+	</div>
+
 	<!--------------------------- menus / browser --------------------------------->
 	<div id="playinfo">
 		<!--div class="itemlabel">Directory:</div-->
 		<div class="settingitem">
-			<input type="text" id="dirpath" placeholder="Directory Path">
+			<input readonly  type="text" id="dirpath" placeholder="Directory Path">
 			<!--button class="button_browse" id="openbtn">Browse</button-->
 		</div>
 	</div>
 	<div id="filelistArea">
 		<div id="filenameArea">
-			<input type="text" id="filename" placeholder="File Name:" value="">
+			<input readonly type="text" id="filename" placeholder="File Name:" value="">
 			<div class="filename_border"></div>
 		</div>
 		<!--div class="itemlabel">File:</div-->

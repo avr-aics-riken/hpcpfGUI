@@ -162,13 +162,30 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			if (fs.existsSync(targetBaseDir)) {
 				fs.writeFileSync(targetPath, data.data);
 				console.log('It\'s saved!:' + targetPath);
-				socket.emit("filesaved");
+				socket.emit("filesavedone");
 			}
 		} catch(e) {
 			console.log("reqFileSave failed:"+e);
 		}
 	});
-	socket.on('reqDirSave', function(sdata) {
+	socket.on('reqNewFile', function(sdata) {
+		//console.log(data.file);
+		var srcdir = sesstionTable[socket.id].dir,
+			data = JSON.parse(sdata),
+			targetBaseDir = path.join(srcdir, data.basedir);
+			targetPath = path.join(targetBaseDir, data.file);
+
+		try {
+			if (fs.existsSync(targetBaseDir)) {
+				fs.writeFileSync(targetPath, data.data);
+				console.log('It\'s saved!:' + targetPath);
+				socket.emit("newfiledone");
+			}
+		} catch(e) {
+			console.log("reqNewFile failed:"+e);
+		}
+	});
+	socket.on('reqNewDir', function(sdata) {
 		var srcdir = sesstionTable[socket.id].dir,
 			data = JSON.parse(sdata),
 			targetBaseDir = path.join(srcdir, data.basedir);
@@ -180,12 +197,12 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 					fs.mkdirSync(targetPath);
 					console.log('It\'s saved!:' + targetPath);
 					if (fs.existsSync(targetPath)) {
-						socket.emit("dirsaved");
+						socket.emit("newdirdone");
 					}
 				}
 			}
 		} catch (e) {
-			console.error("reqDirSave failed:"+e);
+			console.error("reqNewDir failed:"+e);
 		}
 	});
 	
@@ -203,16 +220,24 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		if (fs.existsSync(target)) {
 			if (fs.statSync(target).isDirectory()) {
 				dstpath = path.join(target, '..', newName);
-				console.log("rename from:" + target);
-				console.log("rename to:" + dstpath);
-				fs.renameSync(target, dstpath);
-				socket.emit("renamed");
+				if (fs.existsSync(dstpath)) {
+					socket.emit("renamedone", false);
+				} else {
+					console.log("rename from:" + target);
+					console.log("rename to:" + dstpath);
+					fs.renameSync(target, dstpath);
+					socket.emit("renamedone", true);
+				}
 			} else {
 				dstpath = path.join(path.dirname(target), newName);
-				console.log("rename from:" + target);
-				console.log("rename to:" + dstpath);
-				fs.renameSync(target, dstpath);
-				socket.emit("renamed");
+				if (fs.existsSync(dstpath)) {
+					socket.emit("renamedone", false);
+				} else {
+					console.log("rename from:" + target);
+					console.log("rename to:" + dstpath);
+					fs.renameSync(target, dstpath);
+					socket.emit("renamedone", true);
+				}
 			}
 		}
 	});

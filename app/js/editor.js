@@ -110,12 +110,17 @@ function showNewNameArea(id) {
 
 /// save file
 function saveFile(){
+	var basedir = $('dirpath').value,
+		filename = $('filename').value;
 	if (!openedfile)
 		return;
 	if (!edited)
 		return;
 	console.log("Save:"+openedfile);
-	socket.emit('reqFileSave',{file: openedfile, data:editor.getValue()});
+	socket.emit('reqFileSave',JSON.stringify({basedir: basedir, file: filename, data:editor.getValue()}));
+	socket.on('filesavedone', function() {
+		
+	});
 	ChangeEditor(false);
 }
 
@@ -129,10 +134,10 @@ function newFile(fd, basedir, fname){
 	console.log(fname);
 	$('newfilename').value = ''
 	
-	socket.emit('reqFileSave', JSON.stringify({basedir: basedir, file: fname, data:''}));
+	socket.emit('reqNewFile', JSON.stringify({basedir: basedir, file: fname, data:''}));
 	fd.FileList('/');
 	
-	socket.on("filesaved", function() {
+	socket.on("newfiledone", function() {
 		// new file saved
 		hideNewNameArea();
 		fd.FileList('/');
@@ -149,10 +154,10 @@ function newDirectory(fd, basedir, dirname) {
 	$('newdirname').value = '';
 	
 	console.log({dir: dirname, data:''});
-	socket.emit('reqDirSave', JSON.stringify({basedir: basedir, dir: dirname}));
+	socket.emit('reqNewDir', JSON.stringify({basedir: basedir, dir: dirname}));
 	fd.FileList('/');
 	
-	socket.on("dirsaved", function() {
+	socket.on("newdirdone", function() {
 		// new directory saved
 		hideNewNameArea();
 		fd.FileList('/');
@@ -163,18 +168,26 @@ function newDirectory(fd, basedir, dirname) {
 /// @param fd file dialog instance
 /// @param name new name of the file or dir
 function renameFileOrDirectory(fd, name) {
-	var target = "";
+	var renamedPath = "",
+		target = "",
+		i = 0;
 	console.log("renameFileOrDirectory:" + name);
 	if (name == "")
 		return;
 	
 	target = $('dirpath').value + $('filename').value;
 	socket.emit('reqRename', JSON.stringify({target: target, name:name}));
-	
-	socket.on("renamed", function() {
-		// file or directory was renamed
-		hideNewNameArea();
-		fd.FileList('/');
+	socket.on("renamedone", function(success) {
+		if (success) {
+			// file or directory was renamed
+			hideNewNameArea();
+			fd.FileList('/');
+		} else {
+			// exists same path
+			showExistWarning(function() {
+				hiddenExistWarning();
+			});
+		}
 	});
 }
 
@@ -318,4 +331,25 @@ function setupSeparator() {
 			}
 		}
 	};
+}
+
+
+/// hidden exist warning dialog
+function hiddenExistWarning(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("exist_warning_dialog").style.visibility = "hidden";
+}
+
+/// show same file/directory exists dialog
+function showExistWarning(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("exist_warning_dialog").style.visibility = "visible";
+
+	function okfunc() {
+		callback();
+		save.removeEventListener("click", okfunc, true);
+	}
+	ok.addEventListener("click", okfunc, true);
 }

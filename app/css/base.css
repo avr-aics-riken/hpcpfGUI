@@ -281,4 +281,56 @@ input{
 	margin:0px;
 }
 
+#confirm_area {
+	min-height: 100%;
+	min-width: 800px;
+	width: 100%;
+	height: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	visibility: hidden;
+	background-color:#CCCCCC;
+	opacity: 0.7;
+	z-index:50;
+}
+
+#confirm_dialog {
+	top: 50%;
+	left: 50%;
+	width: 400px;
+	height: 200px;
+	margin-top:-100px;
+	margin-left:-200px;
+	position: fixed;
+	visibility: hidden;
+	background-color:#444444;
+	z-index:60;
+}
+
+#exist_warning_dialog {
+	top: 50%;
+	left: 50%;
+	width: 400px;
+	height: 200px;
+	margin-top:-100px;
+	margin-left:-200px;
+	position: fixed;
+	visibility: hidden;
+	background-color:#444444;
+	z-index:60;
+}
+
+#confirm_message {
+	transform: translateY(50%);
+	font-family:sans-serif;
+	text-align:center;
+	font-size:20px;
+	color: #ffffff;
+}
+
+.confirm_button {
+	margin-top:20px;
+}
+
 

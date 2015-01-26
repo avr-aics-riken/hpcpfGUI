@@ -109,23 +109,6 @@ function fileselect(path) {
 	socket.emit('reqSelectFile', path);
 }
 
-/*
-function diropen(dirname)
-{
-	editor.setReadOnly(true);
-	saveFile();
-	openedfile = null;
-	
-	editor.setValue("");// clear
-	ChangeEditor(false);
-	console.log("Open Dir:"+dirname);
-	
-	//redirect
-	window.open("editor.html?"+dirname);// new dir
-	//document.location = "editor.html?"+dirname;
-}
-*/
-
 function launchApp(name, file) {
 	"use strict";
 	socket.emit('ptl_launchapp', {appname : name, file : file});
@@ -206,47 +189,6 @@ socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 	openedfile = filename;
 	ChangeEditor(false);
 });
-
-/*
-socket.on('updatefilelist', function(jsonlist){
-	var ls = $('filelist');
-	console.log("update filelist");
-	ls.innerHTML = ''; // clear
-	var list = JSON.parse(jsonlist);
-	for(var i in list) {
-		//console.log(list[i]);
-		//var newbtn = document.createElement('button');
-		//newbtn.setAttribute('class','btn btn-info btn-wide btnsize');
-		//newbtn.setAttribute('onclick','fileopen("'+list[i]+'")');
-		//newbtn.innerHTML = list[i];
-		
-		var newbtn = document.createElement('div');
-		newbtn.setAttribute('class', "fileitem");
-		newbtn.setAttribute('draggable', "false");
-		var fileicon = document.createElement('div');
-		if (list[i].type != "file" && list[i].type != "dir"){
-			console.log("Unknown file type -> "+list[i].type);
-			continue;
-		}
-		
-		fileicon.setAttribute('class', list[i].type);
-		newbtn.appendChild(fileicon);
-		var filelabel = document.createElement('p');
-		filelabel.setAttribute('class', "filelabel_short");
-		filelabel.innerHTML = list[i].name;
-		newbtn.appendChild(filelabel);
-		if (list[i].type == "file")
-			newbtn.setAttribute('onclick','fileselect("'+list[i].name+'")');
-		else // dir
-			newbtn.setAttribute('onclick','diropen("'+list[i].path+'")');
-		//<div class="fileitem" id="dir2" draggable="false"><div class="dir"></div><p class="filelabel_short">dir2</p></div>
-		//<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1aaaaaaaaaaaaaaa</p></div>
-		
-		ls.appendChild (newbtn);
-		ls.appendChild(document.createElement('br'));
-	}
-});
-*/
 
 socket.on('fileopen', function(data) {
 	console.log("fileopen : " + data);
