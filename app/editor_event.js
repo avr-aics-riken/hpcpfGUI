@@ -22,8 +22,9 @@ if (os.platform() === 'linux'){ // Linux setting
 }
 
 
-var SH_CMD = 'sh'
-
+var SH_CMD = 'sh',
+	PIF_FILENAME = 'pif.json',
+	CIF_FILENAME = 'cif.json';
 
 var sesstionTable = {};
 
@@ -158,9 +159,33 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			console.log('It\'s saved!');
 		});
 	});
-	
+	socket.on('reqRename', function(sdata) {
+		var srcdir = sesstionTable[socket.id].dir,
+			dstpath,
+			data = JSON.parse(sdata);
+		
+		if (data.file.charAt(0) == '/') {
+			data.file = path.join(srcdir, data.file.slice(1));
+		}
+		console.log('reqRename:' + sdata);
+		if (fs.existsSync(data.file)) {
+			if (fs.statSync(data.file).isDirectory()) {
+				dstpath = path.join(data.file, '..', data.data);
+				console.log("rename from:" + data.file);
+				console.log("rename to:" + dstpath);
+				fs.renameSync(data.file, dstpath);
+				socket.emit("renamed");
+			} else {
+				dstpath = path.join(path.dirname(data.file), data.data);
+				console.log("rename from:" + data.file);
+				console.log("rename to:" + dstpath);
+				fs.renameSync(data.file, dstpath);
+				socket.emit("renamed");
+			}
+		}
+	});
 	socket.on('reqUpdateInformation', function() {
-		var pifFile = path.join(sesstionTable[socket.id].dir, "pif.json"),
+		var pifFile = path.join(sesstionTable[socket.id].dir, PIF_FILENAME),
 			pifData,
 			pifStr;
 		console.log("reqUpdateInformation:" + pifFile);

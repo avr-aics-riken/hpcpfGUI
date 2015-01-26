@@ -109,6 +109,7 @@ function fileselect(path) {
 	socket.emit('reqSelectFile', path);
 }
 
+/*
 function diropen(dirname)
 {
 	editor.setReadOnly(true);
@@ -123,6 +124,7 @@ function diropen(dirname)
 	window.open("editor.html?"+dirname);// new dir
 	//document.location = "editor.html?"+dirname;
 }
+*/
 
 function saveFile(){
 	if (!openedfile)
@@ -149,6 +151,16 @@ function newDirectory(fd, dirname) {
 }
 
 function renameFileOrDirectory(fd, name) {
+	var target = "";
+	console.log("renameFileOrDirectory:" + name);
+	if (name == "")
+		return;
+	
+	target = $('dirpath').value + $('filename').value;
+	socket.emit('reqRename', JSON.stringify({file: target, data:name}));
+	socket.on("renamed", function() {
+		fd.FileList('/');
+	});
 }
 
 function showNewNameArea(id){
@@ -181,13 +193,6 @@ function showOutputArea(forceshow){
 	}
 }
 */
-
-socket.on('connect', function() {
-	"use strict";
-	setupSeparator();
-	setupFileDialog();
-	//getFileList();
-});
 
 socket.on('showfile', function (data) {
 	//console.log(data.str, data.type);
@@ -298,6 +303,9 @@ socket.on('fileopen', function(data) {
 	fileopen(data);
 });
 
+socket.on('renamed', function() {
+});
+
 function procRun() {
 	clearOutput();
 	//showOutputArea(true);
@@ -359,52 +367,4 @@ function setupSeparator() {
 			}
 		}
 	};
-}
-
-function setupFileDialog() {
-	"use strict";
-	var errormsg = document.getElementById('errormsg');
-	
-	var fd = new FileDialog('opendlg', document.getElementById("filelist"), true, false);
-	fd.registerSocketEvent(socket);
-	
-	socket.on('connect', function () {
-		console.log('connected');
-		socket.on('event', function (data) {
-			console.log(data);
-		});
-		socket.on('showError', function (data) {
-			//console.log('Err:', data)
-			errormsg.innerHTML = data;
-		});
-	});
-	
-	fd.FileList('/');
-	
-	$('button_newfile_done').onclick = function() {
-		newFile(fd, $('newfilename').value);
-	};
-	$('button_newdir_done').onclick = function() {
-		newDirectory(fd, $('newdirname').value);
-	};
-	$('button_rename_done').onclick = function() {
-		renameFileOrDirectory(fd, $('renamefilename').value);
-	};
-}
-
-function clickDir(fd, path) {
-	changeDir(fd, path);
-	hideNewNameArea();
-}
-
-function changeDir(fd, path) {
-	document.getElementById('dirpath').value = path;
-}
-
-function clickFile(fd, path) {
-	var fl;
-	fileselect(path);
-	fl = path.split("/");
-	document.getElementById('filename').value = fl[fl.length - 1];
-	showEditView();
 }
