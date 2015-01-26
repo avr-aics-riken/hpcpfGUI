@@ -17,7 +17,6 @@
 <body>
 	<div class="header">
 		<div id="logo"></div>
-		<div id="version">Ver.1.1</div>
 	</div>
 	<div class="title text_title">Project Editor</div>
 	
@@ -26,9 +25,8 @@
 		<button class="button_edit" onclick="executeProject();">Stop</button>
 	</div>
 	<div class="change_mode_area">
-		<button class="button_change_mode" onclick="showInfoView();">Info View</button>
-		<button class="button_change_mode" onclick="showExeView();">EXE View</button>
-		<button class="button_change_mode" onclick="showEditView();">Edit View</button>
+		<button class="button_change_mode" onclick="showInfoView();">Info</button>
+		<button class="button_change_mode" onclick="showExeView();">Log</button>
 	</div>
 	
 	<!--------------------------- menus / browser --------------------------------->
@@ -51,16 +49,24 @@
 		</div>
 		<div id="filebutton_conainer" class="filebutton_conainer">
 			<div class="shownewfilearea">
-				<button id="button_newdir" onclick="showNewNameArea('newdirArea');">New<br>Directory</button>
+				<button id="button_newdir" onclick="showNewNameArea('newdirArea');">
+					<span class="newdirectory_new">New</span><br><span class="newdirectory_dir">Directory</span>
+				</button>
 			</div>
 			<div class="shownewfilearea">
-				<button id="button_newfile" onclick="showNewNameArea('newfileArea');">New File</button>
+				<button id="button_newfile" onclick="showNewNameArea('newfileArea');">
+					<span class="newfilearea_label">New File</span>
+				</button>
 			</div>
 			<div class="shownewfilearea">
-				<button id="button_rename" onclick="showNewNameArea('renameArea');">Rename</button>
+				<button id="button_rename" onclick="showNewNameArea('renameArea');">
+					<span class="newfilearea_label">Rename</span>
+				</button>
 			</div>
 			<div class="shownewfilearea">
-				<button id="button_delete" onclick="showNewNameArea('deleteArea');">Delete</button>
+				<button id="button_delete" onclick="showNewNameArea('deleteArea');">
+					<span class="newfilearea_label">Delete</span>
+				</button>
 			</div>
 		</div>
 	</div>

@@ -3,7 +3,7 @@
 	position:relative;
 	display: flex;
 	/*display: -webkit-flex;*/
-	margin-top:45px;
+	margin-top:-25px;
 	margin-bottom:5px;
 	/*flex-direction: row;*/
 }
@@ -28,14 +28,14 @@
 
 .filename_border {
 	position:relative;
-	width:90%;
-	padding-top:10px;
+	width:95%;
+	padding-top:0px;
 	margin-left: auto;
 	margin-right: auto;
 	border-top:0px;
 	border-left:0px;
 	border-right:0px;
-	border-bottom: 0.2em solid white;
+	border-bottom: 0.15em solid white;
 }
 
 #soundname {
@@ -96,7 +96,7 @@
 
 .file {
 	margin: 8px 0px 0px 10px;
-	font-size: 12px;
+	font-size: 11px;
 	border-top: 0.2em solid #72ca2a;
 	position: relative;
 	width: 1em;
@@ -125,7 +125,7 @@
 
 .dir {
 	margin: 8px 0px 0px 10px;
-	font-size: 12px;
+	font-size: 11px;
 	width: 2em;
 	height: 1.5em;
 	background: #72ca2a;

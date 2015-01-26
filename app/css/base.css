@@ -104,6 +104,7 @@ input{
 	width:100%;
 	min-width:800px;
 	overflow:hidden;
+	height:50px;
 }
 
 #logo{
@@ -113,9 +114,10 @@ input{
 	text-align:left;
 	background-image:url("../image/hpcpf_logo.png");
 	background-repeat:no-repeat;
+	background-size: contain;
 	float:left;
-	width:180px;
-	height:54px;
+	width:185px;
+	height:52px;
 	vertical-align:middle;
 }
 
@@ -138,10 +140,10 @@ input{
 	text-align:center;
 	width:800px;
 	min-width:300px;
-	height:300px;
+	height:250px;
 	margin-left:auto;
 	margin-right:auto;
-	margin-top:50px;
+	margin-top:70px;
 	padding-top:0px;
 	background-color:transparent;
 	border:none;
@@ -152,7 +154,7 @@ input{
 	color:#72ca2a;
 	text-align:left;
 	width:92%;
-	height:75px;
+	height:50px;
 	font-size:24px;
 }
 
@@ -160,14 +162,15 @@ input{
 	font-family:sans-serif;
 	font-size:20px;
 	font-weight:600;
-	margin-top:40px;
-	margin-left:40px;
-	padding-top:30px;
+	margin-top:8px;
+	margin-left:10px;
+	padding-top:27px;
 	padding-left:40px;
 	background-image:url("../image/button_bg_menu_press.png");
 	background-repeat:no-repeat;
-	width:380px;
-	height:65px;
+	background-size: contain;
+	width:224px;
+	height:59px;
 }
 
 .text_recent{
@@ -182,21 +185,16 @@ input{
 /* pane */
 .pane_left{
 	float:left;
-	width:380px;
-	text-align:center;
-	margin-right:10px;
-	margin-left:auto;
-	padding-left:10px;
+	width:370px;
+	text-align:right;
+	padding-right:10px;
 }
 
 .pane_right{
-	margin-left:10px;
-	margin-right:auto;
-	padding-left:10px;
 	float:right;
-	width:380px;
-	text-align:center;
-	
+	width:370px;
+	text-align:left;
+	padding-left:10px;
 }
 
 .pane_top{

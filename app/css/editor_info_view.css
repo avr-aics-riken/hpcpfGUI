@@ -1,7 +1,7 @@
 .info_area {
 	position:absolute;
-	top:290px;
-	left:375px;
+	top:175px;
+	left:315px;
 	right:10px;
 	bottom:10px;
 	
@@ -52,7 +52,7 @@
 	position:relative;
 	margin-left:50px;
 	margin-bottom:20px;
-	font-size:30px;
+	font-size:18px;
 	font-family:sans-serif;
 }
 
@@ -60,8 +60,8 @@
 	position:relative;
 	margin-top:5px;
 	margin-bottom:5px;
-	margin-left:30px;
-	font-size:24px;
+	margin-left:20px;
+	font-size:16px;
 	font-family:sans-serif;
 }
 

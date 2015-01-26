@@ -4,14 +4,15 @@
 }
 
 .button_menu{
-	width:367px;
-	height:98px;
+	width:224px;
+	height:54px;
 	text-align:left;
-	margin-bottom:20px;
+	margin-bottom:45px;
 	padding-left:25px;
 	font-size:22px;
 	background-image:url("../image/button_bg_menu.png");
 	background-repeat:no-repeat;
+	background-size: contain;
 }
 .button_menu:active{
 	background-image:url("../image/button_bg_menu_press.png");
@@ -19,11 +20,11 @@
 }
 
 .button_menu_bottom {
-	width:200px;
-	height:101px;
+	width:154px;
+	height:71px;
 	margin-top:40px;
 	margin-bottom:20px;
-	margin-left:10px;
+	margin-left:25px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_menu.png");
 	background-size: contain;
@@ -89,16 +90,20 @@
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_open:active{
 	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - save */
 .button_save{
-	width:165px;
-	height:101px;
+	width:71px;
+	height:46px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
@@ -112,15 +117,19 @@
 /* button - cancel */
 .button_cancel{
 	width:165px;
-	height:101px;
+	height:95px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_cancel.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_cancel:active{
 	background-image:url("../image/button_bg_action_cancel_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - cancel */
@@ -143,18 +152,18 @@
 /* button - newdir */
 #button_newdir {
 	position:absolute;
-	width:90px;
-	height:60px;
+	width:71px;
+	height:46px;
 	left:-5px;
-	top:-50px;
-	text-align:center;
+	top:-35px;
+	text-align:left;
 	padding-bottom:15px;
 	background-image:url("../image/button_bg_action.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 	color:#fff;
 	font-weight:300;
-	font-size:14px;
+	font-size:11px;
 }
 
 #button_newdir:active{
@@ -166,18 +175,18 @@
 /* button - newfile */
 #button_newfile{
 	position:absolute;
-	width:90px;
-	height:60px;
-	left:80px;
-	top:-50px;
-	text-align:center;
+	width:71px;
+	height:46px;
+	left:65px;
+	top:-35px;
+	text-align:left;
 	padding-bottom:15px;
 	background-image:url("../image/button_bg_action.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 	color:#fff;
 	font-weight:300;
-	font-size:14px;
+	font-size:11px;
 }
 
 #button_newfile:active{
@@ -189,18 +198,18 @@
 /* button - rename */
 #button_rename {
 	position:absolute;
-	width:90px;
-	height:60px;
-	left:165px;
-	top:-50px;
-	text-align:center;
+	width:71px;
+	height:46px;
+	left:135px;
+	top:-35px;
+	text-align:left;
 	padding-bottom:15px;
 	background-image:url("../image/button_bg_action.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 	color:#fff;
 	font-weight:300;
-	font-size:14px;
+	font-size:11px;
 }
 
 #button_rename:active{
@@ -212,18 +221,18 @@
 /* button - delete */
 #button_delete {
 	position:absolute;
-	width:90px;
-	height:60px;
-	left:250px;
-	top:-50px;
-	text-align:center;
+	width:71px;
+	height:46px;
+	left:205px;
+	top:-35px;
+	text-align:left;
 	padding-bottom:15px;
 	background-image:url("../image/button_bg_action.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 	color:#fff;
 	font-weight:300;
-	font-size:14px;
+	font-size:11px;
 }
 
 #button_delete:active{
@@ -248,26 +257,28 @@
 
 /* button - remotehost */
 .button_remotehost{
-	width:165px;
-	height:100px;
-	margin-top:20px;
-	margin-bottom:20px;
+	width:71px;
+	height:47px;
+	margin-top:50px;
+	margin-bottom:40px;
 	margin-right:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_upper.png");
+	background-size: contain;
 	color:#fff;
 	font-weight:bolder;
-	font-size:16px;
+	font-size:12px;
 }
 
 .button_remotehost:active{
 	background-image:url("../image/button_bg_action_upper_press.png");
+	background-size: contain;
 }
 
 /* button - home */
 .button_home{
-	width:165px;
-	height:100px;
+	width:71px;
+	height:46px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
@@ -275,21 +286,6 @@
 }
 
 .button_home:active{
-	background-image:url("../image/button_bg_action_press.png");
-}
-
-/* button - save */
-.button_save{
-	width:165px;
-	height:100px;
-	margin-top:20px;
-	margin-right:0px;
-	margin-left:0px;
-	text-align:center;
-	background-image:url("../image/button_bg_action.png");
-}
-
-.button_save:active{
 	background-image:url("../image/button_bg_action_press.png");
 }
 
@@ -311,10 +307,10 @@
 
 /* button - change mode */
 .button_change_mode {
-	width:150px;
-	height:80px;
+	width:72px;
+	height:47px;
 	position:relative;
-	top:-56px;
+	top:-80px;
 	background-image:url("../image/button_bg_action_upper.png");
 	background-repeat:no-repeat;
 	background-size: contain;
@@ -336,10 +332,10 @@
 
 /* button - execute */
 .button_execute {
-	width:140px;
-	height:70px;
+	width:60px;
+	height:40px;
 	position:relative;
-	top:-56px;
+	top:-66px;
 	background-image:url("../image/button_bg_action_play.png");
 	font-size:18px;
 	font-weight:600;
@@ -356,13 +352,13 @@
 
 /* button - edit */
 .button_edit {
-	width:140px;
-	height:70px;
+	width:60px;
+	height:40px;
 	position:relative;
-	top:-86px;
+	top:-80px;
 	background-image:url("../image/button_bg_action_edit.png");
-	font-size:18px;
-	font-weight:600;
+	font-size:14px;
+	font-weight:300;
 	background-repeat:no-repeat;
 	background-size: contain;
 	margin-left:auto;
@@ -431,8 +427,8 @@
 }
 
 #button_save_editor{
-	width:165px;
-	height:100px;
+	width:71px;
+	height:46px;
 	position:absolute;
 	left:180px;
 	top:40px;
@@ -447,8 +443,8 @@
 
 /* button - stop */ 
 #button_stop{
-	width:165px;
-	height:100px;
+	width:71px;
+	height:46px;
 	position:absolute;
 	left:360px;
 	top:40px;
@@ -462,8 +458,8 @@
 
 /* button - run */
 #button_run{
-	width:165px;
-	height:100px;
+	width:71px;
+	height:46px;
 	position:absolute;
 	left:0px;
 	top:40px;
@@ -510,22 +506,22 @@
 }
 
 .text_button_menu{
-	font-size:18px;
+	font-size:16px;
 	font-weight:600;
 	font-family:sans-serif;
 	position:relative;
-	top:-10px;
-	left:18px;
+	top:0px;
+	left:0px;
 	color:#72ca2a;
 }
 
 .text_button_menu_bottom {
-	font-size:18px;
+	font-size:16px;
 	font-weight:600;
 	font-family:sans-serif;
 	position:relative;
-	top:-14px;
-	left:0px;
+	top:-12px;
+	left:-3px;
 	color:#4d4d4d;
 }
 
