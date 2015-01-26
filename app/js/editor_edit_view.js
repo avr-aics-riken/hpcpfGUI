@@ -126,56 +126,6 @@ function diropen(dirname)
 }
 */
 
-function saveFile(){
-	if (!openedfile)
-		return;
-	if (!edited)
-		return;
-	console.log("Save:"+openedfile);
-	socket.emit('reqFileSave',{file: openedfile, data:editor.getValue()});
-	ChangeEditor(false);
-}
-
-function newFile(fd, fname){
-	console.log("newfile:" + fname);
-	if (fname == "")
-		return;
-	console.log(fname);
-	$('newfilename').value = ''
-	
-	socket.emit('reqFileSave',{file: fname, data:''});
-	fd.FileList(fname);
-}
-
-function newDirectory(fd, dirname) {
-}
-
-function renameFileOrDirectory(fd, name) {
-	var target = "";
-	console.log("renameFileOrDirectory:" + name);
-	if (name == "")
-		return;
-	
-	target = $('dirpath').value + $('filename').value;
-	socket.emit('reqRename', JSON.stringify({file: target, data:name}));
-	socket.on("renamed", function() {
-		fd.FileList('/');
-	});
-}
-
-function showNewNameArea(id){
-	var classNames = $(id).className.split(' ');
-	console.log("showNewNameArea:" + $(id).className);
-	if (classNames[1] === 'fadeIn') {
-		classNames[1] = 'fadeOut';
-		$(id).className = classNames.join(' ');
-	} else {
-		classNames = $(id).className.split(' ');
-		classNames[1] = 'fadeIn';
-		$(id).className = classNames.join(' ');
-	}
-}
-
 function launchApp(name, file) {
 	"use strict";
 	socket.emit('ptl_launchapp', {appname : name, file : file});
@@ -303,9 +253,6 @@ socket.on('fileopen', function(data) {
 	fileopen(data);
 });
 
-socket.on('renamed', function() {
-});
-
 function procRun() {
 	clearOutput();
 	//showOutputArea(true);
@@ -326,45 +273,4 @@ function procStop() {
 function getFileList()
 {
 	socket.emit('reqFileList');
-}
-
-function setupSeparator() {
-	var separator = document.getElementById('separator'),
-		dragging = false;
-	separator.onmousedown = function(e) {
-		dragging = true;
-	};
-	document.onmouseup = function(e) {
-		dragging = false;
-	};
-	document.onmousemove = function(e) {
-		var filelist,
-			editor,
-			launchButtonArea,
-			imageArea,
-			exeArea,
-			infoArea,
-			left = window.pageXOffset || document.documentElement.scrollLeft,
-			pos;
-		if (dragging) {
-			filelist = document.getElementById('filelist');
-			filelistArea = document.getElementById('filelistArea');
-			exeArea = document.getElementById('exe_area');
-			infoArea = document.getElementById('info_area');
-			editor = document.getElementById('editor');
-			launchButtonArea = document.getElementById('launchButtonArea');
-			imageArea = document.getElementById('imageArea');
-			pos = left + e.clientX;
-			if (pos > 170 && pos < (document.documentElement.clientWidth  - 50)) {
-				separator.style.left = pos + 'px';
-				filelist.style.width = (pos - 18) + 'px';
-				filelistArea.style.width = filelist.style.width;
-				editor.style.left = (pos + 8) + 'px';
-				launchButtonArea.style.left = editor.style.left;
-				imageArea.style.left = editor.style.left;
-				exeArea.style.left = editor.style.left;
-				infoArea.style.left = editor.style.left;
-			}
-		}
-	};
 }

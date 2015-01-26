@@ -95,8 +95,92 @@ function setProjectName(name) {
 	$('exe_project_title_text').innerHTML = name;
 }
 
+function showNewNameArea(id) {
+	var classNames = $(id).className.split(' ');
+	console.log("showNewNameArea:" + $(id).className);
+	if (classNames[1] === 'fadeIn') {
+		classNames[1] = 'fadeOut';
+		$(id).className = classNames.join(' ');
+	} else {
+		classNames = $(id).className.split(' ');
+		classNames[1] = 'fadeIn';
+		$(id).className = classNames.join(' ');
+	}
+}
+
+/// save file
+function saveFile(){
+	if (!openedfile)
+		return;
+	if (!edited)
+		return;
+	console.log("Save:"+openedfile);
+	socket.emit('reqFileSave',{file: openedfile, data:editor.getValue()});
+	ChangeEditor(false);
+}
+
+/// make new file
+/// @param fd file dialog instance
+/// @param fname new filename
+function newFile(fd, basedir, fname){
+	console.log("newfile:" + fname);
+	if (fname == "")
+		return;
+	console.log(fname);
+	$('newfilename').value = ''
+	
+	socket.emit('reqFileSave', JSON.stringify({basedir: basedir, file: fname, data:''}));
+	fd.FileList('/');
+	
+	socket.on("filesaved", function() {
+		// new file saved
+		hideNewNameArea();
+		fd.FileList('/');
+	});
+}
+
+/// make new directory
+/// @param fd file dialog instance
+/// @param dirname new directory name
+function newDirectory(fd, basedir, dirname) {
+	if (dirname == "")
+		return;
+	console.log(dirname);
+	$('newdirname').value = '';
+	
+	console.log({dir: dirname, data:''});
+	socket.emit('reqDirSave', JSON.stringify({basedir: basedir, dir: dirname}));
+	fd.FileList('/');
+	
+	socket.on("dirsaved", function() {
+		// new directory saved
+		hideNewNameArea();
+		fd.FileList('/');
+	});
+}
+
+/// rename file or directory
+/// @param fd file dialog instance
+/// @param name new name of the file or dir
+function renameFileOrDirectory(fd, name) {
+	var target = "";
+	console.log("renameFileOrDirectory:" + name);
+	if (name == "")
+		return;
+	
+	target = $('dirpath').value + $('filename').value;
+	socket.emit('reqRename', JSON.stringify({file: target, data:name}));
+	
+	socket.on("renamed", function() {
+		// file or directory was renamed
+		hideNewNameArea();
+		fd.FileList('/');
+	});
+}
 
 /// change directory
+/// @param fd file dialog instance
+/// @param path dir path of upper input box
 function changeDir(fd, path) {
 	document.getElementById('dirpath').value = path;
 }
@@ -109,6 +193,9 @@ function clickDir(fd, parentDir, path) {
 }
 
 /// callback of file clicked on file dialog
+/// @param fd file dialog instance
+/// @param parentDir parent directory of path
+/// @param path relative path from project dir
 function clickFile(fd, parentDir, path) {
 	var fl;
 	console.log("file clicked");
@@ -147,10 +234,10 @@ function setupFileDialog() {
 	fd.FileList('/');
 	
 	$('button_newfile_done').onclick = function() {
-		newFile(fd, $('newfilename').value);
+		newFile(fd, $('dirpath').value, $('newfilename').value);
 	};
 	$('button_newdir_done').onclick = function() {
-		newDirectory(fd, $('newdirname').value);
+		newDirectory(fd, $('dirpath').value, $('newdirname').value);
 	};
 	$('button_rename_done').onclick = function() {
 		renameFileOrDirectory(fd, $('renamefilename').value);

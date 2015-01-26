@@ -151,14 +151,44 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			console.error("no such file or directory: " + absolutePath);
 		}
 	});
-	socket.on('reqFileSave', function(data) {
+	socket.on('reqFileSave', function(sdata) {
 		//console.log(data.file);
-		var srcdir = sesstionTable[socket.id].dir;
-		fs.writeFile(srcdir+data.file, data.data, function (err) {
-			if (err) throw err;
-			console.log('It\'s saved!');
-		});
+		var srcdir = sesstionTable[socket.id].dir,
+			data = JSON.parse(sdata),
+			targetBaseDir = path.join(srcdir, data.basedir);
+			targetPath = path.join(targetBaseDir, data.file);
+
+		try {
+			if (fs.existsSync(targetBaseDir)) {
+				fs.writeFileSync(targetPath, data.data);
+				console.log('It\'s saved!:' + targetPath);
+				socket.emit("filesaved");
+			}
+		} catch(e) {
+			console.log("reqFileSave failed:"+e);
+		}
 	});
+	socket.on('reqDirSave', function(sdata) {
+		var srcdir = sesstionTable[socket.id].dir,
+			data = JSON.parse(sdata),
+			targetBaseDir = path.join(srcdir, data.basedir);
+			targetPath = path.join(targetBaseDir, data.dir);
+		
+		try {
+			if (fs.existsSync(targetBaseDir)) {
+				if (!fs.existsSync(targetPath)) {
+					fs.mkdirSync(targetPath);
+					console.log('It\'s saved!:' + targetPath);
+					if (fs.existsSync(targetPath)) {
+						socket.emit("dirsaved");
+					}
+				}
+			}
+		} catch (e) {
+			console.log("reqDirSave failed:"+e);
+		}
+	});
+	
 	socket.on('reqRename', function(sdata) {
 		var srcdir = sesstionTable[socket.id].dir,
 			dstpath,
