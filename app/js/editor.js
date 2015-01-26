@@ -306,7 +306,7 @@ function setupSeparator() {
 			launchButtonArea = document.getElementById('launchButtonArea');
 			imageArea = document.getElementById('imageArea');
 			pos = left + e.clientX;
-			if (pos > 170 && pos < (document.documentElement.clientWidth  - 50)) {
+			if (pos > 295 && pos < (document.documentElement.clientWidth  - 50)) {
 				separator.style.left = pos + 'px';
 				filelist.style.width = (pos - 18) + 'px';
 				filelistArea.style.width = filelist.style.width;

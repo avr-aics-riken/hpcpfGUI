@@ -1,5 +1,5 @@
 body {
-	overflow: hidden;
+	min-height:600px;
 }
 
 .fadeIn {
@@ -26,14 +26,27 @@ body {
 .execute_button_area {
 	position:absolute;
 	top:160px;
-	height:10px;
-	padding-left:400px;
 	padding-right:auto;
 	z-index:20;
 	margin:0px;
+	width:800px;
+	height:10px;
+	min-width:800px;
+  text-align: center;
 }
 
 td {
 	text-align: left;
 	vertical-align: top;
+}
+
+.change_mode_area {
+	position: absolute;
+	padding-right:auto;
+	z-index:20;
+	width:800px;
+	height:10px;
+	margin:0px;
+	min-width:800px;
+	text-align: right;
 }

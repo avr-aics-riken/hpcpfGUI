@@ -10,6 +10,8 @@
 	left:315px;
 	right:10px;
 	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+	min-width:485px; /* + 315 = 800 */
 }
 
 #filelistArea {
@@ -28,11 +30,12 @@
 	left:10px;
 	width:290px;
 	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
 }
 
 #filelist_conainer {
 	position:absolute;
-	height: 800px;
+	height: 600px;
 }
 
 #filelist {
@@ -71,6 +74,8 @@
 	left:315px;
 	right:10px;
 	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+	min-width:485px; /* + 315 = 800 */
 	z-index:15;
 	padding:auto;
 	color: #f00;
@@ -90,6 +95,8 @@
 	left:315px;
 	right:10px;
 	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+	min-width:485px; /* + 315 = 800 */
 	z-index:15;
 	padding:auto;
 	color: #f00;

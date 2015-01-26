@@ -5,6 +5,8 @@
 	left:315px;
 	right:10px;
 	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+	min-width:485px; /* + 315 = 800 */
 	
 	/*
 	position:relative;
