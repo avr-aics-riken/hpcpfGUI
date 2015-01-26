@@ -26,11 +26,16 @@ function runWorkflow() {
 	socket.emit('run',{file:"pwf.lua"});
 }
 
-function stopProject() {
+function stopWorkflow() {
 	"use strict";
 	console.log("stop");
 	socket.emit('stop');
-	showExeView();
+	socket.once('stopdone', function(success) {
+		console.log("stopdone");
+		if (success) {
+			showStoppedMessage();
+		}
+	});
 }
 
 function clearOutput() {

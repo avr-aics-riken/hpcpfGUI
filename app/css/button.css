@@ -362,6 +362,7 @@
 	background-size: contain;
 	margin-left:auto;
 	margin-right:auto;
+	text-align: left;
 }
 
 .button_edit:active{

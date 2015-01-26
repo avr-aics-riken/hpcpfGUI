@@ -195,6 +195,7 @@ socket.on('fileopen', function(data) {
 	fileopen(data);
 });
 
+/*
 function procRun() {
 	clearOutput();
 	//showOutputArea(true);
@@ -211,6 +212,7 @@ function procStop() {
 	console.log("STOP");
 	socket.emit('stop');
 }
+*/
 
 function getFileList()
 {

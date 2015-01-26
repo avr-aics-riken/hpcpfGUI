@@ -155,14 +155,14 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		//console.log(data.file);
 		var srcdir = sesstionTable[socket.id].dir,
 			data = JSON.parse(sdata),
-			targetBaseDir = path.join(srcdir, data.basedir);
-			targetPath = path.join(targetBaseDir, data.file);
-
+			targetPath = sesstionTable[socket.id].dir + data.file;
 		try {
-			if (fs.existsSync(targetBaseDir)) {
+			if (fs.existsSync(targetPath)) {
 				fs.writeFileSync(targetPath, data.data);
 				console.log('It\'s saved!:' + targetPath);
-				socket.emit("filesavedone");
+				socket.emit("filesavedone", true);
+			} else {
+				socket.emit("filesavedone", false);
 			}
 		} catch(e) {
 			console.log("reqFileSave failed:"+e);
@@ -284,7 +284,7 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		}
 	});
 	
-	function KillSpawn(sp){
+	function KillSpawn(sp, endcallback){
 		if (!sp) {
 			return;
 		}
@@ -295,6 +295,13 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			exec('sh killthem.sh '+pid, function(error, stdout, stderr) {
 				console.log('killed childs');
 				console.log(error, stdout, stderr);
+				if (endcallback) {
+					if (error) {
+						endcallback(false);
+					} else {
+						endcallback(true);
+					}
+				}
 			});
 		} else {
 			var pid = sp.pid;
@@ -302,6 +309,13 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			exec('TASKKILL /T /F /PID '+pid, function(error, stdout, stderr) {
 				console.log('killed childs');
 				console.log(error, stdout, stderr);
+				if (endcallback) {
+					if (error) {
+						endcallback(false);
+					} else {
+						endcallback(true);
+					}
+				}
 			});
 		}
 	}
@@ -310,7 +324,10 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		if (!processspawn)
 			return;
 		console.log('kill');
-		KillSpawn(processspawn);
+		KillSpawn(processspawn, function(success) {
+			sesstionTable[socket.id].proc = null;
+			socket.emit('stopdone', success);
+		});
 		sesstionTable[socket.id].proc = null;
 	});
 	socket.on('run', function(data) {

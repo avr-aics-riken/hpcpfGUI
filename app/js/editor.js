@@ -89,6 +89,12 @@ function executeProject() {
 	runWorkflow();
 }
 
+function stopProject() {
+	"use strict";
+	showExeView();
+	stopWorkflow();
+}
+
 function setProjectName(name) {
 	"use strict";
 	$('info_project_title_text').innerHTML = name;
@@ -118,9 +124,11 @@ function saveFile(){
 	if (!edited)
 		return;
 	console.log("Save:"+openedfile);
-	socket.emit('reqFileSave',JSON.stringify({basedir: basedir, file: filename, data:editor.getValue()}));
-	socket.on('filesavedone', function() {
-		
+	socket.emit('reqFileSave',JSON.stringify({file: openedfile, data:editor.getValue()}));
+	socket.once('filesavedone', function(success) {
+		if (success) {
+			showSavedMessage();
+		}
 	});
 	ChangeEditor(false);
 }
@@ -139,7 +147,7 @@ function newFile(fd, basedir, fname){
 	socket.emit('reqNewFile', JSON.stringify({basedir: basedir, file: fname, data:''}));
 	fd.FileList('/');
 	
-	socket.on("newfiledone", function(success) {
+	socket.once("newfiledone", function(success) {
 		if (success) {
 			// new file saved
 			hideNewNameArea();
@@ -167,7 +175,7 @@ function newDirectory(fd, basedir, dirname) {
 	socket.emit('reqNewDir', JSON.stringify({basedir: basedir, dir: dirname}));
 	fd.FileList('/');
 	
-	socket.on("newdirdone", function(success) {
+	socket.once("newdirdone", function(success) {
 		if (success) {
 			// new directory saved
 			hideNewNameArea();
@@ -194,7 +202,7 @@ function renameFileOrDirectory(fd, name) {
 	
 	target = $('dirpath').value + $('filename').value;
 	socket.emit('reqRename', JSON.stringify({target: target, name:name}));
-	socket.on("renamedone", function(success) {
+	socket.once("renamedone", function(success) {
 		if (success) {
 			// file or directory was renamed
 			hideNewNameArea();
@@ -218,7 +226,7 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 	console.log("deleteFileOrDirectory: " + filename);
 	
 	socket.emit('reqDelete', JSON.stringify({target: target}));
-	socket.on('deleted', function() {
+	socket.once('deleted', function() {
 		console.log("deleted");
 		// file or directory was deleted
 		hideNewNameArea();
@@ -370,7 +378,39 @@ function showExistWarning(callback) {
 
 	function okfunc() {
 		callback();
-		save.removeEventListener("click", okfunc, true);
 	}
 	ok.addEventListener("click", okfunc, true);
+}
+
+
+/// hidden stop messsage
+function hiddenStoppedMessage(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("stop_message_dialog").style.visibility = "hidden";
+}
+
+/// show stop messsage dialog
+function showStoppedMessage(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("stop_message_dialog").style.visibility = "visible";
+
+	setTimeout('hiddenStoppedMessage()', 1500);
+}
+
+/// hidden saved messsage
+function hiddenSavedMessage(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("save_message_dialog").style.visibility = "hidden";
+}
+
+/// show saved messsage dialog
+function showSavedMessage(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("save_message_dialog").style.visibility = "visible";
+
+	setTimeout('hiddenSavedMessage()', 500);
 }

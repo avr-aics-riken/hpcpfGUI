@@ -22,7 +22,9 @@
 	
 	<div class="execute_button_area">
 		<button class="button_execute" onclick="executeProject();"></button>
-		<button class="button_edit" onclick="executeProject();">Stop</button>
+		<button class="button_edit" onclick="stopProject();">
+			<span class="stop_label">Stop</span>
+		</button>
 	</div>
 	<div class="change_mode_area">
 		<button class="button_change_mode" onclick="showInfoView();">Info</button>
@@ -31,15 +33,26 @@
 	
 	<div id="confirm_area">
 	</div>
-	<div id="exist_warning_dialog">
-		<div id="confirm_message">
+	<div id="exist_warning_dialog" class="confirm_dialog">
+		<div id="confirm_message" class="confirm_message">
 			<p>The name of file or directory already exists.</p>
 			<div id="confirm_button">
 				<button id="button_ok" type="button">OK</button>
 			</div>
 		</div>
 	</div>
+	<div id="stop_message_dialog" class="confirm_dialog">
+		<div id="stop_message" class="confirm_message">
+			<p>Execution: Stopped.</p>
+		</div>
+	</div>
+	<div id="save_message_dialog" class="confirm_dialog">
+		<div id="save_message" class="confirm_message">
+			<p>File: Saved.</p>
+		</div>
+	</div>
 
+	
 	<!--------------------------- menus / browser --------------------------------->
 	<div id="playinfo">
 		<!--div class="itemlabel">Directory:</div-->

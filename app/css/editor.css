@@ -50,3 +50,9 @@ td {
 	min-width:800px;
 	text-align: right;
 }
+
+.stop_label {
+	position: relative;
+	top:-5px;
+	left:12px;
+}
