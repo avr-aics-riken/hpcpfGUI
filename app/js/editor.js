@@ -41,7 +41,7 @@ function setupWorkingPath() {
 
 function hideNewNameArea() {
 	var i = 0,
-		ids = ['newfileArea', 'newdirArea', 'renameArea'];
+		ids = ['newfileArea', 'newdirArea', 'renameArea', 'deleteArea'];
 	for (i = 0; i < ids.length; ++i) {
 		var classNames = $(ids[i]).className.split(' ');
 		classNames[1] = 'fadeOut';
@@ -169,10 +169,24 @@ function renameFileOrDirectory(fd, name) {
 		return;
 	
 	target = $('dirpath').value + $('filename').value;
-	socket.emit('reqRename', JSON.stringify({file: target, data:name}));
+	socket.emit('reqRename', JSON.stringify({target: target, name:name}));
 	
 	socket.on("renamed", function() {
 		// file or directory was renamed
+		hideNewNameArea();
+		fd.FileList('/');
+	});
+}
+
+function deleteFileOrDirectory(fd, basedir, filename) {
+	var target = basedir + filename;
+	console.log("deleteFileOrDirectory: " + basedir);
+	console.log("deleteFileOrDirectory: " + filename);
+	
+	socket.emit('reqDelete', JSON.stringify({target: target}));
+	socket.on('deleted', function() {
+		console.log("deleted");
+		// file or directory was deleted
 		hideNewNameArea();
 		fd.FileList('/');
 	});
@@ -257,7 +271,10 @@ function setupFileDialog() {
 		newDirectory(fd, $('dirpath').value, $('newdirname').value);
 	};
 	$('button_rename_done').onclick = function() {
-		renameFileOrDirectory(fd, $('renamefilename').value);
+		renameFileOrDirectory(fd, $('renameitem').value);
+	};
+	$('button_delete_done').onclick = function() {
+		deleteFileOrDirectory(fd, $('dirpath').value, $('filename').value);
 	};
 }
 

@@ -185,35 +185,62 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 				}
 			}
 		} catch (e) {
-			console.log("reqDirSave failed:"+e);
+			console.error("reqDirSave failed:"+e);
 		}
 	});
 	
 	socket.on('reqRename', function(sdata) {
 		var srcdir = sesstionTable[socket.id].dir,
 			dstpath,
-			data = JSON.parse(sdata);
+			data = JSON.parse(sdata),
+			target = data.target,
+			newName = data.name;
 		
-		if (data.file.charAt(0) == '/') {
-			data.file = path.join(srcdir, data.file.slice(1));
+		if (target.charAt(0) == '/') {
+			target = path.join(srcdir, target.slice(1));
 		}
 		console.log('reqRename:' + sdata);
-		if (fs.existsSync(data.file)) {
-			if (fs.statSync(data.file).isDirectory()) {
-				dstpath = path.join(data.file, '..', data.data);
-				console.log("rename from:" + data.file);
+		if (fs.existsSync(target)) {
+			if (fs.statSync(target).isDirectory()) {
+				dstpath = path.join(target, '..', newName);
+				console.log("rename from:" + target);
 				console.log("rename to:" + dstpath);
-				fs.renameSync(data.file, dstpath);
+				fs.renameSync(target, dstpath);
 				socket.emit("renamed");
 			} else {
-				dstpath = path.join(path.dirname(data.file), data.data);
-				console.log("rename from:" + data.file);
+				dstpath = path.join(path.dirname(target), newName);
+				console.log("rename from:" + target);
 				console.log("rename to:" + dstpath);
-				fs.renameSync(data.file, dstpath);
+				fs.renameSync(target, dstpath);
 				socket.emit("renamed");
 			}
 		}
 	});
+	
+	socket.on('reqDelete', function(sdata) {
+		var srcdir = sesstionTable[socket.id].dir,
+			data = JSON.parse(sdata),
+			target = data.target;
+		
+		if (target.charAt(0) == '/') {
+			target = path.join(srcdir, target.slice(1));
+		}
+		console.log("reqDelete:" + sdata);
+		try {
+			if (fs.existsSync(target)) {
+				if (fs.statSync(target).isDirectory()) {
+					fs.rmdirSync(target);
+					socket.emit("deleted");
+				} else {
+					fs.unlinkSync(target);
+					socket.emit("deleted");
+				}
+			}
+		} catch(e) {
+			console.error("reqDirSave failed:"+e);
+		}
+	});
+	
 	socket.on('reqUpdateInformation', function() {
 		var pifFile = path.join(sesstionTable[socket.id].dir, PIF_FILENAME),
 			pifData,
