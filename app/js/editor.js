@@ -185,9 +185,25 @@ function changeDir(fd, path) {
 	document.getElementById('dirpath').value = path;
 }
 
+/// change color for selecting file or directory element
+function changeColor(element) {
+	"use strict";
+	var items = document.getElementsByClassName("fileitem"),
+		i;
+	for (i = 0; i < items.length; ++i) {
+		items[i].style.backgroundColor  = "";
+	}
+	element.style.backgroundColor  = "gray";
+}
+
 /// callback of dir clicked on file dialog
-function clickDir(fd, parentDir, path) {
-	console.log(path);
+/// @param fd file dialog instance
+/// @param element clicked element
+/// @param parentDir parent directory of path
+/// @param path relative path from project dir
+function clickDir(fd, element, parentDir, path) {
+	console.log("directory clicked");
+	// changeColor(element);
 	changeDir(fd, '/' + path + '/');
 	hideNewNameArea();
 }
@@ -196,17 +212,18 @@ function clickDir(fd, parentDir, path) {
 /// @param fd file dialog instance
 /// @param parentDir parent directory of path
 /// @param path relative path from project dir
-function clickFile(fd, parentDir, path) {
-	var fl;
+function clickFile(fd, element, parentDir, path) {
 	console.log("file clicked");
+	changeColor(element);
+	
+	// directory, path setting
 	if (parentDir === '') {
 		changeDir(fd, '/');
 	} else {
 		changeDir(fd, '/' + parentDir + '/');
 	}
 	fileselect(path);
-	fl = path.split("/");
-	document.getElementById('filename').value = fl[fl.length - 1];
+	document.getElementById('filename').value = path.split("/").pop();
 	showEditView();
 }
 

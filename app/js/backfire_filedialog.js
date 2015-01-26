@@ -129,6 +129,7 @@ if (typeof window === 'undefined') { // Node.js
 			this.socket.emit(this.name + ":FileDialogReqFileList", relativePath);
 		};
 
+		/*
 		function getUpDir(path) { // fix me beautiful
 			if (path === "/") {
 				return "/";
@@ -151,6 +152,7 @@ if (typeof window === 'undefined') { // Node.js
 
 			return uppath;
 		}
+		*/
 	
 		//--------------
 		FileDialog.prototype.makeFilelist = function (ls, list, level, parentDir) {
@@ -204,26 +206,26 @@ if (typeof window === 'undefined') { // Node.js
 			newbtn.appendChild(filelabel);
 			if (type === "dir") {
 				//newbtn.setAttribute('onclick', 'clickDir("' + path + '")');
-				newbtn.addEventListener('click', (function (relativePath, listitem, fileDialog) { return function () {
+				newbtn.addEventListener('click', (function (relativePath, listitem, fileDialog, element) { return function () {
 					listitem.extract = !listitem.extract;
 					console.log('Extract Dir:' + relativePath);
 					if (fileDialog.dirClickCallback) {
-						fileDialog.dirClickCallback(fileDialog, parentDir, relativePath);
+						fileDialog.dirClickCallback(fileDialog, element, parentDir, relativePath);
 					}
 					fileDialog.refleshFileList();
-				}; }(relativePath, listitem, this)));
+				}; }(relativePath, listitem, this, newbtn)));
 				ls.appendChild(newbtn);
 				
 				if (extract) {
 					this.makeFilelist(ls, listitem.child, level + 1, relativePath);
 				}
 			} else if (type === "file") {
-				newbtn.addEventListener('click', (function (fileDialog) { return function() {
+				newbtn.addEventListener('click', (function (fileDialog, element) { return function() {
 						if (fileDialog.fileClickCallback) {
-							fileDialog.fileClickCallback(fileDialog, parentDir, relativePath);
+							fileDialog.fileClickCallback(fileDialog, element, parentDir, relativePath);
 						}
 					}
-				})(this));
+				})(this, newbtn));
 				ls.appendChild(newbtn);
 			}
 		};
