@@ -177,9 +177,13 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 
 		try {
 			if (fs.existsSync(targetBaseDir)) {
-				fs.writeFileSync(targetPath, data.data);
-				console.log('It\'s saved!:' + targetPath);
-				socket.emit("newfiledone");
+				if (fs.existsSync(targetPath)) {
+					socket.emit("newfiledone", false);
+				} else {
+					fs.writeFileSync(targetPath, data.data);
+					console.log('It\'s saved!:' + targetPath);
+					socket.emit("newfiledone", true);
+				}
 			}
 		} catch(e) {
 			console.log("reqNewFile failed:"+e);
@@ -193,12 +197,12 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		
 		try {
 			if (fs.existsSync(targetBaseDir)) {
-				if (!fs.existsSync(targetPath)) {
+				if (fs.existsSync(targetPath)) {
+					socket.emit("newdirdone", false);
+				} else {
 					fs.mkdirSync(targetPath);
 					console.log('It\'s saved!:' + targetPath);
-					if (fs.existsSync(targetPath)) {
-						socket.emit("newdirdone");
-					}
+					socket.emit("newdirdone", true);
 				}
 			}
 		} catch (e) {

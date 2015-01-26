@@ -97,6 +97,7 @@ function setProjectName(name) {
 
 function showNewNameArea(id) {
 	var classNames = $(id).className.split(' ');
+	hideNewNameArea();
 	console.log("showNewNameArea:" + $(id).className);
 	if (classNames[1] === 'fadeIn') {
 		classNames[1] = 'fadeOut';
@@ -126,6 +127,7 @@ function saveFile(){
 
 /// make new file
 /// @param fd file dialog instance
+/// @param basedir relatative dir path from project dir
 /// @param fname new filename
 function newFile(fd, basedir, fname){
 	console.log("newfile:" + fname);
@@ -137,15 +139,23 @@ function newFile(fd, basedir, fname){
 	socket.emit('reqNewFile', JSON.stringify({basedir: basedir, file: fname, data:''}));
 	fd.FileList('/');
 	
-	socket.on("newfiledone", function() {
-		// new file saved
-		hideNewNameArea();
-		fd.FileList('/');
+	socket.on("newfiledone", function(success) {
+		if (success) {
+			// new file saved
+			hideNewNameArea();
+			fd.FileList('/');
+		} else {
+			// exists same path
+			showExistWarning(function() {
+				hiddenExistWarning();
+			});
+		}
 	});
 }
 
 /// make new directory
 /// @param fd file dialog instance
+/// @param basedir relatative dir path from project dir
 /// @param dirname new directory name
 function newDirectory(fd, basedir, dirname) {
 	if (dirname == "")
@@ -157,10 +167,17 @@ function newDirectory(fd, basedir, dirname) {
 	socket.emit('reqNewDir', JSON.stringify({basedir: basedir, dir: dirname}));
 	fd.FileList('/');
 	
-	socket.on("newdirdone", function() {
-		// new directory saved
-		hideNewNameArea();
-		fd.FileList('/');
+	socket.on("newdirdone", function(success) {
+		if (success) {
+			// new directory saved
+			hideNewNameArea();
+			fd.FileList('/');
+		} else {
+			// exists same path
+			showExistWarning(function() {
+				hiddenExistWarning();
+			});
+		}
 	});
 }
 
@@ -191,6 +208,10 @@ function renameFileOrDirectory(fd, name) {
 	});
 }
 
+/// delete file or directory
+/// @param fd file dialog instance
+/// @param basedir relatative dir path from project dir
+/// @param filename filename
 function deleteFileOrDirectory(fd, basedir, filename) {
 	var target = basedir + filename;
 	console.log("deleteFileOrDirectory: " + basedir);
