@@ -28,6 +28,7 @@
 			<div class="change_mode_area">
 				<button class="button_change_mode" onclick="showInfoView();">Info</button>
 				<button class="button_change_mode" onclick="showExeView();">Log</button>
+				<button class="button_change_mode" onclick="modeChange(this.value);" value="vim" id="button_vimmode">Vim Mode</button>
 			</div>
 		</div>
 	</div>
@@ -56,7 +57,6 @@
 	
 	<!--------------------------- menus / browser --------------------------------->
 	<div id="playinfo">
-		<!--div class="itemlabel">Directory:</div-->
 		<div class="settingitem">
 			<input readonly  type="text" id="dirpath" placeholder="Directory Path">
 			<!--button class="button_browse" id="openbtn">Browse</button-->

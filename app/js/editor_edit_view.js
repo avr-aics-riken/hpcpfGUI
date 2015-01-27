@@ -63,12 +63,12 @@ function modeVim() {
 function modeChange(modename){
 	if (modename == "vim"){
 		modeVim();
-		$('button_editmode').value = "xcode";
-		$('button_editmode').innerHTML = "Xcode Mode";
+		$('button_vimmode').value = "xcode";
+		$('button_vimmode').innerHTML = "Xcode Mode";
 	}else{
 		modeXcode();
-		$('button_editmode').value = "vim";
-		$('button_editmode').innerHTML = "Vim Mode";
+		$('button_vimmode').value = "vim";
+		$('button_vimmode').innerHTML = "Vim Mode";
 	}
 }
 

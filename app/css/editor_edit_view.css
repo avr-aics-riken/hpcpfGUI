@@ -12,6 +12,7 @@
 	bottom:10px;
 	min-height:425px; /* + 175 = 600 */
 	min-width:485px; /* + 315 = 800 */
+	z-index:20;
 }
 
 #filelistArea {
