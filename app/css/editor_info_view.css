@@ -71,3 +71,22 @@ a.info_link:hover {
 	color: #AAA;
 	text-decoration: none;
 }
+
+table {
+	border-collapse: collapse;
+}
+
+td.info_title {
+	border-color : #000000;
+	border-width : 1px;
+	border-style : solid;
+	padding : 2px;
+	width: 30%;
+}
+td.info_text {
+	border-color : #000000;
+	border-width : 1px;
+	border-style : solid;
+	padding : 2px;
+	width: 70%;
+}
