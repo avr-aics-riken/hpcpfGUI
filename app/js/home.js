@@ -125,17 +125,23 @@ function launchApp(name) {
 
 function showNewProjectDialog() {
 	"use strict";
-	var display = document.getElementById("new_project").style.display;
+	var display = document.getElementById("new_project").style.display,
+		background = document.getElementById('popup_background');
 	if (display == "block") {
 		closeNewProjectDialog();
 	} else {
 		document.getElementById("new_project").style.display = "block";
+		background = document.getElementById('popup_background');
+		background.style.visibility = "visible";
+		background.addEventListener('click', closeNewProjectDialog);
 	}
 }
 
 function closeNewProjectDialog() {
 	"use strict";
 	document.getElementById("new_project").style.display = "none";
+	document.getElementById('popup_background').style.visibility = "hidden";
+	document.getElementById('popup_background').removeEventListener('click', closeNewProjectDialog);
 }
 
 function showProjectArchiveDialog() {
