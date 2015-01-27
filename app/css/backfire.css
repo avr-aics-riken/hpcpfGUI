@@ -4,6 +4,7 @@
 	display: flex;
 	/*display: -webkit-flex;*/
 	/*flex-direction: row;*/
+	height: 30px;
 }
 
 .itemlabel {
@@ -56,6 +57,7 @@
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
+	height: 30px;
 }
 
 #errormsg {
