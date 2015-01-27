@@ -8,20 +8,10 @@
 	min-height:425px; /* + 175 = 600 */
 	min-width:485px; /* + 315 = 800 */
 	
-	/*
-	position:relative;
-	left: 10%;
-	float: left;
-	margin-top:30px;
-	width:80%;
-	min-width:800px;
-	height:auto;
-	min-height:800px;
-	*/
 	overflow:hidden;
 	border:solid;
 	border-radius:2px;
-	border-width:2px;
+	border-width:3px;
 	border-color:#000;
 	background-color:#444;
 	-webkit-touch-callout: text;

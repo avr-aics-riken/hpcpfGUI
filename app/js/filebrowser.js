@@ -130,7 +130,7 @@ function showRenameBox(filelabel, fpath, ftp) {
 	container.style.display = "block";
 	container.style.position = "absolute";
 	container.style.left = ""+bounds.left+"px";
-	container.style.top  = ""+(bounds.top+20)+"px";
+	container.style.top  = ""+(bounds.top+3)+"px";
 	container.style.zIndex = 20;
 	renameBox.value = filelabel.innerHTML;
 	renameBox.focus();

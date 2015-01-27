@@ -48,7 +48,7 @@ input{
 	font-weight:bold;
 	text-align:left;
 	border-radius:2px;
-	border-width:2px;
+	border-width:3px;
 	border-color:#72ca2a;
 	border-style:solid;
 	padding:4px 10px;
@@ -163,7 +163,7 @@ input{
 
 /* title */
 .title{
-	position:fixed;
+	position:relative;
 	color:#72ca2a;
 	text-align:left;
 	font-size:24px;
@@ -192,8 +192,9 @@ input{
 	font-size:24px;
 	color:#fff;
 	text-align:left;
-	margin-left:50px;
-	margin-top:20px;
+	margin-left:20px;
+	margin-top:10px;
+	margin-bottom:10px;
 }
 
 /* pane */
@@ -232,7 +233,7 @@ input{
 	width: 100%;
 	height: auto;
 	position: fixed;
-	top: 100px;
+	top: 60px;
 	left: 0;
 	
 	text-align:center;
@@ -244,14 +245,15 @@ input{
 
 .popup_content{
 	min-width: 600px;
-	max-width:800px;
+	max-width:600px;
+	height:500px;
 	margin-left:auto;
 	margin-right:auto;
 	
 	background-color:#4d4d4d;
 	border:solid;
-	border-radius:20px;
-	border-width:12px;
+	border-radius:10px;
+	border-width:6px;
 	border-color:#72ca2a;
 	box-shadow:8px 15px 26px #111111;
 }
@@ -293,7 +295,6 @@ input{
 	position:absolute;
 	top:170px;
 	right:10px;
-	z-index:20;
 	margin:0px;
 }
 

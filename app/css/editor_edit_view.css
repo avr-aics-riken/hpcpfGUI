@@ -12,7 +12,6 @@
 	bottom:10px;
 	min-height:425px; /* + 175 = 600 */
 	min-width:485px; /* + 315 = 800 */
-	z-index:20;
 }
 
 #filelistArea {
@@ -88,6 +87,7 @@
 	background-size: contain;
 	background-position: center;
 	cursor: w-resize;
+	z-index:20;
 }
 
 
@@ -164,7 +164,7 @@
 	position:absolute;
 	left:20px;
 	bottom:80px;
-	width:290px;
+	width:260px;
 	height:80px;
 	z-index:20;
 	padding: 6px 6px 6px 6px;
@@ -175,15 +175,19 @@
 	opacity: 0;
 }
 
+.newNameLabel {
+	font-weight: 600;
+}
+
 .inputNewNameBox {
 	position:absolute;
 	top:30px;
-	width:200px;
+	width:180px;
 	background-color:#4d4d4d;
 	border-style:none;
-	line-height:38px;
+	line-height:30px;
 	border-radius:2px;
-	color:#000;
+	color:#fff;
 }
 
 #showoutputarea{
@@ -213,15 +217,25 @@
 }
 
 .newdirectory_new {
-	padding-left:5px;
+	padding-left:6px;
 }
 
 .newdirectory_dir {
-	padding-left:11px;
+	position:relative;
+	bottom:1px;
+	padding-left:15px;
 }
 
 .newfilearea_label {
-	padding-left:15px;
+	padding-left:13px;
+}
+
+.newfilearea_file_label {
+	padding-left:12px;
+}
+
+.newfilearea_delete_label {
+	padding-left:18px;
 }
 
 /*

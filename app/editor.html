@@ -20,15 +20,14 @@
 	
 		<div class="execute_button_area">
 			<button class="button_execute" onclick="executeProject();"></button>
-			<button class="button_edit" onclick="stopProject();">
-				<span class="stop_label">Stop</span>
-			</button>
+			<button class="button_stop" onclick="stopProject();"></button>
 		</div>
 		<div class="change_mode_area_container">
 			<div class="change_mode_area">
 				<button class="button_change_mode" onclick="showInfoView();">Info</button>
 				<button class="button_change_mode" onclick="showExeView();">Log</button>
-				<button class="button_change_mode" onclick="modeChange(this.value);" value="vim" id="button_vimmode">Vim Mode</button>
+				<button class="button_vim_mode" onclick="modeChange(this.value);" value="vim" id="button_vimmode">
+					<span class="vim_mode_text">Vim Mode</span></button>
 			</div>
 		</div>
 	</div>
@@ -80,7 +79,7 @@
 			</div>
 			<div class="shownewfilearea">
 				<button id="button_newfile" onclick="showNewNameArea('newfileArea');">
-					<span class="newfilearea_label">New File</span>
+					<span class="newfilearea_file_label">New File</span>
 				</button>
 			</div>
 			<div class="shownewfilearea">
@@ -90,7 +89,7 @@
 			</div>
 			<div class="shownewfilearea">
 				<button id="button_delete" onclick="showNewNameArea('deleteArea');">
-					<span class="newfilearea_label">Delete</span>
+					<span class="newfilearea_delete_label">Delete</span>
 				</button>
 			</div>
 		</div>
@@ -113,22 +112,22 @@
 		<span id="launchButtonView"/>
 	</div>
 	<div id="newfileArea" class="newNameArea" >
-		New file!<br>
+		<span class="newNameLabel">New file!</span><br>
 		<input type="text" id="newfilename" class="inputNewNameBox" placeholder="file name"/>
 		<button class="button_new" id="button_newfile_done"></button>
 	</div>
 	<div id="newdirArea" class="newNameArea">
-		New directory!<br>
+		<span class="newNameLabel">New directory!</span><br>
 		<input type="text" id="newdirname" class="inputNewNameBox" placeholder="directory name"/>
 		<button class="button_new" id="button_newdir_done"></button>
 	</div>
 	<div id="renameArea" class="newNameArea">
-		Rename selected<br>
+		<span class="newNameLabel">Rename selected</span><br>
 		<input type="text" id="renameitem" class="inputNewNameBox" placeholder="rename"/>
 		<button class="button_new" id="button_rename_done"></button>
 	</div>
 	<div id="deleteArea" class="newNameArea">
-		Delete selected file or directory ? <br>
+		<span class="newNameLabel">Delete selected file or directory ? </span><br>
 		<button class="button_new" id="button_delete_done"></button>
 	</div>
 

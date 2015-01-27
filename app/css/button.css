@@ -62,15 +62,17 @@
 
 /* button - editor - launchapp */
 .button_editor_launchapp{
-	width:165px;
-	height:101px;
+	width:110px;
+	height:66px;
 	text-align:center;
 	margin-top:10px;
-	padding-left:2px;
-	padding-right:10px;
+	padding-left:0px;
+	padding-right:0px;
 	margin-right:5px;
 	background-image:url("../image/button_bg_action_green.png");
-	font-size:18px;
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
 	font-weight:600;
 	-webkit-text-overflow:ellipsis;
 	text-overflow:ellipsis;
@@ -80,12 +82,14 @@
 
 .button_editor_launchapp:active{
 	background-image:url("../image/button_bg_action_green_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - open */
 .button_open{
-	width:165px;
-	height:101px;
+	width:95px;
+	height:60px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
@@ -108,6 +112,8 @@
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_save:active{
@@ -116,8 +122,8 @@
 
 /* button - cancel */
 .button_cancel{
-	width:165px;
-	height:95px;
+	width:95px;
+	height:60px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
@@ -259,19 +265,21 @@
 .button_remotehost{
 	width:71px;
 	height:47px;
-	margin-top:50px;
+	margin-top:70px;
 	margin-bottom:40px;
 	margin-right:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_upper.png");
+	background-repeat:no-repeat;
 	background-size: contain;
 	color:#fff;
-	font-weight:bolder;
-	font-size:12px;
+	font-weight:300;
+	font-size:11px;
 }
 
 .button_remotehost:active{
 	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
 	background-size: contain;
 }
 
@@ -283,10 +291,14 @@
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_home:active{
 	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - output */
@@ -310,11 +322,11 @@
 	width:72px;
 	height:47px;
 	position:relative;
-	top:-80px;
+	top:-140px;
 	background-image:url("../image/button_bg_action_upper.png");
 	background-repeat:no-repeat;
 	background-size: contain;
-	font-size:16px;
+	font-size:12px;
 	font-weight:300;
 }
 
@@ -325,6 +337,33 @@
 }
 
 .button_change_mode:disabled{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - vim mode */
+.button_vim_mode {
+	width:72px;
+	height:47px;
+	margin-left: 30px;
+	position:relative;
+	top:-140px;
+	background-image:url("../image/button_bg_action_upper.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
+	font-weight:300;
+	text-align: left;
+}
+
+.button_vim_mode:active{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_vim_mode:disabled{
 	background-image:url("../image/button_bg_action_upper_press.png");
 	background-repeat:no-repeat;
 	background-size: contain;
@@ -345,6 +384,25 @@
 
 .button_execute:active{
 	background-image:url("../image/button_bg_action_play_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - stop */
+.button_stop {
+	width:60px;
+	height:40px;
+	position:relative;
+	top:-66px;
+	background-image:url("../image/button_bg_action_stop.png");
+	font-size:18px;
+	font-weight:600;
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_stop:active{
+	background-image:url("../image/button_bg_action_stop_press.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 }
@@ -403,11 +461,11 @@
 
 /* button - new */
 .button_new{
-	width:100px;
-	height:60px;
+	width:60px;
+	height:44px;
 	position:absolute;
 	top:25px;
-	right:-10px;
+	right:0px;
 	background-image:url("../image/button_bg_action_upper_new.png");
 	background-repeat:no-repeat;
 	background-size: contain;
@@ -535,23 +593,22 @@
 }
 
 .text_button_launchapp{
-	font-size:18px;
+	font-size:14px;
 	font-family:sans-serif;
 	font-weight:600;
 	margin-right:18px;
 	position:relative;
-	top:-14px;
+	top:-10px;
 	left:6px;
 }
 
 .text_button_action{
-	font-family:sans-serif;
 	position:relative;
-	font-size:18px;
-	font-weight:600;
+	font-size:12px;
+	font-weight:300;
 	color:#fff;
-	top:-18px;
-	left:-2px;
+	top:-10px;
+	left:-4px;
 }
 
 .text_button_right{

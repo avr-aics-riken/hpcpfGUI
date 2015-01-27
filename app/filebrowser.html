@@ -38,14 +38,17 @@
 		</div>
 	</div>
 
-	<div class="tab tab_filebrowser">
+	<div class="tab_filebrowser">
 	<div class="grp_alignright">
-		<button type="button" class="button_remotehost" onclick="registerRemoteHost()">Register host</button>
+		<button type="button" class="button_remotehost" onclick="registerRemoteHost()">
+			<span class="registerhost_register_label">Register</span>
+			<span class="registerhost_host_label">host</span></button>
 	</div>
-		<div class="pane_left">
+		<div class="filebrowser_pane_left">
 			<!--div class="filepath">hirose@localhost:/home/hirose/</div-->
 			<div class="pane_grp">
 				<div class="select_host">
+					<span class="select_host_image"></span>
 					<select id="select_host_left">
 					<!--	<option class="option_host">localhost:/home/user1/</option>
 						<option class="option_host">user1@remotehost1:/home/user1/</option>
@@ -87,7 +90,7 @@
 			</div>
 		</div>
 
-		<div class="pane_right">
+		<div class="filebrowser_pane_right">
 			<div class="pane_grp">
 				<div class="select_host">
 					<select id="select_host_right">
