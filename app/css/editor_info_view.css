@@ -1,6 +1,6 @@
 .info_area {
 	position:absolute;
-	top:175px;
+	top:110px;
 	left:315px;
 	right:10px;
 	bottom:10px;
@@ -19,8 +19,8 @@
 	*/
 	overflow:hidden;
 	border:solid;
-	border-radius:5px;
-	border-width:5px;
+	border-radius:2px;
+	ｃh:5px;
 	border-color:#72ca2a;
 	background-color:#f4f2e9;
 	-webkit-touch-callout: text;

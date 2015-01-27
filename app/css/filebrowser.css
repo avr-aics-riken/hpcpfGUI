@@ -214,7 +214,7 @@
 /* history browser */
 .historybrowser{
 	width:500px;
-	min-width:500px;
+	min-width:400px;
 	height:430px;
 	border:solid;
 	border-radius:20px;

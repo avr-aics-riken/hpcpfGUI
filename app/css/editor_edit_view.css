@@ -6,7 +6,7 @@
 	border-width:3px;
 	border-color:#72ca2a;
 	
-	top:175px;
+	top:110px;
 	left:315px;
 	right:10px;
 	bottom:10px;
@@ -26,7 +26,7 @@
 	border-color:#72ca2a;
 	background-color:#4d4d4d;
 	
-	top:175px;
+	top:110px;
 	left:10px;
 	width:290px;
 	bottom:10px;
@@ -39,7 +39,6 @@
 }
 
 #filelist {
-	margin: 0px;
 	position:absolute;
 	overflow:scroll;
 	/*
@@ -61,16 +60,39 @@
 #separator {
 	background-color:transparent;
 	position:absolute;
-	top:175px;
+	top:110px;
 	left:308px;
 	width:4px;
 	bottom:10px;
+	min-height:490px; /* + 110 = 600 */
+	height:80%;
+	text-align: center;
+	display: table;
+}
+
+.separator_image_container {
+	background-color:transparent;
+	vertical-align: middle;
+	display: table-cell;
+}
+
+.separator_image {
+	position:relative;
+	background-color:transparent;
+	left:0px;
+	width:6px;
+	height:105px;
+	background:url("../image/separator.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	background-position: center;
 	cursor: w-resize;
 }
 
+
 #imageArea {
 	position:absolute;
-	top:175px;
+	top:110px;
 	left:315px;
 	right:10px;
 	bottom:10px;
@@ -91,7 +113,7 @@
 }
 #launchButtonArea {
 	position:absolute;
-	top:175px;
+	top:110px;
 	left:315px;
 	right:10px;
 	bottom:10px;
@@ -101,7 +123,7 @@
 	padding:auto;
 	color: #f00;
 	background-color: #8b8b8b;
-	border-radius: 4px;
+	border-radius:2px;
 	text-align:center;
 	overflow:scroll;
 	visibility: hidden;
@@ -147,7 +169,7 @@
 	padding: 6px 6px 6px 6px;
 	color: #fff;
 	background-color:#72ca2a; 
-	border-radius: 5px;
+	border-radius: 2px;
 	visibility: hidden;
 	opacity: 0;
 }
@@ -159,7 +181,7 @@
 	background-color:#4d4d4d;
 	border-style:none;
 	line-height:38px;
-	border-radius:5px;
+	border-radius:2px;
 	color:#000;
 }
 

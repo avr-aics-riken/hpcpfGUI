@@ -1,7 +1,7 @@
 
 .exe_area {
 	position:absolute;
-	top:175px;
+	top:110px;
 	left:315px;
 	right:10px;
 	bottom:10px;
@@ -20,8 +20,8 @@
 	*/
 	overflow:hidden;
 	border:solid;
-	border-radius:5px;
-	border-width:5px;
+	border-radius:2px;
+	border-width:2px;
 	border-color:#000;
 	background-color:#444;
 	-webkit-touch-callout: text;

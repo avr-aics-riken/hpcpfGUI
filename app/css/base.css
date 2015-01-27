@@ -51,7 +51,7 @@ input{
 	border-width:2px;
 	border-color:#72ca2a;
 	border-style:solid;
-	padding:5px 15px;
+	padding:4px 10px;
 	background-color:#4d4d4d;
 
 }
@@ -99,17 +99,16 @@ input{
 /* header */
 .header{
 	background-color:#f4f2e9;
-	padding-top:10px;
 	color:#72ca2a;
 	width:100%;
 	min-width:800px;
 	overflow:hidden;
-	height:50px;
+	height:67px;
 }
 
 #logo{
 	margin-left:20px;
-	margin-top:0px;
+	margin-top:10px;
 	margin-bottom:10px;
 	text-align:left;
 	background-image:url("../image/hpcpf_logo.png");
@@ -149,28 +148,43 @@ input{
 	border:none;
 }
 
-/* title */
-.title{
-	color:#72ca2a;
-	text-align:left;
-	width:92%;
-	height:50px;
-	font-size:24px;
+.remotehost_tab{
+	text-align:center;
+	width:800px;
+	min-width:300px;
+	height:250px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:15px;
+	padding-top:0px;
+	background-color:transparent;
+	border:none;
 }
 
-.text_title{
-	font-family:sans-serif;
-	font-size:20px;
-	font-weight:600;
-	margin-top:8px;
-	margin-left:10px;
-	padding-top:27px;
-	padding-left:40px;
+/* title */
+.title{
+	position:fixed;
+	color:#72ca2a;
+	text-align:left;
+	font-size:24px;
 	background-image:url("../image/button_bg_menu_press.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 	width:224px;
 	height:59px;
+	margin-left:0px;
+	margin-top:8px;
+	left:10px;
+}
+
+.text_title{
+	position:relative;
+	font-family:sans-serif;
+	font-size:20px;
+	font-weight:600;
+	padding-left:40px;
+	top:15px;
+	margin:auto;
 }
 
 .text_recent{
@@ -198,12 +212,14 @@ input{
 }
 
 .pane_top{
-	width:940px;
+	width:800px;
+	min-width:800px;
 	margin:auto;
 }
 
 .pane_middle{
-	width:940px;
+	width:800px;
+	min-width:800px;
 	margin:auto;
 }
 

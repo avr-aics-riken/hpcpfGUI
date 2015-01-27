@@ -37,7 +37,7 @@
 /* host browser */
 .hostbrowser{
 	margin:auto;
-	margin-left:45px;
+	margin-left:15px;
 	margin-top:10px;
 	border:solid;
 	border-radius:20px;
@@ -80,7 +80,7 @@
 .buttons_remotehost{
 	text-align:center;
 	width:410px;
-	margin-left:460px;
+	margin-left:400px;
 	margin-top:200px;
 }
 

@@ -323,8 +323,9 @@ function setupFileDialog() {
 /// initialize dialog and set separator 
 function setupSeparator() {
 	var separator = document.getElementById('separator'),
+		separator_image = document.getElementById('separator_image'),
 		dragging = false;
-	separator.onmousedown = function(e) {
+	separator_image.onmousedown = function(e) {
 		dragging = true;
 	};
 	document.onmouseup = function(e) {
