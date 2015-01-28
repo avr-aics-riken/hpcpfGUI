@@ -22,11 +22,8 @@
 
 .info_text_area {
 	position:relative;
-	overflow:hidden;
-	left: 10%;
-	float: left;
+	width: 80%;
 	margin-top:30px;
-	width:100%;
 	height:auto;
 }
 
@@ -56,6 +53,11 @@
 	font-family:sans-serif;
 }
 
+.info_table_area {
+	position: absolute;
+	width: 100%;
+}
+
 a.info_link:link {
 	color: #000;
 	text-decoration: underline;
@@ -74,8 +76,9 @@ a.info_link:hover {
 
 table {
 	border-collapse: collapse;
-	width: 100%;
 	margin:auto;
+	table-layout: fixed;
+	width: 100%;
 }
 
 td.info_title  {
@@ -83,12 +86,12 @@ td.info_title  {
 	border-width : 1px;
 	border-style : solid;
 	padding : 2px;
-	width: 30%;
+	width: 300px;
 }
 td.info_text {
 	border-color : #000000;
 	border-width : 1px;
 	border-style : solid;
 	padding : 2px;
-	width: 70%;
+	width: 2048px;
 }
