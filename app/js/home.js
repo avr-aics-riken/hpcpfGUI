@@ -106,8 +106,12 @@ function bootstrap() {
 
 function newProject(name) {
 	"use strict";
-	var filteredName = name.split('/').join('');
-	filteredName = filteredName.split('\\').join('');
+	var prohibit = ['/', '\\', '|', ',', '*', '<', '>', '?', '"',  ':'],
+		filteredName = name,
+		i = 0;
+	for (i = 0; i < prohibit.length; ++i) {
+		filteredName = filteredName.split(prohibit[i]).join('');
+	}
 	socket.emit('reqCreateNewProject', filteredName);
 }
 

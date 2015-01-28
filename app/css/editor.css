@@ -62,13 +62,3 @@ td {
 	top:-5px;
 	left:12px;
 }
-
-.vim_mode_text {
-	position:relative;
-	left: 10px;
-}
-
-.xcode_mode_text {
-	position:relative;
-	left: 3px;
-}

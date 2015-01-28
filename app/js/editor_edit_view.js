@@ -60,15 +60,15 @@ function modeVim() {
 	editor.setKeyboardHandler("ace/keyboard/vim");
 }
 
-function modeChange(modename){
+function modeChange(modename) {
 	if (modename == "vim"){
 		modeVim();
 		$('button_vimmode').value = "xcode";
-		$('button_vimmode').innerHTML = "<span class='xcode_mode_text'>Xcode Mode</span>";
-	}else{
+		$('button_vimmode').innerHTML = "<span class='xcode_mode_text'>Xcode</span>";
+	} else {
 		modeXcode();
 		$('button_vimmode').value = "vim";
-		$('button_vimmode').innerHTML = "<span class='vim_mode_text'>Vim Mode</span>";
+		$('button_vimmode').innerHTML = "<span class='vim_mode_text'>Vim</span>";
 	}
 }
 

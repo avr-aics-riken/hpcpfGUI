@@ -39,6 +39,16 @@ function setupWorkingPath() {
 	socket.emit('setWorkingPath',{path:path});
 }
 
+function validateModeChangeButton(enable) {
+	if (enable) {
+		$('button_vimmode').style.opacity = 1.0;
+		$('button_vimmode').disabled = false;
+	} else {
+		$('button_vimmode').style.opacity = 0.6;
+		$('button_vimmode').disabled = true;
+	}
+}
+
 function hideNewNameArea() {
 	var i = 0,
 		ids = ['newfileArea', 'newdirArea', 'renameArea', 'deleteArea'];
@@ -54,6 +64,7 @@ function hideEditArea() {
 	$('imageView').src = "";
 	$('launchButtonArea').className = 'fadeOut';
 	$('launchButtonView').src = "";
+	validateModeChangeButton(false);
 }
 
 function showInfoView() {
@@ -81,6 +92,7 @@ function showEditView() {
 	$("exe_mode").style.display = "none";
 	$("edit_mode").style.display = "block";
 	hideNewNameArea();
+	validateModeChangeButton(true);
 }
 
 function executeProject() {

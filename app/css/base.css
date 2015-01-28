@@ -28,6 +28,14 @@ body{
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	
+	scrollbar-face-color      : #eee;
+	scrollbar-arrow-color     : gray;
+	scrollbar-track-color     : black;
+	scrollbar-shadow-color    : gray;
+	scrollbar-highlight-color : #aaa;
+	scrollbar-3dlight-color   : #ccc;
+	scrollbar-darkshadow-Color: #ccc;
 }
 
 button{

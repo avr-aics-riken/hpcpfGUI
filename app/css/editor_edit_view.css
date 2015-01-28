@@ -238,6 +238,15 @@
 	padding-left:18px;
 }
 
+.vim_mode_text {
+	position:relative;
+	left: 23px;
+}
+
+.xcode_mode_text {
+	position:relative;
+	left: 17px;
+}
 /*
 #stderr {
 	background-color:#bcbcbc;

@@ -352,9 +352,10 @@
 	background-image:url("../image/button_bg_action_upper.png");
 	background-repeat:no-repeat;
 	background-size: contain;
-	font-size:11px;
+	font-size:12px;
 	font-weight:300;
 	text-align: left;
+	opacity: 0.6;
 }
 
 .button_vim_mode:active{
