@@ -40,7 +40,7 @@
 
 #filelist {
 	position:absolute;
-	overflow:scroll;
+	overflow:auto;
 	/*
 	border-style:solid;
 	border-radius:2px;

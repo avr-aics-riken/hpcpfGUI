@@ -23,7 +23,7 @@ function runWorkflow() {
 	console.log("procRun");
 	
 	clearOutput();
-	socket.emit('run',{file:"pwf.lua"});
+	socket.emit('run',{file:targetFile});
 }
 
 function stopWorkflow() {
