@@ -118,6 +118,7 @@
 
 .button_save:active{
 	background-image:url("../image/button_bg_action_press.png");
+	opacity: 0.6;
 }
 
 /* button - cancel */
@@ -486,18 +487,26 @@
 }
 
 #button_save_editor{
-	width:71px;
-	height:46px;
 	position:absolute;
-	left:180px;
-	top:40px;
+	width:60px;
+	height:40px;
+	right:40px;
+	bottom:35px;
+	font-weight:300;
+	font-size:12px;
+	opacity: 0.6;
+	z-index:10;
 
 	text-align:center;
-	background-image:url("../image/button_bg_action.png");
+	background-image:url("../image/button_bg_action_save.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 #button_save_editor:active{
-	background-image:url("../image/button_bg_action_press.png");
+	background-image:url("../image/button_bg_action_save.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - stop */ 

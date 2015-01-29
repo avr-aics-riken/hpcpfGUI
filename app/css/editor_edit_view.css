@@ -272,6 +272,13 @@
 	position:relative;
 	left: 17px;
 }
+
+.save_label {
+	position:relative;
+	top: -3px;
+	left: -2px;
+}
+
 /*
 #stderr {
 	background-color:#bcbcbc;
