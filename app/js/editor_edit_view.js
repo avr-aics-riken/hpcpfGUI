@@ -1,7 +1,7 @@
 // depends: editor.js
 
 var editor = ace.edit("editor");
-editor.setTheme("ace/theme/tomorrow_night_bright");
+editor.setTheme("ace/theme/hpcpf");
 editor.setReadOnly(true);
 editor.on('change',	function changeInput() {
 	if (editor.session.getUndoManager().isClean())
@@ -51,12 +51,12 @@ document.addEventListener('keydown', function(e) {
 });
 
 function modeXcode() {
-	editor.setTheme("ace/theme/tomorrow_night_bright");
+	editor.setTheme("ace/theme/hpcpf");
 	editor.setKeyboardHandler("");
 }
 
 function modeVim() {
-	editor.setTheme("ace/theme/vibrant_ink");
+	editor.setTheme("ace/theme/tomorrow_night_bright");
 	editor.setKeyboardHandler("ace/keyboard/vim");
 }
 
