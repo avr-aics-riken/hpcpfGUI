@@ -479,6 +479,46 @@
 	background-size: contain;
 }
 
+/* button - rename none */
+.button_rename_done {
+	width:60px;
+	height:44px;
+	position:absolute;
+	top:30px;
+	right:0px;
+	background-image:url("../image/button_bg_action_upper_none.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
+	font-weight:300;
+}
+
+.button_rename_done:active{
+	background-image:url("../image/button_bg_action_upper_none_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - delete none */
+.button_delete_done {
+	width:60px;
+	height:44px;
+	position:absolute;
+	top:30px;
+	right:0px;
+	background-image:url("../image/button_bg_action_upper_none.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
+	font-weight:300;
+}
+
+.button_rename_done:active{
+	background-image:url("../image/button_bg_action_upper_none_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
 /* bottom buttons in editor */
 .button_editor{
 	padding-bottom:28px;
