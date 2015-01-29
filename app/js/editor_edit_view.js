@@ -50,7 +50,7 @@ document.addEventListener('keydown', function(e) {
 	}
 });
 
-function modeXcode() {
+function modeDefault() {
 	editor.setTheme("ace/theme/hpcpf");
 	editor.setKeyboardHandler("");
 }
@@ -63,10 +63,10 @@ function modeVim() {
 function modeChange(modename) {
 	if (modename == "vim"){
 		modeVim();
-		$('button_vimmode').value = "xcode";
-		$('button_vimmode').innerHTML = "<span class='xcode_mode_text'>Xcode</span>";
+		$('button_vimmode').value = "default";
+		$('button_vimmode').innerHTML = "<span class='default_mode_text'>Xcode</span>";
 	} else {
-		modeXcode();
+		modeDefault();
 		$('button_vimmode').value = "vim";
 		$('button_vimmode').innerHTML = "<span class='vim_mode_text'>Vim</span>";
 	}
