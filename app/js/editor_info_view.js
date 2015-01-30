@@ -65,6 +65,32 @@ socket.on('openFile', function (data) {
 	$('info_opened_text_area').innerHTML = "<pre>"+data+"</pre>";
 });
 
+socket.on('openJSON', function (data) {
+	"use strict";
+	var key,
+		textArea = $('info_opened_text_area'),
+		textAreaHTML;
+	$('info_back_button_area').style.display = "block";
+	$('info_text_area').style.display = "none";
+	$('info_opened_text_area').style.display = "block";
+	var json = JSON.parse(data);
+	textAreaHTML = "<table border=1>";
+	for (key in json) {
+		textAreaHTML += "<tr>";
+		textAreaHTML += "<td>";
+		textAreaHTML += key;
+		textAreaHTML += "</td>";
+		textAreaHTML += "<td>";
+		textAreaHTML += json[key];
+		textAreaHTML += "</td>";
+		textAreaHTML += "</tr>";
+		console.log("hoge");
+	}
+	textArea.innerHTML = textAreaHTML + "</table>"
+	//console.log(json);
+	//$('info_opened_text_area').innerHTML = "<pre>"+data+"</pre>";
+});
+
 function showFile(file) {
 	"use strict";
 	console.log("showFile:" + file);
@@ -83,9 +109,9 @@ function createInfoLink(str, isURL, isCase) {
 		return "<div><a class='info_link' href='"+str+"' target='_blank'>"+str+"</a></div>";
 	} else if (isCase) {
 		if (str.length > 0 && str[str.length-1] !== '/') {
-			return "<div><a class='info_link' href='#' onclick=\"showFile('"+str+"/cwf.lua');\">"+str+"</a></div>";
+			return "<div><a class='info_link' href='#' onclick=\"showFile('"+str+"/cif.json');\">"+str+"</a></div>";
 		} else {
-			return "<div><a class='info_link' href='#' onclick=\"showFile('"+str+"cwf.lua');\">"+str+"</a></div>";
+			return "<div><a class='info_link' href='#' onclick=\"showFile('"+str+"cif.json');\">"+str+"</a></div>";
 		}
 	} else {
 		return "<div><a class='info_link' href='#' onclick=\"showFile('"+str+"');\">"+str+"</a></div>";

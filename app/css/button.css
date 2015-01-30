@@ -448,17 +448,21 @@
 
 /* button - back */
 .button_back {
-	width:80px;
-	height:50px;
+	width:50px;
+	height:25px;
 	position:relative;
 	top:0px;
 	background-image:url("../image/button_rect.png");
-	font-size:18px;
-	font-weight:600;
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:12px;
+	font-weight:300;
 }
 
 .button_back:active{
 	background-image:url("../image/button_rect_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - new */

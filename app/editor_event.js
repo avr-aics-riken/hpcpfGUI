@@ -117,8 +117,12 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			console.log('reqOpenFile:'+filepath);
 			if (fs.existsSync(filepath) && fs.statSync(filepath).isFile()) {
 				file = fs.readFileSync(filepath).toString();
-				//console.log(file);
-				socket.emit('openFile', file);
+				if (path.extname(filepath) == ".json") {
+					socket.emit('openJSON', file);
+				} else {
+					//console.log(file);
+					socket.emit('openFile', file);
+				}
 			}
 		} catch(e) {
 			console.log(e);
