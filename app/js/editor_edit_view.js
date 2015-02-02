@@ -16,11 +16,11 @@ document.addEventListener('keypress', function(e){
 	
 	if (e.keyCode == 18 && e.ctrlKey){ // R + ctrl
 		saveFile();
-		procRun();
+		executeProject();
 		return false;
 	}
 	if (e.keyCode == 17 && e.ctrlKey){ // Q + ctrl
-		procStop();
+		stopProject();
 		return false;
 	}
 	if (e.keyCode == 19 && e.ctrlKey){ // S + ctrl
@@ -33,12 +33,12 @@ document.addEventListener('keydown', function(e) {
 	if (window.navigator.platform.match("Win")) {
 		if (e.keyCode == 82 && e.ctrlKey){ // R + ctrl
 			saveFile();
-			procRun();
+			executeProject();
 			e.preventDefault();
 			return false;
 		}
 		if (e.keyCode == 81 && e.ctrlKey){ // Q + ctrl
-			procStop();
+			stopProject();
 			e.preventDefault();
 			return false;
 		}

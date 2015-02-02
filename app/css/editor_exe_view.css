@@ -6,7 +6,7 @@
 	right:10px;
 	bottom:10px;
 	min-height:425px; /* + 175 = 600 */
-	min-width:485px; /* + 315 = 800 */
+	min-width:465px; /* + 315 + 20 = 800 */
 	
 	overflow:hidden;
 	border:solid;
