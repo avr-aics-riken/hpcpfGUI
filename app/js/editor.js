@@ -415,15 +415,17 @@ function showStoppedMessage(callback) {
 /// hidden saved messsage
 function hiddenSavedMessage(callback) {
 	var ok = document.getElementById('button_ok');
-	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("save_message_area").style.visibility = "hidden";
 	document.getElementById("save_message_dialog").style.visibility = "hidden";
+	document.getElementById('save_message_area').className = 'fadeOut';
 }
 
 /// show saved messsage dialog
 function showSavedMessage(callback) {
 	var ok = document.getElementById('button_ok');
-	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById('save_message_area').className = 'fadeIn';
+	document.getElementById("save_message_area").style.visibility = "visible";
 	document.getElementById("save_message_dialog").style.visibility = "visible";
 
-	setTimeout('hiddenSavedMessage()', 500);
+	setTimeout('hiddenSavedMessage()', 800);
 }

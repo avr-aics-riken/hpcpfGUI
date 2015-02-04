@@ -287,6 +287,43 @@
 .button_delete_done_label {
 }
 
+.save_message_dialog {
+	bottom: 50px;
+	left: 400px;
+	width: 150px;
+	height: 50px;
+	position: fixed;
+	visibility: hidden;
+	background-color:#444444;
+	z-index:60;
+	border:solid;
+	border-color:#72ca2a;
+	border-radius: 6px;
+	border-width 2px;
+}
+
+.save_message {
+	transform: translateY(70%);
+	font-family:sans-serif;
+	text-align:center;
+	font-size:18px;
+	color: #ffffff;
+}
+
+#save_message_area {
+	min-height: 100%;
+	min-width: 800px;
+	width: 100%;
+	height: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	visibility: hidden;
+	background-color:transparent;
+	opacity: 0.7;
+	z-index:50;
+}
+
 /*
 #stderr {
 	background-color:#bcbcbc;

@@ -34,6 +34,8 @@
 	
 	<div id="confirm_area">
 	</div>
+	<div id="save_message_area">
+	</div>
 	<div id="exist_warning_dialog" class="confirm_dialog">
 		<div id="confirm_message" class="confirm_message">
 			<p>The name of file or directory already exists.</p>
@@ -47,9 +49,9 @@
 			<p>Execution: Stopped.</p>
 		</div>
 	</div>
-	<div id="save_message_dialog" class="confirm_dialog">
-		<div id="save_message" class="confirm_message">
-			<p>File: Saved.</p>
+	<div id="save_message_dialog" class="save_message_dialog">
+		<div id="save_message" class="save_message">
+			<p>File: Saved</p>
 		</div>
 	</div>
 
@@ -135,7 +137,7 @@
 		</button>
 	</div>
 
-	<!--------------------------- Info view --------------------------------->
+	<!--------------------------- Info --------------------------------->
 	<span id="info_mode" style="display:block">
 		<div id="info_area" class="info_area">
 			<div class="project_title">
@@ -219,7 +221,7 @@
 		</div>
 	</span>
 	
-	<!--------------------------- EXE view --------------------------------->
+	<!--------------------------- Log --------------------------------->
 	<span id="exe_mode" style="display:none">
 		<div id="exe_area" class="exe_area">
 			<div class="project_title_log">
@@ -236,19 +238,8 @@
 		</div>
 	</span>
 	
-	<!--------------------------- Edit view --------------------------------->
+	<!--------------------------- Editer --------------------------------->
 	<span id="edit_mode" style="display:none">
-		<!--div id="menubtn">
-			<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
-			<button class="button_editor" id="button_save_editor" onclick="saveFile();">SAVE<br>(CTRL+S)</button>
-			<button class="button_editor" id="button_stop" onclick="procStop();">STOP<br>(CTRL+Q)</button>
-			<button class="button_editor"  onclick="modeChange(this.value);" value="vim" id="button_editmode">Vim Mode</button>
-		</div-->
-		<!--nav class="navbar navbar-default" id="editorbar">
-			<div class="filepath" id="filename">-</a>
-			<label class="checkbox" for="checkbox1">
-		</nav-->
-
 		<div>
 			<pre id="editor"></pre>
 			<button class="button_save_editor" id="button_save_editor"
