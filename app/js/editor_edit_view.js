@@ -195,25 +195,6 @@ socket.on('fileopen', function(data) {
 	fileopen(data);
 });
 
-/*
-function procRun() {
-	clearOutput();
-	//showOutputArea(true);
-	// run client side
-	//var src = editor.getValue();
-	//Lua.execute(src);
-	//---
-	// run server side
-	if (!openedfile)
-		return;
-	socket.emit('run',{file:openedfile});
-}
-function procStop() {
-	console.log("STOP");
-	socket.emit('stop');
-}
-*/
-
 function getFileList()
 {
 	socket.emit('reqFileList');

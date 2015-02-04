@@ -131,10 +131,18 @@ function registerPTLEvent(socket) {
 	var historyFile = "../conf/project_history.json";
 	
 	socket.on('reqCreateNewProject', function (name) {
-		var newpath = "";
+		var newpath = "",
+			newName = "",
+			counter = 1;
 		if (fs.existsSync(projectBasePath)) {
 			newpath = path.join(projectBasePath, name);
 			if (path.join(newpath, '..') === projectBasePath) {
+				while (fs.existsSync(newpath)) {
+					newName = name + "_" + counter;
+					console.log("newName:" + newName);
+					newpath = path.join(projectBasePath, newName);
+					++counter;
+				}
 				if (!fs.existsSync(newpath)) {
 					try {
 						fs.mkdirSync(newpath);
