@@ -64,7 +64,7 @@ function modeChange(modename) {
 	if (modename == "vim"){
 		modeVim();
 		$('button_vimmode').value = "default";
-		$('button_vimmode').innerHTML = "<span class='default_mode_text'>Xcode</span>";
+		$('button_vimmode').innerHTML = "<span class='default_mode_text'>Default</span>";
 	} else {
 		modeDefault();
 		$('button_vimmode').value = "vim";
