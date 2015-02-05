@@ -179,10 +179,10 @@ end
 function executeCASE(casename,...)
     local args_table = {...}
     --print("num="..#args_table)
-    local cf = loadfile('./'..casename..'/case.cwl');
+    local cf = loadfile('./'..casename..'/cwf.lua');
     if (cf == nil) then
         print("Can't find Case work flow:"..casename)
-        print("or can't find " .. casename..'/case.cwl')
+        print("or can't find " .. casename..'/cwf.lua')
     else
         print("--- Start CASE: "..casename.." ---")
         setBasePath('/' .. casename)
