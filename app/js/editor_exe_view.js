@@ -12,7 +12,7 @@ socket.on('stdout', function (data) {
 
 socket.on('stderr', function (data) {
 	var s = $('exe_log')
-	s.innerHTML += data.toString() + '</br>';
+	s.innerHTML += data.toString();
 	s.scrollTop = s.scrollHeight;
 });
 
