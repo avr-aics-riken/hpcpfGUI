@@ -12,6 +12,7 @@ var exec = require('child_process').exec,
 	RemoteFTP = require('./js/RemoteFTP'),
 	
 	confFile = path.resolve(__dirname, '../conf/hpcpfGUI.conf'),
+	projectTemplate = path.resolve(__dirname, '../template/project_template'),
 	portNumber      = 8080,
 	projectBasePath = "",
 	appCommands = {},   // app name to launch path
@@ -129,6 +130,21 @@ function registerPTLEvent(socket) {
 	backfire_filedialog.SocketEvent(socket, 'opendlg');
 
 	var historyFile = "../conf/project_history.json";
+		
+	function copyTemplate(src, dst) {
+		if (fs.existsSync(src) && fs.statSync(src).isDirectory()) {
+			if (!fs.existsSync(dst)) {
+				fs.mkdirSync(dst);
+			}
+			fs.readdirSync(src).forEach(
+				function(childItemName) {
+					copyTemplate(path.join(src, childItemName), path.join(dst, childItemName));
+				}
+			);
+		} else {
+			fs.linkSync(src, dst);
+		}
+	}
 	
 	socket.on('reqCreateNewProject', function (name) {
 		var newpath = "",
@@ -146,9 +162,12 @@ function registerPTLEvent(socket) {
 				if (!fs.existsSync(newpath)) {
 					try {
 						fs.mkdirSync(newpath);
-						newpath = path.relative('/', newpath);
-						newpath = '/' + newpath.split(path.sep).join("/");
-						socket.emit('createNewProject', newpath);
+						if (fs.existsSync(newpath)) {
+							copyTemplate(projectTemplate, newpath);
+							newpath = path.relative('/', newpath);
+							newpath = '/' + newpath.split(path.sep).join("/");
+							socket.emit('createNewProject', newpath);
+						}
 					} catch(e) {
 						console.log(e);
 					}
