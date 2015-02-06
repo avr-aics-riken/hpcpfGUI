@@ -1,48 +1,55 @@
+/*jslint devel:true*/
+/*global $, ace, ChangeEditor, saveFile, executeProject, stopProject, socket,
+  hideEditArea*/
 // depends: editor.js
 
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/hpcpf");
 editor.setReadOnly(true);
 editor.on('change',	function changeInput() {
-	if (editor.session.getUndoManager().isClean())
+	"use strict";
+	if (editor.session.getUndoManager().isClean()) {
 		ChangeEditor(false);
-	else
+	} else {
 		ChangeEditor(true);
+	}
 });
 
-document.addEventListener('keypress', function(e){
+document.addEventListener('keypress', function (e) {
+	"use strict";
 	//console.log(e.keyCode);
 	// window.navigator.platform.match("Mac") ==> e.metaKey is commandKey
 	
-	if (e.keyCode == 18 && e.ctrlKey){ // R + ctrl
+	if (e.keyCode === 18 && e.ctrlKey) { // R + ctrl
 		saveFile();
 		executeProject();
 		return false;
 	}
-	if (e.keyCode == 17 && e.ctrlKey){ // Q + ctrl
+	if (e.keyCode === 17 && e.ctrlKey) { // Q + ctrl
 		stopProject();
 		return false;
 	}
-	if (e.keyCode == 19 && e.ctrlKey){ // S + ctrl
+	if (e.keyCode === 19 && e.ctrlKey) { // S + ctrl
 		saveFile();
 		return false;
 	}
 });
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
+	"use strict";
 	if (window.navigator.platform.match("Win")) {
-		if (e.keyCode == 82 && e.ctrlKey){ // R + ctrl
+		if (e.keyCode === 82 && e.ctrlKey) { // R + ctrl
 			saveFile();
 			executeProject();
 			e.preventDefault();
 			return false;
 		}
-		if (e.keyCode == 81 && e.ctrlKey){ // Q + ctrl
+		if (e.keyCode === 81 && e.ctrlKey) { // Q + ctrl
 			stopProject();
 			e.preventDefault();
 			return false;
 		}
-		if (e.keyCode == 83 && e.ctrlKey){ // S + ctrl
+		if (e.keyCode === 83 && e.ctrlKey) { // S + ctrl
 			saveFile();
 			e.preventDefault();
 			return false;
@@ -51,17 +58,20 @@ document.addEventListener('keydown', function(e) {
 });
 
 function modeDefault() {
+	"use strict";
 	editor.setTheme("ace/theme/hpcpf");
 	editor.setKeyboardHandler("");
 }
 
 function modeVim() {
+	"use strict";
 	editor.setTheme("ace/theme/tomorrow_night_bright");
 	editor.setKeyboardHandler("ace/keyboard/vim");
 }
 
 function modeChange(modename) {
-	if (modename == "vim"){
+	"use strict";
+	if (modename === "vim") {
 		modeVim();
 		$('button_vimmode').value = "default";
 		$('button_vimmode').innerHTML = "<span class='default_mode_text'>Default</span>";
@@ -77,27 +87,30 @@ function modeChange(modename) {
 var openedfile = null;
 var edited = false;
 
-function ChangeEditor(state){
+function ChangeEditor(state) {
+	"use strict";
 	edited = state;
-	if (openedfile === null)
+	if (openedfile === null) {
 		$('filename').innerHTML = '-';
-	else
-		$('filename').innerHTML = openedfile + (state == true ? " *" : "" ) ;
+	} else {
+		$('filename').innerHTML = openedfile + (state === true ? " *" : "");
+	}
 }
 
-function fileopen(filename, forceEdit){
+function fileopen(filename, forceEdit) {
+	"use strict";
 	editor.setReadOnly(false);
 	saveFile();
 	
 	if (!forceEdit) {
-		if (openedfile == filename) {
+		if (openedfile === filename) {
 			console.log("fileopen : same file");
 			return;
 		}
 	}
 	
 	openedfile = filename;
-	console.log("Open:"+filename);
+	console.log("Open:" + filename);
 	editor.setValue("");// clear
 	ChangeEditor(false);
 	socket.emit('reqFileOpen', filename);
@@ -128,11 +141,12 @@ function showOutputArea(forceshow){
 */
 
 socket.on('showfile', function (data) {
+	"use strict";
 	//console.log(data.str, data.type);
-	if (data.type != "")
-		editor.getSession().setMode("ace/mode/"+data.type.toString());
-	
-	editor.session.setValue(data.str.toString(),-1);// set cursor the start
+	if (data.type !== "") {
+		editor.getSession().setMode("ace/mode/" + data.type.toString());
+	}
+	editor.session.setValue(data.str.toString(), -1);// set cursor the start
 	editor.session.getUndoManager().reset(true);
 	editor.session.getUndoManager().markClean();
 	ChangeEditor(false);
@@ -143,6 +157,7 @@ socket.on('showfile', function (data) {
 });
 
 socket.on('showfile_image', function (data) {
+	"use strict";
 	editor.setReadOnly(true);
 	ChangeEditor(false);
 	console.log("show_image");
@@ -152,6 +167,7 @@ socket.on('showfile_image', function (data) {
 });
 
 socket.on('showfile_launchbutton', function (appnames, dir, filename) {
+	"use strict";
 	var apparea,
 		name,
 		button,
@@ -166,36 +182,40 @@ socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 	while (apparea.firstChild) {
 		apparea.removeChild(apparea.firstChild);
 	}
+	function buttonClick() {
+		launchApp(name, dir + filename);
+	}
 	for (i in appnames) {
-		name = appnames[i];
-		button = document.createElement("button");
-		button.setAttribute('type', 'button');
-		button.setAttribute('class', 'button_editor_launchapp');
-		button.onclick = function() {
-			launchApp(name, dir+filename);
+		if (appnames.hasOwnProperty(i)) {
+			name = appnames[i];
+			button = document.createElement("button");
+			button.setAttribute('type', 'button');
+			button.setAttribute('class', 'button_editor_launchapp');
+			button.onclick = buttonClick;
+			button.innerHTML = "<span class='text_button_launchapp'>Open " + name + "</span>";
+			apparea.appendChild(button);
 		}
-		button.innerHTML = "<span class='text_button_launchapp'>Open " + name + "</span>";
-		apparea.appendChild(button);
 	}
 	// create edit button
 	button = document.createElement("button");
 	button.setAttribute('type', 'button');
 	button.setAttribute('class', 'button_editor_launchapp');
-	button.onclick = function() {
+	button.onclick = function () {
 		fileopen(filename, true);
-	}
+	};
 	button.innerHTML = "<span class='text_button_launchapp'>Edit text</span>";
 	apparea.appendChild(button);
 	openedfile = filename;
 	ChangeEditor(false);
 });
 
-socket.on('fileopen', function(data) {
+socket.on('fileopen', function (data) {
+	"use strict";
 	console.log("fileopen : " + data);
 	fileopen(data);
 });
 
-function getFileList()
-{
+function getFileList() {
+	"use strict";
 	socket.emit('reqFileList');
 }
