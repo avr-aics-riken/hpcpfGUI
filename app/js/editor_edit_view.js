@@ -1,12 +1,12 @@
 /*jslint devel:true*/
-/*global $, ace, ChangeEditor, saveFile, executeProject, stopProject, socket,
+/*global $, ace, ChangeEditor, saveFile, socket,
   hideEditArea*/
 // depends: editor.js
 
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/hpcpf");
 editor.setReadOnly(true);
-editor.on('change',	function changeInput() {
+editor.on('change', function changeInput() {
 	"use strict";
 	if (editor.session.getUndoManager().isClean()) {
 		ChangeEditor(false);
@@ -14,6 +14,16 @@ editor.on('change',	function changeInput() {
 		ChangeEditor(true);
 	}
 });
+
+function executeProject() {
+	"use strict";
+	$('button_execute_').onclick();
+}
+
+function stopProject() {
+	"use strict";
+	$('button_stop_').onclick();
+}
 
 document.addEventListener('keypress', function (e) {
 	"use strict";

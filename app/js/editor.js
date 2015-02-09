@@ -11,6 +11,12 @@ socket.on('connect', function () {
 	setupFileDialog();
 });
 
+function init() {
+	socket.emit('reqInit');
+}
+
+window.onload = init;
+
 function getWorkingPath() {
 	var url = location.href;
 	console.log(url);
@@ -93,18 +99,6 @@ function showEditView() {
 	$("edit_mode").style.display = "block";
 	hideNewNameArea();
 	validateModeChangeButton(true);
-}
-
-function executeProject() {
-	"use strict";
-	showExeView();
-	runWorkflow();
-}
-
-function stopProject() {
-	"use strict";
-	showExeView();
-	stopWorkflow();
 }
 
 function setProjectName(name) {

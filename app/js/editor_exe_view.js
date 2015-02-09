@@ -1,5 +1,5 @@
 /*jslint devel:true*/
-/*global $, socket, clearOutput, showStoppedMessage*/
+/*global $, socket, showStoppedMessage*/
 // depends: editor.js
 
 (function () {
@@ -20,6 +20,10 @@
 		s.scrollTop = s.scrollHeight;
 	});
 
+	function clearOutput() {
+		$('exe_log').innerHTML = '';
+	}
+	
 	function runWorkflow() {
 		var targetFile = "pwf.lua";
 
@@ -40,8 +44,19 @@
 		});
 	}
 
-	function clearOutput() {
-		$('exe_log').innerHTML = '';
+	function executeProject() {
+		showExeView();
+		runWorkflow();
 	}
 
+	function stopProject() {
+		showExeView();
+		stopWorkflow();
+	}
+	
+	socket.on('init', function () {
+		$('button_execute_').onclick = executeProject;
+		$('button_stop_').onclick = stopProject;
+	});
+	
 }());

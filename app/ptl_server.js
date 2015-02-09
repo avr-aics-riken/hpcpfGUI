@@ -227,6 +227,10 @@ function registerPTLEvent(socket) {
 		}
 		socket.emit('updateLaunchButtons', appnames);
 	});
+	
+	socket.on('reqInit', function() {
+		socket.emit('init');
+	});
 }
 
 
