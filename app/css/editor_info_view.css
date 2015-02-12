@@ -32,6 +32,7 @@
 	overflow:hidden;
 	float: left;
 	width:80%;
+	margin-top:30px;
 	height:auto;
 	display:none;
 }

@@ -103,6 +103,7 @@ function showEditView() {
 
 function setProjectName(name) {
 	"use strict";
+	document.title = name;
 	$('info_project_title_text').innerHTML = name;
 	$('exe_project_title_text').innerHTML = name;
 }
