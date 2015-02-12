@@ -242,8 +242,8 @@
 
 .newdirectory_dir {
 	position:relative;
-	bottom:1px;
-	padding-left:15px;
+	bottom:3px;
+	padding-left:11px;
 }
 
 .newfilearea_label {
@@ -304,7 +304,6 @@
 
 .save_message {
 	transform: translateY(70%);
-	font-family:sans-serif;
 	text-align:center;
 	font-size:18px;
 	color: #ffffff;

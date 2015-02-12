@@ -13,11 +13,11 @@
 	text-decoration:none;
 	background:transparent;
 	outline:none;
+	font-family:'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
 }
 
 body{
 	background-color:#ffffff;
-	font-family:sans-serif;
 	min-width:800px;
 	-webkit-font-smoothing: antialiased;
 
@@ -187,7 +187,6 @@ input{
 
 .text_title{
 	position:relative;
-	font-family:sans-serif;
 	font-size:20px;
 	font-weight:600;
 	padding-left:40px;
@@ -196,8 +195,7 @@ input{
 }
 
 .text_recent{
-	font-family:sans-serif;
-	font-size:24px;
+	font-size:20px;
 	color:#fff;
 	text-align:left;
 	margin-left:20px;
