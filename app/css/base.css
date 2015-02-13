@@ -321,26 +321,93 @@ input{
 .confirm_dialog {
 	top: 50%;
 	left: 50%;
-	width: 400px;
-	height: 200px;
-	margin-top:-100px;
-	margin-left:-200px;
+	width: 295px;
+	height: 116px;
+	margin-top:-53px;
+	margin-left:-145px;
 	position: fixed;
 	visibility: hidden;
-	background-color:#444444;
+	background:url("../image/button_bg_white.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	
 	z-index:60;
 }
 
 .confirm_message {
 	transform: translateY(50%);
-	font-family:sans-serif;
 	text-align:center;
-	font-size:20px;
-	color: #ffffff;
+	font-size:12px;
 }
 
 .confirm_button {
-	margin-top:20px;
+	position:relative;
+	left: 105px;
+	top: 14px;
+	width: 71px;
+	height: 46px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	z-index:61;
+}
+
+.confirm_button:active {
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+
+.confirm_overwrite_message {
+	position:relative;
+	left:20px;
+	transform: translateY(25%);
+	text-align:left;
+	font-size:12px;
+}
+
+.confirm_save_button {
+	position:relative;
+	left: 117px;
+	top: 8px;
+	width: 71px;
+	height: 46px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	z-index:61;
+}
+
+.confirm_save_button:active {
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.confirm_cancel_button {
+	position:relative;
+	left: 117px;
+	top: 8px;
+	width: 71px;
+	height: 46px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	z-index:61;
+}
+
+.confirm_cancel_button:active {
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.confirm_button_text {
+	position: relative;
+	right: 2px;
+	bottom: 10px;
+	font-size:12px;
 }
 
 

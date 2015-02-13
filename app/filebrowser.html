@@ -20,12 +20,14 @@
 	<div id="confirm_area">
 	</div>
 	<div id="confirm_dialog" class="confirm_dialog">
-		<div id="confirm_message" class="confirm_message">
+		<div id="confirm_message" class="confirm_overwrite_message">
 			<p>The name of file or directory already exists.</p>
 			<p>Do you want to overwrite it?</p>
 			<div id="confirm_button">
-				<button id="button_save" type="button">Save</button>
-				<button id="button_cancel" type="button">Cancel</button>
+				<button class="confirm_save_button" id="button_save" type="button">
+					<span class="confirm_button_text">Save</span></button>
+				<button class="confirm_cancel_button" id="button_cancel" type="button">
+					<span class="confirm_button_text">Cancel</span></button>
 			</div>
 		</div>
 	</div>
@@ -33,7 +35,8 @@
 		<div id="confirm_message" class="confirm_message">
 			<p>The name of file or directory already exists.</p>
 			<div id="confirm_button">
-				<button id="button_ok" type="button">OK</button>
+				<button class="confirm_button" id="button_ok" type="button">
+					<span class="confirm_button_text">OK</span></button>
 			</div>
 		</div>
 	</div>

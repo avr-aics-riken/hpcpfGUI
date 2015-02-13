@@ -288,24 +288,25 @@
 }
 
 .save_message_dialog {
-	bottom: 50px;
-	left: 400px;
-	width: 150px;
-	height: 50px;
+	bottom: 84px;
+	right: 30px;
+	width: 85px;
+	height: 46px;
 	position: fixed;
 	visibility: hidden;
 	background-color:#444444;
-	z-index:60;
-	border:solid;
-	border-color:#72ca2a;
-	border-radius: 6px;
-	border-width 2px;
+	z-index:5;
+	background:url("../image/button_file_saved.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .save_message {
-	transform: translateY(70%);
+	position: relative;
+	top:8px;
 	text-align:center;
-	font-size:18px;
+	font-weight:300;
+	font-size:11px;
 	color: #ffffff;
 }
 
