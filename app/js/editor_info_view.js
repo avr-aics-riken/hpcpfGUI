@@ -78,7 +78,11 @@ socket.on('openFile', function (data) {
 	$('info_back_button_area').style.display = "block";
 	$('info_text_area').style.display = "none";
 	$('info_opened_text_area').style.display = "block";
-	$('info_opened_text_area').innerHTML = "<pre>" + data + "</pre>";
+	$('info_opened_text_area').innerHTML =
+		"<pre class='info_text_file'>"
+		+ data
+		+ "</pre>";
+	console.log($('info_opened_text_area').innerHTML);
 });
 
 function convertJSONtoTable(table, parentKey, json) {
@@ -90,17 +94,17 @@ function convertJSONtoTable(table, parentKey, json) {
 			if (typeof json[key] === 'object') {
 				return convertJSONtoTable(result, key, json[key]);
 			} else {
-				result += "<tr>";
-				result += "<td>";
+				result += "<div class='row'>";
+				result += "<div class='json_title'>";
 				if (parentKey) {
 					result += parentKey + " - ";
 				}
 				result += key;
-				result += "</td>";
-				result += "<td>";
+				result += "</div>";
+				result += "<div class='json_text'>";
 				result += json[key];
-				result += "</td>";
-				result += "</tr>";
+				result += "</div>";
+				result += "</div>";
 			}
 		}
 	}
@@ -110,15 +114,12 @@ function convertJSONtoTable(table, parentKey, json) {
 socket.on('openJSON', function (data) {
 	"use strict";
 	var textArea = $('info_opened_text_area'),
-		textAreaHTML,
 		json;
 	$('info_back_button_area').style.display = "block";
 	$('info_text_area').style.display = "none";
 	$('info_opened_text_area').style.display = "block";
 	json = JSON.parse(data);
-	textAreaHTML = "<table border=1 class='info_text_area'>";
-	textAreaHTML = convertJSONtoTable(textAreaHTML, "", json);
-	textArea.innerHTML = textAreaHTML + "</table>";
+	textArea.innerHTML = convertJSONtoTable("", "", json);
 	//console.log(json);
 	//$('info_opened_text_area').innerHTML = "<pre>"+data+"</pre>";
 });

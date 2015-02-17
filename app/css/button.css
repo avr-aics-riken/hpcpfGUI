@@ -448,12 +448,12 @@
 
 /* button - back */
 .button_back {
-	width:50px;
-	height:25px;
+	width:18px;
+	height:20px;
 	position:relative;
-	top:0px;
-	left: 60px;
-	background-image:url("../image/button_rect.png");
+	top:10px;
+	left: 10px;
+	background-image:url("../image/back_button.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 	font-size:12px;
@@ -462,7 +462,7 @@
 }
 
 .button_back:active{
-	background-image:url("../image/button_rect_press.png");
+	background-image:url("../image/back_button_press.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 }
