@@ -38,9 +38,7 @@
 		socket.emit('stop');
 		socket.once('stopdone', function (success) {
 			console.log("stopdone");
-			if (success) {
-				showStoppedMessage();
-			}
+			showStoppedMessage();
 		});
 	}
 

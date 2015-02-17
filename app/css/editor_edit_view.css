@@ -310,6 +310,14 @@
 	color: #ffffff;
 }
 
+.stop_message{
+	position: relative;
+	top:50px;
+	text-align:center;
+	font-weight:300;
+	font-size:14px;
+}
+
 #save_message_area {
 	min-height: 100%;
 	min-width: 800px;
