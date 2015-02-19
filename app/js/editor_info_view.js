@@ -85,14 +85,14 @@ socket.on('openFile', function (data) {
 	console.log($('info_opened_text_area').innerHTML);
 });
 
-function convertJSONtoTable(table, parentKey, json) {
+function convertJSONtoTable(parentKey, json) {
 	"use strict";
 	var key,
-		result = table;
+		result = "";
 	for (key in json) {
 		if (json.hasOwnProperty(key)) {
 			if (typeof json[key] === 'object') {
-				return convertJSONtoTable(result, key, json[key]);
+				result += convertJSONtoTable(key, json[key]);
 			} else {
 				result += "<div class='row'>";
 				result += "<div class='json_title'>";
@@ -119,7 +119,7 @@ socket.on('openJSON', function (data) {
 	$('info_text_area').style.display = "none";
 	$('info_opened_text_area').style.display = "block";
 	json = JSON.parse(data);
-	textArea.innerHTML = convertJSONtoTable("", "", json);
+	textArea.innerHTML = convertJSONtoTable("", json);
 	//console.log(json);
 	//$('info_opened_text_area').innerHTML = "<pre>"+data+"</pre>";
 });
