@@ -1,3 +1,11 @@
+/* override font family for ACE editor */
+* {
+	font-family:inherit;
+}
+span.fontchange * {
+	font-family:'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+}
+
 body {
 	min-height:600px;
 }
