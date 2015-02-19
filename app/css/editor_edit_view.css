@@ -14,7 +14,7 @@
 	min-width:465px; /* + 315 + 20 = 800 */
 }
 
-#filelistArea {
+.filelistArea {
 	margin: 0px;
 	position:absolute;
 	/*
@@ -38,7 +38,7 @@
 	height: 600px;
 }
 
-#filelist {
+.filelist {
 	position:absolute;
 	overflow:auto;
 	/*
@@ -55,6 +55,15 @@
 	top:40px;
 	width:290px;
 	bottom: 58px;
+}
+
+.filelist * {
+	font-size: 14px;
+}
+
+.filename {
+	font-size: 14px;
+	height: 18px;
 }
 
 #separator {

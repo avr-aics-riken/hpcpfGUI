@@ -26,12 +26,14 @@ body {
 .project_title {
 	margin-top:7px;
 	margin-bottom:1px;
+	height:25px;
 }
 
 .info_project_title {
 	margin-left:20px;
 	text-align:left;
 	font-size:16px;
+	height:30px;
 }
 
 .execute_button_area {

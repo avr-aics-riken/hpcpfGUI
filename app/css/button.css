@@ -450,9 +450,9 @@
 .button_back {
 	width:18px;
 	height:20px;
-	position:relative;
-	top:10px;
-	left: 10px;
+	position:absolute;
+	top: 155px;
+	left: 330px;
 	background-image:url("../image/back_button.png");
 	background-repeat:no-repeat;
 	background-size: contain;

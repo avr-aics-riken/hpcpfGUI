@@ -65,15 +65,15 @@
 			<!--button class="button_browse" id="openbtn">Browse</button-->
 		</div>
 	</div>
-	<div id="filelistArea">
+	<div id="filelistArea" class="filelistArea">
 		<div id="filenameArea">
-			<input readonly type="text" id="filename" placeholder="File Name:" value="">
+			<input class="filename" readonly type="text" id="filename" placeholder="File Name:" value="">
 			<div class="filename_border"></div>
 		</div>
 		<!--div class="itemlabel">File:</div-->
 		<!--div id="hintmsg">連番ファイルでimage000001.jpgから始まる場合は "image%06d.jpg"と設定する</div-->
-		<div id="filelist_container">
-			<div id="filelist"></div>
+		<div id="filelist_container" class="filelist_conainer">
+			<div id="filelist" class="filelist"></div>
 		</div>
 		<div id="filebutton_conainer" class="filebutton_conainer">
 			<div class="shownewfilearea">
@@ -149,11 +149,8 @@
 				<span id="info_project_title_text" class="project_title_text">
 					Project Title
 				</span>
-				<div class="info_bar"></div>
 			</div>
-			<div class="info_back_button_area" id="info_back_button_area">
-				<button class="button_back" onclick="backToInfo();"></button>
-			</div>
+			<div class="info_bar"></div>
 			<div class="info_text_area" id="info_opened_text_area">
 			</div>
 			<div class="info_text_area" id="info_text_area">
@@ -223,6 +220,9 @@
 			</div>
 		</div>
 	</span>
+	<div class="info_back_button_area" id="info_back_button_area">
+		<button class="button_back" onclick="backToInfo();"></button>
+	</div>
 	
 	<!--------------------------- Log --------------------------------->
 	<span id="exe_mode" style="display:none">
