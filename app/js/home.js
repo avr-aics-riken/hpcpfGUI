@@ -95,6 +95,35 @@ socket.on('createNewProject', function (path) {
 	}
 });
 
+/// hidden exist warning dialog
+function hiddenExistWarning(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("exist_warning_dialog").style.visibility = "hidden";
+}
+
+/// show same file/directory exists dialog
+function showExistWarning(callback) {
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("exist_warning_dialog").style.visibility = "visible";
+
+	function okfunc() {
+		callback();
+		save.removeEventListener("click", okfunc, true);
+	}
+	ok.addEventListener("click", okfunc, true);
+}
+
+socket.on('showNewProjectNameExists', function (newname, newpath) {
+	var nametag = document.getElementById('confirm_projectname');
+	nametag.innerHTML = newname;
+	showExistWarning(function() {
+		hiddenExistWarning();
+		socket.emit("reqCreateNewProjectWithSameName", newpath);
+	});
+});
+
 function updateProjectList() {
 	socket.emit('reqUpdateProjectHistory','');
 }

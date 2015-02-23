@@ -19,6 +19,19 @@
 		<div id="logo"></div>
 	</div>
 		
+	<div id="confirm_area">
+	</div>
+	<div id="exist_warning_dialog" class="confirm_dialog">
+		<div id="confirm_message" class="confirm_project_message">
+			<p>The name of project already exists. </p>
+			<span>Created as </span><span id="confirm_projectname"></span>
+			<div id="confirm_button">
+				<button class="confirm_project_button" id="button_ok" type="button">
+					<span class="confirm_button_text">OK</span></button>
+			</div>
+		</div>
+	</div>
+		
 	<div class="tab">
 		<div class="pane_left" id="button_menus">
 			<button type="button" class="button_menu" onclick="showNewProjectDialog()"><span class="text_button_menu">New Project</span></button><br>

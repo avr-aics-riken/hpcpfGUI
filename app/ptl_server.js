@@ -145,35 +145,61 @@ function registerPTLEvent(socket) {
 			fs.linkSync(src, dst);
 		}
 	}
+
+	function withExistWarningEx(is_exist, doFunction) {
+		"use strict";
+		if (is_exist) {
+			showExistWarning(function() {
+				hiddenExistWarning();
+				doFunction();
+			});
+		} else {
+			doFunction();
+		}
+	}
 	
+	function createNewProject(newpath) {
+		if (!fs.existsSync(newpath)) {
+			try {
+				fs.mkdirSync(newpath);
+				if (fs.existsSync(newpath)) {
+					copyTemplate(projectTemplate, newpath);
+					newpath = path.relative('/', newpath);
+					newpath = '/' + newpath.split(path.sep).join("/");
+					socket.emit('createNewProject', newpath);
+				}
+			} catch(e) {
+				console.log(e);
+			}
+		}
+	}
+
 	socket.on('reqCreateNewProject', function (name) {
 		var newpath = "",
 			newName = "",
-			counter = 1;
+			counter = 1,
+			is_exist = false;
 		if (fs.existsSync(projectBasePath)) {
 			newpath = path.join(projectBasePath, name);
 			if (path.join(newpath, '..') === projectBasePath) {
 				while (fs.existsSync(newpath)) {
+					is_exist = true;
 					newName = name + "_" + counter;
 					console.log("newName:" + newName);
 					newpath = path.join(projectBasePath, newName);
 					++counter;
 				}
-				if (!fs.existsSync(newpath)) {
-					try {
-						fs.mkdirSync(newpath);
-						if (fs.existsSync(newpath)) {
-							copyTemplate(projectTemplate, newpath);
-							newpath = path.relative('/', newpath);
-							newpath = '/' + newpath.split(path.sep).join("/");
-							socket.emit('createNewProject', newpath);
-						}
-					} catch(e) {
-						console.log(e);
-					}
+				if (is_exist) {
+					socket.emit('showNewProjectNameExists', newName, newpath);
+				} else {
+					createNewProject(newpath);
 				}
 			}
 		}
+	});
+	
+	socket.on('reqCreateNewProjectWithSameName', function (newpath) {
+		createNewProject(newpath);
 	});
 	
 	socket.on('reqUpdateProjectHistory', function (path) {
@@ -232,7 +258,6 @@ function registerPTLEvent(socket) {
 		socket.emit('init');
 	});
 }
-
 
 // socket.io setting
 var io = require('socket.io').listen(server);

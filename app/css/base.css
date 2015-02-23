@@ -340,6 +340,26 @@ input{
 	font-size:12px;
 }
 
+.confirm_project_message {
+	padding-top:5px;
+	padding-left:40px;
+	transform: translateY(50%);
+	text-align:left;
+	font-size:12px;
+}
+
+.confirm_project_button {
+	position:absolute;
+	left: 210px;
+	top: 50px;
+	width: 71px;
+	height: 46px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	z-index:61;
+}
+
 .confirm_button {
 	position:relative;
 	left: 105px;
