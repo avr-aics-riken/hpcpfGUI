@@ -5,3 +5,6 @@ require('hpcpf')
 print('Project flow')
 
 executeCASE('case01')
+executeCASE('case02')
+executeCASE('case03')
+
