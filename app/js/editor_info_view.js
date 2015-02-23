@@ -126,6 +126,7 @@ socket.on('openJSON', function (data) {
 
 function showFile(file) {
 	"use strict";
+	setFileName(file);
 	console.log("showFile:" + file);
 	socket.emit('reqOpenFile', file);
 }

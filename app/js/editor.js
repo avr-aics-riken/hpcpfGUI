@@ -88,6 +88,7 @@ function showExeView() {
 	$("info_mode").style.display = "none";
 	$("exe_mode").style.display = "block";
 	$("edit_mode").style.display = "none";
+	$("info_back_button_area").style.display = "none";
 	hideEditArea();
 	hideNewNameArea();
 }
@@ -97,6 +98,7 @@ function showEditView() {
 	$("info_mode").style.display = "none";
 	$("exe_mode").style.display = "none";
 	$("edit_mode").style.display = "block";
+	$("info_back_button_area").style.display = "none";
 	hideNewNameArea();
 	validateModeChangeButton(true);
 }
@@ -104,8 +106,16 @@ function showEditView() {
 function setProjectName(name) {
 	"use strict";
 	document.title = name;
-	$('info_project_title_text').innerHTML = name;
+	$('info_project_title').innerHTML = "Project Name:";
+	$('info_title_text').innerHTML = name;
 	$('exe_project_title_text').innerHTML = name;
+}
+
+function setFileName(name) {
+	"use strict";
+	document.title = name;
+	$('info_project_title').innerHTML = "File Name:";
+	$('info_title_text').innerHTML = name;
 }
 
 function showNewNameArea(id) {
@@ -345,6 +355,7 @@ function setupSeparator() {
 			imageArea,
 			exeArea,
 			infoArea,
+			backButtonArea,
 			left = window.pageXOffset || document.documentElement.scrollLeft,
 			pos;
 		if (dragging) {
@@ -355,6 +366,7 @@ function setupSeparator() {
 			editor = document.getElementById('editor');
 			launchButtonArea = document.getElementById('launchButtonArea');
 			imageArea = document.getElementById('imageArea');
+			buttonBack = document.getElementById('button_back');
 			pos = left + e.clientX;
 			if (pos > 295 && pos < (document.documentElement.clientWidth  - 50)) {
 				separator.style.left = pos + 'px';
@@ -365,6 +377,7 @@ function setupSeparator() {
 				imageArea.style.left = editor.style.left;
 				exeArea.style.left = editor.style.left;
 				infoArea.style.left = editor.style.left;
+				buttonBack.style.left = (pos + 20) + "px";
 			}
 		}
 	};
