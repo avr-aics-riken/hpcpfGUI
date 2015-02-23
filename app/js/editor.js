@@ -267,7 +267,7 @@ function changeColor(element) {
 function clickDir(fd, element, parentDir, path) {
 	console.log("directory clicked");
 	// changeColor(element);
-	changeDir(fd, '/' + path + '/');
+	changeDir(fd, getWorkingPath() + '/' + path + '/');
 	hideNewNameArea();
 }
 
@@ -281,9 +281,9 @@ function clickFile(fd, element, parentDir, path) {
 	
 	// directory, path setting
 	if (parentDir === '') {
-		changeDir(fd, '/');
+		changeDir(fd, getWorkingPath() + '/');
 	} else {
-		changeDir(fd, '/' + parentDir + '/');
+		changeDir(fd, getWorkingPath() + '/' + parentDir + '/');
 	}
 	fileselect(path);
 	document.getElementById('filename').value = path.split("/").pop();
