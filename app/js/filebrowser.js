@@ -125,12 +125,14 @@ function closeRenameBox() {
 function showRenameBox(filelabel, fpath, ftp) {
 	var container = document.getElementById('rename_box_container'),
 		renameBox = document.getElementById('rename_box'),
+		scrollLeft = (document.body.scrollLeft + document.documentElement.scrollLeft),
+		scrollTop  = (document.body.scrollTop + document.documentElement.scrollTop),
 		bounds = filelabel.getBoundingClientRect(),
 		background = document.getElementById('popup_background');
 	container.style.display = "block";
 	container.style.position = "absolute";
-	container.style.left = ""+bounds.left+"px";
-	container.style.top  = ""+(bounds.top+3)+"px";
+	container.style.left = (bounds.left+scrollLeft)+"px";
+	container.style.top  = (bounds.top+scrollTop)+"px";
 	container.style.zIndex = 20;
 	renameBox.value = filelabel.innerHTML;
 	renameBox.focus();

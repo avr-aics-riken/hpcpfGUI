@@ -47,7 +47,6 @@
 	border-radius:5px;
 	border-color:transparent;
 	height:30px;
-
 }
 
 .fileitem:active, .fileitem:focus, .fileitem:checked{
@@ -84,6 +83,14 @@
 	white-space: nowrap;
 	overflow: hidden;
 
+}
+
+.rename_box {
+	text-align:left;
+	font-size:14px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .back{
