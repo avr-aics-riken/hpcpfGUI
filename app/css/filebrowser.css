@@ -87,7 +87,6 @@
 
 .rename_box {
 	text-align:left;
-	font-size:14px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
