@@ -91,7 +91,6 @@ socket.on('createNewProject', function (path) {
 		console.log("createNewProject:" + path);
 		closeNewProjectDialog();
 		document.getElementById('newprojectname').value = "";
-		openProject(path);
 	}
 });
 
