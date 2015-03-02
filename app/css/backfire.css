@@ -12,11 +12,14 @@
 }
 
 #dirpath {
-	width:100%;
+	position:absolute;
+	left:0px;
+	right:0px;
 	z-index:30;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 
 #filename {
