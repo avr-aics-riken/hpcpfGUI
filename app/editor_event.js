@@ -176,7 +176,7 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		//console.log(data.file);
 		var srcdir = sesstionTable[socket.id].dir,
 			data = JSON.parse(sdata),
-			targetBaseDir = path.join(srcdir, data.basedir);
+			targetBaseDir = path.join(srcdir, data.basedir),
 			targetPath = path.join(targetBaseDir, data.file);
 
 		try {
@@ -196,7 +196,7 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 	socket.on('reqNewDir', function(sdata) {
 		var srcdir = sesstionTable[socket.id].dir,
 			data = JSON.parse(sdata),
-			targetBaseDir = path.join(srcdir, data.basedir);
+			targetBaseDir = path.join(srcdir, data.basedir),
 			targetPath = path.join(targetBaseDir, data.dir);
 		
 		try {
