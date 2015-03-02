@@ -163,7 +163,8 @@ end
 
 
 function dxjob:SubmitAndWait(remoteCasePath)
-	self.m_jobstartdate = os.date('20%y-%m-%d %H:%M:%S')
+	--self.m_jobstartdate = os.date('20%y-%m-%d %H:%M:%S')
+	self.m_jobstartdate = self.m_jobmgr:remoteDate()
     while #self.m_jobque > 0 or #self.m_submitque > 0 do
         -- check ended job
 		for i = #self.m_submitque, 1, -1 do
