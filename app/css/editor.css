@@ -30,10 +30,18 @@ body {
 }
 
 .info_project_title {
-	margin-left:20px;
+	margin-left:35px;
 	text-align:left;
 	font-size:16px;
 	height:30px;
+}
+
+.info_project_title_log {
+	margin-left:30px;
+	text-align:left;
+	font-size:16px;
+	height:30px;
+	color: #FFF;
 }
 
 .execute_button_area {
