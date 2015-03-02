@@ -1,3 +1,5 @@
+/*jslint devel:true, nomen: true*/
+/*global require, __dirname, showExistWarning, hiddenExistWarning*/
 var exec = require('child_process').exec,
 	spawn = require('child_process').spawn,
 	fs = require('fs'),
@@ -9,7 +11,7 @@ var exec = require('child_process').exec,
 	remotehostevent = require('./remotehost_event'),
 	filedialog = require('./js/filedialog'),
 	backfire_filedialog = require('./js/backfire_filedialog'),
-	RemoteFTP = require('./js/RemoteFTP'),
+	remoteFTP = require('./js/RemoteFTP'),
 	
 	confFile = path.resolve(__dirname, '../conf/hpcpfGUI.conf'),
 	projectTemplate = path.resolve(__dirname, '../template/project_template'),
@@ -22,28 +24,35 @@ try {
 	console.log('confFile = ' + confFile);
 	var ostype = os.platform(),
 		file = fs.readFileSync(confFile),
-		data = JSON.parse(file);
+		data = JSON.parse(file),
+		name,
+		i,
+		extensions;
 	console.log('OS = ' + ostype);
 	
-	if (data.port) { portNumber        = data.port; }
-	for (var name in data) {
-		if (name === "project_base") {
-			projectBasePath = path.normalize(data.project_base);
-			if (util.isRelative(projectBasePath)) {
-				projectBasePath = path.resolve(path.join(__dirname, ".."), projectBasePath);
-			}
-			console.log("project base:" + projectBasePath);
-		} else if (name !== "port") {
-			appCommands[name] = data[name][ostype];
-			if ("extension" in data[name]) {
-				var extensions = data[name]["extension"].split(';');
-				// exclude dot and asterisk
-				for (var i in extensions) {
-					extensions[i] = extensions[i].split('.').join("");
-					extensions[i] = extensions[i].split('*').join("");
-					extensions[i] = extensions[i].split(' ').join("");
+	if (data.port) { portNumber = data.port; }
+	for (name in data) {
+		if (data.hasOwnProperty(name)) {
+			if (name === "project_base") {
+				projectBasePath = path.normalize(data.project_base);
+				if (util.isRelative(projectBasePath)) {
+					projectBasePath = path.resolve(path.join(__dirname, ".."), projectBasePath);
 				}
-				appExtensions[name] = extensions;
+				console.log("project base:" + projectBasePath);
+			} else if (name !== "port") {
+				appCommands[name] = data[name][ostype];
+				if (data[name].hasOwnProperty("extension")) {
+					extensions = data[name].extension.split(';');
+					// exclude dot and asterisk
+					for (i in extensions) {
+						if (extensions.hasOwnProperty(i)) {
+							extensions[i] = extensions[i].split('.').join("");
+							extensions[i] = extensions[i].split('*').join("");
+							extensions[i] = extensions[i].split(' ').join("");
+						}
+					}
+					appExtensions[name] = extensions;
+				}
 			}
 		}
 	}
@@ -137,7 +146,7 @@ function registerPTLEvent(socket) {
 				fs.mkdirSync(dst);
 			}
 			fs.readdirSync(src).forEach(
-				function(childItemName) {
+				function (childItemName) {
 					copyTemplate(path.join(src, childItemName), path.join(dst, childItemName));
 				}
 			);
@@ -147,9 +156,8 @@ function registerPTLEvent(socket) {
 	}
 
 	function withExistWarningEx(is_exist, doFunction) {
-		"use strict";
 		if (is_exist) {
-			showExistWarning(function() {
+			showExistWarning(function () {
 				hiddenExistWarning();
 				doFunction();
 			});
@@ -168,7 +176,7 @@ function registerPTLEvent(socket) {
 					newpath = '/' + newpath.split(path.sep).join("/");
 					socket.emit('createNewProject', newpath);
 				}
-			} catch(e) {
+			} catch (e) {
 				console.log(e);
 			}
 		}
@@ -187,7 +195,7 @@ function registerPTLEvent(socket) {
 					newName = name + "_" + counter;
 					console.log("newName:" + newName);
 					newpath = path.join(projectBasePath, newName);
-					++counter;
+					counter = counter + 1;
 				}
 				if (is_exist) {
 					socket.emit('showNewProjectNameExists', newName, newpath);
@@ -222,8 +230,8 @@ function registerPTLEvent(socket) {
 		console.log("REGISTER_HISTORY:" + path);
 		fs.readFile(historyFile, function (err, data) {
 			var names = path.split("/"),
-				name = names[names.length - 1];
-			var i;
+				name = names[names.length - 1],
+				i;
 			console.log("ProjName=" + name);
 			if (err) {
 				console.log('Error: ' + err);
@@ -232,7 +240,7 @@ function registerPTLEvent(socket) {
 			} else {
 				data = JSON.parse(data);
 				// remove same entry
-				for (i = data.length-1; i >= 0; --i) {
+				for (i = data.length - 1; i >= 0; i = i - 1) {
 					if (data[i].name === name && data[i].path === path) {
 						data.splice(i, 1);
 					}
@@ -245,16 +253,18 @@ function registerPTLEvent(socket) {
 	});
 	
 	// no use function on home
-	socket.on('reqUpdateLaunchButtons', function() {
-		var appnames = [];
-		var name;
+	socket.on('reqUpdateLaunchButtons', function () {
+		var appnames = [],
+			name;
 		for (name in appCommands) {
-			appnames.push(name);
+			if (appCommands.hasOwnProperty(name)) {
+				appnames.push(name);
+			}
 		}
 		socket.emit('updateLaunchButtons', appnames);
 	});
 	
-	socket.on('reqInit', function() {
+	socket.on('reqInit', function () {
 		socket.emit('init');
 	});
 }
@@ -267,7 +277,7 @@ io.sockets.on('connection', function (socket) {
 	socket.emit('event', 'Server Connected.');
 	console.log("[CONNECT] ID=" + socket.id);
 
-	RemoteFTP(socket);
+	remoteFTP(socket);
 	editorevent.registerEditorEvent(socket, appCommands, appExtensions);
 	remotehostevent.registerEditorEvent(socket);
 	registerPTLEvent(socket);
