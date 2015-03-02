@@ -218,14 +218,14 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		var srcdir = sesstionTable[socket.id].dir,
 			dstpath,
 			data = JSON.parse(sdata),
-			target = data.target,
+			target = data.target, // This is full path
 			newName = data.name;
 		
-		if (target.charAt(0) == '/') {
-			target = path.join(srcdir, target.slice(1));
-		}
 		console.log('reqRename:' + sdata);
-		if (fs.existsSync(target)) {
+				
+		if (!fs.existsSync(target)) {
+			console.log('NOT FOUND rename target:', target);
+		} else {
 			if (fs.statSync(target).isDirectory()) {
 				dstpath = path.join(target, '..', newName);
 				if (fs.existsSync(dstpath)) {
