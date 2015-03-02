@@ -255,10 +255,8 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			data = JSON.parse(sdata),
 			target = data.target;
 		
-		if (target.charAt(0) == '/') {
-			target = path.join(srcdir, target.slice(1));
-		}
 		console.log("reqDelete:" + sdata);
+		
 		try {
 			if (fs.existsSync(target)) {
 				if (fs.statSync(target).isDirectory()) {
