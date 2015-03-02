@@ -114,7 +114,7 @@ function registerPTLEvent(socket) {
 		console.log("ptl_launchapp file:" + data.file);
 		
 		var appcmd, child;
-		if (data.appname in appCommands) {
+		if (appCommands.hasOwnProperty(data.appname)) {
 			appcmd = appCommands[data.appname];
 		}
 		if (data.file) {
