@@ -260,8 +260,7 @@ function registerPTLEvent(socket) {
 }
 
 // socket.io setting
-var io = require('socket.io').listen(server);
-io.set('log level', 1);
+var io = require('socket.io').listen(server, {'log level': 1});
 
 io.sockets.on('connection', function (socket) {
 	"use strict";
