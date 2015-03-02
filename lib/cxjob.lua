@@ -70,6 +70,13 @@ function cxjob.new(username_or_table, sshkey, server, port, workdir)
     end
 
     setmetatable(inst, {__index = cxjob})
+
+    -- auto generate date folder
+    --[[
+    inst.workdir = inst.workdir ..  os.date("hpcpfJob_%Y%m%d_%H%M%S/")
+    print('REMOTE WORKDIR=', inst.workdir)
+    inst:remoteMakeDir(inst.workdir)
+    --]]
     return inst;
 end
 
@@ -175,7 +182,7 @@ function cxjob:remoteExtractFile(filepath, verbose)
 end
 
 function cxjob:remoteCompressNewerFile(srcfile, tarfile, newdate, verbose)
-    local newer = '' -- '--newer \\"' .. newdate .. '\\" '
+    local newer =  '--newer \\"' .. newdate .. '\\" '
     local option = (verbose == true) and '-czvf' or '-czf'
     option = newer .. option
     local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. tarfile .. ' ' .. srcfile
@@ -333,6 +340,14 @@ function cxjob:remoteJobStat(jobdata)
     local jobstat = parseJobStat(self.jobinfo, cmdret, jobdata.id)
     --print('JOB ST = ' .. jobstat)
     return jobstat
+end
+
+function cxjob:remoteDate()
+    local cmd = 'date \\"+%Y-%m-%d %H:%M:%S\\"'
+    print(cmd)
+    local dateret = sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
+    print('DATERET:', dateret)
+    return dateret
 end
 
 return cxjob
