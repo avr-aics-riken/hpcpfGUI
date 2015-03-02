@@ -95,6 +95,12 @@ function getDirAndName(fullpath)
 	return dirpath, name
 end
 
+--[[
+function getJobCaseName(casename)
+	return casename .. os.date("_%Y%m%d_%H%M%S")
+end
+--]]
+
 function getRelativeCasePath()
 	local p = getBasePath()
 	if (p == "") then

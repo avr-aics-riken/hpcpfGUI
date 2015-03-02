@@ -70,6 +70,13 @@ function cxjob.new(username_or_table, sshkey, server, port, workdir)
     end
 
     setmetatable(inst, {__index = cxjob})
+
+    -- auto generate date folder
+    --[[
+    inst.workdir = inst.workdir ..  os.date("hpcpfJob_%Y%m%d_%H%M%S/")
+    print('REMOTE WORKDIR=', inst.workdir)
+    inst:remoteMakeDir(inst.workdir)
+    --]]
     return inst;
 end
 
