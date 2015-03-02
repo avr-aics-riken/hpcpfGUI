@@ -12,14 +12,16 @@
 }
 
 #dirpath {
-	position:absolute;
+	position:relative;
+	top:0px;
 	left:0px;
 	right:0px;
 	z-index:30;
-	user-select: none;
+	width: 100%;
+	/*user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
-	-ms-user-select: none;
+	-ms-user-select: none;*/
 }
 
 #filename {
@@ -57,10 +59,12 @@
 	margin-left: 10px;
 	margin-top: 7px;
 	margin-bottom: 3px;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-	height: 30px;
+	/*user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;*/
+	overflow: hidden;
+	height: 32px;
 }
 
 #errormsg {
@@ -98,7 +102,7 @@
 }
 
 .filelabel{
-	margin: 5px 0px 0px 10px;
+	margin: 10px 0px 0px 10px;
 	color: white;
 }
 
@@ -107,7 +111,7 @@
 }
 
 .file {
-	margin: 8px 0px 0px 18px;
+	margin: 4px 0px 0px 18px;
 	font-size: 11px;
 	border-top: 0.2em solid #72ca2a;
 	position: relative;
