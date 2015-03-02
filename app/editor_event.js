@@ -386,6 +386,7 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			processspawn.on('exit', function(code) {
 				console.log('exit code: ' + code);
 				updateFileList(srcdir);
+				socket.emit('exit');
 			});
 			processspawn.on('error', function (err) {
 				console.log('process error', err);

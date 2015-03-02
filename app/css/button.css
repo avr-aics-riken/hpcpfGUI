@@ -373,7 +373,7 @@
 
 /* button - execute */
 .button_execute {
-	width:60px;
+	width:107px;
 	height:40px;
 	position:relative;
 	top:-66px;
@@ -385,12 +385,14 @@
 }
 
 .button_execute:active{
-	background-image:url("../image/button_bg_action_play_press.png");
+	background-image:url("../image/button_bg_start_stop_press.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 }
 
 /* button - stop */
+
+/*
 .button_stop {
 	width:60px;
 	height:40px;
@@ -408,6 +410,7 @@
 	background-repeat:no-repeat;
 	background-size: contain;
 }
+*/
 
 /* button - edit */
 .button_edit {

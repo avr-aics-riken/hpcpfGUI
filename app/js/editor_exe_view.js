@@ -4,6 +4,12 @@
 
 (function () {
 	"use strict";
+	
+	var playButtonURL = "url(../image/button_bg_action_play.png)",
+		playButtonTitle = "Run (CTRL+R)",
+		stopButtonTitle = "Stop (CTRL+Q)",
+		stopButtonURL = "url(../image/button_bg_action_stop.png)",
+		executeButton = $('button_execute_');
 
 	socket.on('connect', function () {
 	});
@@ -24,6 +30,12 @@
 		$('exe_log').innerHTML = '';
 	}
 	
+	socket.on('exit', function () {
+		executeButton.style.backgroundImage = playButtonURL;
+		executeButton.title = playButtonTitle;
+		executeButton.onclick = executeProject;
+	});
+	
 	function runWorkflow() {
 		var targetFile = "pwf.lua";
 
@@ -39,12 +51,18 @@
 		socket.once('stopdone', function (success) {
 			console.log("stopdone");
 			showStoppedMessage();
+			executeButton.style.backgroundImage = playButtonURL;
+			executeButton.title = playButtonTitle;
+			executeButton.onclick = executeProject;
 		});
 	}
 
 	function executeProject() {
 		showExeView();
 		runWorkflow();
+		executeButton.onclick = stopProject;
+		executeButton.style.backgroundImage = stopButtonURL;
+		executeButton.title = stopButtonTitle;
 	}
 
 	function stopProject() {
@@ -53,8 +71,8 @@
 	}
 	
 	socket.on('init', function () {
-		$('button_execute_').onclick = executeProject;
-		$('button_stop_').onclick = stopProject;
+		executeButton.onclick = executeProject;
+		//$('button_stop_').onclick = stopProject;
 	});
 	
 }());
