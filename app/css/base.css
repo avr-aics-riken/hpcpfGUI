@@ -336,6 +336,10 @@ input{
 
 .confirm_message {
 	transform: translateY(50%);
+	-webkit-transform: translateY(50%);
+	-ms-transform: translateY(50%);
+	-moz-transform: translateY(50%);
+	-o-transform: translateY(50%);
 	text-align:center;
 	font-size:12px;
 }
@@ -344,6 +348,10 @@ input{
 	padding-top:5px;
 	padding-left:40px;
 	transform: translateY(50%);
+	-webkit-transform: translateY(50%);
+	-ms-transform: translateY(50%);
+	-moz-transform: translateY(50%);
+	-o-transform: translateY(50%);
 	text-align:left;
 	font-size:12px;
 }
@@ -383,6 +391,10 @@ input{
 	position:relative;
 	left:20px;
 	transform: translateY(25%);
+	-webkit-transform: translateY(25%);
+	-ms-transform: translateY(25%);
+	-moz-transform: translateY(25%);
+	-o-transform: translateY(25%);
 	text-align:left;
 	font-size:12px;
 }

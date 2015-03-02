@@ -42,7 +42,7 @@ socket.on('connect', function () { // 2
 // project history
 
 socket.on('updateProjectHistory', function (data) {
-	console.log(data);
+	//console.log(data);
 	
 	function readProjectHistory(data) {
 		var proj = JSON.parse(data),
@@ -120,7 +120,35 @@ socket.on('showNewProjectNameExists', function (newname, newpath) {
 	nametag.innerHTML = newname;
 	showExistWarning(function() {
 		hiddenExistWarning();
-		socket.emit("reqCreateNewProjectWithSameName", newpath);
+		openProject(newpath);
+	});
+});
+
+/// hidden new project name dialog
+function hiddenNewProjectName(callback) {
+	var ok = document.getElementById('newproject_name_button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("newproject_name_dialog").style.visibility = "hidden";
+}
+
+/// show new project name dialog
+function showNewProjectName(callback) {
+	var ok = document.getElementById('newproject_name_button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("newproject_name_dialog").style.visibility = "visible";
+	function okfunc() {
+		callback();
+		ok.removeEventListener("click", okfunc, true);
+	}
+	ok.addEventListener("click", okfunc, true);
+}
+
+socket.on('showNewProjectName', function (newname, newpath) {
+	var nametag = document.getElementById('new_projectname');
+	nametag.innerHTML = newname;
+	showNewProjectName(function() {
+		hiddenNewProjectName();
+		openProject(newpath);
 	});
 });
 

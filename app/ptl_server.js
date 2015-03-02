@@ -198,17 +198,21 @@ function registerPTLEvent(socket) {
 					counter = counter + 1;
 				}
 				if (is_exist) {
+					createNewProject(newpath);
 					socket.emit('showNewProjectNameExists', newName, newpath);
 				} else {
 					createNewProject(newpath);
+					socket.emit('showNewProjectName', name, newpath);
 				}
 			}
 		}
 	});
 	
+	/*
 	socket.on('reqCreateNewProjectWithSameName', function (newpath) {
 		createNewProject(newpath);
 	});
+	*/
 	
 	socket.on('reqUpdateProjectHistory', function (path) {
 		fs.readFile(historyFile, function (err, data) {
