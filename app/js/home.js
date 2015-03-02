@@ -110,7 +110,7 @@ function showExistWarning(callback) {
 
 	function okfunc() {
 		callback();
-		save.removeEventListener("click", okfunc, true);
+		ok.removeEventListener("click", okfunc, true);
 	}
 	ok.addEventListener("click", okfunc, true);
 }
