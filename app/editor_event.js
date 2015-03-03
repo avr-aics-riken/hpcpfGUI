@@ -83,7 +83,7 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			socket.emit('updatefilelist', JSON.stringify(list));
 	}
 	socket.on('setWorkingPath', function(data){
-		var path = data.path.toString();
+		var path = JSON.parse(data).path.toString();
 		if (path.substr(path.length - 1) != "/")
 			path += "/";
 		sesstionTable[socket.id].dir = path;
@@ -113,8 +113,9 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		var srcdir = sesstionTable[socket.id].dir,
 			filepath = path.join(srcdir, path.normalize(relativePath)),
 			file;
+		console.log("reqOpenFile:", filepath);
 		try {
-			console.log('reqOpenFile:'+filepath);
+			console.log('reqOpenFile:' + filepath);
 			if (fs.existsSync(filepath) && fs.statSync(filepath).isFile()) {
 				file = fs.readFileSync(filepath).toString();
 				if (path.extname(filepath) == ".json") {
@@ -136,6 +137,7 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			absolutePath = path.join(srcdir, data);
 			filebuf = null;
 		
+		console.log('reqFileOpen:', absolutePath, 'SSSSS=',srcdir);
 		if (fs.existsSync(absolutePath)) {
 			filebuf = fs.readFileSync(absolutePath);
 			if (editType === "image") {
@@ -173,15 +175,17 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		}
 	});
 	socket.on('reqNewFile', function(sdata) {
-		//console.log(data.file);
-		var srcdir = sesstionTable[socket.id].dir,
-			data = JSON.parse(sdata),
-			targetBaseDir = path.join(srcdir, data.basedir),
-			targetPath = path.join(targetBaseDir, data.file);
-
+		console.log('reqNewFile');
+		//var srcdir = sesstionTable[socket.id].dir,
+		var data = JSON.parse(sdata),
+			targetBaseDir = data.basedir,
+			targetPath = data.target;
+		console.log('SSSS', targetBaseDir);
+		
 		try {
 			if (fs.existsSync(targetBaseDir)) {
 				if (fs.existsSync(targetPath)) {
+					console.log('It\'s exist!:' + targetPath);
 					socket.emit("newfiledone", false);
 				} else {
 					fs.writeFileSync(targetPath, data.data);
@@ -196,9 +200,10 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 	socket.on('reqNewDir', function(sdata) {
 		var srcdir = sesstionTable[socket.id].dir,
 			data = JSON.parse(sdata),
-			targetBaseDir = path.join(srcdir, data.basedir),
-			targetPath = path.join(targetBaseDir, data.dir);
-		
+			targetBaseDir = data.basedir,
+			targetPath = data.target;
+
+		console.log('reqNewDir:', targetPath);
 		try {
 			if (fs.existsSync(targetBaseDir)) {
 				if (fs.existsSync(targetPath)) {

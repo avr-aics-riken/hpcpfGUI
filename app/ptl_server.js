@@ -271,10 +271,16 @@ function registerPTLEvent(socket) {
 	socket.on('reqInit', function () {
 		socket.emit('init');
 	});
+	
+	socket.on('disconnect', (function (backfire_filedialog, id) {
+		return function () {
+			backfire_filedialog.Disconnect(id);
+		};
+	}(backfire_filedialog, socket.id)));
 }
 
 // socket.io setting
-var io = require('socket.io').listen(server, {'log level': 1});
+var io = require('socket.io').listen(server);//, {'log level': 1});
 
 io.sockets.on('connection', function (socket) {
 	"use strict";

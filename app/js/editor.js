@@ -2,13 +2,15 @@ var socket = io.connect();
 
 socket.on('connect', function () {
 	"use strict";
-	setupWorkingPath();
+	var fd;
 	console.log('connected');
 	socket.on('event', function (data) {
 		console.log(data);
 	});
 	setupSeparator();
-	setupFileDialog();
+	fd = setupFileDialog();
+	setupWorkingPath(fd);
+
 });
 
 function init() {
@@ -39,10 +41,11 @@ function getWorkingPath() {
 
 function $(id){ return document.getElementById(id); }
 
-function setupWorkingPath() {
+function setupWorkingPath(fd) {
 	"use strict";
 	var path = getWorkingPath();
-	socket.emit('setWorkingPath',{path:path});
+	fd.setWorkingPath(path);
+	socket.emit('setWorkingPath', JSON.stringify({path: path})); // pass to editor_event.js
 }
 
 function validateModeChangeButton(enable) {
@@ -155,20 +158,21 @@ function saveFile(){
 /// @param basedir relatative dir path from project dir
 /// @param fname new filename
 function newFile(fd, basedir, fname){
-	console.log("newfile:" + fname);
+	var targetFile =  basedir + fname;
+	console.log("newfile:" + targetFile);
 	if (fname == "")
 		return;
 	console.log(fname);
 	$('newfilename').value = ''
 	
-	socket.emit('reqNewFile', JSON.stringify({basedir: basedir, file: fname, data:''}));
-	fd.FileList('/');
+	socket.emit('reqNewFile', JSON.stringify({target: targetFile, basedir: basedir}));// JSON.stringify({basedir: basedir, file: fname, data:''}));
+//	fd.FileList('/');
 	
 	socket.once("newfiledone", function(success) {
 		if (success) {
 			// new file saved
 			hideNewNameArea();
-			fd.FileList('/');
+//			fd.FileList('/'); // to use fs.watch
 		} else {
 			// exists same path
 			showExistWarning(function() {
@@ -183,20 +187,22 @@ function newFile(fd, basedir, fname){
 /// @param basedir relatative dir path from project dir
 /// @param dirname new directory name
 function newDirectory(fd, basedir, dirname) {
+	var targetname = basedir + dirname;
+	console.log('newDirectory:', targetname);
 	if (dirname == "")
 		return;
 	console.log(dirname);
 	$('newdirname').value = '';
 	
 	console.log({dir: dirname, data:''});
-	socket.emit('reqNewDir', JSON.stringify({basedir: basedir, dir: dirname}));
-	fd.FileList('/');
+	socket.emit('reqNewDir', JSON.stringify({basedir: basedir, target: targetname}));
+//	fd.FileList('/');
 	
 	socket.once("newdirdone", function(success) {
 		if (success) {
 			// new directory saved
 			hideNewNameArea();
-			fd.FileList('/');
+//			fd.FileList('/');
 		} else {
 			// exists same path
 			showExistWarning(function() {
@@ -223,7 +229,7 @@ function renameFileOrDirectory(fd, name) {
 		if (success) {
 			// file or directory was renamed
 			hideNewNameArea();
-			fd.FileList('/');
+//			fd.FileList('/');
 		} else {
 			// exists same path
 			showExistWarning(function() {
@@ -247,7 +253,7 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 		console.log("deleted");
 		// file or directory was deleted
 		hideNewNameArea();
-		fd.FileList('/');
+//		fd.FileList('/');
 	});
 }
 
@@ -290,10 +296,10 @@ function clickFile(fd, element, parentDir, path) {
 	changeColor(element);
 	
 	// directory, path setting
-	if (parentDir === '') {
+	if (parentDir === '/') {
 		changeDir(fd, getWorkingPath() + '/');
 	} else {
-		changeDir(fd, getWorkingPath() + '/' + parentDir + '/');
+		changeDir(fd, getWorkingPath() + parentDir);
 	}
 	fileselect(path);
 	document.getElementById('filename').value = path.split("/").pop();
@@ -321,7 +327,7 @@ function setupFileDialog() {
 		});
 	});
 	
-	fd.FileList('/');
+	//fd.FileList('/');
 	
 	$('button_newfile_done').onclick = function() {
 		newFile(fd, $('dirpath').value, $('newfilename').value);
@@ -335,6 +341,7 @@ function setupFileDialog() {
 	$('button_delete_done').onclick = function() {
 		deleteFileOrDirectory(fd, $('dirpath').value, $('filename').value);
 	};
+	return fd;
 }
 
 /// initialize dialog and set separator 
