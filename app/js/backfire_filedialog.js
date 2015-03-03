@@ -93,6 +93,8 @@ if (typeof window === 'undefined') { // Node.js
 							};
 						}(dir, callback)));
 						fsWatches[dir] = wt;
+					} else {
+						console.log('[WATCH ALREADY]:', dir);
 					}
 					// Update callback immediately for First time.
 					loadFileList(dir, callback);
