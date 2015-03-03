@@ -190,6 +190,7 @@ var remoteMakeDir      = function(conn,path,callback)    { remoteCmd(conn, 'mkdi
 	
 	
 var LFTPClass = function(){
+	this.watchingDir = null;
 	
 	this.errorLog = function(msg,callback){
 		console.log(msg);
@@ -237,25 +238,47 @@ var LFTPClass = function(){
 	}
 
 	this.OpenDir  = function(path, callback){
-		fs.readdir(path, function(err,list){
-			var lists = new Array();
-			if (list) {
-				for (var i=0; i<list.length; ++i) {
-                    try {
-					    var stat = fs.statSync(path+list[i]);
-					    if (stat && stat.isDirectory()) {
-						    lists.push({filename:list[i], longname:"d"});
-					    }else{
-						    lists.push({filename:list[i], longname:"-"});
-					    }
-                    } catch (e) {
-                        console.log('Failed stat:'+list[i]);
-                    }
+		fs.readdir(path, (function (path, thisptr) {
+			return function (err, list) {
+				if (thisptr.watchingDir) {
+					thisptr.watchingDir.close();
+					thisptr.watchingDir = null;
 				}
-			}
-			if (callback)
-				callback(lists);
-		});
+				
+				function readLocalDir(path, list, callback) {
+					var lists = new Array();
+					if (list) {
+						for (var i = 0; i < list.length; i = i + 1) {
+							try {
+								var stat = fs.statSync(path + list[i]);
+								if (stat && stat.isDirectory()) {
+									lists.push({filename: list[i], longname: "d"});
+								}else{
+									lists.push({filename: list[i], longname: "-"});
+								}
+							} catch (e) {
+								console.log('Failed stat:' + list[i]);
+							}
+						}
+					}
+					if (callback) {
+						callback(lists);
+					}
+				}
+				
+				thisptr.watchingDir = fs.watch(path, (function (path, callback) {
+					return function (event, filename) {
+						console.log('CHANGE LOCAL DIR:', path);
+						fs.readdir(path, (function (path, callback) {
+							return function (err, list) {
+								readLocalDir(path, list, callback);
+							};
+						}(path, callback)));
+					};
+				}(path, callback)));
+				readLocalDir(path, list, callback);
+			};
+		}(path, this)));
 	}
 	this.Connect = function(args){
 		// nothing to do.
@@ -263,6 +286,10 @@ var LFTPClass = function(){
 	}
 	
 	this.delete = function(){
+		if (this.watchingDir) {
+			this.watchingDir.close();
+			this.watchingDir = null;
+		}
 		console.log('delete local FTP session');
 	}
 
