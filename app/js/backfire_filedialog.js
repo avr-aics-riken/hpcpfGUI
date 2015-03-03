@@ -123,7 +123,8 @@ if (typeof window === 'undefined') { // Node.js
 				function unwatchDir(relativePath, skt) {
 					var fsWatches,
 						wpath,
-						absolutePath;
+						absolutePath,
+						key;
 					
 					if (workpath.length === 0) {
 						console.log("project path error");
@@ -145,9 +146,15 @@ if (typeof window === 'undefined') { // Node.js
 						return;
 					}
 
-					fsWatches[absolutePath].close();
-					delete fsWatches[absolutePath];
-					console.log(' > unwatch');
+					for (key in fsWatches) {
+						if (fsWatches.hasOwnProperty(key)) {
+							if (key.indexOf(absolutePath) === 0) {
+								fsWatches[key].close();
+								delete fsWatches[key];
+								console.log(key + ' > unwatch');
+							}
+						}
+					}
 				}
 
 				// get for subdir
