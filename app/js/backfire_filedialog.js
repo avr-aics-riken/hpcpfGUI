@@ -99,6 +99,23 @@ if (typeof window === 'undefined') { // Node.js
 					// Update callback immediately for First time.
 					loadFileList(dir, callback);
 				}
+				function makeAbsolutePath(relativePath) {
+					var absolutePath;
+					if (workpath.length === 0) {
+						console.log("project path error");
+						return "";
+					}
+					
+					//absolutePath = path.join(workpath, relativePath); // TODO: windows native path
+					
+					// It's okay
+					if (relativePath === '/') {
+						absolutePath = workpath; // root
+					} else {
+						absolutePath = workpath + '/' + relativePath;
+					}
+					return absolutePath;
+				}
 				function updateFileList(relativePath, skt) {
 					var absolutePath;
 					if (workpath.length === 0) {
@@ -106,7 +123,7 @@ if (typeof window === 'undefined') { // Node.js
 						return;
 					}
 					try {
-						absolutePath = path.join(workpath, relativePath);
+						absolutePath = makeAbsolutePath(relativePath);
 						console.log("updateFileList:" + absolutePath);
 						getFiles(absolutePath, skt.id, (function (name, skt) {
 							return function (dir, list) {
@@ -126,11 +143,7 @@ if (typeof window === 'undefined') { // Node.js
 						absolutePath,
 						key;
 					
-					if (workpath.length === 0) {
-						console.log("project path error");
-						return;
-					}
-					absolutePath = path.join(workpath, relativePath);
+					absolutePath = makeAbsolutePath(relativePath);
 					if (absolutePath[absolutePath.length - 1] !== '/') {
 						absolutePath += '/';
 					}
