@@ -366,7 +366,7 @@ function changeColor(element) {
 function clickDir(fd, element, parentDir, path) {
 	"use strict";
 	console.log("directory clicked");
-	// changeColor(element);
+	changeColor(element);
 	changeDir(fd, getWorkingPath() + '/' + path + '/');
 	document.getElementById('filename').value = "";
 	hideNewNameArea();
