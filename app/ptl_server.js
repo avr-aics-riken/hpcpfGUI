@@ -140,6 +140,8 @@ function registerPTLEvent(socket) {
 
 	var historyFile = "../conf/project_history.json";
 		
+	/// @param src native path
+	/// @param dst native path
 	function copyTemplate(src, dst) {
 		if (fs.existsSync(src) && fs.statSync(src).isDirectory()) {
 			if (!fs.existsSync(dst)) {
@@ -166,15 +168,23 @@ function registerPTLEvent(socket) {
 		}
 	}
 	
+	/// @param str native path
+	/// @retval slash path
+	function toSlashPath(str) {
+		var newpath = path.relative('/', str);
+		newpath = '/' + newpath.split(path.sep).join("/");
+		return newpath;
+	}
+	
+	/// @param newpath native path
 	function createNewProject(newpath) {
 		if (!fs.existsSync(newpath)) {
 			try {
 				fs.mkdirSync(newpath);
 				if (fs.existsSync(newpath)) {
 					copyTemplate(projectTemplate, newpath);
-					newpath = path.relative('/', newpath);
-					newpath = '/' + newpath.split(path.sep).join("/");
-					socket.emit('createNewProject', newpath);
+					console.log("createNewProject:" + newpath);
+					socket.emit('createNewProject', toSlashPath(newpath));
 				}
 			} catch (e) {
 				console.log(e);
@@ -186,7 +196,9 @@ function registerPTLEvent(socket) {
 		var newpath = "",
 			newName = "",
 			counter = 1,
-			is_exist = false;
+			is_exist = false,
+			tempBasePath;
+		
 		if (fs.existsSync(projectBasePath)) {
 			newpath = path.join(projectBasePath, name);
 			if (path.join(newpath, '..') === projectBasePath) {
@@ -199,10 +211,10 @@ function registerPTLEvent(socket) {
 				}
 				if (is_exist) {
 					createNewProject(newpath);
-					socket.emit('showNewProjectNameExists', newName, newpath);
+					socket.emit('showNewProjectNameExists', newName, toSlashPath(newpath));
 				} else {
 					createNewProject(newpath);
-					socket.emit('showNewProjectName', name, newpath);
+					socket.emit('showNewProjectName', name, toSlashPath(newpath));
 				}
 			}
 		}
@@ -224,8 +236,7 @@ function registerPTLEvent(socket) {
 	});
 	
 	socket.on('reqOpenProjectDialog', function () {
-		var basepath = path.relative('/', projectBasePath);
-		basepath = '/' + basepath.split(path.sep).join("/");
+		var basepath = toSlashPath(projectBasePath);
 		console.log("reqOpenProjectDialog:" + basepath);
 		socket.emit('openProjectDialog', basepath);
 	});
