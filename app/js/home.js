@@ -1,101 +1,44 @@
+/*jslint devel:true*/
+/*global $, socket, showStoppedMessage, io, FileDialog */
+
 var socket = io.connect(),
 	filedialog = new FileDialog('homedlg', true, true);
 
 // ------ app launch ----------------------------------------------------
-socket.on('updateLaunchButtons', function(appnames) {
-	var paneleft = document.getElementById("button_menus");
-	var toolarea = document.createElement("div");
+socket.on('updateLaunchButtons', function (appnames) {
+	"use strict";
+	var paneleft = document.getElementById("button_menus"),
+		toolarea = document.createElement("div"),
+		line = document.createElement("div"),
+		i,
+		name,
+		button;
+	
 	toolarea.setAttribute('class', 'toolarea');
-	var line = document.createElement("div");
 	line.setAttribute('class', 'launcherline_home');
 	toolarea.appendChild(line);
 
-	for (var i in appnames) {
-		var name = appnames[i];
-		var button = document.createElement("button");
-		button.setAttribute('type', 'button');
-		button.setAttribute('class', 'button_tool');
-		button.setAttribute('onclick', 'launchApp("' +name+ '")');
-		button.innerHTML = '<span class="text_button_tool">' +name+ '</span>';
-		toolarea.appendChild(button);
+	for (i in appnames) {
+		if (appnames.hasOwnProperty(i)) {
+			name = appnames[i];
+			button = document.createElement("button");
+			button.setAttribute('type', 'button');
+			button.setAttribute('class', 'button_tool');
+			button.setAttribute('onclick', 'launchApp("' + name + '")');
+			button.innerHTML = '<span class="text_button_tool">' + name + '</span>';
+			toolarea.appendChild(button);
+		}
 	}
 	paneleft.appendChild(toolarea);
 });
 function updateLaunchButtons() {
-	socket.emit('reqUpdateLaunchButtons','');
-}
-// ---------------------------------------------------------------------
-
-socket.on('connect', function () { // 2
 	"use strict";
-	console.log('connected');
-	socket.on('event', function (data) {
-		console.log(data);
-	});
-	filedialog.registerSocketEvent(socket);
-	
-	// no use in current version
-	// updateLaunchButtons();
-});
-
-//-------------
-// project history
-
-socket.on('updateProjectHistory', function (data) {
-	//console.log(data);
-	
-	function readProjectHistory(data) {
-		var proj = JSON.parse(data),
-			plist,
-			newitem,
-			projectname,
-			projectpath,
-			label,
-			i;
-		var plist = document.getElementById("projectHistoryList");
-		var hitem = document.getElementById("historyitem");
-
-		// remove list items
-		while (hitem) {
-			plist.removeChild(hitem);
-			hitem = document.getElementById("historyitem");
-		}
-		
-		for (i = 0; i < proj.length; i += 1) {
-			newitem = document.getElementById("projectHistoryList_itemtemplate").cloneNode(true);
-			newitem.id = "historyitem";
-
-			// setting new item
-			projectname = proj[i].name;//"PROJECT:01";
-			projectpath = proj[i].path;//"/Users/username/project01/";
-
-			label = newitem.firstChild.nextSibling;
-			label.innerHTML = projectname;
-			newitem.path = projectpath;
-			plist.appendChild(newitem);
-		}
-	}
-	readProjectHistory(data);
-});
-
-socket.on('openProjectDialog', function (data) {
-	if (data) {
-		openfileDialog(data);
-	} else {
-		openfileDialog('/');
-	}
-});
-
-socket.on('createNewProject', function (path) {
-	if (path) {
-		console.log("createNewProject:" + path);
-		closeNewProjectDialog();
-		document.getElementById('newprojectname').value = "";
-	}
-});
+	socket.emit('reqUpdateLaunchButtons', '');
+}
 
 /// hidden exist warning dialog
 function hiddenExistWarning(callback) {
+	"use strict";
 	var ok = document.getElementById('button_ok');
 	document.getElementById("confirm_area").style.visibility = "hidden";
 	document.getElementById("exist_warning_dialog").style.visibility = "hidden";
@@ -103,6 +46,7 @@ function hiddenExistWarning(callback) {
 
 /// show same file/directory exists dialog
 function showExistWarning(callback) {
+	"use strict";
 	var ok = document.getElementById('button_ok');
 	document.getElementById("confirm_area").style.visibility = "visible";
 	document.getElementById("exist_warning_dialog").style.visibility = "visible";
@@ -114,17 +58,9 @@ function showExistWarning(callback) {
 	ok.addEventListener("click", okfunc, true);
 }
 
-socket.on('showNewProjectNameExists', function (newname, newpath) {
-	var nametag = document.getElementById('confirm_projectname');
-	nametag.innerHTML = newname;
-	showExistWarning(function() {
-		hiddenExistWarning();
-		openProject(newpath);
-	});
-});
-
 /// hidden new project name dialog
 function hiddenNewProjectName(callback) {
+	"use strict";
 	var ok = document.getElementById('newproject_name_button_ok');
 	document.getElementById("confirm_area").style.visibility = "hidden";
 	document.getElementById("newproject_name_dialog").style.visibility = "hidden";
@@ -132,6 +68,7 @@ function hiddenNewProjectName(callback) {
 
 /// show new project name dialog
 function showNewProjectName(callback) {
+	"use strict";
 	var ok = document.getElementById('newproject_name_button_ok');
 	document.getElementById("confirm_area").style.visibility = "visible";
 	document.getElementById("newproject_name_dialog").style.visibility = "visible";
@@ -142,17 +79,9 @@ function showNewProjectName(callback) {
 	ok.addEventListener("click", okfunc, true);
 }
 
-socket.on('showNewProjectName', function (newname, newpath) {
-	var nametag = document.getElementById('new_projectname');
-	nametag.innerHTML = newname;
-	showNewProjectName(function() {
-		hiddenNewProjectName();
-		openProject(newpath);
-	});
-});
-
 function updateProjectList() {
-	socket.emit('reqUpdateProjectHistory','');
+	"use strict";
+	socket.emit('reqUpdateProjectHistory', '');
 }
 
 function bootstrap() {
@@ -165,7 +94,7 @@ function newProject(name) {
 	var prohibit = ['/', '\\', '|', ',', '*', '<', '>', '?', '"',  ':'],
 		filteredName = name,
 		i = 0;
-	for (i = 0; i < prohibit.length; ++i) {
+	for (i = 0; i < prohibit.length; i = i + 1) {
 		filteredName = filteredName.split(prohibit[i]).join('');
 	}
 	socket.emit('reqCreateNewProject', filteredName);
@@ -180,21 +109,7 @@ function openProject(path) {
 
 function launchApp(name) {
 	"use strict";
-	socket.emit('ptl_launchapp', {appname : name, args:[]});
-}
-
-function showNewProjectDialog() {
-	"use strict";
-	var display = document.getElementById("new_project").style.display,
-		background = document.getElementById('popup_background');
-	if (display == "block") {
-		closeNewProjectDialog();
-	} else {
-		document.getElementById("new_project").style.display = "block";
-		background = document.getElementById('popup_background');
-		background.style.visibility = "visible";
-		background.addEventListener('click', closeNewProjectDialog);
-	}
+	socket.emit('ptl_launchapp', {appname : name, args : []});
 }
 
 function closeNewProjectDialog() {
@@ -202,6 +117,20 @@ function closeNewProjectDialog() {
 	document.getElementById("new_project").style.display = "none";
 	document.getElementById('popup_background').style.visibility = "hidden";
 	document.getElementById('popup_background').removeEventListener('click', closeNewProjectDialog);
+}
+
+function showNewProjectDialog() {
+	"use strict";
+	var display = document.getElementById("new_project").style.display,
+		background = document.getElementById('popup_background');
+	if (display === "block") {
+		closeNewProjectDialog();
+	} else {
+		document.getElementById("new_project").style.display = "block";
+		background = document.getElementById('popup_background');
+		background.style.visibility = "visible";
+		background.addEventListener('click', closeNewProjectDialog);
+	}
 }
 
 function showProjectArchiveDialog() {
@@ -270,3 +199,95 @@ function open_selectedFile() {
 	registerProjectHistory(tarPath);
 	openProject(tarPath);
 }
+
+socket.on('showNewProjectNameExists', function (newname, newpath) {
+	"use strict";
+	var nametag = document.getElementById('confirm_projectname');
+	nametag.innerHTML = newname;
+	showExistWarning(function () {
+		hiddenExistWarning();
+		openProject(newpath);
+	});
+});
+
+socket.on('showNewProjectName', function (newname, newpath) {
+	"use strict";
+	var nametag = document.getElementById('new_projectname');
+	nametag.innerHTML = newname;
+	showNewProjectName(function () {
+		hiddenNewProjectName();
+		openProject(newpath);
+	});
+});
+
+// ---------------------------------------------------------------------
+
+socket.on('connect', function () { // 2
+	"use strict";
+	console.log('connected');
+	socket.on('event', function (data) {
+		console.log(data);
+	});
+	filedialog.registerSocketEvent(socket);
+	
+	// no use in current version
+	// updateLaunchButtons();
+});
+
+//-------------
+// project history
+
+socket.on('updateProjectHistory', function (data) {
+	"use strict";
+	//console.log(data);
+	
+	function readProjectHistory(data) {
+		var proj = JSON.parse(data),
+			newitem,
+			projectname,
+			projectpath,
+			label,
+			i,
+			plist = document.getElementById("projectHistoryList"),
+			hitem = document.getElementById("historyitem");
+
+		// remove list items
+		while (hitem) {
+			plist.removeChild(hitem);
+			hitem = document.getElementById("historyitem");
+		}
+		
+		for (i = 0; i < proj.length; i += 1) {
+			newitem = document.getElementById("projectHistoryList_itemtemplate").cloneNode(true);
+			newitem.id = "historyitem";
+
+			// setting new item
+			projectname = proj[i].name;//"PROJECT:01";
+			projectpath = proj[i].path;//"/Users/username/project01/";
+
+			label = newitem.firstChild.nextSibling;
+			label.innerHTML = projectname;
+			newitem.path = projectpath;
+			plist.appendChild(newitem);
+		}
+	}
+	readProjectHistory(data);
+});
+
+socket.on('openProjectDialog', function (data) {
+	"use strict";
+	if (data) {
+		openfileDialog(data);
+	} else {
+		openfileDialog('/');
+	}
+});
+
+socket.on('createNewProject', function (path) {
+	"use strict";
+	if (path) {
+		console.log("createNewProject:" + path);
+		closeNewProjectDialog();
+		document.getElementById('newprojectname').value = "";
+	}
+});

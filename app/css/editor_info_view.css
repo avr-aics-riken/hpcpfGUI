@@ -7,7 +7,6 @@
 	min-height:425px; /* + 175 = 600 */
 	min-width:465px; /* + 315 + 20 = 800 */
 	
-	overflow:hidden;
 	border:solid;
 	border-radius:2px;
 	border-color:#72ca2a;
