@@ -93,7 +93,7 @@ function convertJSONtoTable(parentKey, json) {
 		if (json.hasOwnProperty(key)) {
 			if (typeof json[key] === 'object') {
 				if (parentKey) {
-					result += convertJSONtoTable(pafinforentKey + " - " + key, json[key]);
+					result += convertJSONtoTable(parentKey + " - " + key, json[key]);
 				} else {
 					result += convertJSONtoTable(key, json[key]);
 				}
@@ -127,7 +127,8 @@ socket.on('openJSON', function (data) {
 		textArea.innerHTML = convertJSONtoTable("", json);
 	} catch (e) {
 		textArea.innerHTML +=
-			"<pre class='info_text_file'>"
+			"<p style='background:red'>JSON Parse Error:" + e + "</p>"
+			+ "<pre class='info_text_file'>"
 			+ data
 			+ "</pre>";
 	}

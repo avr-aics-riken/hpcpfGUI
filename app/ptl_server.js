@@ -247,11 +247,23 @@ function registerPTLEvent(socket) {
 		socket.emit('openProjectArchiveDialog', basepath);
 	});
 	
-	socket.on('reqOpenProjectArchive', function (tarpath) {
-		var basepath = toSlashPath(projectBasePath);
-		console.log("tar path : " + tarpath);
-		console.log("basepath : " + basepath);
-		util.extractTar(basepath + '/', tarpath);
+	socket.on('reqOpenProjectArchive', function (dstFolderName, tarpath) {
+		var basepath = toSlashPath(projectBasePath),
+			dstpath = basepath + '/' + dstFolderName,
+			counter = 1;
+		console.log("tarpath : " + tarpath);
+		console.log("dstFolderName : " + dstFolderName);
+		try {
+			while (fs.existsSync(dstpath)) {
+				dstpath = basepath + '/' + dstFolderName + "_" + counter;
+				console.log("dstpath:" + dstpath);
+				counter = counter + 1;
+			}
+			fs.mkdirSync(dstpath);
+			util.extractTar(dstpath, tarpath);
+		} catch (e) {
+			console.log(e);
+		}
 	});
 	
 	socket.on('registerProjectHistory', function (path) {

@@ -180,7 +180,7 @@ function closeFileDialog() {
 
 function openProjectArchive(tarPath) {
 	"use strict";
-	socket.emit('reqOpenProjectArchive', tarPath);
+	socket.emit('reqOpenProjectArchive', "extract_test", tarPath);
 }
 
 function openSelectedFile() {
