@@ -93,7 +93,7 @@ function convertJSONtoTable(parentKey, json) {
 		if (json.hasOwnProperty(key)) {
 			if (typeof json[key] === 'object') {
 				if (parentKey) {
-					result += convertJSONtoTable(parentKey + " - " + key, json[key]);
+					result += convertJSONtoTable(pafinforentKey + " - " + key, json[key]);
 				} else {
 					result += convertJSONtoTable(key, json[key]);
 				}

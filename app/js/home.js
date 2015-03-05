@@ -4,33 +4,6 @@
 var socket = io.connect(),
 	filedialog = new FileDialog('homedlg', true, true);
 
-// ------ app launch ----------------------------------------------------
-socket.on('updateLaunchButtons', function (appnames) {
-	"use strict";
-	var paneleft = document.getElementById("button_menus"),
-		toolarea = document.createElement("div"),
-		line = document.createElement("div"),
-		i,
-		name,
-		button;
-	
-	toolarea.setAttribute('class', 'toolarea');
-	line.setAttribute('class', 'launcherline_home');
-	toolarea.appendChild(line);
-
-	for (i in appnames) {
-		if (appnames.hasOwnProperty(i)) {
-			name = appnames[i];
-			button = document.createElement("button");
-			button.setAttribute('type', 'button');
-			button.setAttribute('class', 'button_tool');
-			button.setAttribute('onclick', 'launchApp("' + name + '")');
-			button.innerHTML = '<span class="text_button_tool">' + name + '</span>';
-			toolarea.appendChild(button);
-		}
-	}
-	paneleft.appendChild(toolarea);
-});
 function updateLaunchButtons() {
 	"use strict";
 	socket.emit('reqUpdateLaunchButtons', '');
@@ -135,7 +108,7 @@ function showNewProjectDialog() {
 
 function showProjectArchiveDialog() {
 	"use strict";
-	socket.emit('reqOpenProjectDialog');
+	socket.emit('reqOpenProjectArchiveDialog');
 }
 
 function showProjectDialog() {
@@ -177,28 +150,80 @@ function registerProjectHistory(path) {
 	socket.emit("registerProjectHistory", path);
 }
 
-function openfileDialog(path) {
+function openFileDialog(path) {
 	"use strict";
+	console.log("openFileDialog");
+	filedialog.dir_only = false;
+	console.log("path:" + path);
 	document.getElementById("file_dialog").style.display = "block";
 	document.getElementById('projdir_path').value = path;
 	document.getElementById('popup_background').style.visibility = "visible";
 	filedialog.FileList(path);
 }
 
-function closefileDialog() {
+function openFolderDialog(path) {
+	"use strict";
+	console.log("openFolderDialog");
+	filedialog.dir_only = true;
+	console.log("path:" + path);
+	document.getElementById("file_dialog").style.display = "block";
+	document.getElementById('projdir_path').value = path;
+	document.getElementById('popup_background').style.visibility = "visible";
+	filedialog.FileList(path);
+}
+
+function closeFileDialog() {
 	"use strict";
 	document.getElementById("file_dialog").style.display = "none";
 	document.getElementById('popup_background').style.visibility = "hidden";
 }
 
-function open_selectedFile() {
+function openProjectArchive(tarPath) {
+	"use strict";
+	socket.emit('reqOpenProjectArchive', tarPath);
+}
+
+function openSelectedFile() {
 	"use strict";
 	var tarPath = document.getElementById('projdir_path').value;
 	console.log("OPENPATH:" + tarPath);
-	closefileDialog();
-	registerProjectHistory(tarPath);
-	openProject(tarPath);
+	
+	if (filedialog.dir_only === true) {
+		closeFileDialog();
+		registerProjectHistory(tarPath);
+		openProject(tarPath);
+	} else {
+		openProjectArchive(tarPath);
+	}
 }
+
+// ------ app launch ----------------------------------------------------
+socket.on('updateLaunchButtons', function (appnames) {
+	"use strict";
+	var paneleft = document.getElementById("button_menus"),
+		toolarea = document.createElement("div"),
+		line = document.createElement("div"),
+		i,
+		name,
+		button;
+	
+	toolarea.setAttribute('class', 'toolarea');
+	line.setAttribute('class', 'launcherline_home');
+	toolarea.appendChild(line);
+
+	for (i in appnames) {
+		if (appnames.hasOwnProperty(i)) {
+			name = appnames[i];
+			button = document.createElement("button");
+			button.setAttribute('type', 'button');
+			button.setAttribute('class', 'button_tool');
+			button.setAttribute('onclick', 'launchApp("' + name + '")');
+			button.innerHTML = '<span class="text_button_tool">' + name + '</span>';
+			toolarea.appendChild(button);
+		}
+	}
+	paneleft.appendChild(toolarea);
+});
 
 socket.on('showNewProjectNameExists', function (newname, newpath) {
 	"use strict";
@@ -274,12 +299,21 @@ socket.on('updateProjectHistory', function (data) {
 	readProjectHistory(data);
 });
 
+socket.on('openProjectArchiveDialog', function (data) {
+	"use strict";
+	if (data) {
+		openFileDialog(data);
+	} else {
+		openFileDialog('/');
+	}
+});
+
 socket.on('openProjectDialog', function (data) {
 	"use strict";
 	if (data) {
-		openfileDialog(data);
+		openFolderDialog(data);
 	} else {
-		openfileDialog('/');
+		openFolderDialog('/');
 	}
 });
 

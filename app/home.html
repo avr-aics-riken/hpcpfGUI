@@ -68,7 +68,7 @@
 				</div>
 			</div>
 			<div class="historybrowser_buttons">
-				<button type="button" class="button_open" onclick="openfileDialog('/')">
+				<button type="button" class="button_open" onclick="openFolderDialog('/')">
 					<span class="text_button_action">Browse</span>
 				</button>
 				<button type="button" class="button_cancel" onclick="closeRecentProjectDialog()">
@@ -85,17 +85,16 @@
 			</div>
 			<div class="filebrowser filedialog" id="fbList"></div>
 			<div class="buttons_dialog">
-				<button type="button" class="button_open" onclick="open_selectedFile()">
+				<button type="button" class="button_open" onclick="openSelectedFile()">
 					<span class="text_button_action">Open</span>
 				</button>
-				<button type="button" class="button_cancel" onclick="closefileDialog()">
+				<button type="button" class="button_cancel" onclick="closeFileDialog()">
 					<span class="text_button_action">Cancel</span>
 				</button>
 			</div>
 		</div>
 	</div>
 		
-
 	<div id="new_project">
 		<div class="new_project_content">
 			<div class="newNameLabel">New Project!</div>

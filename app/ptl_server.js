@@ -241,6 +241,19 @@ function registerPTLEvent(socket) {
 		socket.emit('openProjectDialog', basepath);
 	});
 	
+	socket.on('reqOpenProjectArchiveDialog', function () {
+		var basepath = toSlashPath(projectBasePath);
+		console.log("reqOpenProjectArchiveDialog:" + basepath);
+		socket.emit('openProjectArchiveDialog', basepath);
+	});
+	
+	socket.on('reqOpenProjectArchive', function (tarpath) {
+		var basepath = toSlashPath(projectBasePath);
+		console.log("tar path : " + tarpath);
+		console.log("basepath : " + basepath);
+		util.extractTar(basepath + '/', tarpath);
+	});
+	
 	socket.on('registerProjectHistory', function (path) {
 		console.log("REGISTER_HISTORY:" + path);
 		fs.readFile(historyFile, function (err, data) {
