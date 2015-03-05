@@ -92,7 +92,11 @@ function convertJSONtoTable(parentKey, json) {
 	for (key in json) {
 		if (json.hasOwnProperty(key)) {
 			if (typeof json[key] === 'object') {
-				result += convertJSONtoTable(key, json[key]);
+				if (parentKey) {
+					result += convertJSONtoTable(parentKey + " - " + key, json[key]);
+				} else {
+					result += convertJSONtoTable(key, json[key]);
+				}
 			} else {
 				result += "<div class='row'>";
 				result += "<div class='json_title'>";
@@ -118,8 +122,15 @@ socket.on('openJSON', function (data) {
 	$('info_back_button_area').style.display = "block";
 	$('info_text_area').style.display = "none";
 	$('info_opened_text_area').style.display = "block";
-	json = JSON.parse(data);
-	textArea.innerHTML = convertJSONtoTable("", json);
+	try {
+		json = JSON.parse(data);
+		textArea.innerHTML = convertJSONtoTable("", json);
+	} catch (e) {
+		textArea.innerHTML +=
+			"<pre class='info_text_file'>"
+			+ data
+			+ "</pre>";
+	}
 	//console.log(json);
 	//$('info_opened_text_area').innerHTML = "<pre>"+data+"</pre>";
 });
