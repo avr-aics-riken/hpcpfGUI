@@ -1,32 +1,96 @@
+/*jslint devel:true*/
+/*global $, socket, showStoppedMessage, io, FileDialog */
+// depends: editor.js
+
 var socket = io.connect();
 
-socket.on('connect', function () {
-	"use strict";
-	var fd;
-	console.log('connected');
-	socket.on('event', function (data) {
-		console.log(data);
-	});
-	setupSeparator();
-	fd = setupFileDialog();
-	setupWorkingPath(fd);
-
-});
 
 function init() {
+	"use strict";
 	socket.emit('reqInit');
+}
+
+/// hidden exist warning dialog
+function hiddenExistWarning(callback) {
+	"use strict";
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("exist_warning_dialog").style.visibility = "hidden";
+}
+
+/// show same file/directory exists dialog
+function showExistWarning(callback) {
+	"use strict";
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("exist_warning_dialog").style.visibility = "visible";
+
+	function okfunc() {
+		callback();
+	}
+	ok.addEventListener("click", okfunc, true);
+}
+
+
+/// hidden stop messsage
+function hiddenStoppedMessage(callback) {
+	"use strict";
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("stop_message_dialog").style.visibility = "hidden";
+}
+
+/// show stop messsage dialog
+function showStoppedMessage(callback) {
+	"use strict";
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("stop_message_dialog").style.visibility = "visible";
+
+	setTimeout(hiddenStoppedMessage, 1500);
+}
+
+/// hidden saved messsage
+function hiddenSavedMessage(callback) {
+	"use strict";
+	var ok = document.getElementById('button_ok');
+	document.getElementById("save_message_area").style.visibility = "hidden";
+	document.getElementById("save_message_dialog").style.visibility = "hidden";
+	document.getElementById('save_message_area').className = 'fadeOut';
+}
+
+/// show saved messsage dialog
+function showSavedMessage(callback) {
+	"use strict";
+	var ok = document.getElementById('button_ok');
+	document.getElementById('save_message_area').className = 'fadeIn';
+	document.getElementById("save_message_area").style.visibility = "visible";
+	document.getElementById("save_message_dialog").style.visibility = "visible";
+
+	setTimeout(hiddenSavedMessage, 800);
+}
+
+/// change directory
+/// @param fd file dialog instance
+/// @param path dir path of upper input box
+function changeDir(fd, path) {
+	"use strict";
+	document.getElementById('dirpath').value = path;
 }
 
 window.onload = init;
 
 function getWorkingPath() {
-	var url = location.href;
+	"use strict";
+	var url = location.href,
+		addrs = url.split("?"),
+		argstr,
+		args;
 	console.log(url);
-	var addrs = url.split("?");
 	if (addrs) {
-		if (addrs.length>1) {
-			var argstr = addrs[1];
-			var args = argstr.split("&");
+		if (addrs.length > 1) {
+			argstr = addrs[1];
+			args = argstr.split("&");
 			console.log(args.length);
 			if (args.length > 0) {
 				args = args[0].split("#");
@@ -39,7 +103,10 @@ function getWorkingPath() {
 	return "/Users/Public/";
 }
 
-function $(id){ return document.getElementById(id); }
+function $(id) {
+	"use strict";
+	return document.getElementById(id);
+}
 
 function setupWorkingPath(fd) {
 	"use strict";
@@ -50,6 +117,7 @@ function setupWorkingPath(fd) {
 }
 
 function validateModeChangeButton(enable) {
+	"use strict";
 	if (enable) {
 		$('button_vimmode').style.opacity = 1.0;
 		$('button_vimmode').disabled = false;
@@ -60,16 +128,19 @@ function validateModeChangeButton(enable) {
 }
 
 function hideNewNameArea() {
+	"use strict";
 	var i = 0,
-		ids = ['newfileArea', 'newdirArea', 'renameArea', 'deleteArea'];
-	for (i = 0; i < ids.length; ++i) {
-		var classNames = $(ids[i]).className.split(' ');
+		ids = ['newfileArea', 'newdirArea', 'renameArea', 'deleteArea'],
+		classNames;
+	for (i = 0; i < ids.length; i = i + 1) {
+		classNames = $(ids[i]).className.split(' ');
 		classNames[1] = 'fadeOut';
 		$(ids[i]).className = classNames.join(' ');
 	}
 }
 
 function hideEditArea() {
+	"use strict";
 	$('imageArea').className = 'fadeOut';
 	$('imageView').src = "";
 	$('launchButtonArea').className = 'fadeOut';
@@ -123,6 +194,7 @@ function setFileName(name) {
 }
 
 function showNewNameArea(id) {
+	"use strict";
 	var classNames = $(id).className.split(' ');
 	hideNewNameArea();
 	console.log("showNewNameArea:" + $(id).className);
@@ -137,16 +209,19 @@ function showNewNameArea(id) {
 }
 
 /// save file
-function saveFile(){
+function saveFile() {
+	"use strict";
 	var basedir = $('dirpath').value,
 		filename = $('filename').value;
-	if (!openedfile)
+	if (!openedfile) {
 		return;
-	if (!edited)
+	}
+	if (!edited) {
 		return;
-	console.log("Save:"+openedfile);
-	socket.emit('reqFileSave',JSON.stringify({file: openedfile, data:editor.getValue()}));
-	socket.once('filesavedone', function(success) {
+	}
+	console.log("Save:" + openedfile);
+	socket.emit('reqFileSave', JSON.stringify({file : openedfile, data : editor.getValue()}));
+	socket.once('filesavedone', function (success) {
 		if (success) {
 			showSavedMessage();
 		}
@@ -158,25 +233,27 @@ function saveFile(){
 /// @param fd file dialog instance
 /// @param basedir relatative dir path from project dir
 /// @param fname new filename
-function newFile(fd, basedir, fname){
+function newFile(fd, basedir, fname) {
+	"use strict";
 	var targetFile =  basedir + fname;
 	console.log("newfile:" + targetFile);
-	if (fname == "")
+	if (fname === "") {
 		return;
+	}
 	console.log(fname);
-	$('newfilename').value = ''
+	$('newfilename').value = '';
 	
 	socket.emit('reqNewFile', JSON.stringify({target: targetFile, basedir: basedir}));// JSON.stringify({basedir: basedir, file: fname, data:''}));
 //	fd.FileList('/');
 	
-	socket.once("newfiledone", function(success) {
+	socket.once("newfiledone", function (success) {
 		if (success) {
 			// new file saved
 			hideNewNameArea();
 //			fd.FileList('/'); // to use fs.watch
 		} else {
 			// exists same path
-			showExistWarning(function() {
+			showExistWarning(function () {
 				hiddenExistWarning();
 			});
 		}
@@ -188,25 +265,27 @@ function newFile(fd, basedir, fname){
 /// @param basedir relatative dir path from project dir
 /// @param dirname new directory name
 function newDirectory(fd, basedir, dirname) {
+	"use strict";
 	var targetname = basedir + dirname;
 	console.log('newDirectory:', targetname);
-	if (dirname == "")
+	if (dirname === "") {
 		return;
+	}
 	console.log(dirname);
 	$('newdirname').value = '';
 	
-	console.log({dir: dirname, data:''});
+	console.log({dir : dirname, data : ''});
 	socket.emit('reqNewDir', JSON.stringify({basedir: basedir, target: targetname}));
 //	fd.FileList('/');
 	
-	socket.once("newdirdone", function(success) {
+	socket.once("newdirdone", function (success) {
 		if (success) {
 			// new directory saved
 			hideNewNameArea();
 //			fd.FileList('/');
 		} else {
 			// exists same path
-			showExistWarning(function() {
+			showExistWarning(function () {
 				hiddenExistWarning();
 			});
 		}
@@ -217,23 +296,25 @@ function newDirectory(fd, basedir, dirname) {
 /// @param fd file dialog instance
 /// @param name new name of the file or dir
 function renameFileOrDirectory(fd, name) {
+	"use strict";
 	var renamedPath = "",
 		target = "",
 		i = 0;
 	console.log("renameFileOrDirectory:" + name);
-	if (name == "")
+	if (name === "") {
 		return;
+	}
 	
 	target = $('dirpath').value + $('filename').value;
-	socket.emit('reqRename', JSON.stringify({target: target, name:name}));
-	socket.once("renamedone", function(success) {
+	socket.emit('reqRename', JSON.stringify({target : target, name : name}));
+	socket.once("renamedone", function (success) {
 		if (success) {
 			// file or directory was renamed
 			hideNewNameArea();
 //			fd.FileList('/');
 		} else {
 			// exists same path
-			showExistWarning(function() {
+			showExistWarning(function () {
 				hiddenExistWarning();
 			});
 		}
@@ -245,6 +326,7 @@ function renameFileOrDirectory(fd, name) {
 /// @param basedir relatative dir path from project dir
 /// @param filename filename
 function deleteFileOrDirectory(fd, basedir, filename) {
+	"use strict";
 	var target = basedir + filename;
 	console.log("deleteFileOrDirectory: " + basedir);
 	console.log("deleteFileOrDirectory: " + filename);
@@ -254,7 +336,7 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 	}
 
 	socket.emit('reqDelete', JSON.stringify({target: target}));
-	socket.once('deleted', function() {
+	socket.once('deleted', function () {
 		console.log("deleted");
 		if (filename === "") {
 			changeDir(fd, getWorkingPath() + '/');
@@ -265,19 +347,12 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 	});
 }
 
-/// change directory
-/// @param fd file dialog instance
-/// @param path dir path of upper input box
-function changeDir(fd, path) {
-	document.getElementById('dirpath').value = path;
-}
-
 /// change color for selecting file or directory element
 function changeColor(element) {
 	"use strict";
 	var items = document.getElementsByClassName("fileitem"),
 		i;
-	for (i = 0; i < items.length; ++i) {
+	for (i = 0; i < items.length; i += 1) {
 		items[i].style.backgroundColor  = "";
 	}
 	element.style.backgroundColor  = "gray";
@@ -289,6 +364,7 @@ function changeColor(element) {
 /// @param parentDir parent directory of path
 /// @param path relative path from project dir
 function clickDir(fd, element, parentDir, path) {
+	"use strict";
 	console.log("directory clicked");
 	// changeColor(element);
 	changeDir(fd, getWorkingPath() + '/' + path + '/');
@@ -301,6 +377,7 @@ function clickDir(fd, element, parentDir, path) {
 /// @param parentDir parent directory of path
 /// @param path relative path from project dir
 function clickFile(fd, element, parentDir, path) {
+	"use strict";
 	console.log("file clicked");
 	changeColor(element);
 	
@@ -318,9 +395,8 @@ function clickFile(fd, element, parentDir, path) {
 /// initialize dialog and set callbacks 
 function setupFileDialog() {
 	"use strict";
-	var errormsg = document.getElementById('errormsg');
-	
-	var fd = new FileDialog('opendlg', document.getElementById("filelist"), true, false);
+	var errormsg = document.getElementById('errormsg'),
+		fd = new FileDialog('opendlg', document.getElementById("filelist"), true, false);
 	fd.registerSocketEvent(socket);
 	fd.setFileClickCallback(clickFile);
 	fd.setDirClickCallback(clickDir);
@@ -338,16 +414,16 @@ function setupFileDialog() {
 	
 	//fd.FileList('/');
 	
-	$('button_newfile_done').onclick = function() {
+	$('button_newfile_done').onclick = function () {
 		newFile(fd, $('dirpath').value, $('newfilename').value);
 	};
-	$('button_newdir_done').onclick = function() {
+	$('button_newdir_done').onclick = function () {
 		newDirectory(fd, $('dirpath').value, $('newdirname').value);
 	};
-	$('button_rename_done').onclick = function() {
+	$('button_rename_done').onclick = function () {
 		renameFileOrDirectory(fd, $('renameitem').value);
 	};
-	$('button_delete_done').onclick = function() {
+	$('button_delete_done').onclick = function () {
 		deleteFileOrDirectory(fd, $('dirpath').value, $('filename').value);
 	};
 	return fd;
@@ -355,16 +431,17 @@ function setupFileDialog() {
 
 /// initialize dialog and set separator 
 function setupSeparator() {
+	"use strict";
 	var separator = document.getElementById('separator'),
 		separator_image = document.getElementById('separator_image'),
 		dragging = false;
-	separator_image.onmousedown = function(e) {
+	separator_image.onmousedown = function (e) {
 		dragging = true;
 	};
-	document.onmouseup = function(e) {
+	document.onmouseup = function (e) {
 		dragging = false;
 	};
-	document.onmousemove = function(e) {
+	document.onmousemove = function (e) {
 		var filelist,
 			editor,
 			launchButtonArea,
@@ -372,6 +449,8 @@ function setupSeparator() {
 			exeArea,
 			infoArea,
 			backButtonArea,
+			filelistArea,
+			buttonBack,
 			left = window.pageXOffset || document.documentElement.scrollLeft,
 			pos;
 		if (dragging) {
@@ -400,56 +479,15 @@ function setupSeparator() {
 }
 
 
-/// hidden exist warning dialog
-function hiddenExistWarning(callback) {
-	var ok = document.getElementById('button_ok');
-	document.getElementById("confirm_area").style.visibility = "hidden";
-	document.getElementById("exist_warning_dialog").style.visibility = "hidden";
-}
+socket.on('connect', function () {
+	"use strict";
+	var fd;
+	console.log('connected');
+	socket.on('event', function (data) {
+		console.log(data);
+	});
+	setupSeparator();
+	fd = setupFileDialog();
+	setupWorkingPath(fd);
 
-/// show same file/directory exists dialog
-function showExistWarning(callback) {
-	var ok = document.getElementById('button_ok');
-	document.getElementById("confirm_area").style.visibility = "visible";
-	document.getElementById("exist_warning_dialog").style.visibility = "visible";
-
-	function okfunc() {
-		callback();
-	}
-	ok.addEventListener("click", okfunc, true);
-}
-
-
-/// hidden stop messsage
-function hiddenStoppedMessage(callback) {
-	var ok = document.getElementById('button_ok');
-	document.getElementById("confirm_area").style.visibility = "hidden";
-	document.getElementById("stop_message_dialog").style.visibility = "hidden";
-}
-
-/// show stop messsage dialog
-function showStoppedMessage(callback) {
-	var ok = document.getElementById('button_ok');
-	document.getElementById("confirm_area").style.visibility = "visible";
-	document.getElementById("stop_message_dialog").style.visibility = "visible";
-
-	setTimeout('hiddenStoppedMessage()', 1500);
-}
-
-/// hidden saved messsage
-function hiddenSavedMessage(callback) {
-	var ok = document.getElementById('button_ok');
-	document.getElementById("save_message_area").style.visibility = "hidden";
-	document.getElementById("save_message_dialog").style.visibility = "hidden";
-	document.getElementById('save_message_area').className = 'fadeOut';
-}
-
-/// show saved messsage dialog
-function showSavedMessage(callback) {
-	var ok = document.getElementById('button_ok');
-	document.getElementById('save_message_area').className = 'fadeIn';
-	document.getElementById("save_message_area").style.visibility = "visible";
-	document.getElementById("save_message_dialog").style.visibility = "visible";
-
-	setTimeout('hiddenSavedMessage()', 800);
-}
+});
