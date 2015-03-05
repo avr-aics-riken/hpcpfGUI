@@ -261,6 +261,7 @@ function registerPTLEvent(socket) {
 			}
 			fs.mkdirSync(dstpath);
 			util.extractTar(dstpath, tarpath);
+			socket.emit("openProjectArchive", dstpath);
 		} catch (e) {
 			console.log(e);
 		}

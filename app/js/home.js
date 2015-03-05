@@ -106,6 +106,28 @@ function showNewProjectDialog() {
 	}
 }
 
+function closeExtractArchiveDialog() {
+	"use strict";
+	document.getElementById("extract_archive").style.display = "none";
+}
+
+function showExtractArchiveDialog() {
+	"use strict";
+	var background = document.getElementById('extract_archive'),
+		content = document.getElementById('extract_archive_content');
+	if (background.style.display === "block") {
+		closeExtractArchiveDialog();
+	} else {
+		background.style.display = "block";
+		background.onclick  = closeExtractArchiveDialog;
+		content.onclick = function (evt) {
+			evt.preventDefault();
+			evt.stopPropagation();
+		};
+		console.log(background);
+	}
+}
+
 function showProjectArchiveDialog() {
 	"use strict";
 	socket.emit('reqOpenProjectArchiveDialog');
@@ -180,7 +202,15 @@ function closeFileDialog() {
 
 function openProjectArchive(tarPath) {
 	"use strict";
-	socket.emit('reqOpenProjectArchive', "extract_test", tarPath);
+	showExtractArchiveDialog();
+}
+
+function extractArchive(name) {
+	"use strict";
+	var tarPath = document.getElementById('projdir_path').value;
+	socket.emit('reqOpenProjectArchive', name, tarPath);
+	closeExtractArchiveDialog();
+	closeFileDialog();
 }
 
 function openSelectedFile() {
@@ -315,6 +345,11 @@ socket.on('openProjectDialog', function (data) {
 	} else {
 		openFolderDialog('/');
 	}
+});
+
+socket.on('openProjectArchive', function (data) {
+	"use strict";
+	openProject(data);
 });
 
 socket.on('createNewProject', function (path) {
