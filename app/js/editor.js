@@ -45,6 +45,7 @@ function setupWorkingPath(fd) {
 	"use strict";
 	var path = getWorkingPath();
 	fd.setWorkingPath(path);
+	changeDir(fd, path + "/");
 	socket.emit('setWorkingPath', JSON.stringify({path: path})); // pass to editor_event.js
 }
 
@@ -248,9 +249,16 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 	console.log("deleteFileOrDirectory: " + basedir);
 	console.log("deleteFileOrDirectory: " + filename);
 	
+	if (filename === "") {
+		fd.UnwatchDir(basedir.split(getWorkingPath() + '/').join(''));
+	}
+
 	socket.emit('reqDelete', JSON.stringify({target: target}));
 	socket.once('deleted', function() {
 		console.log("deleted");
+		if (filename === "") {
+			changeDir(fd, getWorkingPath() + '/');
+		}
 		// file or directory was deleted
 		hideNewNameArea();
 //		fd.FileList('/');
@@ -284,6 +292,7 @@ function clickDir(fd, element, parentDir, path) {
 	console.log("directory clicked");
 	// changeColor(element);
 	changeDir(fd, getWorkingPath() + '/' + path + '/');
+	document.getElementById('filename').value = "";
 	hideNewNameArea();
 }
 
