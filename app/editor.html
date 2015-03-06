@@ -8,68 +8,269 @@
 	<link href="css/base.css" rel="stylesheet"/>
 	<link href="css/button.css" rel="stylesheet"/>
 	<link href="css/editor.css" rel="stylesheet"/>
-	<link href="css/filebrowser.css" rel="stylesheet"/>
-	<!--link href="css/flat-ui.css" rel="stylesheet"/-->
+	<link href="css/editor_info_view.css" rel="stylesheet"/>
+	<link href="css/editor_exe_view.css" rel="stylesheet"/>
+	<link href="css/editor_edit_view.css" rel="stylesheet"/>
+	<!--link href="css/filebrowser.css" rel="stylesheet"/-->
+	<link href="css/backfire.css" rel="stylesheet"/>
 </head>
-<body onload="boot();">
+<body>
+	<span class="fontchange">
 	<div class="header">
-		<div id="logo"></div>
-		<div id="version">Ver.1.1</div>
+		<div class="title"><span class="text_title">Project Editor</span></div>
+	
+		<div class="execute_button_area">
+			<button class="button_execute" id="button_execute_" title='Run (CTRL+R)'></button>
+			<!--button class="button_stop" id="button_stop_" title='Stop (CTRL+Q)'></button-->
+		</div>
+		<div class="change_mode_area_container">
+			<div class="change_mode_area">
+				<button class="button_change_mode" onclick="showInfoView();">Info</button>
+				<button class="button_change_mode" onclick="showExeView();">Log</button>
+				<button class="button_vim_mode" onclick="modeChange(this.value);" disabled value="vim" id="button_vimmode">
+					<span class="vim_mode_text">Vim</span></button>
+			</div>
+		</div>
+	</div>
+	
+	<div id="confirm_area">
+	</div>
+	<div id="save_message_area">
+	</div>
+	<div id="exist_warning_dialog" class="confirm_dialog">
+		<div id="confirm_message" class="confirm_message">
+			<p>The name of file or directory already exists.</p>
+			<div id="confirm_button">
+				<button class="confirm_button" id="button_ok" type="button">
+					<span class="confirm_button_text">OK</span></button>
+			</div>
+		</div>
+	</div>
+	<div id="stop_message_dialog" class="confirm_dialog">
+		<div id="stop_message" class="stop_message">
+			<p>Execution: Stopped.</p>
+		</div>
+	</div>
+	<div id="save_message_dialog" class="save_message_dialog">
+		<div id="save_message" class="save_message">
+			<p>File: Saved</p>
+		</div>
 	</div>
 
-<div class="title text_title">Project Editor</div>
-	<div id="menubtn">
-		<button class="button_editor" id="button_run"  onclick="procRun();">RUN<br>(CTRL+R)</button>
-		<button class="button_editor" id="button_save_editor" onclick="saveFile();">SAVE<br>(CTRL+S)</button>
-		<button class="button_editor" id="button_stop" onclick="procStop();">STOP<br>(CTRL+Q)</button>
-		<button class="button_editor"  onclick="modeChange(this.value);" value="vim" id="button_editmode">Vim Mode</button>
+	
+	<!--------------------------- menus / browser --------------------------------->
+	<div id="playinfo">
+		<div class="settingitem">
+			<input readonly  type="text" id="dirpath" placeholder="Directory Path">
+			<!--button class="button_browse" id="openbtn">Browse</button-->
+		</div>
+	</div>
+	<div id="filelistArea" class="filelistArea">
+		<div id="filenameArea">
+			<input class="filename" readonly type="text" id="filename" placeholder="File Name:" value="">
+			<div class="filename_border"></div>
+		</div>
+		<!--div class="itemlabel">File:</div-->
+		<!--div id="hintmsg">連番ファイルでimage000001.jpgから始まる場合は "image%06d.jpg"と設定する</div-->
+		<div id="filelist_container" class="filelist_conainer">
+			<div id="filelist" class="filelist"></div>
+		</div>
+		<div id="filebutton_conainer" class="filebutton_conainer">
+			<div class="shownewfilearea">
+				<button id="button_newdir" onclick="showNewNameArea('newdirArea');">
+					<span class="newdirectory_new">New</span><br><span class="newdirectory_dir">Directory</span>
+				</button>
+			</div>
+			<div class="shownewfilearea">
+				<button id="button_newfile" onclick="showNewNameArea('newfileArea');">
+					<span class="newfilearea_file_label">New File</span>
+				</button>
+			</div>
+			<div class="shownewfilearea">
+				<button id="button_rename" onclick="showNewNameArea('renameArea');">
+					<span class="newfilearea_label">Rename</span>
+				</button>
+			</div>
+			<div class="shownewfilearea">
+				<button id="button_delete" onclick="showNewNameArea('deleteArea');">
+					<span class="newfilearea_delete_label">Delete</span>
+				</button>
+			</div>
+		</div>
+		<div class="newfilearea_border_container">
+			<div class="newfilearea_border"></div>
+		</div>
 	</div>
 
-	<nav class="navbar navbar-default" id="editorbar">
-    	<div class="filepath" id="filename">-</a>
-		<label class="checkbox" for="checkbox1">
-	</nav>
-
-	<div id="showoutputarea">
-		<button id="button_output" onclick="showOutputArea();">Output</button>
+	<div id="separator">
+		<span class="separator_image_container">
+			<div id="separator_image" class="separator_image"></div>
+		</span>
 	</div>
 
-	<div id="filelist">
-<!--		<div class="fileitem" id="dir1" draggable="false"><div class="dir"></div><p class="filelabel_short">dir1</p></div>
-		<div class="fileitem" id="dir2" draggable="false"><div class="dir"></div><p class="filelabel_short">dir2</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1aaaaaaaaaaaaaaa</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>
-		<div class="fileitem" id="file1" draggable="false"><div class="file"></div><p class="filelabel_short">file1</p></div>-->
-	</div>
-
-	<div>
-		<pre id="editor"></pre>
-	</div>
-	<div id="outputArea">
-		<pre id='stdout'></pre>
-	</div>
 	<div id="imageArea">
 		<img id="imageView"/>
 	</div>
+
 	<div id="launchButtonArea">
 		<span id="launchButtonView"/>
 	</div>
-	<div id="shownewfilearea">
-		<button id="button_newfile" onclick="showNewFileArea();">New File</button>
+	<div id="newfileArea" class="newNameArea" >
+		<span class="newNameLabel">New file!</span><br>
+		<input type="text" id="newfilename" class="inputNewNameBox" placeholder="file name"/>
+		<button class="button_new" id="button_newfile_done"></button>
 	</div>
-	<div id="newfileArea">
-		New file!<br><!--stdout:<br>-->
-		<input type="text" id="newfilename" class="input-newfile" placeholder="file name"/>
-		<button id="button_new" onclick="newFile(newfilename.value)"></button>
+	<div id="newdirArea" class="newNameArea">
+		<span class="newNameLabel">New directory!</span><br>
+		<input type="text" id="newdirname" class="inputNewNameBox" placeholder="directory name"/>
+		<button class="button_new" id="button_newdir_done"></button>
 	</div>
+	<div id="renameArea" class="newNameArea">
+		<span class="newNameLabel">Rename selected</span><br>
+		<input type="text" id="renameitem" class="inputNewNameBox" placeholder="rename"/>
+		<button class="button_rename_done" id="button_rename_done">
+			<span class="rename_done_label">Rename</span>
+		</button>
+	</div>
+	<div id="deleteArea" class="newNameArea">
+		<span class="newNameLabel">Delete selected file or directory ? </span><br>
+		<button class="button_delete_done" id="button_delete_done">
+			<span class="delete_done_label">Delete</span>
+		</button>
+	</div>
+
+	<!--------------------------- Info --------------------------------->
+	<span id="info_mode" style="display:block">
+		<div id="info_area" class="info_area">
+			<div class="project_title">
+				<span class="info_project_title" id="info_project_title">
+				Project Name:
+				</span>
+				<span id="info_title_text" class="project_title_text">
+					Project Title
+				</span>
+			</div>
+			<div class="info_bar"></div>
+			<div class="info_text_area" id="info_opened_text_area">
+			</div>
+			<div class="info_text_area" id="info_text_area">
+				<div class="row">
+					<div class="info_title">
+						Description
+					</div>
+					<div class="info_text" id="info_description">
+						<!--project description-->
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="info_title">
+						Workflow File
+					</div>
+					<div class="info_text" id="info_workflow">
+						<!--<a class="info_link" href="#">workflow files</a>-->
+					</div>
+				</div>
+
+
+				<div class="row">
+					<div class="info_title">
+						Case File
+					</div>
+					<div class="info_text" id="info_case">
+						<!--<a class="info_link" href="#">case files</a>-->
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="info_title">
+						KDB URL
+					</div>
+					<div class="info_text" id="info_kdb_url">
+						<!--<a class="info_link" href="#">KDB URL</a>-->
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="info_title">
+						KDB Modified
+					</div>
+					<div class="info_text" id="info_kdb_change">
+						<!--KDB changes-->
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="info_title">
+						KDB Detail
+					</div>
+					<div class="info_text" id="info_kdb_detail_of_change">
+						<!--KDB detail of change-->
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="info_title">
+						Log File
+					</div>
+					<div class="info_text" id="info_log">
+						<!--<a class="info_link" href="#">log files</a>-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</span>
+	<div class="info_back_button_area" id="info_back_button_area">
+		<button class="button_back" id="button_back" onclick="backToInfo();"></button>
+	</div>
+	
+	<!--------------------------- Log --------------------------------->
+	<span id="exe_mode" style="display:none">
+		<div id="exe_area" class="exe_area">
+			<div class="project_title">
+				<div class="info_project_title_log">
+					Log:
+					<span id="exe_project_title_text" class="project_title_text">
+						Project Title
+					</span>
+				</div>
+			</div>
+			<div class="info_bar"></div>
+			<div class="exe_log_area">
+				<pre class="exe_log" id="exe_log"> Log Area
+				</pre>
+			</div>
+		</div>
+	</span>
+	
+		
+	<!---- End of fontchange -->
+	</span>
+		
+	<!--------------------------- Editer --------------------------------->
+	<span id="edit_mode" style="display:none">
+		<div>
+			<pre id="editor"></pre>
+			<button class="button_save_editor" id="button_save_editor"
+					onClick="saveFile();"
+					onMouseover="this.style.opacity=1.0;"
+					onMouseout="this.style.opacity=0.6" title='Save File (CTRL + S)'>
+				<span class="save_label">Save</span>
+			</button>
+		</div>
+
+		<div id="exeViewArea">
+		</div>
+	</span>
+	<!------------------------------------------------------------------------------>
+
 
 	<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="js/editor.js"></script>
+	<script type="text/javascript" src="js/editor_info_view.js"></script>
+	<script type="text/javascript" src="js/editor_exe_view.js"></script>
+	<script type="text/javascript" src="js/editor_edit_view.js"></script>
+	<script type="text/javascript" src="js/backfire_filedialog.js"></script>
 </body>
 </html>

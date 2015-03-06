@@ -1,3 +1,5 @@
+/*jslint devel:true, nomen: true*/
+/*global require, __dirname, showExistWarning, hiddenExistWarning*/
 var exec = require('child_process').exec,
 	spawn = require('child_process').spawn,
 	fs = require('fs'),
@@ -8,34 +10,49 @@ var exec = require('child_process').exec,
 	editorevent = require('./editor_event'),
 	remotehostevent = require('./remotehost_event'),
 	filedialog = require('./js/filedialog'),
-	RemoteFTP = require('./js/RemoteFTP'),
+	backfire_filedialog = require('./js/backfire_filedialog'),
+	remoteFTP = require('./js/RemoteFTP'),
 	
-	confFile = __dirname + '/../conf/hpcpfGUI.conf',
+	confFile = path.resolve(__dirname, '../conf/hpcpfGUI.conf'),
+	projectTemplate = path.resolve(__dirname, '../template/project_template'),
 	portNumber      = 8080,
+	projectBasePath = "",
 	appCommands = {},   // app name to launch path
 	appExtensions = {}; // app name to extension list
-	
 
 try {
 	console.log('confFile = ' + confFile);
 	var ostype = os.platform(),
 		file = fs.readFileSync(confFile),
-		data = JSON.parse(file);
+		data = JSON.parse(file),
+		name,
+		i,
+		extensions;
 	console.log('OS = ' + ostype);
 	
-	if (data.port) { portNumber        = data.port; }
-	for (var name in data) {
-		if (name !== "port") {
-			appCommands[name] = data[name][ostype];
-			if ("extension" in data[name]) {
-				var extensions = data[name]["extension"].split(';');
-				// exclude dot and asterisk
-				for (var i in extensions) {
-					extensions[i] = extensions[i].split('.').join("");
-					extensions[i] = extensions[i].split('*').join("");
-					extensions[i] = extensions[i].split(' ').join("");
+	if (data.port) { portNumber = data.port; }
+	for (name in data) {
+		if (data.hasOwnProperty(name)) {
+			if (name === "project_base") {
+				projectBasePath = path.normalize(data.project_base);
+				if (util.isRelative(projectBasePath)) {
+					projectBasePath = path.resolve(path.join(__dirname, ".."), projectBasePath);
 				}
-				appExtensions[name] = extensions;
+				console.log("project base:" + projectBasePath);
+			} else if (name !== "port") {
+				appCommands[name] = data[name][ostype];
+				if (data[name].hasOwnProperty("extension")) {
+					extensions = data[name].extension.split(';');
+					// exclude dot and asterisk
+					for (i in extensions) {
+						if (extensions.hasOwnProperty(i)) {
+							extensions[i] = extensions[i].split('.').join("");
+							extensions[i] = extensions[i].split('*').join("");
+							extensions[i] = extensions[i].split(' ').join("");
+						}
+					}
+					appExtensions[name] = extensions;
+				}
 			}
 		}
 	}
@@ -97,7 +114,7 @@ function registerPTLEvent(socket) {
 		console.log("ptl_launchapp file:" + data.file);
 		
 		var appcmd, child;
-		if (data.appname in appCommands) {
+		if (appCommands.hasOwnProperty(data.appname)) {
 			appcmd = appCommands[data.appname];
 		}
 		if (data.file) {
@@ -119,8 +136,95 @@ function registerPTLEvent(socket) {
 	
 	filedialog.SocketEvent(socket, 'homedlg');
 	filedialog.SocketEvent(socket, 'remotedlg');
+	backfire_filedialog.SocketEvent(socket, 'opendlg');
 
 	var historyFile = "../conf/project_history.json";
+		
+	/// @param src native path
+	/// @param dst native path
+	function copyTemplate(src, dst) {
+		if (fs.existsSync(src) && fs.statSync(src).isDirectory()) {
+			if (!fs.existsSync(dst)) {
+				fs.mkdirSync(dst);
+			}
+			fs.readdirSync(src).forEach(
+				function (childItemName) {
+					copyTemplate(path.join(src, childItemName), path.join(dst, childItemName));
+				}
+			);
+		} else {
+			fs.linkSync(src, dst);
+		}
+	}
+
+	function withExistWarningEx(is_exist, doFunction) {
+		if (is_exist) {
+			showExistWarning(function () {
+				hiddenExistWarning();
+				doFunction();
+			});
+		} else {
+			doFunction();
+		}
+	}
+	
+	/// @param str native path
+	/// @retval slash path
+	function toSlashPath(str) {
+		var newpath = path.relative('/', str);
+		newpath = '/' + newpath.split(path.sep).join("/");
+		return newpath;
+	}
+	
+	/// @param newpath native path
+	function createNewProject(newpath) {
+		if (!fs.existsSync(newpath)) {
+			try {
+				fs.mkdirSync(newpath);
+				if (fs.existsSync(newpath)) {
+					copyTemplate(projectTemplate, newpath);
+					console.log("createNewProject:" + newpath);
+					socket.emit('createNewProject', toSlashPath(newpath));
+				}
+			} catch (e) {
+				console.log(e);
+			}
+		}
+	}
+
+	socket.on('reqCreateNewProject', function (name) {
+		var newpath = "",
+			newName = "",
+			counter = 1,
+			is_exist = false,
+			tempBasePath;
+		
+		if (fs.existsSync(projectBasePath)) {
+			newpath = path.join(projectBasePath, name);
+			if (path.join(newpath, '..') === projectBasePath) {
+				while (fs.existsSync(newpath)) {
+					is_exist = true;
+					newName = name + "_" + counter;
+					console.log("newName:" + newName);
+					newpath = path.join(projectBasePath, newName);
+					counter = counter + 1;
+				}
+				if (is_exist) {
+					createNewProject(newpath);
+					socket.emit('showNewProjectNameExists', newName, toSlashPath(newpath));
+				} else {
+					createNewProject(newpath);
+					socket.emit('showNewProjectName', name, toSlashPath(newpath));
+				}
+			}
+		}
+	});
+	
+	/*
+	socket.on('reqCreateNewProjectWithSameName', function (newpath) {
+		createNewProject(newpath);
+	});
+	*/
 	
 	socket.on('reqUpdateProjectHistory', function (path) {
 		fs.readFile(historyFile, function (err, data) {
@@ -131,21 +235,44 @@ function registerPTLEvent(socket) {
 		});
 	});
 	
-	socket.on('reqUpdateLaunchButtons', function() {
-		var appnames = [];
-		var name;
-		for (name in appCommands) {
-			appnames.push(name);
+	socket.on('reqOpenProjectDialog', function () {
+		var basepath = toSlashPath(projectBasePath);
+		console.log("reqOpenProjectDialog:" + basepath);
+		socket.emit('openProjectDialog', basepath);
+	});
+	
+	socket.on('reqOpenProjectArchiveDialog', function () {
+		var basepath = toSlashPath(projectBasePath);
+		console.log("reqOpenProjectArchiveDialog:" + basepath);
+		socket.emit('openProjectArchiveDialog', basepath);
+	});
+	
+	socket.on('reqOpenProjectArchive', function (dstFolderName, tarpath) {
+		var basepath = toSlashPath(projectBasePath),
+			dstpath = basepath + '/' + dstFolderName,
+			counter = 1;
+		console.log("tarpath : " + tarpath);
+		console.log("dstFolderName : " + dstFolderName);
+		try {
+			while (fs.existsSync(dstpath)) {
+				dstpath = basepath + '/' + dstFolderName + "_" + counter;
+				console.log("dstpath:" + dstpath);
+				counter = counter + 1;
+			}
+			fs.mkdirSync(dstpath);
+			util.extractTar(dstpath, tarpath);
+			socket.emit("openProjectArchive", dstpath);
+		} catch (e) {
+			console.log(e);
 		}
-		socket.emit('updateLaunchButtons', appnames);
 	});
 	
 	socket.on('registerProjectHistory', function (path) {
 		console.log("REGISTER_HISTORY:" + path);
 		fs.readFile(historyFile, function (err, data) {
 			var names = path.split("/"),
-				name = names[names.length - 1];
-			var i;
+				name = names[names.length - 1],
+				i;
 			console.log("ProjName=" + name);
 			if (err) {
 				console.log('Error: ' + err);
@@ -154,7 +281,7 @@ function registerPTLEvent(socket) {
 			} else {
 				data = JSON.parse(data);
 				// remove same entry
-				for (i = data.length-1; i >= 0; --i) {
+				for (i = data.length - 1; i >= 0; i = i - 1) {
 					if (data[i].name === name && data[i].path === path) {
 						data.splice(i, 1);
 					}
@@ -165,20 +292,39 @@ function registerPTLEvent(socket) {
 			fs.writeFileSync(historyFile, data, 'utf8');
 		});
 	});
-
+	
+	// no use function on home
+	socket.on('reqUpdateLaunchButtons', function () {
+		var appnames = [],
+			name;
+		for (name in appCommands) {
+			if (appCommands.hasOwnProperty(name)) {
+				appnames.push(name);
+			}
+		}
+		socket.emit('updateLaunchButtons', appnames);
+	});
+	
+	socket.on('reqInit', function () {
+		socket.emit('init');
+	});
+	
+	socket.on('disconnect', (function (backfire_filedialog, id) {
+		return function () {
+			backfire_filedialog.Disconnect(id);
+		};
+	}(backfire_filedialog, socket.id)));
 }
 
-
 // socket.io setting
-var io = require('socket.io').listen(server);
-io.set('log level', 1);
+var io = require('socket.io').listen(server);//, {'log level': 1});
 
 io.sockets.on('connection', function (socket) {
 	"use strict";
 	socket.emit('event', 'Server Connected.');
 	console.log("[CONNECT] ID=" + socket.id);
 
-	RemoteFTP(socket);
+	remoteFTP(socket);
 	editorevent.registerEditorEvent(socket, appCommands, appExtensions);
 	remotehostevent.registerEditorEvent(socket);
 	registerPTLEvent(socket);

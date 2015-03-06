@@ -16,12 +16,10 @@
 	</head>
 	<body onload="boot()">
 	<div class="header">
-		<div id="logo"></div>
-		<div id="version">Ver.1.1</div>
+		<div class="title"><span class="text_title">Register host</span></div>
 	</div>
 
-	<div class="title"><div class="text_title">Register host</div></div>
-	<div class="tab">
+	<div class="remotehost_tab">
 		<div class="pane_top">
 			<div class="grp_floatleft">
 				<div class="text_label">Label</div>
@@ -42,7 +40,7 @@
 						<input id="input_id" class="input_info"  placeholder="username"></input>
 					</div>
 					<div class="grp_floatleft">
-						<div class="text_label">Password</div>
+						<div class="text_label">Passphrase</div>
 						<input id="input_password" class="input_info" type="password"></input>
 					</div>
 					<div class="grp_floatleft">
@@ -72,7 +70,7 @@
 		</div>
 		<div class="buttons_remotehost">
 			<button type="button" class="button_open" onclick="openFileBrowser()">
-				<span class="text_button_action">File Browser</span>
+				<span class="text_button_action file_browser_label">File Browser</span>
 			</button>
 		</div>
 		<div class="popup_center">

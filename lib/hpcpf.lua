@@ -13,10 +13,10 @@ function getPlatform()
         s = string.gsub(s, '[\n\r]+', ' ')
         return s
     end
-    local plf = captureRedirectErr('uname')
-    if string.sub(plf,1,8) == "'uname' " then -- not found 'uname' cmd
+    if package.config:sub(1,1) == "\\" then
         return 'Windows'
     else
+	    local plf = captureRedirectErr('uname')
         return plf -- 'Darwin', 'Linux'
     end
 end
@@ -179,10 +179,10 @@ end
 function executeCASE(casename,...)
     local args_table = {...}
     --print("num="..#args_table)
-    local cf = loadfile('./'..casename..'/case.cwl');
+    local cf = loadfile('./'..casename..'/cwf.lua');
     if (cf == nil) then
         print("Can't find Case work flow:"..casename)
-        print("or can't find " .. casename..'/case.cwl')
+        print("or can't find " .. casename..'/cwf.lua')
     else
         print("--- Start CASE: "..casename.." ---")
         setBasePath('/' .. casename)

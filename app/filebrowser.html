@@ -14,22 +14,44 @@
 	</head>
 	<body onload="bootstrap()">
 	<div class="header">
-		<div id="logo"></div>
-		<div id="version">Ver.1.1</div>
+		<div class="title"><span class="text_title">File Browser</span></div>
+	</div>
+	
+	<div id="confirm_area">
+	</div>
+	<div id="confirm_dialog" class="confirm_dialog">
+		<div id="confirm_message" class="confirm_overwrite_message">
+			<p>The name of file or directory already exists.</p>
+			<p>Do you want to overwrite it?</p>
+			<div id="confirm_button">
+				<button class="confirm_save_button" id="button_save" type="button">
+					<span class="confirm_button_text">Save</span></button>
+				<button class="confirm_cancel_button" id="button_cancel" type="button">
+					<span class="confirm_button_text">Cancel</span></button>
+			</div>
+		</div>
+	</div>
+	<div id="exist_warning_dialog" class="confirm_dialog">
+		<div id="confirm_message" class="confirm_message">
+			<p>The name of file or directory already exists.</p>
+			<div id="confirm_button">
+				<button class="confirm_button" id="button_ok" type="button">
+					<span class="confirm_button_text">OK</span></button>
+			</div>
+		</div>
 	</div>
 
-	<div class="title"><div class="text_title">File Browser</div>
-	</div>
-				
-
-	<div class="tab tab_filebrowser">
+	<div class="tab_filebrowser">
 	<div class="grp_alignright">
-		<button type="button" class="button_remotehost" onclick="registerRemoteHost()">Register host</button>
+		<button type="button" class="button_remotehost" onclick="registerRemoteHost()">
+			<span class="registerhost_register_label">Register</span>
+			<span class="registerhost_host_label">host</span></button>
 	</div>
-		<div class="pane_left">
+		<div class="filebrowser_pane_left">
 			<!--div class="filepath">hirose@localhost:/home/hirose/</div-->
 			<div class="pane_grp">
 				<div class="select_host">
+					<span class="select_host_image"></span>
 					<select id="select_host_left">
 					<!--	<option class="option_host">localhost:/home/user1/</option>
 						<option class="option_host">user1@remotehost1:/home/user1/</option>
@@ -44,6 +66,11 @@
 					<div class="fileitem" id="dir2" draggable="true" ><div class="dir" ></div><p class="filelabel">dir1</p><button type="button" class="dustbox"></button></div>
 					<div class="fileitem" id="file1" draggable="true"><div class="file"></div><p class="filelabel">file1</p><button type="button" class="dustbox"></button></div>-->
 				</div>
+				
+				<span id="rename_box_container" style="display:none;">
+					<input type="text" id="rename_box" class="rename_box">
+				</span>
+				
 				<div class="actionmenu" id="actionmenu_left">
 					<div class="actionitem" id="copy_left"><p class="text_action">-> copy</p></div>
 					<div class="actionitem" id="move_left"><p class="text_action">-> move</p></div>
@@ -66,7 +93,7 @@
 			</div>
 		</div>
 
-		<div class="pane_right">
+		<div class="filebrowser_pane_right">
 			<div class="pane_grp">
 				<div class="select_host">
 					<select id="select_host_right">
@@ -104,5 +131,8 @@
 		</div>
 
 	</div>
+		
+	<div class="popup_background" id="popup_background"></div>
+		
 	</body>
 </html>

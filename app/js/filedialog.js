@@ -6,7 +6,7 @@ if (typeof window === 'undefined') { // Node.js
 		{
 			var list=[];
 			util.getFiles(path, list);
-			if (list.length != 0)
+			//if (list.length != 0)
 				socket.emit(name+':fbUpdateList', JSON.stringify(list));
 		}
 
@@ -19,11 +19,11 @@ if (typeof window === 'undefined') { // Node.js
 
 } else {
 
-	var tarPath = "";
 	var FileDialog = function(name,ignoreDotFile,dir_only){
 		this.name = name;
 		this.ignoreDotFile = ignoreDotFile;
 		this.dir_only = dir_only;
+		this.tarPath = "";
 	}
 	
 	FileDialog.prototype.registerSocketEvent = function(socket){
@@ -32,19 +32,21 @@ if (typeof window === 'undefined') { // Node.js
 		console.log('FileDialog:'+eventname);
 		socket.on(eventname, function(thisptr){ return function (data) {
 			//console.log(data);
-			thisptr.updateDirlist(data);
+			thisptr.updateDirlist(data, thisptr.dir_only);
 		}}(this));
 	}
 
 	FileDialog.prototype.FileList = function(path)
 	{
+		console.log("dirOnly:" + this.dir_only);
 		//this.dispPath(path);
 		console.log("FB:"+path);
+		this.tarPath = path;
 		this.socket.emit(this.name+":fb:reqFileList",path);
 	}
 
 	//--------------
-	FileDialog.prototype.updateDirlist = function(jsonlist)
+	FileDialog.prototype.updateDirlist = function(jsonlist, dir_only)
 	{
 		function getUpDir(path) // fix me beautiful
 		{
@@ -65,7 +67,7 @@ if (typeof window === 'undefined') { // Node.js
 			return uppath;
 		}
 		
-		function makeUpNode()
+		function makeUpNode(path)
 		{
 			var newbtn = document.createElement('div');
 			newbtn.setAttribute('class', "fileitem");
@@ -78,9 +80,13 @@ if (typeof window === 'undefined') { // Node.js
 			filelabel.setAttribute('class', "filelabel");
 			filelabel.innerHTML = "..";
 			newbtn.appendChild(filelabel);
-			var upath = getUpDir(tarPath);
+			var upath = getUpDir(path);
 			console.log("UPATH="+upath);
-			newbtn.setAttribute('onclick','openfileDialog("'+upath+'")');
+			if (dir_only) {
+				newbtn.setAttribute('onclick','openFolderDialog("'+upath+'")');
+			} else {
+				newbtn.setAttribute('onclick','openFileDialog("'+upath+'")');
+			}
 			return newbtn;
 		}
 
@@ -97,7 +103,11 @@ if (typeof window === 'undefined') { // Node.js
 			filelabel.setAttribute('class', "filelabel");
 			filelabel.innerHTML = name;
 			newbtn.appendChild(filelabel);
-			newbtn.setAttribute('onclick','openfileDialog("'+path+'")');
+			if (dir_only) {
+				newbtn.setAttribute('onclick','openFolderDialog("'+path+'")');
+			} else {
+				newbtn.setAttribute('onclick','openFileDialog("'+path+'")');
+			}
 			return newbtn;
 		}
 	
@@ -106,7 +116,7 @@ if (typeof window === 'undefined') { // Node.js
 		ls.innerHTML = ''; // clear
 
 		// up dir
-		var unode = makeUpNode();
+		var unode = makeUpNode(this.tarPath);
 		ls.appendChild (unode);
 
 		var list = JSON.parse(jsonlist);
@@ -118,7 +128,7 @@ if (typeof window === 'undefined') { // Node.js
 			}
 			if (list[i].name.charAt(0) == "." && this.ignoreDotFile)
 				continue;
-			if (list[i].type == "file" && this.dir_only) // ignore files
+			if (list[i].type == "file" && dir_only) // ignore files
 				continue;
 
 			var newbtn = makeNode(list[i].name, list[i].path, list[i].type);

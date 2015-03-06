@@ -1,123 +1,13 @@
+/* override font family for ACE editor */
+* {
+	font-family:inherit;
+}
+span.fontchange * {
+	font-family:'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+}
+
 body {
-	overflow: hidden;
-}
-  
-#editor {
-	margin: 0px;
-	position:absolute;
-	top:235px;
-	left:260px;
-	right:10px;
-	bottom:190px;
-	border-style:solid;
-	border-radius:2px;
-	border-width:3px;
-	border-color:#72ca2a;
-
-}
-#imageArea {
-	position:absolute;
-	top:235px;
-	left:240px;
-	right:10px;
-	bottom:190px;
-	z-index:15;
-	padding:auto;
-	color: #f00;
-	background-color: #8b8b8b;
-	border-radius: 4px;
-	text-align:center;
-	overflow:scroll;
-	visibility: hidden;
-	opacity: 0;
-}
-#imageView {
-	margin:auto;
-}
-#launchButtonArea {
-	position:absolute;
-	top:235px;
-	left:240px;
-	right:10px;
-	bottom:190px;
-	z-index:15;
-	padding:auto;
-	color: #f00;
-	background-color: #8b8b8b;
-	border-radius: 4px;
-	text-align:center;
-	overflow:scroll;
-	visibility: hidden;
-	opacity: 0;
-}
-#editorbar {
-	position:absolute;
-	left:10px;
-	right:235px;
-	top:194px;
-	height:20px;
-	margin-top:2px;
-	padding:10px;
-	font-size:16px;
-	color:#fff;
-	background-color:#transparent;
-}
-#menubtn {
-	position:absolute;
-	/*top:970px;*/
-	bottom:214px;
-	left:240px;
-	right:0px
-}
-.btnsize {
-	  width:180px;
-  }
-
-#filelist {
-	margin: 0px;
-	position:absolute;
-	top:235px;
-	left:10px;
-	bottom:190px;
-	overflow:scroll;
-	border-style:solid;
-	border-radius:2px;
-	border-width:3px;
-	border-color:#72ca2a;
-	background-color:#292929;
-
-	width:220px;
-}
-#shownewfilearea {
-	margin: 0px;
-	position:absolute;
-	left:10px;
-	bottom:10px;
-}
-#newfileArea {
-	position:absolute;
-	left:10px;
-	/*top:915px;*/
-	bottom:175px;
-	width:330px;
-	height:80px;
-	z-index:20;
-	padding: 6px 6px 6px 6px;
-	color: #fff;
-	background-color:#72ca2a; 
-	border-radius: 5px;
-	visibility: hidden;
-	opacity: 0;
-}
-.input-newfile{
-	position:absolute;
-	top:30px;
-	width:200px;
-	background-color:#4d4d4d;
-	border-style:none;
-	line-height:38px;
-	border-radius:5px;
-	color:#000;
+	min-height:600px;
 }
 
 .fadeIn {
@@ -132,61 +22,64 @@ body {
 	-webkit-transition: visibility 0s linear 0.5s, opacity 0.5s linear;
 	transition: visibility 0s linear 0.5s, opacity 0.5s linear;
 }
-  
-#stderr {
-	background-color:#bcbcbc;
-	width:300px
+
+.project_title {
+	margin-top:7px;
+	margin-bottom:1px;
+	height:25px;
 }
-#showoutputarea{
-	position:absolute;
-	top:170px;
-	right:10px;
-	z-index:20;
-	margin:0px;
+
+.info_project_title {
+	margin-left:35px;
+	text-align:left;
+	font-size:16px;
+	height:30px;
 }
-#outputArea {
-	position:absolute;
-	top:235px;
-	right:10px;
-	bottom:10px;
-	z-index:20;
-	margin:0px;
-	visibility: hidden;
-	opacity: 0;
-	resize:both;
 
-   	-webkit-touch-callout: text;
-	-webkit-user-select: text;
-	-khtml-user-select: text;
-	-moz-user-select: text;
-	-ms-user-select: text;
-	user-select: text; 
-
-
-
+.info_project_title_log {
+	margin-left:30px;
+	text-align:left;
+	font-size:16px;
+	height:30px;
+	color: #FFF;
 }
-#launchapparea {
-	position:absolute;
-	top:80px;
-	right:400px;
-	z-index:20;
-	margin:0px;
-}
-#stdout{
-	background-color:rgba(219, 219, 219, 0.8);
-	position:absolute;
-	top:0px;
-	width:524px;
-	right:0px;
-	bottom:0px;
-	margin:0px;
-/*	height:500px;*/
-	overflow:scroll;
 
-  }
+.execute_button_area {
+	position:absolute;
+	top:90px;
+	padding-right:auto;
+	margin:0px;
+	width:800px;
+	height:10px;
+	min-width:800px;
+	text-align: center;
+}
 
 td {
 	text-align: left;
 	vertical-align: top;
 }
-  
+
+.change_mode_area_container {
+	position: absolute;
+	left:0px;
+	min-width:800px;
+	width:100%;
+	text-align: right;
+}
+
+.change_mode_area {
+	position: relative;
+	right: 10px;
+	top:90px;
+	min-width:800px;
+	width:100%;
+	height:-10px;
+	margin:0px;
+}
+
+.stop_label {
+	position: relative;
+	top:-5px;
+	left:12px;
+}

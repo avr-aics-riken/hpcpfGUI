@@ -1,21 +1,39 @@
 /* button - home menu*/
 #button_menus{
-    padding-top:12px;
+	padding-top:12px;
 }
 
 .button_menu{
-	width:367px;
-	height:98px;
+	width:224px;
+	height:54px;
 	text-align:left;
-	margin-bottom:20px;
+	margin-bottom:45px;
 	padding-left:25px;
 	font-size:22px;
 	background-image:url("../image/button_bg_menu.png");
 	background-repeat:no-repeat;
+	background-size: contain;
 }
 .button_menu:active{
 	background-image:url("../image/button_bg_menu_press.png");
 	background-repeat:no-repeat;
+}
+
+.button_menu_bottom {
+	width:154px;
+	height:71px;
+	margin-top:40px;
+	margin-bottom:20px;
+	margin-left:25px;
+	text-align:center;
+	background-image:url("../image/button_bg_action_menu.png");
+	background-size: contain;
+	background-repeat:no-repeat;
+}
+.button_menu_bottom:active{
+	background-image:url("../image/button_bg_action_menu_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - tool */
@@ -25,17 +43,17 @@
 	text-align:center;
 	margin-top:10px;
 	margin-right:5px;
-    padding-top:0px;
+	padding-top:0px;
 	padding-left:2px;
-    padding-right:10px;
-    padding-bottom:0px;
+	padding-right:10px;
+	padding-bottom:0px;
 	background-image:url("../image/button_bg_tool.png");
 	background-repeat:no-repeat;
 
-    -webkit-text-overflow:ellipsis;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    overflow:hidden;
+	-webkit-text-overflow:ellipsis;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	overflow:hidden;
 }
 
 .button_tool:active{
@@ -44,66 +62,81 @@
 
 /* button - editor - launchapp */
 .button_editor_launchapp{
-	width:165px;
-	height:101px;
+	width:110px;
+	height:66px;
 	text-align:center;
 	margin-top:10px;
-	padding-left:2px;
-    padding-right:10px;
+	padding-left:0px;
+	padding-right:0px;
 	margin-right:5px;
 	background-image:url("../image/button_bg_action_green.png");
-    font-size:18px;
-    font-weight:600;
-    -webkit-text-overflow:ellipsis;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    overflow:hidden;
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
+	font-weight:600;
+	-webkit-text-overflow:ellipsis;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	overflow:hidden;
 }
 
 .button_editor_launchapp:active{
 	background-image:url("../image/button_bg_action_green_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - open */
 .button_open{
-	width:165px;
-	height:101px;
+	width:95px;
+	height:60px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_open:active{
 	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - save */
 .button_save{
-	width:165px;
-	height:101px;
+	width:71px;
+	height:46px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_save:active{
 	background-image:url("../image/button_bg_action_press.png");
+	opacity: 0.6;
 }
 
 /* button - cancel */
 .button_cancel{
-	width:165px;
-	height:101px;
+	width:95px;
+	height:60px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_cancel.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_cancel:active{
 	background-image:url("../image/button_bg_action_cancel_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - cancel */
@@ -115,35 +148,107 @@
 	top:40px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_green.png");
-    color:#fff;
-    font-weight:bolder;
+	color:#fff;
+	font-weight:bolder;
 }
 
 #button_editmode:active{
 	background-image:url("../image/button_bg_action_green_press.png");
 }
 
-/* button - cancel */
+/* button - newdir */
+#button_newdir {
+	position:absolute;
+	width:71px;
+	height:46px;
+	left:-5px;
+	top:-35px;
+	text-align:left;
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:11px;
+}
+
+#button_newdir:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - newfile */
 #button_newfile{
 	position:absolute;
-	width:165px;
-	height:101px;
-	left:24px;
-	top:-162px;
-	text-align:center;
-	padding-bottom:28px;
-	background-image:url("../image/button_bg_action_green.png");
-    color:#fff;
-    font-weight:600;
-    font-size:18px;
+	width:71px;
+	height:46px;
+	left:65px;
+	top:-35px;
+	text-align:left;
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:11px;
 }
 
 #button_newfile:active{
-	background-image:url("../image/button_bg_action_green_press.png");
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
+/* button - rename */
+#button_rename {
+	position:absolute;
+	width:71px;
+	height:46px;
+	left:135px;
+	top:-35px;
+	text-align:left;
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:11px;
+}
 
+#button_rename:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
 
+/* button - delete */
+#button_delete {
+	position:absolute;
+	width:71px;
+	height:46px;
+	left:205px;
+	top:-35px;
+	text-align:left;
+	padding-bottom:15px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:11px;
+}
+
+#button_delete:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+<!--
 /* button - delete */
 .button_delete{
 	background-image:url("");
@@ -155,52 +260,46 @@
 .button_delete:active{
 
 }
+-->
 
 /* button - remotehost */
 .button_remotehost{
-	width:165px;
-	height:100px;
-	margin-top:20px;
-	margin-bottom:20px;
+	width:71px;
+	height:47px;
+	margin-top:70px;
+	margin-bottom:40px;
 	margin-right:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action_upper.png");
-    color:#fff;
-    font-weight:bolder;
-	font-size:16px;
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:11px;
 }
 
 .button_remotehost:active{
 	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - home */
 .button_home{
-	width:165px;
-	height:100px;
+	width:71px;
+	height:46px;
 	margin-top:20px;
 	margin-left:10px;
 	text-align:center;
 	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 .button_home:active{
 	background-image:url("../image/button_bg_action_press.png");
-}
-
-/* button - save */
-.button_save{
-	width:165px;
-	height:100px;
-	margin-top:20px;
-	margin-right:0px;
-	margin-left:0px;
-	text-align:center;
-	background-image:url("../image/button_bg_action.png");
-}
-
-.button_save:active{
-	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - output */
@@ -211,54 +310,258 @@
 	top:-56px;
 	right:0px;
 	background-image:url("../image/button_bg_action_upper.png");
-    font-size:18px;
-    font-weight:600;
+	font-size:18px;
+	font-weight:600;
 }
 
 #button_output:active{
 	background-image:url("../image/button_bg_action_upper_press.png");
 }
 
-/* button - new */
-#button_new{
-	width:100px;
-	height:73px;
-	position:absolute;
-	top:20px;
-	left:240px;
-	background-image:url("../image/button_bg_action_upper_new.png");
+/* button - change mode */
+.button_change_mode {
+	width:72px;
+	height:47px;
+	position:relative;
+	top:-140px;
+	background-image:url("../image/button_bg_action_upper.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:12px;
+	font-weight:300;
 }
 
-#button_new:active{
+.button_change_mode:active{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_change_mode:disabled{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - vim mode */
+.button_vim_mode {
+	width:72px;
+	height:47px;
+	margin-left: 30px;
+	position:relative;
+	top:-140px;
+	background-image:url("../image/button_bg_action_upper.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:12px;
+	font-weight:300;
+	text-align: left;
+	opacity: 0.6;
+}
+
+.button_vim_mode:active{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_vim_mode:disabled{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - execute */
+.button_execute {
+	width:107px;
+	height:40px;
+	position:relative;
+	top:-66px;
+	background-image:url("../image/button_bg_action_play.png");
+	font-size:18px;
+	font-weight:600;
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_execute:active{
+	background-image:url("../image/button_bg_start_stop_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - stop */
+
+/*
+.button_stop {
+	width:60px;
+	height:40px;
+	position:relative;
+	top:-66px;
+	background-image:url("../image/button_bg_action_stop.png");
+	font-size:18px;
+	font-weight:600;
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_stop:active{
+	background-image:url("../image/button_bg_action_stop_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+*/
+
+/* button - edit */
+.button_edit {
+	width:60px;
+	height:40px;
+	position:relative;
+	top:-80px;
+	background-image:url("../image/button_bg_action_edit.png");
+	font-size:14px;
+	font-weight:300;
+	background-repeat:no-repeat;
+	background-size: contain;
+	margin-left:auto;
+	margin-right:auto;
+	text-align: left;
+}
+
+.button_edit:active{
+	background-image:url("../image/button_bg_action_edit_press.png");
+	background-repeat:no-repeat;
+}
+
+/* button - browse */
+.button_browse {
+	width:80px;
+	height:auto;
+	position:relative;
+	top:0px;
+	background-image:url("../image/button_rect.png");
+	font-size:18px;
+	font-weight:600;
+	z-index:30;
+}
+
+.button_browse:active{
+	background-image:url("../image/button_rect_press.png");
+}
+
+/* button - back */
+.button_back {
+	width:18px;
+	height:20px;
+	position:absolute;
+	top: 120px;
+	left: 326px;
+	background-image:url("../image/back_button.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:12px;
+	font-weight:300;
+	z-index:1;
+}
+
+.button_back:active{
+	background-image:url("../image/back_button_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - new */
+.button_new{
+	width:60px;
+	height:44px;
+	position:absolute;
+	top:40px;
+	right:0px;
+	background-image:url("../image/button_bg_action_upper_new.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_new:active{
 	background-image:url("../image/button_bg_action_upper_new_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - rename none */
+.button_rename_done {
+	width:60px;
+	height:44px;
+	position:absolute;
+	top:30px;
+	right:0px;
+	background-image:url("../image/button_bg_action_upper_none.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
+	font-weight:300;
+}
+
+.button_rename_done:active{
+	background-image:url("../image/button_bg_action_upper_none_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+/* button - delete none */
+.button_delete_done {
+	width:60px;
+	height:44px;
+	position:absolute;
+	top:30px;
+	right:0px;
+	background-image:url("../image/button_bg_action_upper_none.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
+	font-weight:300;
+}
+
+.button_rename_done:active{
+	background-image:url("../image/button_bg_action_upper_none_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* bottom buttons in editor */
 .button_editor{
 	padding-bottom:28px;
 	font-size:18px;
-    font-weight:600;
+	font-weight:600;
 }
 
 #button_save_editor{
-	width:165px;
-	height:100px;
 	position:absolute;
-	left:180px;
-	top:40px;
+	width:60px;
+	height:40px;
+	right:40px;
+	bottom:35px;
+	font-weight:300;
+	font-size:12px;
+	opacity: 0.6;
+	z-index:10;
 
 	text-align:center;
-	background-image:url("../image/button_bg_action.png");
+	background-image:url("../image/button_bg_action_save.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 #button_save_editor:active{
-	background-image:url("../image/button_bg_action_press.png");
+	background-image:url("../image/button_bg_action_save.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 
 /* button - stop */ 
 #button_stop{
-	width:165px;
-	height:100px;
+	width:71px;
+	height:46px;
 	position:absolute;
 	left:360px;
 	top:40px;
@@ -272,8 +575,8 @@
 
 /* button - run */
 #button_run{
-	width:165px;
-	height:100px;
+	width:71px;
+	height:46px;
 	position:absolute;
 	left:0px;
 	top:40px;
@@ -294,10 +597,9 @@
 	margin-left:0px;
 	margin-top:28px;
 	background-color:#72ca2a;
-	font-family:sans-serif;
 	font-size:16px;
-    color:#fff;
-    font-weight:bolder;
+	color:#fff;
+	font-weight:bolder;
 
 }
 
@@ -320,46 +622,50 @@
 }
 
 .text_button_menu{
-    font-size:18px;
-    font-weight:600;
-	font-family:sans-serif;
+	font-size:14px;
+	font-weight:600;
 	position:relative;
-	top:-10px;
-	left:18px;
-    color:#72ca2a;
+	top:0px;
+	left:0px;
+	color:#72ca2a;
+}
+
+.text_button_menu_bottom {
+	font-size:14px;
+	font-weight:600;
+	position:relative;
+	top:-12px;
+	left:-3px;
+	color:#4d4d4d;
 }
 
 .text_button_tool{
-    font-size:18px;
-	font-family:sans-serif;
-    font-weight:600;
+	font-size:18px;
+	font-weight:600;
 	position:relative;
 	top:-14px;
-    left:4px;
+	left:4px;
 }
 
 .text_button_launchapp{
-    font-size:18px;
-	font-family:sans-serif;
-    font-weight:600;
-    margin-right:18px;
+	font-size:14px;
+	font-weight:600;
+	margin-right:18px;
 	position:relative;
-	top:-14px;
-    left:6px;
+	top:-10px;
+	left:6px;
 }
 
 .text_button_action{
-	font-family:sans-serif;
 	position:relative;
-	font-size:18px;
-    font-weight:600;
-    color:#fff;
-	top:-18px;
-	left:-2px;
+	font-size:12px;
+	font-weight:300;
+	color:#fff;
+	top:-10px;
+	left:-4px;
 }
 
 .text_button_right{
-	font-family:sans-serif;
 	margin-right:30px;
 	text-align:right;
 	font-size:20px;
@@ -367,9 +673,8 @@
 
 .text_button_add{
 	position:relative;
-	font-family:sans-serif;
-    font-weight:bolder;
-    color:#fff;
+	font-weight:bolder;
+	color:#fff;
 	top:-14px;
 	left:-4px;
 }
