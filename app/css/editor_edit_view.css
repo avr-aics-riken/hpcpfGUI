@@ -1,0 +1,360 @@
+#editor {
+	margin: 0px;
+	position:absolute;
+	border-style:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#72ca2a;
+	
+	top:110px;
+	left:315px;
+	right:10px;
+	bottom:10px;
+	min-height:425px; /* + 175 + 10 = 600 */
+	min-width:465px; /* + 315 + 20 = 800 */
+}
+
+.filelistArea {
+	margin: 0px;
+	position:absolute;
+	/*
+	overflow:scroll;
+	*/
+	border-style:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#72ca2a;
+	background-color:#4d4d4d;
+	
+	top:110px;
+	left:10px;
+	width:290px;
+	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+}
+
+#filelist_conainer {
+	position:absolute;
+	height: 600px;
+}
+
+.filelist {
+	position:absolute;
+	overflow:auto;
+	/*
+	border-style:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#72ca2a;
+	
+	top:290px;
+	left:10px;
+	bottom:10px;
+	*/
+	background-color:#4d4d4d;
+	top:40px;
+	width:290px;
+	bottom: 58px;
+}
+
+.filelist * {
+	font-size: 14px;
+}
+
+.filename {
+	font-size: 14px;
+	height: 18px;
+}
+
+#separator {
+	background-color:transparent;
+	position:absolute;
+	top:110px;
+	left:307px;
+	width:4px;
+	bottom:10px;
+	min-height:490px; /* + 110 = 600 */
+	height:80%;
+	text-align: center;
+	display: table;
+}
+
+.separator_image_container {
+	background-color:transparent;
+	vertical-align: middle;
+	display: table-cell;
+}
+
+.separator_image {
+	position:relative;
+	background-color:transparent;
+	left:0px;
+	width:6px;
+	height:105px;
+	background:url("../image/separator.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	background-position: center;
+	cursor: w-resize;
+	z-index:20;
+}
+
+
+#imageArea {
+	position:absolute;
+	top:110px;
+	left:315px;
+	right:10px;
+	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+	min-width:465px; /* + 315 + 20 = 800 */
+	z-index:15;
+	padding:auto;
+	color: #f00;
+	background-color: #8b8b8b;
+	border-radius: 4px;
+	text-align:center;
+	overflow:scroll;
+	visibility: hidden;
+	opacity: 0;
+}
+#imageView {
+	margin:auto;
+}
+#launchButtonArea {
+	position:absolute;
+	top:110px;
+	left:315px;
+	right:10px;
+	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+	min-width:465px; /* + 315 + 20 = 800 */
+	z-index:15;
+	padding:auto;
+	color: #f00;
+	background-color: #8b8b8b;
+	border-radius:2px;
+	text-align:center;
+	overflow:scroll;
+	visibility: hidden;
+	opacity: 0;
+}
+#editorbar {
+	position:absolute;
+	left:10px;
+	right:235px;
+	top:194px;
+	height:20px;
+	margin-top:2px;
+	padding:10px;
+	font-size:16px;
+	color:#fff;
+	background-color:transparent;
+}
+#menubtn {
+	position:absolute;
+	/*top:970px;*/
+	bottom:214px;
+	left:240px;
+	right:0px
+}
+.btnsize {
+	  width:180px;
+  }
+
+.shownewfilearea {
+	margin: 0px;
+	position:absolute;
+	left:10px;
+	bottom:10px;
+}
+
+.newNameArea {
+	position:absolute;
+	left:20px;
+	bottom:80px;
+	width:260px;
+	height:80px;
+	z-index:20;
+	padding: 6px 6px 6px 6px;
+	color: #fff;
+	background-color:#72ca2a; 
+	border-radius: 2px;
+	visibility: hidden;
+	opacity: 0;
+}
+
+.newNameLabel {
+	font-weight: 600;
+}
+
+.inputNewNameBox {
+	position:absolute;
+	top:30px;
+	width:180px;
+	background-color:#4d4d4d;
+	border-style:none;
+	line-height:30px;
+	border-radius:2px;
+	color:#fff;
+}
+
+#showoutputarea{
+	position:absolute;
+	top:170px;
+	right:10px;
+	z-index:20;
+	margin:0px;
+}
+#outputArea {
+	position:absolute;
+	top:235px;
+	right:10px;
+	bottom:10px;
+	z-index:20;
+	margin:0px;
+	visibility: hidden;
+	opacity: 0;
+	resize:both;
+
+	-webkit-touch-callout: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+.newfilearea_border_container {
+	position:absolute;
+	width:100%;
+	height:3px;
+	bottom: 53px;
+}
+
+.newfilearea_border {
+	position:relative;
+	width:95%;
+	height:3px;
+	z-index: 60;
+	margin-left: auto;
+	margin-right: auto;
+	border-top:0px;
+	border-left:0px;
+	border-right:0px;
+	border-bottom: 0.15em solid white;
+}
+
+.newdirectory_new {
+	padding-left:6px;
+}
+
+.newdirectory_dir {
+	position:relative;
+	bottom:3px;
+	padding-left:11px;
+}
+
+.newfilearea_label {
+	padding-left:13px;
+}
+
+.newfilearea_file_label {
+	padding-left:12px;
+}
+
+.newfilearea_delete_label {
+	padding-left:18px;
+}
+
+.filebutton_conainer {
+	position: absolute;
+	bottom: 0px;
+}
+
+.vim_mode_text {
+	position:relative;
+	left: 23px;
+}
+
+.default_mode_text {
+	position:relative;
+	left: 17px;
+}
+
+.save_label {
+	position:relative;
+	top: -3px;
+	left: -2px;
+}
+
+.rename_done_label {
+	position:relative;
+	left: -3px;
+}
+
+.button_delete_done_label {
+}
+
+.save_message_dialog {
+	bottom: 84px;
+	right: 30px;
+	width: 85px;
+	height: 46px;
+	position: fixed;
+	visibility: hidden;
+	background-color:#444444;
+	z-index:5;
+	background:url("../image/button_file_saved.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.save_message {
+	position: relative;
+	top:8px;
+	text-align:center;
+	font-weight:300;
+	font-size:11px;
+	color: #ffffff;
+}
+
+.stop_message{
+	position: relative;
+	top:50px;
+	text-align:center;
+	font-weight:300;
+	font-size:14px;
+}
+
+#save_message_area {
+	min-height: 100%;
+	min-width: 800px;
+	width: 100%;
+	height: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	visibility: hidden;
+	background-color:transparent;
+	opacity: 0.7;
+	z-index:50;
+}
+
+/*
+#stderr {
+	background-color:#bcbcbc;
+	width:300px
+}
+#stdout{
+	background-color:rgba(219, 219, 219, 0.8);
+	position:absolute;
+	top:0px;
+	width:524px;
+	right:0px;
+	bottom:0px;
+	margin:0px;
+	overflow:scroll;
+}
+*/
+

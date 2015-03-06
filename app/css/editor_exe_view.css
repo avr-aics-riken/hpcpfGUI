@@ -1,0 +1,60 @@
+
+.exe_area {
+	position:absolute;
+	top:110px;
+	left:315px;
+	right:10px;
+	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+	min-width:465px; /* + 315 + 20 = 800 */
+	
+	overflow:hidden;
+	border:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#000;
+	background-color:#444;
+	-webkit-touch-callout: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+.project_title_log {
+	position:relative;
+	margin-top:30px;
+	text-align:center;
+	font-size:24px;
+	color:white;
+}
+
+.exe_log_area {
+	position:absolute;
+	overflow:auto;
+	float: left;
+	margin-top:30px;
+	width:100%;
+	top:5px;
+	right:0px;
+	bottom:0px;
+}
+
+.exe_log {
+	color: #eee;
+	position:relative;
+	margin-top:5px;
+	margin-bottom:5px;
+	margin-left:30px;
+	font-size:16px;
+	font-family:sans-serif;
+	user-select: auto;
+	
+	-webkit-touch-callout: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
