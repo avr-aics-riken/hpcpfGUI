@@ -79,6 +79,14 @@
 	z-index: 120;
 }
 
+#archive_warning_dialog {
+	z-index: 125;
+}
+
+#confirm_area {
+	z-index: 125;
+}
+
 .extract_archive_content {
 	position:relative;
 	top: 270px;
@@ -109,4 +117,8 @@
 .newArchiveLabel {
 	font-size: 14px;
 	font-weight: 600;
+}
+
+.activefileitem {
+	background: #555;
 }

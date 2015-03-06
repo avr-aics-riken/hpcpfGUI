@@ -31,6 +31,30 @@ function showExistWarning(callback) {
 	ok.addEventListener("click", okfunc, true);
 }
 
+function hiddenArchiveWarning(callback) {
+	"use strict";
+	var ok = document.getElementById('archive_warning_button_ok'),
+		confirmArea = document.getElementById("confirm_area");
+	
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("archive_warning_dialog").style.visibility = "hidden";
+}
+
+function showArchiveWarning(callback) {
+	"use strict";
+	var ok = document.getElementById('archive_warning_button_ok'),
+		confirmArea = document.getElementById("confirm_area");
+	
+	confirmArea.style.visibility = "visible";
+	document.getElementById("archive_warning_dialog").style.visibility = "visible";
+
+	function okfunc() {
+		callback();
+		ok.removeEventListener("click", okfunc, true);
+	}
+	ok.addEventListener("click", okfunc, true);
+}
+
 /// hidden new project name dialog
 function hiddenNewProjectName(callback) {
 	"use strict";
@@ -172,15 +196,24 @@ function registerProjectHistory(path) {
 	socket.emit("registerProjectHistory", path);
 }
 
-function openFileDialog(path) {
+function openFileDialog(path, type) {
 	"use strict";
+	var items;
 	console.log("openFileDialog");
 	filedialog.dir_only = false;
 	console.log("path:" + path);
 	document.getElementById("file_dialog").style.display = "block";
 	document.getElementById('projdir_path').value = path;
 	document.getElementById('popup_background').style.visibility = "visible";
-	filedialog.FileList(path);
+	if (type === "file") {
+		// remove active class tag
+		items = document.getElementsByClassName('activefileitem');
+		if (items.length > 0) {
+			items[0].className = "fileitem";
+		}
+	} else {
+		filedialog.FileList(path);
+	}
 }
 
 function openFolderDialog(path) {
@@ -202,7 +235,23 @@ function closeFileDialog() {
 
 function openProjectArchive(tarPath) {
 	"use strict";
-	showExtractArchiveDialog();
+	var items,
+		filename;
+	items = document.getElementsByClassName('activefileitem');
+	if (items.length > 0) {
+		filename = items[0].innerHTML;
+		if (filename.indexOf('.tar.gz') >= 0
+			|| filename.indexOf('.TAR.GZ') >= 0
+			|| filename.indexOf('.tgz') >= 0
+			|| filename.indexOf('.TGZ') >= 0) {
+			showExtractArchiveDialog();
+		}
+		else {
+			showArchiveWarning(function () {
+				hiddenArchiveWarning();
+			});
+		}
+	}
 }
 
 function extractArchive(name) {
