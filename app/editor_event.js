@@ -265,15 +265,18 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		try {
 			if (fs.existsSync(target)) {
 				if (fs.statSync(target).isDirectory()) {
+					console.log("try delete fodler" + target);
+					util.deleteFolderRecursive(target);
 					fs.rmdirSync(target);
 					socket.emit("deleted");
 				} else {
+					console.log("try delete file" + target);
 					fs.unlinkSync(target);
 					socket.emit("deleted");
 				}
 			}
 		} catch(e) {
-			console.error("reqDirSave failed:"+e);
+			console.error("reqDelete failed:"+e);
 		}
 	});
 	

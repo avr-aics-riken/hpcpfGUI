@@ -152,7 +152,29 @@ function extractTar(dstPath, srcAbsolutePath) {
 	launchApp([tarcmd, realPath.split("\\").join("/"), '-C', realDstPath.split("\\").join("/")]);
 }
 
+function deleteFolderRecursive(target) {
+	"use strict";
+	var files = [],
+		file,
+		i;
+	if (fs.existsSync(target)) {
+		files = fs.readdirSync(target);
+		for (i = files.length - 1; i >= 0; i = i - 1) {
+			file = target + files[i];
+			if (fs.statSync(file).isDirectory()) {
+				deleteFolderRecursive(file + '/');
+				console.log("deleteFolder :" + files[i] + '/');
+				fs.rmdirSync(file);
+			} else {
+				console.log("deleteFile :" + files[i]);
+				fs.unlinkSync(file);
+			}
+		}
+	}
+}
+
 module.exports.getExtention = getExtention;
 module.exports.getFiles = getFiles;
 module.exports.isRelative = isRelative;
 module.exports.extractTar = extractTar;
+module.exports.deleteFolderRecursive = deleteFolderRecursive;
