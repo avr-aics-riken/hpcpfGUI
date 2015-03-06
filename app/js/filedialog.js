@@ -106,7 +106,7 @@ if (typeof window === 'undefined') { // Node.js
 			if (dir_only) {
 				newbtn.setAttribute('onclick','openFolderDialog("'+path+'")');
 			} else {
-				newbtn.setAttribute('onclick','openFileDialog("'+path+'")');
+				newbtn.setAttribute('onclick','openFileDialog("'+path+'","'+type+'");this.className+=" activefileitem"');
 			}
 			return newbtn;
 		}

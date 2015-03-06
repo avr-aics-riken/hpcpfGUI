@@ -111,7 +111,9 @@ function launchApp(command, startcallback, endcallback) {
 		}
 	} else {
 		cmd = command[0];
+		console.log('CMD>' + cmd);
 		args = command.slice(1);
+		console.log('args>' + args);
 		proc = cp.spawn(cmd, args);
 		proc.setMaxListeners(0);
 		if (startcallback) {
@@ -142,14 +144,16 @@ function launchApp(command, startcallback, endcallback) {
 function extractTar(dstPath, srcAbsolutePath) {
 	"use strict";
 	var cmdstr,
-		realPath = getRealPath(srcAbsolutePath),
-		realDstPath = getRealPath(dstPath),
-		tarcmd = 'tar xvf';
+		tarcmd = 'tar',
+		src = srcAbsolutePath,
+		dst = dstPath;
 	
 	if (process.platform === 'win32') {
-		tarcmd = 'tar.exe xvf';
+		tarcmd = 'tar.exe';
+		src = getRealPath(srcAbsolutePath).split("\\").join("/");
+		dst = getRealPath(dstPath).split("\\").join("/");
 	}
-	launchApp([tarcmd, realPath.split("\\").join("/"), '-C', realDstPath.split("\\").join("/")]);
+	launchApp([tarcmd, "xvf", src, '-C', dst]);
 }
 
 function deleteFolderRecursive(target) {
