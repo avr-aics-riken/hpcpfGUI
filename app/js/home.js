@@ -36,6 +36,7 @@ function hiddenArchiveWarning(callback) {
 	var ok = document.getElementById('archive_warning_button_ok'),
 		confirmArea = document.getElementById("confirm_area");
 	
+	confirmArea.style.zIndex = "50";
 	document.getElementById("confirm_area").style.visibility = "hidden";
 	document.getElementById("archive_warning_dialog").style.visibility = "hidden";
 }
@@ -45,6 +46,7 @@ function showArchiveWarning(callback) {
 	var ok = document.getElementById('archive_warning_button_ok'),
 		confirmArea = document.getElementById("confirm_area");
 	
+	confirmArea.style.zIndex = "125";
 	confirmArea.style.visibility = "visible";
 	document.getElementById("archive_warning_dialog").style.visibility = "visible";
 

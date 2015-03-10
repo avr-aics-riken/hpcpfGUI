@@ -83,10 +83,6 @@
 	z-index: 125;
 }
 
-#confirm_area {
-	z-index: 125;
-}
-
 .extract_archive_content {
 	position:relative;
 	top: 270px;
