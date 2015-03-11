@@ -74,17 +74,20 @@
 			</button>
 		</div>
 		<div class="popup_center">
-			<div class="pane_grp"><input class="input_filedialog" id="projdir_path" value="localhost:/home/hirose/project1"/></div>
-			<div class="filebrowser filedialog" id="fbList"></div>
-			<div class="buttons_dialog">
-				<button type="button" class="button_open" onclick="open_selectedFile()">
-					<span class="text_button_action">Open</span>
-				</button>
-				<button type="button" class="button_cancel" onclick="closefileDialog()">
-					<span class="text_button_action">Cancel</span>
-				</button>
+			<div class="popup_content">
+				<div class="pane_grp"><input class="input_filedialog" id="projdir_path" value="localhost:/home/hirose/project1"/></div>
+				<div class="filebrowser filedialog" id="fbList"></div>
+				<div class="buttons_dialog">
+					<button type="button" class="button_open" onclick="open_selectedFile()">
+						<span class="text_button_action">Open</span>
+					</button>
+					<button type="button" class="button_cancel" onclick="closefileDialog()">
+						<span class="text_button_action">Cancel</span>
+					</button>
+				</div>
 			</div>
 		</div>
+		<div class="popup_background" id="popup_background"></div>
 	</div>
 	</body>
 </html>

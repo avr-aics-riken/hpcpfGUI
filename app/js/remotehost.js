@@ -1,6 +1,27 @@
 var socket = io.connect();
 var filedialog = new FileDialog('remotedlg',false,false);
 
+function openFileDialog(path, type) {
+	"use strict";
+	var items;
+	console.log("openFileDialog");
+	filedialog.dir_only = false;
+	console.log("path:" + path);
+	document.getElementById("fbList").style.display = "block";
+	document.getElementById('projdir_path').value = path;
+	document.getElementById('popup_background').style.visibility = "visible";
+	if (type === "file") {
+		// remove active class tag
+		items = document.getElementsByClassName('activefileitem');
+		if (items.length > 0) {
+			items[0].className = "fileitem";
+		}
+	} else {
+		filedialog.FileList(path);
+	}
+	tarPath = path;
+}
+
 function openFileBrowser()
 {
 	var s = window.open("filebrowser.html","filebrowser");
@@ -104,6 +125,11 @@ function openfileDialog(path)
 	tarPath = path;
 	var i = document.getElementsByClassName("popup_center")[0];
 	i.style.display="block";
+	if (path === '/') {
+		document.getElementById('popup_background').style.visibility = "visible";
+	} else {
+		document.getElementById('popup_background').style.visibility = "hidden";
+	}
 
 	var c = document.getElementById('projdir_path');
 	c.value = path;
@@ -113,6 +139,7 @@ function closefileDialog()
 {
 	var i = document.getElementsByClassName("popup_center")[0];
 	i.style.display="none";
+	document.getElementById('popup_background').style.visibility = "hidden";
 }
 
 function open_selectedFile()
