@@ -83,3 +83,20 @@ td {
 	top:-5px;
 	left:12px;
 }
+
+.open_warning_button {
+	position:relative;
+	left: 20px;
+	top: 10px;
+	width: 150px;
+	height: 46px;
+	z-index:61;
+}
+
+.open_warning_button_text {
+	position: relative;
+	right: 2px;
+	bottom: 10px;
+	font-size:12px;
+}
+

@@ -288,9 +288,13 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		if (pifFile && fs.existsSync(pifFile)) {
 			console.log("reqUpdateInformation exists");
 			pifData = fs.readFileSync(pifFile);
-			pifStr = JSON.parse(pifData);
-			//console.log(pifStr);
-			socket.emit('updateInformation', JSON.stringify(pifStr));
+			try {
+				pifStr = JSON.parse(pifData);
+				//console.log(pifStr);
+				socket.emit('updateInformation', JSON.stringify(pifStr));
+			} catch (e) {
+				console.log("JSON parse error:" + pifData);
+			}
 		}
 	});
 	

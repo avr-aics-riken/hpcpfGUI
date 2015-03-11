@@ -70,6 +70,39 @@ function showSavedMessage(callback) {
 	setTimeout(hiddenSavedMessage, 800);
 }
 
+/// hidden open warning messsage
+function hiddenOpenWarningMessage(callback) {
+	"use strict";
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("save_message_area").style.visibility = "hidden";
+	document.getElementById("open_warning_dialog").style.visibility = "hidden";
+	document.getElementById('save_message_area').className = 'fadeOut';
+}
+
+/// show open warning messsage dialog
+function showOpenWarningMessage(callback) {
+	"use strict";
+	var save = document.getElementById('button_save'),
+		cancel = document.getElementById('button_cancel');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById('save_message_area').className = 'fadeIn';
+	document.getElementById("save_message_area").style.visibility = "visible";
+	document.getElementById("open_warning_dialog").style.visibility = "visible";
+
+	function savefunc() {
+		callback(true);
+		save.removeEventListener("click", savefunc, true);
+		cancel.removeEventListener("click", cancelfunc, true);
+	}
+	function cancelfunc() {
+		callback(false);
+		save.removeEventListener("click", savefunc, true);
+		cancel.removeEventListener("click", cancelfunc, true);
+	}
+	save.addEventListener("click", savefunc, true);
+	cancel.addEventListener("click", cancelfunc, true);
+}
+
 /// change directory
 /// @param fd file dialog instance
 /// @param path dir path of upper input box
@@ -209,7 +242,7 @@ function showNewNameArea(id) {
 }
 
 /// save file
-function saveFile() {
+function saveFile(endCallback) {
 	"use strict";
 	var basedir = $('dirpath').value,
 		filename = $('filename').value;
@@ -224,6 +257,10 @@ function saveFile() {
 	socket.once('filesavedone', function (success) {
 		if (success) {
 			showSavedMessage();
+		}
+		if (endCallback) {
+			console.log("savefileendCallback");
+			endCallback();
 		}
 	});
 	ChangeEditor(false);
@@ -356,6 +393,8 @@ function changeColor(element) {
 		items[i].style.backgroundColor  = "";
 	}
 	element.style.backgroundColor  = "gray";
+	
+	console.log("changeColor", element);
 }
 
 /// callback of dir clicked on file dialog
@@ -368,18 +407,12 @@ function clickDir(fd, element, parentDir, path) {
 	console.log("directory clicked");
 	changeColor(element);
 	changeDir(fd, getWorkingPath() + '/' + path + '/');
-	document.getElementById('filename').value = "";
+	//document.getElementById('filename').value = "";
 	hideNewNameArea();
 }
 
-/// callback of file clicked on file dialog
-/// @param fd file dialog instance
-/// @param parentDir parent directory of path
-/// @param path relative path from project dir
-function clickFile(fd, element, parentDir, path) {
+function openFile(fd, element, parentDir, path) {
 	"use strict";
-	console.log("file clicked");
-	changeColor(element);
 	
 	// directory, path setting
 	if (parentDir === '/') {
@@ -390,6 +423,56 @@ function clickFile(fd, element, parentDir, path) {
 	fileselect(path);
 	document.getElementById('filename').value = path.split("/").pop();
 	showEditView();
+	changeColor(element);
+}
+
+/// callback of file clicked on file dialog
+/// @param fd file dialog instance
+/// @param parentDir parent directory of path
+/// @param path relative path from project dir
+function clickFile(fd, element, parentDir, path) {
+	"use strict";
+	var preClickedFile = clickedfile;
+	clickedfile = getWorkingPath() + parentDir + path;
+	
+	if (path !== openedfile) {
+		if (edited) {
+			showOpenWarningMessage(function (isOK) {
+					console.log(isOK);
+					if (isOK) {
+						hiddenOpenWarningMessage();
+						editor.setReadOnly(false);
+						saveFile(function () {
+							openFile(fd, element, parentDir, path);
+							dirStatusChanged(fd, getWorkingPath() + parentDir);
+						});
+					} else {
+						hiddenOpenWarningMessage();
+						//openFile(fd, element, parentDir, path);
+						clickedfile = preClickedFile;
+					}
+				}
+			);
+		} else {
+			openFile(fd, element, parentDir, path);
+			dirStatusChanged(fd, getWorkingPath() + parentDir);
+		}
+	} else {
+		changeColor(element);
+	}
+}
+
+function dirStatusChanged(fd, dirpath) {
+	var elem = null;
+	console.log("dirChanged", clickedfile, dirpath);
+	if (clickedfile && clickedfile.indexOf(dirpath) >= 0) {
+		console.log("dirchanged:", clickedfile);
+		elem = fd.findElement(dirpath, clickedfile);
+		console.log("dirchangeelem", elem);
+		if (elem) {
+			changeColor(elem);
+		}
+	}
 }
 
 /// initialize dialog and set callbacks 
@@ -400,6 +483,7 @@ function setupFileDialog() {
 	fd.registerSocketEvent(socket);
 	fd.setFileClickCallback(clickFile);
 	fd.setDirClickCallback(clickDir);
+	fd.setDirStatusChangeCallback(dirStatusChanged);
 	
 	socket.on('connect', function () {
 		console.log('connected');
