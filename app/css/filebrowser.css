@@ -110,14 +110,14 @@
 	background-size: contain;
 }
 
-/*
 .file{
-	width:65px;
-	height:65px;
+	width:32px;
+	height:32px;
 	display:inline-block;
 	background-image:url("../image/icon_file.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
-*/
 
 .dustbox{
 	margin-right:0px;
