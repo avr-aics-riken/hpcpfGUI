@@ -6,7 +6,19 @@
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/hpcpf");
 editor.setReadOnly(true);
+
+/*
 editor.on('change', function changeInput() {
+	"use strict";
+	if (editor.session.getUndoManager().isClean()) {
+		ChangeEditor(false);
+	} else {
+		ChangeEditor(true);
+	}
+});
+*/
+
+editor.on('input', function changeInput() {
 	"use strict";
 	if (editor.session.getUndoManager().isClean()) {
 		ChangeEditor(false);
@@ -95,6 +107,7 @@ function modeChange(modename) {
 //-------------------------------
 
 var openedfile = null;
+var clickedfile = null;
 var edited = false;
 
 function ChangeEditor(state) {
@@ -110,7 +123,6 @@ function ChangeEditor(state) {
 function fileopen(filename, forceEdit) {
 	"use strict";
 	editor.setReadOnly(false);
-	saveFile();
 	
 	if (!forceEdit) {
 		if (openedfile === filename) {
