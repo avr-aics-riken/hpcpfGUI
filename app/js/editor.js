@@ -189,6 +189,8 @@ function showInfoView() {
 	hideEditArea();
 	hideNewNameArea();
 	socket.emit('reqUpdateInformation');
+	openedfile = "";
+	clickedfile = "";
 }
 
 function showExeView() {
@@ -199,6 +201,8 @@ function showExeView() {
 	$("info_back_button_area").style.display = "none";
 	hideEditArea();
 	hideNewNameArea();
+	openedfile = "";
+	clickedfile = "";
 }
 
 function showEditView() {

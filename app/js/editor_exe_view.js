@@ -39,6 +39,8 @@
 	function runWorkflow() {
 		var targetFile = "pwf.lua";
 
+		openedfile = "";
+		clickedfile = "";
 		console.log("procRun");
 
 		clearOutput();
@@ -59,8 +61,6 @@
 
 	function executeProject() {
 		var exec = function () {
-			openedfile = "";
-			clickedfile = "";
 			showExeView();
 			runWorkflow();
 			executeButton.onclick = stopProject;
