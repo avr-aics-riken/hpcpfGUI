@@ -356,11 +356,11 @@ end
 
 function cxjob:isExistFile(remotefile)
     local cmdFile = 'file ' .. self.workdir .. remotefile
-    print(cmdFile)
+    --print(cmdFile)
     local cmdret  = sshCmd(self.user, self.server, self.port, self.sshkey, cmdFile, true)
-    print(cmdret)
+    --print(cmdret)
     local fnd = string.find(cmdret, 'No such file or directory')
-    print(fnd)
+    --print(fnd)
     if fnd == nil then
         return true
     end

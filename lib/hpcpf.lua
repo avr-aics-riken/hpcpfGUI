@@ -28,7 +28,7 @@ if getPlatform() == 'Windows' then
     print = function(...) orgPrint(...) io.stdout:flush() end
 end
 
-local function errorlog(msg)
+function errorlog(msg)
     io.stderr:write(msg .. '\n')
 end
 
