@@ -2,7 +2,8 @@
 /*global $, socket, showStoppedMessage, io, FileDialog */
 // depends: editor.js
 
-var socket = io.connect();
+var socket = io.connect(),
+	isFolderSelected = false;
 
 
 function init() {
@@ -191,6 +192,7 @@ function showInfoView() {
 	socket.emit('reqUpdateInformation');
 	openedfile = "";
 	clickedfile = "";
+	isFolderSelected = false;
 }
 
 function showExeView() {
@@ -203,6 +205,7 @@ function showExeView() {
 	hideNewNameArea();
 	openedfile = "";
 	clickedfile = "";
+	isFolderSelected = false;
 }
 
 function showEditView() {
@@ -377,6 +380,7 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 		fd.UnwatchDir(basedir.split(getWorkingPath() + '/').join(''));
 	}
 
+	console.log("deletefile:" + openedfile);
 	socket.emit('reqDelete', JSON.stringify({target: target}));
 	socket.once('deleted', function () {
 		console.log("deleted");
@@ -385,8 +389,10 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 		}
 		// file or directory was deleted
 		hideNewNameArea();
+		showInfoView();
 //		fd.FileList('/');
 	});
+	 $('filename').value = "";
 }
 
 /// change color for selecting file or directory element
@@ -402,6 +408,18 @@ function changeColor(element) {
 	console.log("changeColor", element);
 }
 
+function isColorItemExists() {
+	"use strict";
+	var items = document.getElementsByClassName("fileitem"),
+		i;
+	for (i = 0; i < items.length; i += 1) {
+		if (items[i].style.backgroundColor !== "") {
+			return true;
+		}
+	}
+	return false;
+}
+
 /// callback of dir clicked on file dialog
 /// @param fd file dialog instance
 /// @param element clicked element
@@ -414,6 +432,7 @@ function clickDir(fd, element, parentDir, path) {
 	changeDir(fd, getWorkingPath() + '/' + path + '/');
 	//document.getElementById('filename').value = "";
 	hideNewNameArea();
+	isFolderSelected = true;
 }
 
 function openFile(fd, element, parentDir, path) {
@@ -440,6 +459,7 @@ function clickFile(fd, element, parentDir, path) {
 	var preClickedFile = clickedfile;
 	clickedfile = getWorkingPath() + parentDir + path;
 	
+	isFolderSelected = false;
 	console.log("openedfile" + openedfile);
 	console.log("path" + path);
 	if (path !== openedfile) {
@@ -515,7 +535,13 @@ function setupFileDialog() {
 		renameFileOrDirectory(fd, $('renameitem').value);
 	};
 	$('button_delete_done').onclick = function () {
-		deleteFileOrDirectory(fd, $('dirpath').value, $('filename').value);
+		if (isColorItemExists()) {
+			if (isFolderSelected) {
+				deleteFileOrDirectory(fd, $('dirpath').value, "");
+			} else {
+				deleteFileOrDirectory(fd, $('dirpath').value, $('filename').value);
+			}
+		}
 	};
 	return fd;
 }
