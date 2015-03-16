@@ -71,7 +71,11 @@ function cxjob.new(username_or_table, sshkey, server, port, workdir)
 
     setmetatable(inst, {__index = cxjob})
 
-    -- auto generate date folder
+    -- remote directory generation
+    inst:remoteMakeDir(inst.workdir)
+    
+
+    -- auto generate date folder(to be DELETE)
     --[[
     inst.workdir = inst.workdir ..  os.date("hpcpfJob_%Y%m%d_%H%M%S/")
     print('REMOTE WORKDIR=', inst.workdir)
@@ -234,7 +238,7 @@ function cxjob:remoteCopyFile(fromFile, toFile)
 end
 
 function cxjob:remoteMakeDir(dirpath)
-    local cmd = 'mkdir ' .. dirpath
+    local cmd = 'mkdir -p ' .. dirpath
     return sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
 end
 
@@ -318,7 +322,7 @@ end
 
 function cxjob:remoteJobDel(jobdata)
     if jobdata == nil or jobdata.id == nil then
-        print('[Error] job or job.id is invalid (remoteJobDel)')
+        errorlog('[Error] job or job.id is invalid (remoteJobDel)')
         debug.traceback()
         return
     end
@@ -329,7 +333,7 @@ end
 
 function cxjob:remoteJobStat(jobdata)
     if jobdata == nil or jobdata.id == nil then
-        print('[Error] job or job.id is invalid (remoteJobStat)')
+        errorlog('[Error] job or job.id is invalid (remoteJobStat)')
         debug.traceback()
         return
     end
@@ -348,6 +352,19 @@ function cxjob:remoteDate()
     local dateret = sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
     print('DATERET:', dateret)
     return dateret
+end
+
+function cxjob:isExistFile(remotefile)
+    local cmdFile = 'file ' .. self.workdir .. remotefile
+    print(cmdFile)
+    local cmdret  = sshCmd(self.user, self.server, self.port, self.sshkey, cmdFile, true)
+    print(cmdret)
+    local fnd = string.find(cmdret, 'No such file or directory')
+    print(fnd)
+    if fnd == nil then
+        return true
+    end
+    return false
 end
 
 return cxjob
