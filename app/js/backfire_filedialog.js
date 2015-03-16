@@ -412,62 +412,6 @@ if (typeof window === 'undefined') { // Node.js
 			return null;
 		};
 		
-		FileDialog.prototype.findElement = function (dirpath, filename) {
-			var relativepath,
-				elems,
-				elem,
-				el,
-				i,
-				k,
-				file = filename.split('/').pop();
-			console.log("file:" + file);
-			console.log("dirpath:" + dirpath);
-			if (dirpath.indexOf(this.tarDir) === 0) { // matchig dir
-				relativepath = dirpath.substring(this.tarDir.length);
-				elems = this.openingDirList[relativepath];
-				console.log("elems:" + elems);
-				for (i = 0; i < elems.childNodes.length; i = i + 1) {
-					elem = elems.childNodes[i];
-					for (k = 0; k < elem.childNodes.length; k = k + 1) {
-						el = elem.childNodes[k];
-						if (el.innerHTML === file) {
-							console.log("findElement", el);
-							return elem;
-						}
-					}
-				}
-			}
-			return null;
-		};
-		
-		FileDialog.prototype.findElement = function (dirpath, filename) {
-			var relativepath,
-				elems,
-				elem,
-				el,
-				i,
-				k,
-				file = filename.split('/').pop();
-			console.log("file:" + file);
-			console.log("dirpath:" + dirpath);
-			if (dirpath.indexOf(this.tarDir) === 0) { // matchig dir
-				relativepath = dirpath.substring(this.tarDir.length);
-				elems = this.openingDirList[relativepath];
-				console.log("elems:"+ elems);
-				for (i = 0; i < elems.childNodes.length; i = i + 1) {
-					elem = elems.childNodes[i];
-					for (k = 0; k < elem.childNodes.length; k = k + 1) {
-						el = elem.childNodes[k];
-						if (el.innerHTML === file) {
-							console.log("findElement", el);
-							return elem;
-						}
-					}
-				}
-			}
-			return null;
-		}
-		
 		FileDialog.prototype.setWorkingPath = function (path) {
 			console.log('ROOT PATH:', path);
 			if (path.substring(path.length - 1) === '/') {
