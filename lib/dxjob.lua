@@ -5,7 +5,7 @@ local cxjob = require('cxjob')
 
 function dxjob.new(targetConf)
     if type(targetConf) ~= 'table' then
-       print('[Error] failed dxjob new')
+       errorlog('[Error] failed dxjob new')
        return
     end
 
@@ -61,7 +61,7 @@ function dxjob:GenerateBootSh()
 		print('write: ' .. bootsh)
 		local f = io.open(bootsh, "wb")
 		if f == nil then
-			print('faild write:' .. bootsh)
+			errorlog('faild write:' .. bootsh)
 		else
 			local str = self.m_jobmgr:getBootSh() --self.m_targetconf.bootsh;
 			-- replace template
@@ -131,11 +131,17 @@ function dxjob:SendDir(localdir)
 	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
 	local dirpath, casename = getDirAndName(localdir)
+	local exist = self.m_jobmgr:isExistFile(casename)
+	if  exist == true then
+		print('[Error] Already exist case directory:', casename);
+		return false
+	end
 	compressFile(casename, temptar, true, '-C '..dirpath) -- compress
 	self.m_jobmgr:sendFile(temptar, 'HPCPF_case.tar.gz')        -- send
 	deleteFile(temptar)                                         -- delete localtar file
 	self.m_jobmgr:remoteExtractFile('HPCPF_case.tar.gz', true)  -- extract
 	self.m_jobmgr:remoteDeleteFile ('HPCPF_case.tar.gz')        -- delete temp file
+	return true
 end
 
 function dxjob:GetDir(remotedir, basedir)

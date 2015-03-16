@@ -47,17 +47,7 @@ if (typeof window === 'undefined') { // Node.js
 								if (fs.statSync(name).isDirectory()) {
 									dom = {"name": files[i], "type": "dir", "path": relativePath, "extract": false, "child": null};
 									lst.push(dom);
-
-									// recursive dir
-									/*childlist = [];
-									try {
-										getFiles(name, childlist);
-										dom.child = childlist;
-									} catch (e) {
-										console.log("Failed subdir getfile", e);
-									}*/
 								} else if (files[i].substring(0, 1) !== '.') {
-									//console.log(name);
 									lst.push({"name": files[i], "type": "file", "path": relativePath});
 								}
 							} catch (err) {
@@ -129,7 +119,7 @@ if (typeof window === 'undefined') { // Node.js
 							return function (dir, list) {
 								var msg = name + ':FileDialogUpdateList',
 									body = JSON.stringify({dirpath: dir, filelist: list});
-
+								
 								skt.emit(msg, body);
 							};
 						}(skname, skt)));
@@ -261,7 +251,9 @@ if (typeof window === 'undefined') { // Node.js
 		FileDialog.prototype.makeFilelist = function (ls, list, level, parentDir) {
 			console.log("makeFilelist");
 			ls.innerHTML = ''; // clear
-			var skip, i, newbtn;
+			var skip,
+				i,
+				node = null;
 			for (i in list) {
 				if (list.hasOwnProperty(i)) {
 					skip = false;
@@ -275,9 +267,15 @@ if (typeof window === 'undefined') { // Node.js
 					if (list[i].type === "file" && this.dirOnly) { // ignore files
 						skip = true;
 					}
-
 					if (!skip) {
-						this.makeNode(ls, list[i], level,  parentDir);
+						node = this.makeNode(ls, list[i], level,  parentDir);
+					}
+					
+					// Recursive
+					if (node) {
+						if ((list[i].type === "dir") && this.openingDirList['/' + list[i].path + '/']) {
+							this.registerDirDom(list[i].path, list[i].childElement);
+						}
 					}
 				}
 			}
@@ -289,6 +287,7 @@ if (typeof window === 'undefined') { // Node.js
 			this.socket.emit(this.name + ':setRootPath', {path: fullpath});
 		};
 		FileDialog.prototype.registerDirDom = function (relativepath, domElem) {
+			//console.log('REGISTER:', '/' + relativepath + '/', domElem);
 			this.openingDirList['/' + relativepath + '/'] = domElem; // Register
 			this.FileList(relativepath); // get file list for First
 		};
@@ -363,6 +362,7 @@ if (typeof window === 'undefined') { // Node.js
 				}(this, newbtn)));
 				ls.appendChild(newbtn);
 			}
+			return newbtn;
 		};
 		
 		FileDialog.prototype.changeDirStatus = function (dirpath, filelist) {
@@ -382,6 +382,34 @@ if (typeof window === 'undefined') { // Node.js
 			if (this.dirStatusChangeCallback) {
 				this.dirStatusChangeCallback(this, dirpath);
 			}
+		};
+		
+		FileDialog.prototype.findElement = function (dirpath, filename) {
+			var relativepath,
+				elems,
+				elem,
+				el,
+				i,
+				k,
+				file = filename.split('/').pop();
+			console.log("file:" + file);
+			console.log("dirpath:" + dirpath);
+			if (dirpath.indexOf(this.tarDir) === 0) { // matchig dir
+				relativepath = dirpath.substring(this.tarDir.length);
+				elems = this.openingDirList[relativepath];
+				console.log("elems:" + elems);
+				for (i = 0; i < elems.childNodes.length; i = i + 1) {
+					elem = elems.childNodes[i];
+					for (k = 0; k < elem.childNodes.length; k = k + 1) {
+						el = elem.childNodes[k];
+						if (el.innerHTML === file) {
+							console.log("findElement", el);
+							return elem;
+						}
+					}
+				}
+			}
+			return null;
 		};
 		
 		FileDialog.prototype.findElement = function (dirpath, filename) {

@@ -2,7 +2,8 @@
 /*global $, socket, showStoppedMessage, io, FileDialog */
 // depends: editor.js
 
-var socket = io.connect();
+var socket = io.connect(),
+	isFolderSelected = false;
 
 
 function init() {
@@ -189,6 +190,9 @@ function showInfoView() {
 	hideEditArea();
 	hideNewNameArea();
 	socket.emit('reqUpdateInformation');
+	openedfile = "";
+	clickedfile = "";
+	isFolderSelected = false;
 }
 
 function showExeView() {
@@ -199,6 +203,9 @@ function showExeView() {
 	$("info_back_button_area").style.display = "none";
 	hideEditArea();
 	hideNewNameArea();
+	openedfile = "";
+	clickedfile = "";
+	isFolderSelected = false;
 }
 
 function showEditView() {
@@ -263,6 +270,7 @@ function saveFile(endCallback) {
 			endCallback();
 		}
 	});
+	edited = false;
 	ChangeEditor(false);
 }
 
@@ -372,6 +380,7 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 		fd.UnwatchDir(basedir.split(getWorkingPath() + '/').join(''));
 	}
 
+	console.log("deletefile:" + openedfile);
 	socket.emit('reqDelete', JSON.stringify({target: target}));
 	socket.once('deleted', function () {
 		console.log("deleted");
@@ -380,8 +389,10 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 		}
 		// file or directory was deleted
 		hideNewNameArea();
+		showInfoView();
 //		fd.FileList('/');
 	});
+	 $('filename').value = "";
 }
 
 /// change color for selecting file or directory element
@@ -397,6 +408,18 @@ function changeColor(element) {
 	console.log("changeColor", element);
 }
 
+function isColorItemExists() {
+	"use strict";
+	var items = document.getElementsByClassName("fileitem"),
+		i;
+	for (i = 0; i < items.length; i += 1) {
+		if (items[i].style.backgroundColor !== "") {
+			return true;
+		}
+	}
+	return false;
+}
+
 /// callback of dir clicked on file dialog
 /// @param fd file dialog instance
 /// @param element clicked element
@@ -409,6 +432,7 @@ function clickDir(fd, element, parentDir, path) {
 	changeDir(fd, getWorkingPath() + '/' + path + '/');
 	//document.getElementById('filename').value = "";
 	hideNewNameArea();
+	isFolderSelected = true;
 }
 
 function openFile(fd, element, parentDir, path) {
@@ -435,6 +459,9 @@ function clickFile(fd, element, parentDir, path) {
 	var preClickedFile = clickedfile;
 	clickedfile = getWorkingPath() + parentDir + path;
 	
+	isFolderSelected = false;
+	console.log("openedfile" + openedfile);
+	console.log("path" + path);
 	if (path !== openedfile) {
 		if (edited) {
 			showOpenWarningMessage(function (isOK) {
@@ -508,7 +535,13 @@ function setupFileDialog() {
 		renameFileOrDirectory(fd, $('renameitem').value);
 	};
 	$('button_delete_done').onclick = function () {
-		deleteFileOrDirectory(fd, $('dirpath').value, $('filename').value);
+		if (isColorItemExists()) {
+			if (isFolderSelected) {
+				deleteFileOrDirectory(fd, $('dirpath').value, "");
+			} else {
+				deleteFileOrDirectory(fd, $('dirpath').value, $('filename').value);
+			}
+		}
 	};
 	return fd;
 }
@@ -562,6 +595,51 @@ function setupSeparator() {
 	};
 }
 
+function initButton(fd) {
+	var infoButton = document.getElementById('show_info_button'),
+		logButton = document.getElementById('show_log_button');
+	infoButton.onclick = function () {
+		if (edited) {
+			showOpenWarningMessage(function (isOK) {
+				console.log(isOK);
+				if (isOK) {
+					hiddenOpenWarningMessage();
+					editor.setReadOnly(false);
+					saveFile(function () {
+						openedfile = "";
+						clickedfile = "";
+						showInfoView();
+					});
+				} else {
+					hiddenOpenWarningMessage();
+				}
+			});
+		} else {
+			showInfoView();
+		}
+	};
+	logButton.onclick = function () {
+		if (edited) {
+			showOpenWarningMessage(function (isOK) {
+				console.log(isOK);
+				if (isOK) {
+					hiddenOpenWarningMessage();
+					editor.setReadOnly(false);
+					saveFile(function () {
+						openedfile = "";
+						clickedfile = "";
+						showExeView();
+					});
+				} else {
+					hiddenOpenWarningMessage();
+				}
+			});
+		} else {
+			showExeView();
+		}
+	};
+}
+
 
 socket.on('connect', function () {
 	"use strict";
@@ -573,5 +651,5 @@ socket.on('connect', function () {
 	setupSeparator();
 	fd = setupFileDialog();
 	setupWorkingPath(fd);
-
+	initButton(fd);
 });

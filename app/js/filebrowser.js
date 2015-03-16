@@ -194,14 +194,16 @@ function makeNode(name,type,filepath, rftp, argftp,side, another_rftp)
 	newbtn.appendChild(filelabel);
 	
 	console.log("makenode:"+filepath);
-	function renameboxfunc(e) {
+	function renameboxfunc(filelabel, filepath, rftp) {
 		console.log("renameboxfunc:" + filepath);
 		closeRenameBox();
 		showRenameBox(filelabel, filepath, rftp);
-		e.stopPropagation();
 	}
-	filelabel.removeEventListener('click', renameboxfunc);
-	filelabel.addEventListener('click', renameboxfunc);
+	filelabel.oncontextmenu = (function (label, fpath, ftp) {
+		return function () {
+			renameboxfunc(label, fpath, ftp);
+		}
+	}(filelabel, filepath, rftp));
 	
 	var dustbtn = document.createElement('button');
 	dustbtn.setAttribute('class','dustbox');
@@ -303,6 +305,9 @@ socket.on('updateRemoteHostList',function(sdata){
 function bootstrap()
 {
 	getHostList();
+	document.oncontextmenu = function () {
+		return false;
+	}
 }
 
 /// @param target L or R for existence check

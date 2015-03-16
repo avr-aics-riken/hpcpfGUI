@@ -398,9 +398,14 @@ socket.on('openProjectDialog', function (data) {
 	}
 });
 
-socket.on('openProjectArchive', function (data) {
+socket.on('openProjectArchive', function (newname, newpath) {
 	"use strict";
-	openProject(data);
+	var nametag = document.getElementById('new_projectname');
+	nametag.innerHTML = newname;
+	showNewProjectName(function () {
+		hiddenNewProjectName();
+		openProject(newpath);
+	});
 });
 
 socket.on('createNewProject', function (path) {
