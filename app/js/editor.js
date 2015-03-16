@@ -435,6 +435,8 @@ function clickFile(fd, element, parentDir, path) {
 	var preClickedFile = clickedfile;
 	clickedfile = getWorkingPath() + parentDir + path;
 	
+	console.log("openedfile" + openedfile);
+	console.log("path" + path);
 	if (path !== openedfile) {
 		if (edited) {
 			showOpenWarningMessage(function (isOK) {
@@ -562,6 +564,51 @@ function setupSeparator() {
 	};
 }
 
+function initButton(fd) {
+	var infoButton = document.getElementById('show_info_button'),
+		logButton = document.getElementById('show_log_button');
+	infoButton.onclick = function () {
+		if (edited) {
+			showOpenWarningMessage(function (isOK) {
+				console.log(isOK);
+				if (isOK) {
+					hiddenOpenWarningMessage();
+					editor.setReadOnly(false);
+					saveFile(function () {
+						openedfile = "";
+						clickedfile = "";
+						showInfoView();
+					});
+				} else {
+					hiddenOpenWarningMessage();
+				}
+			});
+		} else {
+			showInfoView();
+		}
+	};
+	logButton.onclick = function () {
+		if (edited) {
+			showOpenWarningMessage(function (isOK) {
+				console.log(isOK);
+				if (isOK) {
+					hiddenOpenWarningMessage();
+					editor.setReadOnly(false);
+					saveFile(function () {
+						openedfile = "";
+						clickedfile = "";
+						showExeView();
+					});
+				} else {
+					hiddenOpenWarningMessage();
+				}
+			});
+		} else {
+			showExeView();
+		}
+	};
+}
+
 
 socket.on('connect', function () {
 	"use strict";
@@ -573,5 +620,5 @@ socket.on('connect', function () {
 	setupSeparator();
 	fd = setupFileDialog();
 	setupWorkingPath(fd);
-
+	initButton(fd);
 });

@@ -58,11 +58,22 @@
 	}
 
 	function executeProject() {
-		showExeView();
-		runWorkflow();
-		executeButton.onclick = stopProject;
-		executeButton.style.backgroundImage = stopButtonURL;
-		executeButton.title = stopButtonTitle;
+		var exec = function () {
+			openedfile = "";
+			clickedfile = "";
+			showExeView();
+			runWorkflow();
+			executeButton.onclick = stopProject;
+			executeButton.style.backgroundImage = stopButtonURL;
+			executeButton.title = stopButtonTitle;
+		}
+		if (edited) {
+			saveFile(function () {
+				exec();
+			});
+		} else {
+			exec();
+		}
 	}
 
 	function stopProject() {
