@@ -101,9 +101,10 @@ function newProject(name) {
 
 function openProject(path) {
 	"use strict";
+	var encoded = encodeURIComponent(path);
 	updateProjectList();
-	console.log(path);
-	window.open("editor.html?" + path, "_blank");
+	console.log(encoded);
+	window.open("editor.html?" + encoded, "_blank");
 }
 
 function launchApp(name) {

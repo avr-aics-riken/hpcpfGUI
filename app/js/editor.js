@@ -117,9 +117,10 @@ window.onload = init;
 function getWorkingPath() {
 	"use strict";
 	var url = location.href,
-		addrs = url.split("?"),
+		addrs = decodeURIComponent(url).split("?"),
 		argstr,
 		args;
+	
 	console.log(url);
 	if (addrs) {
 		if (addrs.length > 1) {
