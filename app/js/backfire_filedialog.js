@@ -47,17 +47,7 @@ if (typeof window === 'undefined') { // Node.js
 								if (fs.statSync(name).isDirectory()) {
 									dom = {"name": files[i], "type": "dir", "path": relativePath, "extract": false, "child": null};
 									lst.push(dom);
-
-									// recursive dir
-									/*childlist = [];
-									try {
-										getFiles(name, childlist);
-										dom.child = childlist;
-									} catch (e) {
-										console.log("Failed subdir getfile", e);
-									}*/
 								} else if (files[i].substring(0, 1) !== '.') {
-									//console.log(name);
 									lst.push({"name": files[i], "type": "file", "path": relativePath});
 								}
 							} catch (err) {
@@ -129,7 +119,7 @@ if (typeof window === 'undefined') { // Node.js
 							return function (dir, list) {
 								var msg = name + ':FileDialogUpdateList',
 									body = JSON.stringify({dirpath: dir, filelist: list});
-
+								
 								skt.emit(msg, body);
 							};
 						}(skname, skt)));
@@ -261,7 +251,9 @@ if (typeof window === 'undefined') { // Node.js
 		FileDialog.prototype.makeFilelist = function (ls, list, level, parentDir) {
 			console.log("makeFilelist");
 			ls.innerHTML = ''; // clear
-			var skip, i, newbtn;
+			var skip,
+				i,
+				node = null;
 			for (i in list) {
 				if (list.hasOwnProperty(i)) {
 					skip = false;
@@ -275,9 +267,15 @@ if (typeof window === 'undefined') { // Node.js
 					if (list[i].type === "file" && this.dirOnly) { // ignore files
 						skip = true;
 					}
-
 					if (!skip) {
-						this.makeNode(ls, list[i], level,  parentDir);
+						node = this.makeNode(ls, list[i], level,  parentDir);
+					}
+					
+					// Recursive
+					if (node) {
+						if ((list[i].type === "dir") && this.openingDirList['/' + list[i].path + '/']) {
+							this.registerDirDom(list[i].path, list[i].childElement);
+						}
 					}
 				}
 			}
@@ -289,6 +287,7 @@ if (typeof window === 'undefined') { // Node.js
 			this.socket.emit(this.name + ':setRootPath', {path: fullpath});
 		};
 		FileDialog.prototype.registerDirDom = function (relativepath, domElem) {
+			//console.log('REGISTER:', '/' + relativepath + '/', domElem);
 			this.openingDirList['/' + relativepath + '/'] = domElem; // Register
 			this.FileList(relativepath); // get file list for First
 		};
@@ -363,6 +362,7 @@ if (typeof window === 'undefined') { // Node.js
 				}(this, newbtn)));
 				ls.appendChild(newbtn);
 			}
+			return newbtn;
 		};
 		
 		FileDialog.prototype.changeDirStatus = function (dirpath, filelist) {
