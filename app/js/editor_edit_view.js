@@ -184,8 +184,12 @@ socket.on('showfile_image', function (data) {
 	ChangeEditor(false);
 	console.log("show_image");
 	hideEditArea();
+	editor.session.getUndoManager().reset(true);
+	editor.session.getUndoManager().markClean();
 	$('imageArea').className = 'fadeIn';
 	$('imageView').src = data;
+	openedfile = null;
+	clickedfile = null;
 });
 
 socket.on('showfile_launchbutton', function (appnames, dir, filename) {

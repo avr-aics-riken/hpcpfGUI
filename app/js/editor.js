@@ -267,6 +267,7 @@ function saveFile(endCallback) {
 			endCallback();
 		}
 	});
+	edited = false;
 	ChangeEditor(false);
 }
 
