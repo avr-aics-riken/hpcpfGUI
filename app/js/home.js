@@ -60,9 +60,9 @@ function showArchiveWarning(callback) {
 /// hidden new project name dialog
 function hiddenNewProjectName(callback) {
 	"use strict";
-	var ok = document.getElementById('newproject_name_button_ok');
 	document.getElementById("confirm_area").style.visibility = "hidden";
 	document.getElementById("newproject_name_dialog").style.visibility = "hidden";
+	document.getElementById("extractname").value = "";
 }
 
 /// show new project name dialog
