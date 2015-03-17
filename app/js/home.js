@@ -60,9 +60,9 @@ function showArchiveWarning(callback) {
 /// hidden new project name dialog
 function hiddenNewProjectName(callback) {
 	"use strict";
-	var ok = document.getElementById('newproject_name_button_ok');
 	document.getElementById("confirm_area").style.visibility = "hidden";
 	document.getElementById("newproject_name_dialog").style.visibility = "hidden";
+	document.getElementById("extractname").value = "";
 }
 
 /// show new project name dialog
@@ -101,9 +101,10 @@ function newProject(name) {
 
 function openProject(path) {
 	"use strict";
+	var encoded = encodeURIComponent(path);
 	updateProjectList();
-	console.log(path);
-	window.open("editor.html?" + path, "_blank");
+	console.log(encoded);
+	window.open("editor.html?" + encoded, "_blank");
 }
 
 function launchApp(name) {
