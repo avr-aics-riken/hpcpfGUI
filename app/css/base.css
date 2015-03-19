@@ -2,7 +2,6 @@
  * base.css
  * common setting
 */
-
 /* tag setting */
 * {
 	margin:0px;
@@ -14,6 +13,19 @@
 	background:transparent;
 	outline:none;
 	font-family:'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+}
+
+::-webkit-input-placeholder{
+  color: #ccc;
+}
+
+::-moz-placeholder {
+  color: #ccc;
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: #ccc;
 }
 
 body{

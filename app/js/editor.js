@@ -172,6 +172,10 @@ function hideNewNameArea() {
 		classNames[1] = 'fadeOut';
 		$(ids[i]).className = classNames.join(' ');
 	}
+	$('newfilename').value = "";
+	$('newdirname').value = "";
+	$('renameitem').value = "";
+	editor.setReadOnly(false);
 }
 
 function hideEditArea() {
@@ -238,14 +242,33 @@ function showNewNameArea(id) {
 	"use strict";
 	var classNames = $(id).className.split(' ');
 	hideNewNameArea();
-	console.log("showNewNameArea:" + $(id).className);
-	if (classNames[1] === 'fadeIn') {
-		classNames[1] = 'fadeOut';
-		$(id).className = classNames.join(' ');
+	
+	function showNewNameAreaInternal() {
+		console.log("showNewNameArea:" + $(id).className);
+		if (classNames[1] === 'fadeIn') {
+			classNames[1] = 'fadeOut';
+			$(id).className = classNames.join(' ');
+		} else {
+			classNames = $(id).className.split(' ');
+			classNames[1] = 'fadeIn';
+			$(id).className = classNames.join(' ');
+		}
+	}
+	
+	if (edited && (id === 'renameArea' || id === 'deleteArea')) {
+		showOpenWarningMessage(function (isOK) {
+			if (isOK) {
+				hiddenOpenWarningMessage();
+				editor.setReadOnly(true);
+				saveFile(function () {
+					showNewNameAreaInternal();
+				});
+			} else {
+				hiddenOpenWarningMessage();
+			}
+		});
 	} else {
-		classNames = $(id).className.split(' ');
-		classNames[1] = 'fadeIn';
-		$(id).className = classNames.join(' ');
+		showNewNameAreaInternal();
 	}
 }
 
@@ -289,7 +312,7 @@ function newFile(fd, basedir, fname) {
 	console.log(fname);
 	$('newfilename').value = '';
 	
-	socket.emit('reqNewFile', JSON.stringify({target: targetFile, basedir: basedir}));// JSON.stringify({basedir: basedir, file: fname, data:''}));
+	socket.emit('reqNewFile', JSON.stringify({target: targetFile, basedir: basedir, data:''}));// JSON.stringify({basedir: basedir, file: fname, data:''}));
 //	fd.FileList('/');
 	
 	socket.once("newfiledone", function (success) {
@@ -350,13 +373,27 @@ function renameFileOrDirectory(fd, name) {
 	if (name === "") {
 		return;
 	}
+	if (!isColorItemExists()) {
+		return;
+	}
 	
 	target = $('dirpath').value + $('filename').value;
+	if (isFolderSelected) {
+		target = $('dirpath').value;
+		fd.UnwatchDir(target.split(getWorkingPath() + '/').join(''));
+		console.log("isFolderSelected:" + target);
+	}
+	
 	socket.emit('reqRename', JSON.stringify({target : target, name : name}));
 	socket.once("renamedone", function (success) {
 		if (success) {
+			if (isFolderSelected) {
+				changeDir(fd, getWorkingPath() + '/');
+			}
+			$('filename').value = "";
 			// file or directory was renamed
 			hideNewNameArea();
+			showInfoView();
 //			fd.FileList('/');
 		} else {
 			// exists same path

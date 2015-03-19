@@ -121,3 +121,25 @@
 	background: #555;
 }
 
+.dustbox2{
+	margin-right:0px;
+	margin-top:15px;
+	width:32px;
+	height:32px;
+	background-image:url("../image/icon_dustbox.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	z-index:100;
+	float:right;
+}
+.dustbox_ok2{
+	margin-right:0px;
+	margin-top:15px;
+	width:32px;
+	height:32px;
+	background-image:url("../image/icon_dustbox_ok.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	z-index:100;
+	float:right;
+}

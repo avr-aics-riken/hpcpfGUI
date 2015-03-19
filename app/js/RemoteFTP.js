@@ -29,6 +29,9 @@ if (os.platform().indexOf('win') === 0){ // win setting
 	tarExtractCmd  = 'tar.exe xvf';
 	
 	getRealPath = function (p) {
+		if (p.split(':').length > 1) {
+			return p;
+		}
 		return path.join(process.cwd().split(':')[0] + ':', p);
 	};
 }
@@ -151,7 +154,9 @@ var remoteCmd = function(conn,cmd,callback,dataCallback){
 				callback(err);
 		});
 		stream.on('data', function(data) {
-			dataCallback(data);
+			if (dataCallback) {
+				dataCallback(data);
+			}
 		});
 	}}(callback));
 }
@@ -266,16 +271,20 @@ var LFTPClass = function(){
 					}
 				}
 				
-				thisptr.watchingDir = fs.watch(path, (function (path, callback) {
-					return function (event, filename) {
-						console.log('CHANGE LOCAL DIR:', path);
-						fs.readdir(path, (function (path, callback) {
-							return function (err, list) {
-								readLocalDir(path, list, callback);
-							};
-						}(path, callback)));
-					};
-				}(path, callback)));
+				try {
+					thisptr.watchingDir = fs.watch(path, (function (path, callback) {
+						return function (event, filename) {
+							console.log('CHANGE LOCAL DIR:', path);
+							fs.readdir(path, (function (path, callback) {
+								return function (err, list) {
+									readLocalDir(path, list, callback);
+								};
+							}(path, callback)));
+						};
+					}(path, callback)));
+				} catch (e) {
+					console.error('Failed to watch');
+				}
 				readLocalDir(path, list, callback);
 			};
 		}(path, this)));
@@ -328,6 +337,9 @@ var SFTPClass = function(){
 			
 			// directory upload process.
 			var tempDir = os.tmpdir();
+			if (tempDir[tempDir.length - 1] != path.sep) {
+				tempDir = tempDir + "/";
+			}
 			console.log('TEMPDIR=' + tempDir);
 			
 			localCompressFile(local_path, tempDir, function (self, local_path, tar_path, callback) { return function () {

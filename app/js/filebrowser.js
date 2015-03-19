@@ -119,7 +119,7 @@ function closeRenameBox() {
 	container.style.display = "none";
 	renameBox.value = "";
 	background.style.visibility = "hidden";
-	background.removeEventListener(closeRenameBox);
+	background.removeEventListener('click', closeRenameBox);
 }
 
 function showRenameBox(filelabel, fpath, ftp) {
@@ -139,6 +139,7 @@ function showRenameBox(filelabel, fpath, ftp) {
 	//console.log("left:"+bounds.left);
 	//console.log("top:"+bounds.top);
 	background.style.visibility = "visible";
+	
 	
 	function renamefunc(e) {
 		var keyCode,
@@ -166,10 +167,19 @@ function showRenameBox(filelabel, fpath, ftp) {
 			renameBox.removeEventListener('keydown', renamefunc);
 		}
 	}
-	background.addEventListener('click', function() {
-		closeRenameBox();
+	
+	function closeRenameBox() {
+		var container = document.getElementById('rename_box_container'),
+			renameBox = document.getElementById('rename_box'),
+			background = document.getElementById('popup_background');
+		container.style.display = "none";
 		renameBox.removeEventListener('keydown', renamefunc);
-	});
+		renameBox.value = "";
+		background.style.visibility = "hidden";
+		background.removeEventListener('click', closeRenameBox);
+	}
+	
+	background.addEventListener('click', closeRenameBox);
 	// connect rename event
 	renameBox.addEventListener('keydown', renamefunc);
 }
