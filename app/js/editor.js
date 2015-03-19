@@ -175,6 +175,7 @@ function hideNewNameArea() {
 	$('newfilename').value = "";
 	$('newdirname').value = "";
 	$('renameitem').value = "";
+	editor.setReadOnly(false);
 }
 
 function hideEditArea() {
@@ -258,7 +259,7 @@ function showNewNameArea(id) {
 		showOpenWarningMessage(function (isOK) {
 			if (isOK) {
 				hiddenOpenWarningMessage();
-				editor.setReadOnly(false);
+				editor.setReadOnly(true);
 				saveFile(function () {
 					showNewNameAreaInternal();
 				});
