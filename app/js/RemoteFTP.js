@@ -154,7 +154,9 @@ var remoteCmd = function(conn,cmd,callback,dataCallback){
 				callback(err);
 		});
 		stream.on('data', function(data) {
-			dataCallback(data);
+			if (dataCallback) {
+				dataCallback(data);
+			}
 		});
 	}}(callback));
 }
