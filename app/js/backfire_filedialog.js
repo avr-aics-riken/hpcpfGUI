@@ -76,13 +76,17 @@ if (typeof window === 'undefined') { // Node.js
 					wt = fsWatches[dir];
 					if (wt === undefined) {
 						console.log('[WATCH START]:', dir);
-						wt = fs.watch(dir, (function (dir, callback) {
-							return function (event, filename) {
-								// Update callback, if any changes
-								loadFileList(dir, callback);
-							};
-						}(dir, callback)));
-						fsWatches[dir] = wt;
+						try {
+							wt = fs.watch(dir, (function (dir, callback) {
+								return function (event, filename) {
+									// Update callback, if any changes
+									loadFileList(dir, callback);
+								};
+							}(dir, callback)));
+							fsWatches[dir] = wt;
+						} else {
+							console.error('ERROR: Failed to watch');							
+						}
 					} else {
 						console.log('[WATCH ALREADY]:', dir);
 					}

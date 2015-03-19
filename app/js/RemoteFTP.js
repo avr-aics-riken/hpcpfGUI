@@ -266,16 +266,20 @@ var LFTPClass = function(){
 					}
 				}
 				
-				thisptr.watchingDir = fs.watch(path, (function (path, callback) {
-					return function (event, filename) {
-						console.log('CHANGE LOCAL DIR:', path);
-						fs.readdir(path, (function (path, callback) {
-							return function (err, list) {
-								readLocalDir(path, list, callback);
-							};
-						}(path, callback)));
-					};
-				}(path, callback)));
+				try {
+					thisptr.watchingDir = fs.watch(path, (function (path, callback) {
+						return function (event, filename) {
+							console.log('CHANGE LOCAL DIR:', path);
+							fs.readdir(path, (function (path, callback) {
+								return function (err, list) {
+									readLocalDir(path, list, callback);
+								};
+							}(path, callback)));
+						};
+					}(path, callback)));
+				} catch (e) {
+					console.error('Failed to watch');
+				}
 				readLocalDir(path, list, callback);
 			};
 		}(path, this)));
