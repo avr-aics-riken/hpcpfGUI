@@ -326,12 +326,11 @@
 
 .registerhost_register_label {
 	position: relative;
-	top: 3px;
 }
 
 .registerhost_host_label {
 	position: relative;
-	top: -2px;
+	top: -1px;
 }
 /*---------*/
 
