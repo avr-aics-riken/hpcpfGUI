@@ -29,6 +29,9 @@ if (os.platform().indexOf('win') === 0){ // win setting
 	tarExtractCmd  = 'tar.exe xvf';
 	
 	getRealPath = function (p) {
+		if (p.split(':').length > 1) {
+			return p;
+		}
 		return path.join(process.cwd().split(':')[0] + ':', p);
 	};
 }
@@ -332,6 +335,9 @@ var SFTPClass = function(){
 			
 			// directory upload process.
 			var tempDir = os.tmpdir();
+			if (tempDir[tempDir.length - 1] != path.sep) {
+				tempDir = tempDir + "/";
+			}
 			console.log('TEMPDIR=' + tempDir);
 			
 			localCompressFile(local_path, tempDir, function (self, local_path, tar_path, callback) { return function () {
