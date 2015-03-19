@@ -311,7 +311,7 @@ function newFile(fd, basedir, fname) {
 	console.log(fname);
 	$('newfilename').value = '';
 	
-	socket.emit('reqNewFile', JSON.stringify({target: targetFile, basedir: basedir}));// JSON.stringify({basedir: basedir, file: fname, data:''}));
+	socket.emit('reqNewFile', JSON.stringify({target: targetFile, basedir: basedir, data:''}));// JSON.stringify({basedir: basedir, file: fname, data:''}));
 //	fd.FileList('/');
 	
 	socket.once("newfiledone", function (success) {
