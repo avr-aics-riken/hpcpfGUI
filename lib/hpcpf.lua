@@ -31,6 +31,7 @@ function errorlog(msg)
     io.stderr:write(msg .. '\n')
 end
 
+
 -- File/Dir Utility fuctions
 
 function compressFile(srcname, tarname, verbose, opt)
