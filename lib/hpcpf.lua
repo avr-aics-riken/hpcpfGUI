@@ -23,10 +23,9 @@ end
 
 
 -- force buffer flush function
-if getPlatform() == 'Windows' then
-    orgPrint = print
-    print = function(...) orgPrint(...) io.stdout:flush() end
-end
+orgPrint = print
+print = function(...) orgPrint(...) io.stdout:flush() end
+
 
 function errorlog(msg)
     io.stderr:write(msg .. '\n')
