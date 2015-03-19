@@ -84,8 +84,8 @@ if (typeof window === 'undefined') { // Node.js
 								};
 							}(dir, callback)));
 							fsWatches[dir] = wt;
-						} else {
-							console.error('ERROR: Failed to watch');							
+						} catch (e) {
+							console.error('ERROR: Failed to watch');
 						}
 					} else {
 						console.log('[WATCH ALREADY]:', dir);
