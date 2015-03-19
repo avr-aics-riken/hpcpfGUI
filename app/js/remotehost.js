@@ -38,15 +38,15 @@ function makeNode(cap,hostname){
 	name.innerHTML = cap;
 	newbtn.appendChild(name);
 	var dust = document.createElement('button');
-	dust.setAttribute('class', "dustbox");
+	dust.setAttribute('class', "dustbox2");
 	newbtn.appendChild(dust);
 	dust.addEventListener('click',function(hostname){ return function(e){
 		e.stopPropagation();
-		if (this.getAttribute('class') == 'dustbox_ok') {
+		if (this.getAttribute('class') == 'dustbox_ok2') {
 			console.log('DEL>:'+hostname);
 			socket.emit('REMOTEHOST:DELHOST',{hostname:hostname});
 		} else {
-			this.setAttribute('class','dustbox_ok');
+			this.setAttribute('class','dustbox_ok2');
 		}
 	}}(hostname));
 	
@@ -82,7 +82,7 @@ function makeNode(cap,hostname){
 	testbtn.addEventListener('click',clickfunc(hostname));
 	
 	newbtn.addEventListener('click', function(dust){ return function(e){
-		dust.setAttribute('class','dustbox');
+		dust.setAttribute('class','dustbox2');
 	}}(dust));
 	newbtn.addEventListener('click',function(hostname){ return function(e){
 		socket.emit('REMOTEHOST:REQHOSTINFO',{hostname:hostname});
