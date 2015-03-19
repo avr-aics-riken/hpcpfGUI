@@ -40,7 +40,6 @@
 	border-style:none;
 	line-height:38px;
 	border-radius:5px;
-	color:#fff;
 }
 
 .pane_bottom {
@@ -104,11 +103,11 @@
 	top:10px;
 	left:0px;
 	width:260px;
+	height : 38px;
 	background-color:#4d4d4d;
 	border-style:none;
 	line-height:38px;
 	border-radius:5px;
-	color:#fff;
 }
 
 .newArchiveLabel {
