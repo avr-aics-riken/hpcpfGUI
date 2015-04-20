@@ -144,7 +144,7 @@ local function scpCmd(user, server, port, key, fromfile, tofile)
     if port ~= nil then
         scpcmd = scpcmd .. '-P '.. port .. ' ';
     end
-    scpcmd = scpcmd .. fromfile .. ' ' .. tofile;;
+    scpcmd = scpcmd .. fromfile .. ' ' .. tofile;
     print(scpcmd)
     local handle = io.popen(scpcmd)
     local result = handle:read("*a")
