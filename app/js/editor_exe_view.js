@@ -10,20 +10,25 @@
 		stopButtonTitle = "Stop (CTRL+Q)",
 		stopButtonURL = "url(../image/button_bg_action_stop.png)",
 		executeButton = $('button_execute_');
-
+	
 	socket.on('connect', function () {
 	});
 
 	socket.on('stdout', function (data) {
-		var s = $('exe_log');
+		var s = $('exe_log'),
+			area = $('exe_log_area');
 		s.innerHTML += data.toString() + '</br>';
-		s.scrollTop = s.scrollHeight;
+		//s.scrollTop = s.scrollHeight;
+		area.scrollTop = area.scrollHeight;
 	});
 
 	socket.on('stderr', function (data) {
-		var s = $('exe_log');
+		var s = $('exe_log'),
+			area = $('exe_log_area');
 		s.innerHTML += data.toString();
-		s.scrollTop = s.scrollHeight;
+		
+		//s.scrollTop = s.scrollHeight;
+		area.scrollTop = area.scrollHeight;
 	});
 
 	function clearOutput() {

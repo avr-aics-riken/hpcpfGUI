@@ -397,7 +397,11 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			});
 			processspawn.on('exit', function(code) {
 				console.log('exit code: ' + code);
+			});
+			processspawn.on('close', function (code, signal) {
+				console.log('close code: ' + code);
 				updateFileList(srcdir);
+				sesstionTable[socket.id].proc = null;
 				socket.emit('exit');
 			});
 			processspawn.on('error', function (err) {
