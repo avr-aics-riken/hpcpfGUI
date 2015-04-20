@@ -11,13 +11,12 @@ local focusSetting = {
     end,
     bootsh = [[
 #!/bin/bash
-#SBATCH -p d024h
+#SBATCH -p ye001uta3m
 #SBATCH -N JOB.NODE
 #SBATCH -n JOB.CORE
 #SBATCH -J JOB.NAME
 #SBATCH -o stdout.%J.log
 #SBATCH -e stderr.%J.log
-#SBATCH -p ye001uta3m
 sh JOB.JOB
 ]]      
 }
