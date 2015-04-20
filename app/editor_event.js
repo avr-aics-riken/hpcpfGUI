@@ -305,8 +305,8 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		if (os.platform() === 'darwin' || os.platform() === 'linux') {
 			var pid = sp.pid;
 			console.log('processID='+pid);
-			console.log('sh killthem.sh '+pid);
-			exec('sh killthem.sh '+pid, function(error, stdout, stderr) {
+			console.log('bash killthem.sh '+pid);
+			exec('bash killthem.sh '+pid, function(error, stdout, stderr) {
 				console.log('killed childs');
 				console.log(error, stdout, stderr);
 				if (endcallback) {
