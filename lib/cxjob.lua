@@ -350,6 +350,7 @@ function cxjob:remoteDate()
     local cmd = 'date \\"+%Y-%m-%d %H:%M:%S\\"'
     print(cmd)
     local dateret = sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
+    dateret = dateret:gsub("\n","");
     print('DATERET:', dateret)
     return dateret
 end
