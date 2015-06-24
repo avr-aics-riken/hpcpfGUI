@@ -73,10 +73,47 @@ function registerEditorEvent(socket, appCommands, appExtensions) {
 
 	sesstionTable[socket.id] = { "dir" : def_srcdir, "proc" : null };
 	
+	function killSpawn(sp, endcallback) {
+		var pid;
+		if (!sp) {
+			return;
+		}
+		if (os.platform() === 'darwin' || os.platform() === 'linux') {
+			pid = sp.pid;
+			console.log('processID=' + pid);
+			console.log('bash killthem.sh ' + pid);
+			exec('bash killthem.sh ' + pid, function (error, stdout, stderr) {
+				console.log('killed childs');
+				console.log(error, stdout, stderr);
+				if (endcallback) {
+					if (error) {
+						endcallback(false);
+					} else {
+						endcallback(true);
+					}
+				}
+			});
+		} else {
+			pid = sp.pid;
+			console.log('processID=' + pid);
+			exec('TASKKILL /T /F /PID ' + pid, function (error, stdout, stderr) {
+				console.log('killed childs');
+				console.log(error, stdout, stderr);
+				if (endcallback) {
+					if (error) {
+						endcallback(false);
+					} else {
+						endcallback(true);
+					}
+				}
+			});
+		}
+	}
+	
 	socket.on('disconnect', function () {
 		console.log("[DISCONNECT] ID=" + socket.id);
 		if (sesstionTable[socket.id].proc) {
-			KillSpawn(sesstionTable[socket.id].proc);
+			killSpawn(sesstionTable[socket.id].proc);
 		}
 		delete sesstionTable[socket.id];
 	});
@@ -310,49 +347,13 @@ function registerEditorEvent(socket, appCommands, appExtensions) {
 		}
 	});
 	
-	function KillSpawn(sp, endcallback) {
-		var pid;
-		if (!sp) {
-			return;
-		}
-		if (os.platform() === 'darwin' || os.platform() === 'linux') {
-			pid = sp.pid;
-			console.log('processID=' + pid);
-			console.log('bash killthem.sh ' + pid);
-			exec('bash killthem.sh ' + pid, function (error, stdout, stderr) {
-				console.log('killed childs');
-				console.log(error, stdout, stderr);
-				if (endcallback) {
-					if (error) {
-						endcallback(false);
-					} else {
-						endcallback(true);
-					}
-				}
-			});
-		} else {
-			pid = sp.pid;
-			console.log('processID=' + pid);
-			exec('TASKKILL /T /F /PID ' + pid, function (error, stdout, stderr) {
-				console.log('killed childs');
-				console.log(error, stdout, stderr);
-				if (endcallback) {
-					if (error) {
-						endcallback(false);
-					} else {
-						endcallback(true);
-					}
-				}
-			});
-		}
-	}
 	socket.on('stop', function (data) {
 		var processspawn = sesstionTable[socket.id].proc;
 		if (!processspawn) {
 			return;
 		}
 		console.log('kill');
-		KillSpawn(processspawn, function (success) {
+		killSpawn(processspawn, function (success) {
 			sesstionTable[socket.id].proc = null;
 			socket.emit('stopdone', success);
 		});
@@ -367,7 +368,7 @@ function registerEditorEvent(socket, appCommands, appExtensions) {
 			ofile;
 		console.log("runFile>" + data.file);
 		if (processspawn) {
-			KillSpawn(processspawn);
+			killSpawn(processspawn);
 			sesstionTable[socket.id].proc = null;
 		}
 		
