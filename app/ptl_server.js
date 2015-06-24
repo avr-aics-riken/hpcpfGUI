@@ -247,18 +247,28 @@ function registerPTLEvent(socket) {
 		socket.emit('openProjectArchiveDialog', basepath);
 	});
 	
-	socket.on('reqOpenProjectArchive', function (dstFolderName, tarpath) {
+	socket.on('reqOpenProjectArchive', function (tarpath) {
 		var basepath = toSlashPath(projectBasePath),
 			newname = "",
 			is_exist = false,
-			dstpath = basepath + '/' + dstFolderName,
+			dstpath,
+			tarFileName,
+			tarFileExt,
 			counter = 1;
 		console.log("tarpath : " + tarpath);
-		console.log("dstFolderName : " + dstFolderName);
 		try {
+			// gz
+			tarFileExt = path.extname(tarpath);
+			tarFileName = path.basename(tarpath, tarFileExt);
+			// tar
+			tarFileExt = path.extname(tarFileName);
+			tarFileName = path.basename(tarFileName, tarFileExt);
+			console.log("tarFileName : " + tarFileName);
+			dstpath = basepath + '/' + tarFileName;
+			 
 			while (fs.existsSync(dstpath)) {
 				is_exist = true;
-				newname = dstFolderName + "_" + counter;
+				newname = tarFileName + "_" + counter;
 				dstpath = basepath + '/' + newname;
 				console.log("dstpath:" + dstpath);
 				counter = counter + 1;

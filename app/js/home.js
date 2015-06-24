@@ -62,7 +62,7 @@ function hiddenNewProjectName(callback) {
 	"use strict";
 	document.getElementById("confirm_area").style.visibility = "hidden";
 	document.getElementById("newproject_name_dialog").style.visibility = "hidden";
-	document.getElementById("extractname").value = "";
+	//document.getElementById("extractname").value = "";
 }
 
 /// show new project name dialog
@@ -133,6 +133,7 @@ function showNewProjectDialog() {
 	}
 }
 
+/*
 function closeExtractArchiveDialog() {
 	"use strict";
 	document.getElementById("extract_archive").style.display = "none";
@@ -154,6 +155,7 @@ function showExtractArchiveDialog() {
 		console.log(background);
 	}
 }
+*/
 
 function showProjectArchiveDialog() {
 	"use strict";
@@ -247,7 +249,9 @@ function openProjectArchive(tarPath) {
 			|| filename.indexOf('.TAR.GZ') >= 0
 			|| filename.indexOf('.tgz') >= 0
 			|| filename.indexOf('.TGZ') >= 0) {
-			showExtractArchiveDialog();
+			closeFileDialog();
+			extractArchive();
+			//showExtractArchiveDialog();
 		}
 		else {
 			showArchiveWarning(function () {
@@ -257,12 +261,12 @@ function openProjectArchive(tarPath) {
 	}
 }
 
-function extractArchive(name) {
+function extractArchive() {
 	"use strict";
 	var tarPath = document.getElementById('projdir_path').value;
-	socket.emit('reqOpenProjectArchive', name, tarPath);
-	closeExtractArchiveDialog();
-	closeFileDialog();
+	socket.emit('reqOpenProjectArchive', tarPath);
+	//closeExtractArchiveDialog();
+	//closeFileDialog();
 }
 
 function openSelectedFile() {
