@@ -278,7 +278,7 @@ function registerPTLEvent(socket) {
 			if (is_exist) {
 				socket.emit("openProjectArchive", newname, dstpath);
 			} else {
-				socket.emit("openProjectArchive", dstFolderName, dstpath);
+				socket.emit("openProjectArchive", tarFileName, dstpath);
 			}
 		} catch (e) {
 			console.log(e);
