@@ -1,3 +1,6 @@
+/*jslint devel:true, node:true, nomen:true */
+/*global require, global, $, io, socket */
+
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
 var fs = require('fs');
@@ -11,11 +14,11 @@ var KRENDER_CMD = __dirname + '/krender_mac',
 	LUA_CMD     = __dirname + '/lua_mac',
 	TAR_CMD     = 'tar';
 
-if (os.platform() === 'linux'){ // Linux setting
+if (os.platform() === 'linux') { // Linux setting
     KRENDER_CMD = __dirname + '/krender_linux';
     LUA_CMD = 'lua'; // Use system command
 	TAR_CMD = 'tar';
-}else if (os.platform().indexOf('win') === 0){ // win setting
+} else if (os.platform().indexOf('win') === 0) { // win setting
     KRENDER_CMD = __dirname + '/krender.exe';
     LUA_CMD = __dirname + '/lua.exe';
 	TAR_CMD = __dirname + '/tar.exe';
@@ -31,11 +34,13 @@ var sesstionTable = {};
 // find launchApp name from extension
 function findLaunchApp(appExtensions, ext) {
 	"use strict";
-	var name;
-	var appNames = [];
+	var name,
+		appNames = [];
 	for (name in appExtensions) {
-		if (appExtensions[name].indexOf(ext) >= 0) {
-			appNames.push(name);
+		if (appExtensions.hasOwnProperty(name)) {
+			if (appExtensions[name].indexOf(ext) >= 0) {
+				appNames.push(name);
+			}
 		}
 	}
 	if (appNames.length > 0) {
@@ -61,39 +66,40 @@ function getEditTypeByExtension(ext) {
 	return "";
 }
 
-function registerEditorEvent(socket, appCommands, appExtensions)
-{
+function registerEditorEvent(socket, appCommands, appExtensions) {
+	"use strict";
 	var def_srcdir = __dirname;// + '/work/'
-	console.log('Working Dir='+def_srcdir);
+	console.log('Working Dir=' + def_srcdir);
 
-	sesstionTable[socket.id] = {"dir":def_srcdir, "proc":null}
+	sesstionTable[socket.id] = { "dir" : def_srcdir, "proc" : null };
 	
-	socket.on('disconnect', function() {
-		console.log("[DISCONNECT] ID="+socket.id);
+	socket.on('disconnect', function () {
+		console.log("[DISCONNECT] ID=" + socket.id);
 		if (sesstionTable[socket.id].proc) {
 			KillSpawn(sesstionTable[socket.id].proc);
 		}
 		delete sesstionTable[socket.id];
 	});
-	function updateFileList(path)
-	{
-		var list=[];
+	function updateFileList(path) {
+		var list = [];
 		util.getFiles(path, list);
-		if (list.length != 0)
+		if (list.length !== 0) {
 			socket.emit('updatefilelist', JSON.stringify(list));
+		}
 	}
-	socket.on('setWorkingPath', function(data){
+	socket.on('setWorkingPath', function (data) {
 		var path = JSON.parse(data).path.toString();
-		if (path.substr(path.length - 1) != "/")
+		if (path.substr(path.length - 1) !== "/") {
 			path += "/";
+		}
 		sesstionTable[socket.id].dir = path;
 		updateFileList(path);
 	});
-	socket.on('reqFileList', function(data) {
+	socket.on('reqFileList', function (data) {
 		var srcdir = sesstionTable[socket.id].dir;
 		updateFileList(srcdir);
 	});
-	socket.on('reqSelectFile', function(data) {
+	socket.on('reqSelectFile', function (data) {
 		var srcdir = sesstionTable[socket.id].dir,
 			ext = util.getExtention(data),
 			launchAppNames = findLaunchApp(appExtensions, ext),
@@ -118,46 +124,52 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			console.log('reqOpenFile:' + filepath);
 			if (fs.existsSync(filepath) && fs.statSync(filepath).isFile()) {
 				file = fs.readFileSync(filepath).toString();
-				if (path.extname(filepath) == ".json") {
+				if (path.extname(filepath) === ".json") {
 					socket.emit('openJSON', file);
 				} else {
 					//console.log(file);
 					socket.emit('openFile', file);
 				}
 			}
-		} catch(e) {
+		} catch (e) {
 			console.log(e);
 		}
 	});
 	
-	socket.on('reqFileOpen', function(data) {
+	socket.on('reqFileOpen', function (data) {
 		var srcdir = sesstionTable[socket.id].dir,
 			ext = util.getExtention(data),
 			editType = getEditTypeByExtension(ext),
-			absolutePath = path.join(srcdir, data);
-			filebuf = null;
+			absolutePath = path.join(srcdir, data),
+			filebuf = null,
+			prefix,
+			base64,
+			imgdata;
 		
-		console.log('reqFileOpen:', absolutePath, 'SSSSS=',srcdir);
+		console.log('reqFileOpen:', absolutePath, 'SSSSS=', srcdir);
 		if (fs.existsSync(absolutePath)) {
 			filebuf = fs.readFileSync(absolutePath);
 			if (editType === "image") {
-				var prefix;
-				if      (ext==="jpg") prefix = 'data:image/jpeg;base64,';
-				else if (ext==="tga") prefix = 'data:image/tga;base64,';
-				else if (ext==="png") prefix = 'data:image/png;base64,';
-				var base64 = new Buffer(filebuf, 'binary').toString('base64');
-				var imgdata = prefix + base64;
+				if (ext === "jpg") {
+					prefix = 'data:image/jpeg;base64,';
+				} else if (ext === "tga") {
+					prefix = 'data:image/tga;base64,';
+				} else if (ext === "png") {
+					prefix = 'data:image/png;base64,';
+				}
+				base64 = new Buffer(filebuf, 'binary').toString('base64');
+				imgdata = prefix + base64;
 				//socket.send(data);
-				socket.emit('showfile_image',imgdata);
+				socket.emit('showfile_image', imgdata);
 			} else {
-				socket.emit('showfile',{str:filebuf.toString(), type:editType});
+				socket.emit('showfile', {str : filebuf.toString(), type : editType});
 			}
 		} else {
 			console.log(data);
 			console.error("no such file or directory: " + absolutePath);
 		}
 	});
-	socket.on('reqFileSave', function(sdata) {
+	socket.on('reqFileSave', function (sdata) {
 		//console.log(data.file);
 		var srcdir = sesstionTable[socket.id].dir,
 			data = JSON.parse(sdata),
@@ -170,11 +182,11 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			} else {
 				socket.emit("filesavedone", false);
 			}
-		} catch(e) {
-			console.log("reqFileSave failed:"+e);
+		} catch (e) {
+			console.log("reqFileSave failed:" + e);
 		}
 	});
-	socket.on('reqNewFile', function(sdata) {
+	socket.on('reqNewFile', function (sdata) {
 		console.log('reqNewFile');
 		//var srcdir = sesstionTable[socket.id].dir,
 		var data = JSON.parse(sdata),
@@ -193,11 +205,11 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 					socket.emit("newfiledone", true);
 				}
 			}
-		} catch(e) {
-			console.log("reqNewFile failed:"+e);
+		} catch (e) {
+			console.log("reqNewFile failed:" + e);
 		}
 	});
-	socket.on('reqNewDir', function(sdata) {
+	socket.on('reqNewDir', function (sdata) {
 		var srcdir = sesstionTable[socket.id].dir,
 			data = JSON.parse(sdata),
 			targetBaseDir = data.basedir,
@@ -215,11 +227,11 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 				}
 			}
 		} catch (e) {
-			console.error("reqNewDir failed:"+e);
+			console.error("reqNewDir failed:" + e);
 		}
 	});
 	
-	socket.on('reqRename', function(sdata) {
+	socket.on('reqRename', function (sdata) {
 		var srcdir = sesstionTable[socket.id].dir,
 			dstpath,
 			data = JSON.parse(sdata),
@@ -255,7 +267,7 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		}
 	});
 	
-	socket.on('reqDelete', function(sdata) {
+	socket.on('reqDelete', function (sdata) {
 		var srcdir = sesstionTable[socket.id].dir,
 			data = JSON.parse(sdata),
 			target = data.target;
@@ -275,12 +287,12 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 					socket.emit("deleted");
 				}
 			}
-		} catch(e) {
-			console.error("reqDelete failed:"+e);
+		} catch (e) {
+			console.error("reqDelete failed:" + e);
 		}
 	});
 	
-	socket.on('reqUpdateInformation', function() {
+	socket.on('reqUpdateInformation', function () {
 		var pifFile = path.join(sesstionTable[socket.id].dir, PIF_FILENAME),
 			pifData,
 			pifStr;
@@ -298,15 +310,16 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 		}
 	});
 	
-	function KillSpawn(sp, endcallback){
+	function KillSpawn(sp, endcallback) {
+		var pid;
 		if (!sp) {
 			return;
 		}
 		if (os.platform() === 'darwin' || os.platform() === 'linux') {
-			var pid = sp.pid;
-			console.log('processID='+pid);
-			console.log('bash killthem.sh '+pid);
-			exec('bash killthem.sh '+pid, function(error, stdout, stderr) {
+			pid = sp.pid;
+			console.log('processID=' + pid);
+			console.log('bash killthem.sh ' + pid);
+			exec('bash killthem.sh ' + pid, function (error, stdout, stderr) {
 				console.log('killed childs');
 				console.log(error, stdout, stderr);
 				if (endcallback) {
@@ -318,9 +331,9 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 				}
 			});
 		} else {
-			var pid = sp.pid;
-			console.log('processID='+pid);
-			exec('TASKKILL /T /F /PID '+pid, function(error, stdout, stderr) {
+			pid = sp.pid;
+			console.log('processID=' + pid);
+			exec('TASKKILL /T /F /PID ' + pid, function (error, stdout, stderr) {
 				console.log('killed childs');
 				console.log(error, stdout, stderr);
 				if (endcallback) {
@@ -333,69 +346,74 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			});
 		}
 	}
-	socket.on('stop', function(data) {
+	socket.on('stop', function (data) {
 		var processspawn = sesstionTable[socket.id].proc;
-		if (!processspawn)
+		if (!processspawn) {
 			return;
+		}
 		console.log('kill');
-		KillSpawn(processspawn, function(success) {
+		KillSpawn(processspawn, function (success) {
 			sesstionTable[socket.id].proc = null;
 			socket.emit('stopdone', success);
 		});
 		sesstionTable[socket.id].proc = null;
 	});
-	socket.on('run', function(data) {
-		var srcdir = sesstionTable[socket.id].dir;
-		var processspawn = sesstionTable[socket.id].proc;
-		console.log("runFile>"+data.file);
+	socket.on('run', function (data) {
+		var srcdir = sesstionTable[socket.id].dir,
+			processspawn = sesstionTable[socket.id].proc,
+			ext,
+			lualibpath,
+			sfile,
+			ofile;
+		console.log("runFile>" + data.file);
 		if (processspawn) {
 			KillSpawn(processspawn);
 			sesstionTable[socket.id].proc = null;
 		}
 		
-		var ext = util.getExtention(data.file), lualibpath;
-		console.log("EXT="+ext);
+		ext = util.getExtention(data.file);
+		console.log("EXT=" + ext);
 		if (ext === "lua" || ext === "pwl" || ext === "cwl") {
 			lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
-			processspawn = spawn(LUA_CMD,['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', data.file],{cwd:srcdir});
-		}else if (ext === "sh" || ext === "pwf" || ext === "cwf") {
-			processspawn = spawn(SH_CMD,[data.file],{cwd:srcdir});
-		}else if (ext === "bat") {
-			processspawn = spawn(data.file,[],{cwd:srcdir});
-		} else if (ext === "scn"){
-			console.log("KR:"+KRENDER_CMD+" / scn path="+srcdir+data.file);
-			processspawn = spawn(KRENDER_CMD,[srcdir+data.file], function(err,stdout,stderr) {
-				if (!err) return;
+			processspawn = spawn(LUA_CMD, ['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', data.file], {cwd : srcdir});
+		} else if (ext === "sh" || ext === "pwf" || ext === "cwf") {
+			processspawn = spawn(SH_CMD, [data.file], {cwd : srcdir});
+		} else if (ext === "bat") {
+			processspawn = spawn(data.file, [], {cwd : srcdir});
+		} else if (ext === "scn") {
+			console.log("KR:" + KRENDER_CMD + " / scn path=" + srcdir + data.file);
+			processspawn = spawn(KRENDER_CMD, [srcdir + data.file], function (err, stdout, stderr) {
+				if (!err) { return; }
 				console.log('Failed run krender.');
 				sesstionTable[socket.id].proc = null;
 			});
-		} else if (ext === "frag"){
-			if (!process.env.GLSL_COMPILER){
+		} else if (ext === "frag") {
+			if (!process.env.GLSL_COMPILER) {
 				console.log("can't find GLSL_COMPILER");
 				socket.emit('stderr', "can't find GLSL_COMPILER");
 				return;
 			}
-			var sfile = srcdir+data.file;
-			var ofile = srcdir+data.file;
-			ofile = ofile.substr(0,ofile.length - 4) + "so";
-			console.log("Target SO:"+ofile);
-			processspawn = spawn(process.env.GLSL_COMPILER,['-o',ofile, sfile], function(err,stdout,stderr) {
-				if (!err) return;
+			sfile = srcdir + data.file;
+			ofile = srcdir + data.file;
+			ofile = ofile.substr(0, ofile.length - 4) + "so";
+			console.log("Target SO:" + ofile);
+			processspawn = spawn(process.env.GLSL_COMPILER, ['-o', ofile, sfile], function (err, stdout, stderr) {
+				if (!err) { return; }
 				console.log('Failed run glslc.');
 				sesstionTable[socket.id].proc = null;
 			});
 		}
 		sesstionTable[socket.id].proc = processspawn;
 		if (processspawn) {
-			processspawn.stdout.on('data', function(data) {
+			processspawn.stdout.on('data', function (data) {
 				console.log('stdout: ' + data);
-				socket.emit('stdout',data.toString());
+				socket.emit('stdout', data.toString());
 			});
-			processspawn.stderr.on('data', function(data) {
+			processspawn.stderr.on('data', function (data) {
 				console.log('stderr: ' + data);
-				socket.emit('stderr',data.toString());
+				socket.emit('stderr', data.toString());
 			});
-			processspawn.on('exit', function(code) {
+			processspawn.on('exit', function (code) {
 				console.log('exit code: ' + code);
 			});
 			processspawn.on('close', function (code, signal) {
@@ -406,10 +424,10 @@ function registerEditorEvent(socket, appCommands, appExtensions)
 			});
 			processspawn.on('error', function (err) {
 				console.log('process error', err);
-				socket.emit('stderr',"can't execute program\n");
+				socket.emit('stderr', "can't execute program\n");
 			});
 		} else {
-			socket.emit('stdout','Unknown file type. -> ' + data.file);
+			socket.emit('stdout', 'Unknown file type. -> ' + data.file);
 		}
 	});
 }
