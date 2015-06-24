@@ -603,6 +603,14 @@ if (typeof window === 'undefined') { // Node.js
 				};
 			}(this, callback)));
 
+			conn.on('keyboard-interactive', function redo(name, instructions, instructionsLang, prompts, finish, answers) {
+				if (args.hasOwnProperty('password')) {
+					finish([args.password]);
+				} else {
+					finish([]);
+				}
+			});
+
 			conn.on('error', function (err) {
 				console.log("- connection error: %s", err);
 				if (callback) {
@@ -663,7 +671,8 @@ if (typeof window === 'undefined') { // Node.js
 					regTable,
 					regFilename,
 					info,
-					sfc = null;
+					sfc = null,
+					isUsePassword = false;
 				if (data.cid === '') {
 					console.log('Error: cid parameter. must set unique id.');
 					return;
@@ -677,15 +686,21 @@ if (typeof window === 'undefined') { // Node.js
 					thisptr.errorMessage(data.cid, "Can't read :" + regFilename);
 					return;
 				}
-				info = regTable[data.hostname];
-				if (!info) {
+				if (!regTable[data.hostname]) {
 					thisptr.errorMessage(data.cid, "Not found host.");
 					return;
 				}
+				// create copy.
+				info = JSON.parse(JSON.stringify(regTable[data.hostname]));
 
 				if (!info.hasOwnProperty('type')) {
 					thisptr.errorMessage(data.cid, 'Invalid host type');
 					return;
+				}
+				
+				if (info.hasOwnProperty('usepassword')) {
+					isUsePassword = info.usepassword;
+					delete info.usepassword;
 				}
 
 				if (ftparray[data.cid]) {
@@ -702,11 +717,29 @@ if (typeof window === 'undefined') { // Node.js
 					sfc = new SFTPClass();
 
 					try {
-						info.privateKey = require('fs').readFileSync(info.privateKeyFile);
+						if (isUsePassword) {
+							// password authoricaiton
+							if (info.hasOwnProperty('privateKeyFile')) {
+								delete info.privateKeyFile;
+							}
+							if (info.hasOwnProperty('passphrase')) {
+								delete info.passphrase;
+							}
+							info.tryKeyboard = true;
+						} else {
+							// load private key
+							if (info.hasOwnProperty('password')) {
+								delete info.password;
+							}
+							if (info.hasOwnProperty('privateKeyFile')) {
+								info.privateKey = fs.readFileSync(info.privateKeyFile);
+							}
+						}
 					} catch (ee) {
 						thisptr.errorMessage(data.cid, "Failed read SSH key file:" + info.privateKeyFile);
 						return;
 					}
+					
 					sfc.Connect(info, (function (data, sfc) {
 						return function (err) {
 							if (err) {

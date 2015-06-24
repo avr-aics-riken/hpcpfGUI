@@ -33,7 +33,6 @@ function openFileBrowser() {
 }
 
 function makeNode(cap, hostname) {
-	"use strict";
 	// <div class="hostitem" draggable="false"><span class="hostlabel">user@host1</span><button type="button" class="dustbox"/></div>
 	var newbtn = document.createElement('div'),
 		name,
@@ -120,8 +119,10 @@ socket.on('updateRemoteInfo', function (sdata) {
 	document.getElementById('input_host').value  = data.host || '';
 	document.getElementById('input_path').value  = data.path || '';
 	document.getElementById('input_id').value    = data.username || '';
+	document.getElementById('input_passphrase').value = ''; // hidden
 	document.getElementById('input_password').value = ''; // hidden
 	document.getElementById('input_key').value   = data.privateKeyFile || '';
+	document.getElementById('usepassword').checked = data.usepassword || false;
 });
 
 socket.on('updateRemoteHostList', function (sdata) {
@@ -192,9 +193,11 @@ function addBtn() {
 		hostname   = document.getElementById('input_host').value,
 		path       = document.getElementById('input_path').value,
 		username   = document.getElementById('input_id').value,
-		passphrase = document.getElementById('input_password').value,
+		passphrase = document.getElementById('input_passphrase').value,
 		sshkey     = document.getElementById('input_key').value,
 		error_output = document.getElementById('error_output'),
+		usepassword = document.getElementById('usepassword').checked,
+		password = document.getElementById('input_password').value,
 		valid = true;
 	
 	if (!labelname) {
@@ -215,13 +218,20 @@ function addBtn() {
 			error_output.innerHTML = 'ID is empty';
 			valid = false;
 		}
-		if (!passphrase) {
-			error_output.innerHTML = 'Password is empty';
-			valid = false;
-		}
-		if (!sshkey) {
-			error_output.innerHTML = 'KEY is empty';
-			valid = false;
+		if (!usepassword) {
+			if (!passphrase) {
+				error_output.innerHTML = 'Passphrase is empty';
+				valid = false;
+			}
+			if (!sshkey) {
+				error_output.innerHTML = 'KEY is empty';
+				valid = false;
+			}
+		} else {
+			if (!password) {
+				error_output.innerHTML = 'Password is empty';
+				valid = false;
+			}
 		}
 	}
 	if (!valid) {
@@ -234,7 +244,9 @@ function addBtn() {
 		path : path,
 		username : username,
 		passphrase : passphrase,
-		sshkey : sshkey
+		sshkey : sshkey,
+		usepassword : usepassword,
+		password : password
 	}));
 	
 	error_output.innerHTML = "Added.";
@@ -242,8 +254,10 @@ function addBtn() {
 	document.getElementById('input_host').value     = '';
 	document.getElementById('input_path').value     = '';
 	document.getElementById('input_id').value       = '';
+	document.getElementById('input_passphrase').value = '';
 	document.getElementById('input_password').value = '';
 	document.getElementById('input_key').value      = '';
+	document.getElementById('usepassword').checked = false;
 }
 
 function boot() {

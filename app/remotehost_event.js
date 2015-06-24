@@ -57,10 +57,11 @@ function registerEditorEvent(socket)
 				var hst = host[data.hostname];
 				socket.emit('updateRemoteInfo',JSON.stringify({
 					label:data.hostname,
-					host:hst.host,
-					path:hst.path,
-					username:hst.username,
-					privateKeyFile:hst.privateKeyFile
+					host : hst.host,
+					path : hst.path,
+					username : hst.username,
+					privateKeyFile : hst.privateKeyFile,
+					usepassword : hst.usepassword
 				}));
 			}
 		});
@@ -95,12 +96,14 @@ function registerEditorEvent(socket)
 				};
 			} else {
 				host[data.name] = {
-					"type": type,
-					"host": data.hostname,
-					"username": data.username,
-					"privateKeyFile":data.sshkey,
-					"path":data.path,
-					"passphrase":data.passphrase
+					"type" : type,
+					"host" : data.hostname,
+					"username" : data.username,
+					"privateKeyFile" : data.sshkey,
+					"path" : data.path,
+					"passphrase" : data.passphrase,
+					"password" : data.password,
+					"usepassword" : data.usepassword
 				};
 			}
 			
