@@ -1,3 +1,6 @@
+/*jslint devel:true, node:true, nomen:true */
+/*global require, global, $, io, socket */
+
 if (typeof window === 'undefined') { // Node.js
 	
 	var util = require('../util');

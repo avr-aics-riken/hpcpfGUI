@@ -1,4 +1,4 @@
-/*jslint devel:true*/
+/*jslint devel:true, node:true, nomen:true */
 /*global $, socket, showStoppedMessage, io, FileDialog */
 
 var socket = io.connect(),

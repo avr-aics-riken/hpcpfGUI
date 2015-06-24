@@ -1,3 +1,5 @@
+/*jslint devel:true, node:true, nomen:true */
+/*global require, global, $, io, socket */
 var socket = io.connect();
 
 function registerRemoteHost()

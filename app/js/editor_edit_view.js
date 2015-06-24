@@ -1,4 +1,4 @@
-/*jslint devel:true*/
+/*jslint devel:true, node:true, nomen:true */
 /*global $, ace, ChangeEditor, saveFile, socket,
   hideEditArea*/
 // depends: editor.js

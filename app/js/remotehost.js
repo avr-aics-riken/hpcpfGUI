@@ -1,3 +1,6 @@
+/*jslint devel:true, node:true, nomen:true */
+/*global require, global, $, io, socket */
+
 var socket = io.connect();
 var filedialog = new FileDialog('remotedlg',false,false);
 

@@ -1,4 +1,5 @@
 // depends: editor.js
+/*jslint devel:true, node:true, nomen:true */
 /*global $, console, socket, setProjectName */
 
 socket.on('connect', function () {
