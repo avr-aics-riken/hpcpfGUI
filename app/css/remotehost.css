@@ -29,13 +29,26 @@
 #input_password{
 	width:100px;
 }
+#input_password:disabled {
+	background-color: gray;
+}
 
 #input_passphrase{
 	width:100px;
 }
+#input_passphrase:disabled {
+	background-color: gray;
+}
 
 #input_key{
 	width:100px;
+}
+#input_key:disabled {
+	background-color: gray;
+}
+
+#browse_button:disabled {
+	background-color: rgba(175, 225, 134, 1.0);
 }
 
 /* host browser */
@@ -146,4 +159,57 @@
 	background-size: contain;
 	z-index:100;
 	float:right;
+}
+
+.auth_area {
+	width : 600px;
+	height : 150px;
+}
+
+.auth_area_password {
+	width : 315px;
+	height : 60px;
+	padding-left : 20px;
+}
+
+.auth_area_keyfile {
+	width : 620px;
+	height : 60px;
+	padding-left : 20px;
+}
+
+.auth_area_content {
+	float : right;
+}
+
+.password_radio {
+	float : left;
+	position : relative;
+	top : 35px;
+}
+.password_type {
+	position : relative;
+	top : 30px;
+}
+
+.keyfile_radio {
+	float : left;
+	position : relative;
+	top : 35px;
+}
+.keyfile_type {
+	position : relative;
+	top : 30px;
+}
+
+.passphrase_input {
+	float : left;
+}
+
+.keyfile_input {
+	float : right;
+}
+
+.button_browsekey {
+	float : right;
 }

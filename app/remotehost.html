@@ -39,24 +39,36 @@
 						<div class="text_label">ID</div>
 						<input id="input_id" class="input_info"  placeholder="username"></input>
 					</div>
-					<div class="grp_floatleft">
-						<div class="text_label">Passphrase</div>
-						<input id="input_passphrase" class="input_info" type="password"></input>
-					</div>
-					<div class="grp_floatleft">
-						<div class="text_label">Password</div>
-						<input id="usepassword" class="input_info" type="checkbox"></input>
-						<input id="input_password" class="input_info" type="password"></input>
-					</div>
-					<div class="grp_floatleft">
-						<div class="text_label">KEY</div>
-						<input id="input_key" class="input_info"  placeholder="/home/username/.ssh/id_rsa"></input>
-					</div>
-					<div class="grp_alignleft">
-						<button type="button" class="button_browsekey" onclick="openfileDialog('/')">Browse</button>
+
+					<div class="grp_floatleft auth_area">
+						<div class="text_label">Authorication Type</div>
+						<div class="grp_floatleft auth_area_password">
+							<input id="usepassword" class="input_info password_radio" name="authtype" type="radio"></input>
+							<span class="text_label password_type">Password</span>
+							<span class="auth_area_content">
+								<div class="text_label password_label">Password</div>
+								<input id="input_password" class="input_info" type="password" disabled></input>
+							</span>
+						</div>
+						<br>
+						<div class="grp_floatleft auth_area_keyfile">
+							<input id="usekeyfile" class="input_info keyfile_radio" name="authtype" type="radio" checked></input>
+							<span class="text_label keyfile_type">KeyFile</span>
+							<span class="auth_area_content">
+								<span class="passphrase_input">
+									<div class="text_label">Passphrase</div>
+									<input id="input_passphrase" class="input_info" type="password"></input>
+								</span>
+								<button id="browse_button" type="button" class="button_browsekey" onclick="openfileDialog('/')">Browse</button>
+								<span class="keyfile_input">
+									<div class="text_label">KEY</div>
+									<input id="input_key" class="input_info"  placeholder="/home/username/.ssh/id_rsa"></input>
+								</span>
+							</span>
+						</div>
 					</div>
 				</div>
-		</div>
+			</div>
 
 		<div class="text_label" id="error_output"></div>
 

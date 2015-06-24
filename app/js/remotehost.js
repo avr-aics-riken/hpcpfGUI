@@ -111,9 +111,19 @@ function makeNode(cap, hostname) {
 	return newbtn;
 }
 
+function updateAuthTypeEditable() {
+	"use strict";
+	var usepassword = document.getElementById('usepassword').checked;
+	document.getElementById('input_password').disabled = !usepassword;
+	document.getElementById('input_passphrase').disabled = usepassword;
+	document.getElementById('input_key').disabled = usepassword;
+	document.getElementById('browse_button').disabled = usepassword;
+}
+
 socket.on('updateRemoteInfo', function (sdata) {
 	"use strict";
-	var data = JSON.parse(sdata);
+	var data = JSON.parse(sdata),
+		usepassword = data.usepassword || false;
 	//console.log(data);
 	document.getElementById('input_label').value = data.label;
 	document.getElementById('input_host').value  = data.host || '';
@@ -122,7 +132,10 @@ socket.on('updateRemoteInfo', function (sdata) {
 	document.getElementById('input_passphrase').value = ''; // hidden
 	document.getElementById('input_password').value = ''; // hidden
 	document.getElementById('input_key').value   = data.privateKeyFile || '';
-	document.getElementById('usepassword').checked = data.usepassword || false;
+	
+	document.getElementById('usepassword').checked = usepassword;
+	document.getElementById('usekeyfile').checked = !usepassword;
+	updateAuthTypeEditable();
 });
 
 socket.on('updateRemoteHostList', function (sdata) {
@@ -258,11 +271,23 @@ function addBtn() {
 	document.getElementById('input_password').value = '';
 	document.getElementById('input_key').value      = '';
 	document.getElementById('usepassword').checked = false;
+	document.getElementById('usekeyfile').checked = true;
+}
+
+function initGUI() {
+	"use strict";
+	document.getElementById('usepassword').onchange = function (evt) {
+		updateAuthTypeEditable();
+	};
+	document.getElementById('usekeyfile').onchange = function (evt) {
+		updateAuthTypeEditable();
+	};
 }
 
 function boot() {
 	"use strict";
 	reqHostList();
+	initGUI();
 }
 
 
