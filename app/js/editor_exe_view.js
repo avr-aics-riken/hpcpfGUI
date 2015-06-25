@@ -1,15 +1,20 @@
 /*jslint devel:true, node:true, nomen:true */
-/*global $, socket, showStoppedMessage*/
 // depends: editor.js
 
-(function () {
+(function (editor) {
 	"use strict";
+	
+	function $(id) {
+		return document.getElementById(id);
+	}
 	
 	var playButtonURL = "url(../image/button_bg_action_play.png)",
 		playButtonTitle = "Run (CTRL+R)",
 		stopButtonTitle = "Stop (CTRL+Q)",
 		stopButtonURL = "url(../image/button_bg_action_stop.png)",
-		executeButton = $('button_execute_');
+		executeButton = $('button_execute_'),
+		executeProject;
+	
 	
 	function clearOutput() {
 		$('exe_log').innerHTML = '';
@@ -23,15 +28,15 @@
 		console.log("procRun");
 
 		clearOutput();
-		socket.emit('run', {file: targetFile});
+		editor.socket.emit('run', {file: targetFile});
 	}
 
 	function stopWorkflow() {
 		console.log("stop");
-		socket.emit('stop');
-		socket.once('stopdone', function (success) {
+		editor.socket.emit('stop');
+		editor.socket.once('stopdone', function (success) {
 			console.log("stopdone");
-			showStoppedMessage();
+			editor.showStoppedMessage();
 			executeButton.style.backgroundImage = playButtonURL;
 			executeButton.title = playButtonTitle;
 			executeButton.onclick = executeProject;
@@ -39,31 +44,31 @@
 	}
 
 	function stopProject() {
-		showExeView();
+		editor.showExeView();
 		stopWorkflow();
 	}
 	
-	function executeProject() {
+	executeProject = function () {
 		var exec = function () {
-			showExeView();
+			editor.showExeView();
 			runWorkflow();
 			executeButton.onclick = stopProject;
 			executeButton.style.backgroundImage = stopButtonURL;
 			executeButton.title = stopButtonTitle;
 		};
 		if (window.editor_edit_view.edited) {
-			saveFile(function () {
+			editor.saveFile(function () {
 				exec();
 			});
 		} else {
 			exec();
 		}
-	}
+	};
 
-	socket.on('connect', function () {
+	editor.socket.on('connect', function () {
 	});
 
-	socket.on('stdout', function (data) {
+	editor.socket.on('stdout', function (data) {
 		var s = $('exe_log'),
 			area = $('exe_log_area');
 		s.innerHTML += data.toString() + '</br>';
@@ -71,7 +76,7 @@
 		area.scrollTop = area.scrollHeight;
 	});
 
-	socket.on('stderr', function (data) {
+	editor.socket.on('stderr', function (data) {
 		var s = $('exe_log'),
 			area = $('exe_log_area');
 		s.innerHTML += data.toString();
@@ -80,15 +85,15 @@
 		area.scrollTop = area.scrollHeight;
 	});
 
-	socket.on('exit', function () {
+	editor.socket.on('exit', function () {
 		executeButton.style.backgroundImage = playButtonURL;
 		executeButton.title = playButtonTitle;
 		executeButton.onclick = executeProject;
 	});
 	
-	socket.on('init', function () {
+	editor.socket.on('init', function () {
 		executeButton.onclick = executeProject;
 		//$('button_stop_').onclick = stopProject;
 	});
 	
-}());
+}(window.editor));

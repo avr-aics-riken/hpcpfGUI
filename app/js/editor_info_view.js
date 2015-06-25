@@ -1,9 +1,12 @@
-// depends: editor.js
 /*jslint devel:true, node:true, nomen:true */
-/*global $, console, socket, setProjectName */
+// depends: editor.js
 
-(function () {
+(function (editor) {
 	"use strict";
+	
+	function $(id) {
+		return document.getElementById(id);
+	}
 	
 	function createInfoLink(str, isURL, isCase) {
 		if (isURL) {
@@ -20,18 +23,18 @@
 	}
 
 	function showFile(file) {
-		setFileName(file);
+		editor.setFileName(file);
 		console.log("showFile:" + file);
-		socket.emit('reqOpenFile', file);
+		editor.socket.emit('reqOpenFile', file);
 	}
 
 	function backToInfo() {
 		$('info_back_button_area').style.display = "none";
-		socket.emit('reqUpdateInformation');
+		editor.socket.emit('reqUpdateInformation');
 	}
 	
 
-	socket.on('updateInformation', function (data) {
+	editor.socket.on('updateInformation', function (data) {
 		var info = JSON.parse(data),
 			elem,
 			elemKdb,
@@ -44,7 +47,7 @@
 			if (elem.hasOwnProperty("project_info")) {
 				elem = elem.project_info;
 				if (elem.hasOwnProperty("name_hr")) {
-					setProjectName(elem.name_hr); // editor.js
+					editor.setProjectName(elem.name_hr); // editor.js
 				}
 				if (elem.hasOwnProperty("description_hr")) {
 					$('info_description').innerHTML = elem.description_hr;
@@ -82,7 +85,7 @@
 		}
 	});
 
-	socket.on('openFile', function (data) {
+	editor.socket.on('openFile', function (data) {
 		$('info_back_button_area').style.display = "block";
 		$('info_text_area').style.display = "none";
 		$('info_opened_text_area').style.display = "block";
@@ -122,7 +125,7 @@
 		return result;
 	}
 
-	socket.on('openJSON', function (data) {
+	editor.socket.on('openJSON', function (data) {
 		var textArea = $('info_opened_text_area'),
 			json;
 		$('info_back_button_area').style.display = "block";
@@ -142,12 +145,12 @@
 		//$('info_opened_text_area').innerHTML = "<pre>"+data+"</pre>";
 	});
 	
-	socket.on('connect', function () {
-		socket.emit('reqUpdateInformation');
+	editor.socket.on('connect', function () {
+		editor.socket.emit('reqUpdateInformation');
 	});
 
 	window.editor_info_view = {};
 	window.editor_info_view.showFile = showFile;
 	window.editor_info_view.backToInfo = backToInfo;
-}());
+}(window.editor));
 

@@ -1,20 +1,19 @@
 /*jslint devel:true, node:true, nomen:true */
-/*global $, ace, changeEditor, saveFile, socket,
-  hideEditArea*/
+/*global ace */
 // depends: editor.js
 
-(function () {
+(function (editor) {
 	"use strict";
 	var edit_view = {},
-		editor = ace.edit("editor");
+		ace_editor = ace.edit("editor");
 	
-	editor.setTheme("ace/theme/hpcpf");
-	editor.setReadOnly(true);
+	ace_editor.setTheme("ace/theme/hpcpf");
+	ace_editor.setReadOnly(true);
 
 	/*
-	editor.on('change', function changeInput() {
+	ace_editor.on('change', function changeInput() {
 		"use strict";
-		if (editor.session.getUndoManager().isClean()) {
+		if (ace_editor.session.getUndoManager().isClean()) {
 			changeEditor(false);
 		} else {
 			changeEditor(true);
@@ -22,8 +21,21 @@
 	});
 	*/
 
-	editor.on('input', function changeInput() {
-		if (editor.session.getUndoManager().isClean()) {
+	function $(id) {
+		return document.getElementById(id);
+	}
+	
+	function changeEditor(state) {
+		edit_view.edited = state;
+		if (edit_view.openedfile === null) {
+			$('filename').innerHTML = '-';
+		} else {
+			$('filename').innerHTML = edit_view.openedfile + (state === true ? " *" : "");
+		}
+	}
+	
+	ace_editor.on('input', function changeInput() {
+		if (ace_editor.session.getUndoManager().isClean()) {
 			changeEditor(false);
 		} else {
 			changeEditor(true);
@@ -43,7 +55,7 @@
 		// window.navigator.platform.match("Mac") ==> e.metaKey is commandKey
 
 		if (e.keyCode === 18 && e.ctrlKey) { // R + ctrl
-			saveFile();
+			editor.saveFile();
 			executeProject();
 			return false;
 		}
@@ -52,7 +64,7 @@
 			return false;
 		}
 		if (e.keyCode === 19 && e.ctrlKey) { // S + ctrl
-			saveFile();
+			editor.saveFile();
 			return false;
 		}
 	});
@@ -60,7 +72,7 @@
 	document.addEventListener('keydown', function (e) {
 		if (window.navigator.platform.match("Win")) {
 			if (e.keyCode === 82 && e.ctrlKey) { // R + ctrl
-				saveFile();
+				editor.saveFile();
 				executeProject();
 				e.preventDefault();
 				return false;
@@ -71,7 +83,7 @@
 				return false;
 			}
 			if (e.keyCode === 83 && e.ctrlKey) { // S + ctrl
-				saveFile();
+				editor.saveFile();
 				e.preventDefault();
 				return false;
 			}
@@ -79,13 +91,13 @@
 	});
 
 	function modeDefault() {
-		editor.setTheme("ace/theme/hpcpf");
-		editor.setKeyboardHandler("");
+		ace_editor.setTheme("ace/theme/hpcpf");
+		ace_editor.setKeyboardHandler("");
 	}
 
 	function modeVim() {
-		editor.setTheme("ace/theme/tomorrow_night_bright");
-		editor.setKeyboardHandler("ace/keyboard/vim");
+		ace_editor.setTheme("ace/theme/tomorrow_night_bright");
+		ace_editor.setKeyboardHandler("ace/keyboard/vim");
 	}
 
 	function modeChange(modename) {
@@ -102,17 +114,9 @@
 
 	//-------------------------------
 
-	function changeEditor(state) {
-		edit_view.edited = state;
-		if (edit_view.openedfile === null) {
-			$('filename').innerHTML = '-';
-		} else {
-			$('filename').innerHTML = edit_view.openedfile + (state === true ? " *" : "");
-		}
-	}
 
 	function fileopen(filename, forceEdit) {
-		editor.setReadOnly(false);
+		ace_editor.setReadOnly(false);
 
 		if (!forceEdit) {
 			if (edit_view.openedfile === filename) {
@@ -123,18 +127,18 @@
 
 		edit_view.openedfile = filename;
 		console.log("Open:" + filename);
-		editor.setValue("");// clear
+		ace_editor.setValue("");// clear
 		changeEditor(false);
-		socket.emit('reqFileOpen', filename);
+		editor.socket.emit('reqFileOpen', filename);
 	}
 
 	function fileselect(path) {
 		console.log("fileselect : " + path);
-		socket.emit('reqSelectFile', path);
+		editor.socket.emit('reqSelectFile', path);
 	}
 
 	function launchApp(name, file) {
-		socket.emit('ptl_launchapp', {appname : name, file : file});
+		editor.socket.emit('ptl_launchapp', {appname : name, file : file});
 	}
 
 	/*
@@ -150,14 +154,14 @@
 	}
 	*/
 
-	socket.on('showfile', function (data) {
+	editor.socket.on('showfile', function (data) {
 		//console.log(data.str, data.type);
 		if (data.type !== "") {
-			editor.getSession().setMode("ace/mode/" + data.type.toString());
+			ace_editor.getSession().setMode("ace/mode/" + data.type.toString());
 		}
-		editor.session.setValue(data.str.toString(), -1);// set cursor the start
-		editor.session.getUndoManager().reset(true);
-		editor.session.getUndoManager().markClean();
+		ace_editor.session.setValue(data.str.toString(), -1);// set cursor the start
+		ace_editor.session.getUndoManager().reset(true);
+		ace_editor.session.getUndoManager().markClean();
 		changeEditor(false);
 		$('imageArea').className = 'fadeOut';
 		$('imageView').src = "";
@@ -165,26 +169,26 @@
 		$('launchButtonView').src = "";
 	});
 
-	socket.on('showfile_image', function (data) {
-		editor.setReadOnly(true);
+	editor.socket.on('showfile_image', function (data) {
+		ace_editor.setReadOnly(true);
 		changeEditor(false);
 		console.log("show_image");
-		hideEditArea();
-		editor.session.getUndoManager().reset(true);
-		editor.session.getUndoManager().markClean();
+		editor.hideEditArea();
+		ace_editor.session.getUndoManager().reset(true);
+		ace_editor.session.getUndoManager().markClean();
 		$('imageArea').className = 'fadeIn';
 		$('imageView').src = data;
 		edit_view.openedfile = null;
 		edit_view.clickedfile = null;
 	});
 
-	socket.on('showfile_launchbutton', function (appnames, dir, filename) {
+	editor.socket.on('showfile_launchbutton', function (appnames, dir, filename) {
 		var apparea,
 			name,
 			button,
 			i;
 		console.log('showfile_launchbutton');
-		editor.setReadOnly(true);
+		ace_editor.setReadOnly(true);
 		changeEditor(false);
 		$('launchButtonArea').className = 'fadeIn';
 
@@ -220,21 +224,21 @@
 		changeEditor(false);
 	});
 
-	socket.on('fileopen', function (data) {
+	editor.socket.on('fileopen', function (data) {
 		console.log("fileopen : " + data);
 		fileopen(data);
 	});
 
 	function getFileList() {
-		socket.emit('reqFileList');
+		editor.socket.emit('reqFileList');
 	}
 	
 	window.editor_edit_view = edit_view;
 	window.editor_edit_view.openedfile = null;
 	window.editor_edit_view.clickedfile = null;
 	window.editor_edit_view.edited = false;
-	window.editor_edit_view.editor = editor;
+	window.editor_edit_view.ace_editor = ace_editor;
 	window.editor_edit_view.fileselect = fileselect;
 	window.editor_edit_view.changeEditor = changeEditor;
 	window.editor_edit_view.modeChange = modeChange;
-}());
+}(window.editor));
