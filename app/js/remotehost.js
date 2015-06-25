@@ -272,6 +272,7 @@ function addBtn() {
 	document.getElementById('input_key').value      = '';
 	document.getElementById('usepassword').checked = false;
 	document.getElementById('usekeyfile').checked = true;
+	updateAuthTypeEditable();
 }
 
 function initGUI() {
