@@ -1,14 +1,16 @@
 /*jslint devel:true, node:true, nomen:true */
-/*global $, socket, showStoppedMessage, io, FileDialog */
+/*global $, socket, showStoppedMessage, io, FileDialog, editor */
 // depends: editor.js
 
 var socket = io.connect(),
-	isFolderSelected = false;
+	isFolderSelected = false,
+	edit_view;
 
 
 function init() {
 	"use strict";
 	socket.emit('reqInit');
+	edit_view = window.editor_edit_view;
 }
 
 /// hidden exist warning dialog
@@ -84,22 +86,24 @@ function hiddenOpenWarningMessage(callback) {
 function showOpenWarningMessage(callback) {
 	"use strict";
 	var save = document.getElementById('button_save'),
-		cancel = document.getElementById('button_cancel');
+		cancel = document.getElementById('button_cancel'),
+		savefunc,
+		cancelfunc;
 	document.getElementById("confirm_area").style.visibility = "visible";
 	document.getElementById('save_message_area').className = 'fadeIn';
 	document.getElementById("save_message_area").style.visibility = "visible";
 	document.getElementById("open_warning_dialog").style.visibility = "visible";
 
-	function savefunc() {
+	savefunc = function () {
 		callback(true);
 		save.removeEventListener("click", savefunc, true);
 		cancel.removeEventListener("click", cancelfunc, true);
-	}
-	function cancelfunc() {
+	};
+	cancelfunc = function () {
 		callback(false);
 		save.removeEventListener("click", savefunc, true);
 		cancel.removeEventListener("click", cancelfunc, true);
-	}
+	};
 	save.addEventListener("click", savefunc, true);
 	cancel.addEventListener("click", cancelfunc, true);
 }
@@ -111,8 +115,6 @@ function changeDir(fd, path) {
 	"use strict";
 	document.getElementById('dirpath').value = path;
 }
-
-window.onload = init;
 
 function getWorkingPath() {
 	"use strict";
@@ -175,7 +177,7 @@ function hideNewNameArea() {
 	$('newfilename').value = "";
 	$('newdirname').value = "";
 	$('renameitem').value = "";
-	editor.setReadOnly(false);
+	edit_view.editor.setReadOnly(false);
 }
 
 function hideEditArea() {
@@ -195,8 +197,8 @@ function showInfoView() {
 	hideEditArea();
 	hideNewNameArea();
 	socket.emit('reqUpdateInformation');
-	openedfile = "";
-	clickedfile = "";
+	edit_view.openedfile = "";
+	edit_view.clickedfile = "";
 	isFolderSelected = false;
 }
 
@@ -208,8 +210,8 @@ function showExeView() {
 	$("info_back_button_area").style.display = "none";
 	hideEditArea();
 	hideNewNameArea();
-	openedfile = "";
-	clickedfile = "";
+	edit_view.openedfile = "";
+	edit_view.clickedfile = "";
 	isFolderSelected = false;
 }
 
@@ -238,6 +240,32 @@ function setFileName(name) {
 	$('info_title_text').innerHTML = name;
 }
 
+/// save file
+function saveFile(endCallback) {
+	"use strict";
+	var basedir = $('dirpath').value,
+		filename = $('filename').value;
+	if (!edit_view.openedfile) {
+		return;
+	}
+	if (!edit_view.edited) {
+		return;
+	}
+	console.log("Save:" + edit_view.openedfile);
+	socket.emit('reqFileSave', JSON.stringify({file : edit_view.openedfile, data : edit_view.editor.getValue()}));
+	socket.once('filesavedone', function (success) {
+		if (success) {
+			showSavedMessage();
+		}
+		if (endCallback) {
+			console.log("savefileendCallback");
+			endCallback();
+		}
+	});
+	edit_view.edited = false;
+	edit_view.changeEditor(false);
+}
+
 function showNewNameArea(id) {
 	"use strict";
 	var classNames = $(id).className.split(' ');
@@ -255,11 +283,11 @@ function showNewNameArea(id) {
 		}
 	}
 	
-	if (edited && (id === 'renameArea' || id === 'deleteArea')) {
+	if (edit_view.edited && (id === 'renameArea' || id === 'deleteArea')) {
 		showOpenWarningMessage(function (isOK) {
 			if (isOK) {
 				hiddenOpenWarningMessage();
-				editor.setReadOnly(true);
+				edit_view.editor.setReadOnly(true);
 				saveFile(function () {
 					showNewNameAreaInternal();
 				});
@@ -272,31 +300,6 @@ function showNewNameArea(id) {
 	}
 }
 
-/// save file
-function saveFile(endCallback) {
-	"use strict";
-	var basedir = $('dirpath').value,
-		filename = $('filename').value;
-	if (!openedfile) {
-		return;
-	}
-	if (!edited) {
-		return;
-	}
-	console.log("Save:" + openedfile);
-	socket.emit('reqFileSave', JSON.stringify({file : openedfile, data : editor.getValue()}));
-	socket.once('filesavedone', function (success) {
-		if (success) {
-			showSavedMessage();
-		}
-		if (endCallback) {
-			console.log("savefileendCallback");
-			endCallback();
-		}
-	});
-	edited = false;
-	ChangeEditor(false);
-}
 
 /// make new file
 /// @param fd file dialog instance
@@ -312,7 +315,7 @@ function newFile(fd, basedir, fname) {
 	console.log(fname);
 	$('newfilename').value = '';
 	
-	socket.emit('reqNewFile', JSON.stringify({target: targetFile, basedir: basedir, data:''}));// JSON.stringify({basedir: basedir, file: fname, data:''}));
+	socket.emit('reqNewFile', JSON.stringify({target : targetFile, basedir : basedir, data : ''}));// JSON.stringify({basedir: basedir, file: fname, data:''}));
 //	fd.FileList('/');
 	
 	socket.once("newfiledone", function (success) {
@@ -359,6 +362,18 @@ function newDirectory(fd, basedir, dirname) {
 			});
 		}
 	});
+}
+
+function isColorItemExists() {
+	"use strict";
+	var items = document.getElementsByClassName("fileitem"),
+		i;
+	for (i = 0; i < items.length; i += 1) {
+		if (items[i].style.backgroundColor !== "") {
+			return true;
+		}
+	}
+	return false;
 }
 
 /// rename file or directory
@@ -418,7 +433,7 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 		fd.UnwatchDir(basedir.split(getWorkingPath() + '/').join(''));
 	}
 
-	console.log("deletefile:" + openedfile);
+	console.log("deletefile:" + edit_view.openedfile);
 	socket.emit('reqDelete', JSON.stringify({target: target}));
 	socket.once('deleted', function () {
 		console.log("deleted");
@@ -430,7 +445,7 @@ function deleteFileOrDirectory(fd, basedir, filename) {
 		showInfoView();
 //		fd.FileList('/');
 	});
-	 $('filename').value = "";
+	$('filename').value = "";
 }
 
 /// change color for selecting file or directory element
@@ -446,17 +461,6 @@ function changeColor(element) {
 	console.log("changeColor", element);
 }
 
-function isColorItemExists() {
-	"use strict";
-	var items = document.getElementsByClassName("fileitem"),
-		i;
-	for (i = 0; i < items.length; i += 1) {
-		if (items[i].style.backgroundColor !== "") {
-			return true;
-		}
-	}
-	return false;
-}
 
 /// callback of dir clicked on file dialog
 /// @param fd file dialog instance
@@ -482,10 +486,26 @@ function openFile(fd, element, parentDir, path) {
 	} else {
 		changeDir(fd, getWorkingPath() + parentDir);
 	}
-	fileselect(path);
+	edit_view.fileselect(path);
 	document.getElementById('filename').value = path.split("/").pop();
 	showEditView();
 	changeColor(element);
+}
+
+
+function dirStatusChanged(fd, dirpath) {
+	"use strict";
+	var elem = null;
+	console.log(edit_view);
+	console.log("dirChanged", edit_view.clickedfile, dirpath);
+	if (edit_view.clickedfile && edit_view.clickedfile.indexOf(dirpath) >= 0) {
+		console.log("dirchanged:", edit_view.clickedfile);
+		elem = fd.findElement(dirpath, edit_view.clickedfile);
+		console.log("dirchangeelem", elem);
+		if (elem) {
+			changeColor(elem);
+		}
+	}
 }
 
 /// callback of file clicked on file dialog
@@ -494,19 +514,20 @@ function openFile(fd, element, parentDir, path) {
 /// @param path relative path from project dir
 function clickFile(fd, element, parentDir, path) {
 	"use strict";
-	var preClickedFile = clickedfile;
-	clickedfile = getWorkingPath() + parentDir + path;
+	var preClickedFile = edit_view.clickedfile;
+	edit_view.clickedfile = getWorkingPath() + parentDir + path;
 	
 	isFolderSelected = false;
-	console.log("openedfile" + openedfile);
+	console.log("openedfile" + edit_view.openedfile);
 	console.log("path" + path);
-	if (path !== openedfile) {
-		if (edited) {
-			showOpenWarningMessage(function (isOK) {
+	if (path !== edit_view.openedfile) {
+		if (edit_view.edited) {
+			showOpenWarningMessage(
+				function (isOK) {
 					console.log(isOK);
 					if (isOK) {
 						hiddenOpenWarningMessage();
-						editor.setReadOnly(false);
+						edit_view.editor.setReadOnly(false);
 						saveFile(function () {
 							openFile(fd, element, parentDir, path);
 							dirStatusChanged(fd, getWorkingPath() + parentDir);
@@ -514,7 +535,7 @@ function clickFile(fd, element, parentDir, path) {
 					} else {
 						hiddenOpenWarningMessage();
 						//openFile(fd, element, parentDir, path);
-						clickedfile = preClickedFile;
+						edit_view.clickedfile = preClickedFile;
 					}
 				}
 			);
@@ -524,19 +545,6 @@ function clickFile(fd, element, parentDir, path) {
 		}
 	} else {
 		changeColor(element);
-	}
-}
-
-function dirStatusChanged(fd, dirpath) {
-	var elem = null;
-	console.log("dirChanged", clickedfile, dirpath);
-	if (clickedfile && clickedfile.indexOf(dirpath) >= 0) {
-		console.log("dirchanged:", clickedfile);
-		elem = fd.findElement(dirpath, clickedfile);
-		console.log("dirchangeelem", elem);
-		if (elem) {
-			changeColor(elem);
-		}
 	}
 }
 
@@ -634,18 +642,19 @@ function setupSeparator() {
 }
 
 function initButton(fd) {
+	"use strict";
 	var infoButton = document.getElementById('show_info_button'),
 		logButton = document.getElementById('show_log_button');
 	infoButton.onclick = function () {
-		if (edited) {
+		if (edit_view.edited) {
 			showOpenWarningMessage(function (isOK) {
 				console.log(isOK);
 				if (isOK) {
 					hiddenOpenWarningMessage();
-					editor.setReadOnly(false);
+					edit_view.editor.setReadOnly(false);
 					saveFile(function () {
-						openedfile = "";
-						clickedfile = "";
+						edit_view.openedfile = "";
+						edit_view.clickedfile = "";
 						showInfoView();
 					});
 				} else {
@@ -657,15 +666,15 @@ function initButton(fd) {
 		}
 	};
 	logButton.onclick = function () {
-		if (edited) {
+		if (edit_view.edited) {
 			showOpenWarningMessage(function (isOK) {
 				console.log(isOK);
 				if (isOK) {
 					hiddenOpenWarningMessage();
-					editor.setReadOnly(false);
+					edit_view.editor.setReadOnly(false);
 					saveFile(function () {
-						openedfile = "";
-						clickedfile = "";
+						edit_view.openedfile = "";
+						edit_view.clickedfile = "";
 						showExeView();
 					});
 				} else {
@@ -677,7 +686,6 @@ function initButton(fd) {
 		}
 	};
 }
-
 
 socket.on('connect', function () {
 	"use strict";
@@ -691,3 +699,5 @@ socket.on('connect', function () {
 	setupWorkingPath(fd);
 	initButton(fd);
 });
+
+window.onload = init;

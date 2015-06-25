@@ -27,7 +27,7 @@
 			<div class="change_mode_area">
 				<button class="button_change_mode" id="show_info_button">Info</button>
 				<button class="button_change_mode" id="show_log_button">Log</button>
-				<button class="button_vim_mode" onclick="modeChange(this.value);" disabled value="vim" id="button_vimmode">
+				<button class="button_vim_mode" onclick="window.editor_edit_view.modeChange(this.value);" disabled value="vim" id="button_vimmode">
 					<span class="vim_mode_text">Vim</span></button>
 			</div>
 		</div>
@@ -232,7 +232,7 @@
 		</div>
 	</span>
 	<div class="info_back_button_area" id="info_back_button_area">
-		<button class="button_back" id="button_back" onclick="backToInfo();"></button>
+		<button class="button_back" id="button_back" onclick="window.editor_info_view.backToInfo();"></button>
 	</div>
 	
 	<!--------------------------- Log --------------------------------->

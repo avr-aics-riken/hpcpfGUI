@@ -11,6 +11,55 @@
 		stopButtonURL = "url(../image/button_bg_action_stop.png)",
 		executeButton = $('button_execute_');
 	
+	function clearOutput() {
+		$('exe_log').innerHTML = '';
+	}
+	
+	function runWorkflow() {
+		var targetFile = "pwf.lua";
+
+		window.editor_edit_view.openedfile = "";
+		window.editor_edit_view.clickedfile = "";
+		console.log("procRun");
+
+		clearOutput();
+		socket.emit('run', {file: targetFile});
+	}
+
+	function stopWorkflow() {
+		console.log("stop");
+		socket.emit('stop');
+		socket.once('stopdone', function (success) {
+			console.log("stopdone");
+			showStoppedMessage();
+			executeButton.style.backgroundImage = playButtonURL;
+			executeButton.title = playButtonTitle;
+			executeButton.onclick = executeProject;
+		});
+	}
+
+	function stopProject() {
+		showExeView();
+		stopWorkflow();
+	}
+	
+	function executeProject() {
+		var exec = function () {
+			showExeView();
+			runWorkflow();
+			executeButton.onclick = stopProject;
+			executeButton.style.backgroundImage = stopButtonURL;
+			executeButton.title = stopButtonTitle;
+		};
+		if (window.editor_edit_view.edited) {
+			saveFile(function () {
+				exec();
+			});
+		} else {
+			exec();
+		}
+	}
+
 	socket.on('connect', function () {
 	});
 
@@ -31,60 +80,11 @@
 		area.scrollTop = area.scrollHeight;
 	});
 
-	function clearOutput() {
-		$('exe_log').innerHTML = '';
-	}
-	
 	socket.on('exit', function () {
 		executeButton.style.backgroundImage = playButtonURL;
 		executeButton.title = playButtonTitle;
 		executeButton.onclick = executeProject;
 	});
-	
-	function runWorkflow() {
-		var targetFile = "pwf.lua";
-
-		openedfile = "";
-		clickedfile = "";
-		console.log("procRun");
-
-		clearOutput();
-		socket.emit('run', {file: targetFile});
-	}
-
-	function stopWorkflow() {
-		console.log("stop");
-		socket.emit('stop');
-		socket.once('stopdone', function (success) {
-			console.log("stopdone");
-			showStoppedMessage();
-			executeButton.style.backgroundImage = playButtonURL;
-			executeButton.title = playButtonTitle;
-			executeButton.onclick = executeProject;
-		});
-	}
-
-	function executeProject() {
-		var exec = function () {
-			showExeView();
-			runWorkflow();
-			executeButton.onclick = stopProject;
-			executeButton.style.backgroundImage = stopButtonURL;
-			executeButton.title = stopButtonTitle;
-		}
-		if (edited) {
-			saveFile(function () {
-				exec();
-			});
-		} else {
-			exec();
-		}
-	}
-
-	function stopProject() {
-		showExeView();
-		stopWorkflow();
-	}
 	
 	socket.on('init', function () {
 		executeButton.onclick = executeProject;
