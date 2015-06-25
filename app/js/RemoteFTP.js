@@ -284,6 +284,9 @@ if (typeof window === 'undefined') { // Node.js
 					}
 
 					try {
+						// fix for abort
+						path = fs.normalize(path);
+						
 						thisptr.watchingDir = fs.watch(path, (function (path, callback) {
 							return function (event, filename) {
 								console.log('CHANGE LOCAL DIR:', path);
@@ -998,7 +1001,7 @@ if (typeof window === 'undefined') { // Node.js
 
 		this.UpdateList = function (path) {
 			if (path.charAt(path.length - 1) !== '/') { path += '/'; }
-			this.tarDir = new String(path);
+			this.tarDir = path;
 			this.socket.emit('RFTP:OpenDir', JSON.stringify({id : this.id, path : path, cid : this.cid}));
 		};
 		this.UploadFile = function (local_src, remote_dest) {
