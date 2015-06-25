@@ -5,6 +5,11 @@ if (typeof window === 'undefined') { // Node.js
 	var fs = require('fs'),
 		path = require('path'),
 		fsWatcheClients = {},
+		excludeList = {
+			absolutepath : {},
+			wildcard : {}
+		},
+		excludeListPath = "../conf/exclude_path.json",
 		Filedialog = {
 			Disconnect: function (socketId) {
 				'use strict';
@@ -28,6 +33,38 @@ if (typeof window === 'undefined') { // Node.js
 				var workpath = "",
 					fsWatches = {};
 				fsWatcheClients[socket.id] = fsWatches;
+				
+				function toSlashPath(str) {
+					var newpath = path.relative('/', str);
+					newpath = '/' + newpath.split(path.sep).join("/");
+					return newpath;
+				}
+				function isExcludePath(fullpath) {
+					var i,
+						wild1,
+						wild2;
+					if (excludeList.absolutepath.hasOwnProperty(fullpath)) {
+						return true;
+					}
+					for (i in excludeList.wildcard) {
+						if (excludeList.wildcard.hasOwnProperty(i)) {
+							wild1 = excludeList.wildcard[i].wild1;
+							wild2 = excludeList.wildcard[i].wild2;
+							//console.log("fullpath:", fullpath);
+							//console.log("wild1:", wild1);
+							//console.log("wild2:", wild2, wild2.length);
+							if (fullpath.indexOf(wild1) >= 0) {
+								if (wild2.length === 0) {
+									return true;
+								}
+								if (fullpath.slice(wild1).indexOf(wild2) >= 0) {
+									return true;
+								}
+							}
+						}
+					}
+					return false;
+				}
 				function loadFileList(dir, callback) {
 					var i,
 						name,
@@ -42,16 +79,18 @@ if (typeof window === 'undefined') { // Node.js
 					for (i in files) {
 						if (files.hasOwnProperty(i)) {
 							name = dir + files[i];
-							relativePath = path.relative(workpath, name).split(path.sep).join('/');
-							try {
-								if (fs.statSync(name).isDirectory()) {
-									dom = {"name": files[i], "type": "dir", "path": relativePath, "extract": false, "child": null};
-									lst.push(dom);
-								} else if (files[i].substring(0, 1) !== '.') {
-									lst.push({"name": files[i], "type": "file", "path": relativePath});
+							if (!isExcludePath(name)) {
+								relativePath = path.relative(workpath, name).split(path.sep).join('/');
+								try {
+									if (fs.statSync(name).isDirectory()) {
+										dom = {"name": files[i], "type": "dir", "path": relativePath, "extract": false, "child": null};
+										lst.push(dom);
+									} else if (files[i].substring(0, 1) !== '.') {
+										lst.push({"name": files[i], "type": "file", "path": relativePath});
+									}
+								} catch (err) {
+									console.log("not found dir:" + dir, err);
 								}
-							} catch (err) {
-								console.log("not found dir:" + dir, err);
 							}
 						}
 					}
@@ -110,6 +149,39 @@ if (typeof window === 'undefined') { // Node.js
 					}
 					return absolutePath;
 				}
+				function loadExcludeFileList() {
+					console.log("loadExcludeFileList");
+					excludeList = {
+						absolutepath : {},
+						wildcard : {}
+					};
+					fs.readFile(excludeListPath, function (err, data) {
+						var listData,
+							i,
+							slashPath,
+							pos;
+						if (err) {
+							console.log(err);
+							return;
+						}
+						listData = JSON.parse(data.toString());
+						// to find speedy
+						for (i = 0; i < listData.length; i = i + 1) {
+							slashPath = toSlashPath(listData[i]);
+							if (slashPath.indexOf('*') >= 0) {
+								// wild card
+								excludeList.wildcard[slashPath] = {
+									wild1 : slashPath.slice(0, slashPath.indexOf('*')),
+									wild2 : slashPath.slice(slashPath.lastIndexOf('*') + 1)
+								};
+							} else {
+								// absolute path
+								excludeList.absolutepath[slashPath] = "1";
+							}
+						}
+						console.log("loadexcludeFileList", excludeList);
+					});
+				}
 				function updateFileList(relativePath, skt) {
 					var absolutePath;
 					if (workpath.length === 0) {
@@ -164,6 +236,8 @@ if (typeof window === 'undefined') { // Node.js
 					}
 				}
 
+				loadExcludeFileList();
+				
 				// get for subdir
 				socket.on(skname + ':FileDialogReqFileList', (function (skt) {
 					return function (relativepath) {
