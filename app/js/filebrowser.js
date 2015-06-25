@@ -1,5 +1,5 @@
 /*jslint devel:true, node:true, nomen:true */
-/*global require, global, $, io, socket */
+/*global require, RemoteFTP, $, io, socket */
 var socket = io.connect();
 
 function registerRemoteHost() {
@@ -444,7 +444,7 @@ function startFileList(nameA, nameB) {
 	if (!rftpA || rftpA.hostname !== nameA) {
 		tmppath = undefined;
 		if (rftpA) {
-			rftpA.delete();
+			rftpA.deleteConnection();
 		}
 		console.log('createA');
 		rftpA = new RemoteFTP(socket, 'ConnectionA', nameA); // left
@@ -455,7 +455,7 @@ function startFileList(nameA, nameB) {
 	if (!rftpB || rftpB.hostname !== nameB) {
 		tmppath = undefined;
 		if (rftpB) {
-			rftpB.delete();
+			rftpB.deleteConnection();
 		}
 		console.log('createB');
 		rftpB = new RemoteFTP(socket, 'ConnectionB', nameB); // right

@@ -306,7 +306,7 @@ if (typeof window === 'undefined') { // Node.js
 			console.log('This is local session. no need to connect.');
 		};
 
-		this.delete = function () {
+		this.deleteConnection = function () {
 			if (this.watchingDir) {
 				this.watchingDir.close();
 				this.watchingDir = null;
@@ -635,7 +635,7 @@ if (typeof window === 'undefined') { // Node.js
 			}
 		};
 
-		this.delete = function () {
+		this.deleteConnection = function () {
 			console.log('delete local FTP session:');
 		};
 	}; // SFTPClass
@@ -704,7 +704,7 @@ if (typeof window === 'undefined') { // Node.js
 				}
 
 				if (ftparray[data.cid]) {
-					ftparray[data.cid].delete();
+					ftparray[data.cid].deleteConnection();
 				}
 
 				if (info.type === 'local') {
@@ -1038,14 +1038,14 @@ if (typeof window === 'undefined') { // Node.js
 		//-----------------------------------
 		// socket.io events
 
-		function OnSocketConnected(sfc) {
+		function onSocketConnected(sfc) {
 			return function (sdata) {
 				var data = JSON.parse(sdata);
 				console.log('SocketConnected:' + data.msg + ' / id=' + data.id);
 			};
 		}
 
-		function OnConnected(sfc) {
+		function onConnected(sfc) {
 			return function (sdata) {
 				var data = JSON.parse(sdata);
 				if (data.cid !== sfc.cid) {
@@ -1055,28 +1055,28 @@ if (typeof window === 'undefined') { // Node.js
 				console.log('Connected:' + data.cid + ' / ' + data.initPath);
 				sfc.tarDir = data.initPath;
 				sfc.host   = data.host;
-				if (sfc.onConnected) {
-					sfc.onConnected(data.msg);
+				if (sfc.onConnectedCallback) {
+					sfc.onConnectedCallback(data.msg);
 				}
 				//console.log(sfc);
 				sfc.UpdateList(sfc.tarDir);
 			};
 		}
 
-		function OnError(sfc) {
+		function onError(sfc) {
 			return function (sdata) {
 				var data = JSON.parse(sdata);
 				if (data.cid !== sfc.cid) {
 					return;
 				}
 				console.log('Error:' + data.msg);
-				if (sfc.onError) {
-					sfc.onError(data.msg);
+				if (sfc.onErrorCallback) {
+					sfc.onErrorCallback(data.msg);
 				}
 			};
 		}
 
-		function OnOpenDirRet(sfc) {
+		function onOpenDirRet(sfc) {
 			return function (sdata) {
 				var data = JSON.parse(sdata);
 				if (data.cid !== sfc.cid) {
@@ -1087,13 +1087,13 @@ if (typeof window === 'undefined') { // Node.js
 					console.log('Recived invalid data : ' + sdata);
 					return;
 				}
-				if (sfc.onOpenDir) {
-					sfc.onOpenDir(data.list);
+				if (sfc.onOpenDirCallback) {
+					sfc.onOpenDirCallback(data.list);
 				}
 			};
 		}
 
-		function OnProcessed(sfc) {
+		function onProcessed(sfc) {
 			return function (sdata) {
 				console.log("PROCESSED EVENT:" + sdata);
 				var data = JSON.parse(sdata);
@@ -1101,8 +1101,8 @@ if (typeof window === 'undefined') { // Node.js
 					return;
 				}
 				console.log(data.msg);
-				if (sfc.onProcessed) {
-					sfc.onProcessed(data.msg);
+				if (sfc.onProcessedCallback) {
+					sfc.onProcessedCallback(data.msg);
 				}
 			};
 		}
@@ -1110,35 +1110,35 @@ if (typeof window === 'undefined') { // Node.js
 		this.on = (function (thisptr) {
 			return function (evt, func) {
 				if (evt === 'connected') {
-					thisptr.onConnected = func;
+					thisptr.onConnectedCallback = func;
 				} else if (evt === 'error') {
-					thisptr.onError     = func;
+					thisptr.onErrorCallback     = func;
 				} else if (evt === 'processed') {
-					thisptr.onProcessed = func;
+					thisptr.onProcessedCallback = func;
 				} else if (evt === 'openDir') {
-					thisptr.onOpenDir   = func;
+					thisptr.onOpenDirCallback   = func;
 				}
 			};
 		}(this));
 
-		this.OnSocketConnected = OnSocketConnected(this);
-		this.OnConnected       = OnConnected(this);
-		this.OnError           = OnError(this);
-		this.OnOpenDirRet      = OnOpenDirRet(this);
-		this.OnProcessed       = OnProcessed(this);
+		this.onSocketConnected = onSocketConnected(this);
+		this.onConnected       = onConnected(this);
+		this.onError           = onError(this);
+		this.onOpenDirRet      = onOpenDirRet(this);
+		this.onProcessed       = onProcessed(this);
 
-		socket.on('RFTP:SocketConnected', this.OnSocketConnected);
-		socket.on('RFTP:Connected',      this.OnConnected);
-		socket.on('RFTP:Error',          this.OnError);
-		socket.on('RFTP:OpenDirRet',     this.OnOpenDirRet);
-		socket.on('RFTP:Processed',      this.OnProcessed);
+		socket.on('RFTP:SocketConnected', this.onSocketConnected);
+		socket.on('RFTP:Connected',      this.onConnected);
+		socket.on('RFTP:Error',          this.onError);
+		socket.on('RFTP:OpenDirRet',     this.onOpenDirRet);
+		socket.on('RFTP:Processed',      this.onProcessed);
 
-		this.delete = function () {
-			this.socket.removeListener('RFTP:SocketConnected', this.OnSocketConnected);
-			this.socket.removeListener('RFTP:Connected',       this.OnConnected);
-			this.socket.removeListener('RFTP:Error',           this.OnError);
-			this.socket.removeListener('RFTP:OpenDirRet',      this.OnOpenDirRet);
-			this.socket.removeListener('RFTP:Processed',       this.OnProcessed);
+		this.deleteConnection = function () {
+			this.socket.removeListener('RFTP:SocketConnected', this.onSocketConnected);
+			this.socket.removeListener('RFTP:Connected',       this.onConnected);
+			this.socket.removeListener('RFTP:Error',           this.onError);
+			this.socket.removeListener('RFTP:OpenDirRet',      this.onOpenDirRet);
+			this.socket.removeListener('RFTP:Processed',       this.onProcessed);
 			this.Disconnect();
 		};
 	};

@@ -79,7 +79,7 @@ function makeNode(cap, hostname) {
 					var error_output = document.getElementById('error_output');
 					error_output.innerHTML = 'Connect Error' + data;
 					thisptr.classList.add('connecttest_fail');
-					testConnect.delete();
+					testConnect.deleteConnection();
 					testConnect = null;
 					thisptr.addEventListener('click', clickfunc(hostname)); // add clickfunc
 				};
@@ -88,7 +88,7 @@ function makeNode(cap, hostname) {
 			testConnect.on('openDir', (function (thisptr, hostname) {
 				return function (data) {
 					thisptr.classList.add('connecttest_ok');
-					testConnect.delete();
+					testConnect.deleteConnection();
 					testConnect = null;
 					thisptr.addEventListener('click', clickfunc(hostname)); // add clickfunc
 				};
