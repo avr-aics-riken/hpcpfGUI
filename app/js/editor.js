@@ -99,6 +99,12 @@
 		cancel.addEventListener("click", cancelfunc, true);
 	}
 
+	function isFileItemDisabled(element) {
+		if (element && element.className) {
+			return element.className.indexOf('disabled') >= 0;
+		}
+		return true;
+	}
 	/// change directory
 	/// @param fd file dialog instance
 	/// @param path dir path of upper input box
@@ -217,6 +223,32 @@
 		document.title = name;
 		$('info_project_title').innerHTML = "File Name:";
 		$('info_title_text').innerHTML = name;
+	}
+
+	function disableFileEdit() {
+		$('button_rename').disabled = true;
+		$('button_delete').disabled = true;
+	}
+	
+	function enableFileEdit() {
+		$('button_rename').disabled = false;
+		$('button_delete').disabled = false;
+	}
+
+	function disableDirEdit() {
+		$('button_newdir').disabled = true;
+		$('button_newfile').disabled = true;
+		$('button_rename').disabled = true;
+		$('button_delete').disabled = true;
+		console.log("disableDirEditdisableDirEditdisableDirEdit");
+	}
+	
+	function enableDirEdit() {
+		$('button_newdir').disabled = false;
+		$('button_newfile').disabled = false;
+		$('button_rename').disabled = false;
+		$('button_delete').disabled = false;
+		console.log("enableDirEditenableDirEditenableDirEdit");
 	}
 
 	/// save file
@@ -429,9 +461,8 @@
 		}
 		element.style.backgroundColor  = "gray";
 
-		console.log("changeColor", element);
+		console.log("changeColor", element.className);
 	}
-
 
 	/// callback of dir clicked on file dialog
 	/// @param fd file dialog instance
@@ -454,6 +485,13 @@
 		} else {
 			changeDir(fd, getWorkingPath() + parentDir);
 		}
+		
+		// disable edit for excluding file item
+		enableFileEdit();
+		if (isFileItemDisabled(element)) {
+			disableFileEdit();
+		}
+		
 		edit_view.fileselect(path);
 		document.getElementById('filename').value = path.split("/").pop();
 		showEditView();
@@ -464,25 +502,44 @@
 	function dirStatusChanged(fd, dirpath) {
 		var elem = null;
 		console.log(edit_view);
-		console.log("dirChanged", window.editor.clickedfile, dirpath);
+		
 		if (window.editor.clickedfile && window.editor.clickedfile.indexOf(dirpath) >= 0) {
 			console.log("dirchanged:", window.editor.clickedfile);
-			elem = fd.findElement(dirpath, window.editor.clickedfile);
-			console.log("dirchangeelem", elem);
+			elem = fd.findFileElement(dirpath, window.editor.clickedfile);
 			if (elem) {
+				enableDirEdit();
+				if (elem && elem.parentNode && elem.parentNode.parentDom) {
+					if (isFileItemDisabled(elem.parentNode.parentDom)) {
+						disableDirEdit();
+					}
+				}
 				changeColor(elem);
 			}
+			enableFileEdit();
+			if (isFileItemDisabled(elem)) {
+				disableFileEdit();
+			}
 		}
+		
 	}
-
+	
 	/// callback of file clicked on file dialog
 	/// @param fd file dialog instance
 	/// @param parentDir parent directory of path
 	/// @param path relative path from project dir
 	function clickFile(fd, element, parentDir, path) {
-		var preClickedFile = window.editor.clickedfile;
+		var preClickedFile = window.editor.clickedfile,
+			elem;
 		window.editor.clickedfile = getWorkingPath() + parentDir + path;
 
+		elem = fd.findFileElement(parentDir, path);
+		enableDirEdit();
+		if (elem && elem.parentNode && elem.parentNode.parentDom) {
+			if (isFileItemDisabled(elem.parentNode.parentDom)) {
+				disableDirEdit();
+			}
+		}
+		
 		isFolderSelected = false;
 		console.log("openedfile" + window.editor.openedfile);
 		console.log("path" + path);

@@ -1,7 +1,7 @@
 {
 	"browser" : [ "/Windows/*" ],
 	"workspace" : [
-		"case02/cif.json",
+		"case02",
 		"*.lua"
 	]
 }

@@ -315,7 +315,7 @@ if (typeof window === 'undefined') { // Node.js
 				relativePath    = listitem.path,
 				type    = listitem.type,
 				extract = listitem.extract,
-				isdisable = listitem.exclude,
+				isdisable = listitem.exclude || (ls.className.indexOf('disabled') >= 0),
 				newbtn    = document.createElement('div'),
 				fileicon  = document.createElement('div'),
 				filelabel = document.createElement('p'),
@@ -330,8 +330,6 @@ if (typeof window === 'undefined') { // Node.js
 				sizer.setAttribute('draggable', "false");
 				newbtn.appendChild(sizer);
 			}
-			
-			console.log("disableddisableddisableddisableddisableddisabled");
 			
 			if (isdisable) {
 				newbtn.setAttribute('class', "fileitem fileitem_disabled");
@@ -369,7 +367,11 @@ if (typeof window === 'undefined') { // Node.js
 				// create child div
 				childls = document.createElement('div');
 				ls.appendChild(childls);
+				if (isdisable) {
+					childls.className = "disabled";
+				}
 				listitem.childElement = childls;
+				childls.parentDom = newbtn;
 					
 			} else if (type === "file") {
 				newbtn.addEventListener('click', (function (fileDialog, element) {
@@ -403,7 +405,7 @@ if (typeof window === 'undefined') { // Node.js
 			}
 		};
 		
-		FileDialog.prototype.findElement = function (dirpath, filename) {
+		FileDialog.prototype.findFileElement = function (dirpath, filename) {
 			var relativepath,
 				elems,
 				elem,
