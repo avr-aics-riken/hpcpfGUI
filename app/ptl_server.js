@@ -12,6 +12,7 @@ var exec = require('child_process').exec,
 	filedialog = require('./js/filedialog'),
 	backfire_filedialog = require('./js/backfire_filedialog'),
 	remoteFTP = require('./js/RemoteFTP'),
+	excludePath = require('./js/exclude_path'),
 	
 	confFile = path.resolve(__dirname, '../conf/hpcpfGUI.conf'),
 	projectTemplate = path.resolve(__dirname, '../template/project_template'),
@@ -56,6 +57,7 @@ try {
 			}
 		}
 	}
+	excludePath.loadExcludeFileList();
 } catch (e) {
 	console.log('Not found conf file:' + confFile);
 	console.log('Use default setting.');
