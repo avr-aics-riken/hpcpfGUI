@@ -332,7 +332,7 @@ if (typeof window === 'undefined') { // Node.js
 								try {
 									fullpath = path + list[i];
 									stat = fs.statSync(fullpath);
-									isExcludePath = excludePath.isExcludePath(fullpath);
+									isExcludePath = excludePath.isExcludePath(excludePath.TypeBrowser, fullpath);
 									if (stat && stat.isDirectory()) {
 										lists.push({filename: list[i], longname: "d", excludepath : isExcludePath});
 									} else {

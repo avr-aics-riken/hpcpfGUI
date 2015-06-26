@@ -180,8 +180,8 @@
 		hideEditArea();
 		hideNewNameArea();
 		socket.emit('reqUpdateInformation');
-		edit_view.openedfile = "";
-		edit_view.clickedfile = "";
+		window.editor.openedfile = "";
+		window.editor.clickedfile = "";
 		isFolderSelected = false;
 	}
 
@@ -192,8 +192,8 @@
 		$("info_back_button_area").style.display = "none";
 		hideEditArea();
 		hideNewNameArea();
-		edit_view.openedfile = "";
-		edit_view.clickedfile = "";
+		window.editor.openedfile = "";
+		window.editor.clickedfile = "";
 		isFolderSelected = false;
 	}
 
@@ -223,14 +223,14 @@
 	function saveFile(endCallback) {
 		var basedir = $('dirpath').value,
 			filename = $('filename').value;
-		if (!edit_view.openedfile) {
+		if (!window.editor.openedfile) {
 			return;
 		}
-		if (!edit_view.edited) {
+		if (!window.editor.edited) {
 			return;
 		}
-		console.log("Save:" + edit_view.openedfile);
-		socket.emit('reqFileSave', JSON.stringify({file : edit_view.openedfile, data : edit_view.ace_editor.getValue()}));
+		console.log("Save:" + window.editor.openedfile);
+		socket.emit('reqFileSave', JSON.stringify({file : window.editor.openedfile, data : edit_view.ace_editor.getValue()}));
 		socket.once('filesavedone', function (success) {
 			if (success) {
 				showSavedMessage();
@@ -240,7 +240,7 @@
 				endCallback();
 			}
 		});
-		edit_view.edited = false;
+		window.editor.edited = false;
 		edit_view.changeEditor(false);
 	}
 
@@ -260,7 +260,7 @@
 			}
 		}
 
-		if (edit_view.edited && (id === 'renameArea' || id === 'deleteArea')) {
+		if (window.editor.edited && (id === 'renameArea' || id === 'deleteArea')) {
 			showOpenWarningMessage(function (isOK) {
 				if (isOK) {
 					hiddenOpenWarningMessage();
@@ -405,7 +405,7 @@
 			fd.UnwatchDir(basedir.split(getWorkingPath() + '/').join(''));
 		}
 
-		console.log("deletefile:" + edit_view.openedfile);
+		console.log("deletefile:" + window.editor.openedfile);
 		socket.emit('reqDelete', JSON.stringify({target: target}));
 		socket.once('deleted', function () {
 			console.log("deleted");
@@ -464,10 +464,10 @@
 	function dirStatusChanged(fd, dirpath) {
 		var elem = null;
 		console.log(edit_view);
-		console.log("dirChanged", edit_view.clickedfile, dirpath);
-		if (edit_view.clickedfile && edit_view.clickedfile.indexOf(dirpath) >= 0) {
-			console.log("dirchanged:", edit_view.clickedfile);
-			elem = fd.findElement(dirpath, edit_view.clickedfile);
+		console.log("dirChanged", window.editor.clickedfile, dirpath);
+		if (window.editor.clickedfile && window.editor.clickedfile.indexOf(dirpath) >= 0) {
+			console.log("dirchanged:", window.editor.clickedfile);
+			elem = fd.findElement(dirpath, window.editor.clickedfile);
 			console.log("dirchangeelem", elem);
 			if (elem) {
 				changeColor(elem);
@@ -480,14 +480,15 @@
 	/// @param parentDir parent directory of path
 	/// @param path relative path from project dir
 	function clickFile(fd, element, parentDir, path) {
-		var preClickedFile = edit_view.clickedfile;
-		edit_view.clickedfile = getWorkingPath() + parentDir + path;
+		var preClickedFile = window.editor.clickedfile;
+		window.editor.clickedfile = getWorkingPath() + parentDir + path;
 
 		isFolderSelected = false;
-		console.log("openedfile" + edit_view.openedfile);
+		console.log("openedfile" + window.editor.openedfile);
 		console.log("path" + path);
-		if (path !== edit_view.openedfile) {
-			if (edit_view.edited) {
+		
+		if (path !== window.editor.openedfile) {
+			if (window.editor.edited) {
 				showOpenWarningMessage(
 					function (isOK) {
 						console.log(isOK);
@@ -501,7 +502,7 @@
 						} else {
 							hiddenOpenWarningMessage();
 							//openFile(fd, element, parentDir, path);
-							edit_view.clickedfile = preClickedFile;
+							window.editor.clickedfile = preClickedFile;
 						}
 					}
 				);
@@ -609,15 +610,15 @@
 		var infoButton = document.getElementById('show_info_button'),
 			logButton = document.getElementById('show_log_button');
 		infoButton.onclick = function () {
-			if (edit_view.edited) {
+			if (window.editor.edited) {
 				showOpenWarningMessage(function (isOK) {
 					console.log(isOK);
 					if (isOK) {
 						hiddenOpenWarningMessage();
 						edit_view.ace_editor.setReadOnly(false);
 						saveFile(function () {
-							edit_view.openedfile = "";
-							edit_view.clickedfile = "";
+							window.editor.openedfile = "";
+							window.editor.clickedfile = "";
 							showInfoView();
 						});
 					} else {
@@ -629,15 +630,15 @@
 			}
 		};
 		logButton.onclick = function () {
-			if (edit_view.edited) {
+			if (window.editor.edited) {
 				showOpenWarningMessage(function (isOK) {
 					console.log(isOK);
 					if (isOK) {
 						hiddenOpenWarningMessage();
 						edit_view.ace_editor.setReadOnly(false);
 						saveFile(function () {
-							edit_view.openedfile = "";
-							edit_view.clickedfile = "";
+							window.editor.openedfile = "";
+							window.editor.clickedfile = "";
 							showExeView();
 						});
 					} else {
@@ -672,4 +673,8 @@
 	window.editor.setFileName = setFileName;
 	window.editor.saveFile = saveFile;
 	window.editor.socket = socket;
+	window.editor.openedfile = null;
+	window.editor.edited = false;
+	window.editor.clickedfile = null;
+	window.editor.showNewNameArea = showNewNameArea;
 }());

@@ -26,11 +26,11 @@
 	}
 	
 	function changeEditor(state) {
-		edit_view.edited = state;
-		if (edit_view.openedfile === null) {
+		editor.edited = state;
+		if (editor.openedfile === null) {
 			$('filename').innerHTML = '-';
 		} else {
-			$('filename').innerHTML = edit_view.openedfile + (state === true ? " *" : "");
+			$('filename').innerHTML = editor.openedfile + (state === true ? " *" : "");
 		}
 	}
 	
@@ -119,13 +119,13 @@
 		ace_editor.setReadOnly(false);
 
 		if (!forceEdit) {
-			if (edit_view.openedfile === filename) {
+			if (editor.openedfile === filename) {
 				console.log("fileopen : same file");
 				return;
 			}
 		}
 
-		edit_view.openedfile = filename;
+		editor.openedfile = filename;
 		console.log("Open:" + filename);
 		ace_editor.setValue("");// clear
 		changeEditor(false);
@@ -178,8 +178,8 @@
 		ace_editor.session.getUndoManager().markClean();
 		$('imageArea').className = 'fadeIn';
 		$('imageView').src = data;
-		edit_view.openedfile = null;
-		edit_view.clickedfile = null;
+		editor.openedfile = null;
+		editor.clickedfile = null;
 	});
 
 	editor.socket.on('showfile_launchbutton', function (appnames, dir, filename) {
@@ -220,7 +220,7 @@
 		};
 		button.innerHTML = "<span class='text_button_launchapp'>Edit text</span>";
 		apparea.appendChild(button);
-		edit_view.openedfile = filename;
+		editor.openedfile = filename;
 		changeEditor(false);
 	});
 
@@ -234,9 +234,6 @@
 	}
 	
 	window.editor_edit_view = edit_view;
-	window.editor_edit_view.openedfile = null;
-	window.editor_edit_view.clickedfile = null;
-	window.editor_edit_view.edited = false;
 	window.editor_edit_view.ace_editor = ace_editor;
 	window.editor_edit_view.fileselect = fileselect;
 	window.editor_edit_view.changeEditor = changeEditor;

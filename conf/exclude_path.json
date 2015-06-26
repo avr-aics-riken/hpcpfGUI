@@ -1,3 +1,7 @@
-[
-	"/Windows/*"
-]
+{
+	"browser" : [ "/Windows/*" ],
+	"workspace" : [
+		"case02/cif.json",
+		"*.lua"
+	]
+}

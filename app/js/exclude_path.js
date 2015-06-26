@@ -3,8 +3,12 @@
 (function () {
 	"use strict";
 	var exclude_path = {},
-		excludeList = {
+		excludeListOnBrowser = {
 			absolutepath : {},
+			wildcard : {}
+		},
+		excludeListOnWorkSpace = {
+			relativepath : {},
 			wildcard : {}
 		},
 		path = require('path'),
@@ -17,25 +21,46 @@
 		return newpath;
 	}
 	
-	function isExcludePath(fullpath) {
+	function toSlashPathRelative(str) {
+		return str.split(path.sep).join("/");
+	}
+	
+	function isExcludePath(type, pathstr) {
 		var i,
 			wild1,
-			wild2;
-		if (excludeList.absolutepath.hasOwnProperty(fullpath)) {
-			return true;
+			wild2,
+			excludeList;
+		
+		if (type === module.exports.TypeBrowser) {
+			excludeList = excludeListOnBrowser;
+		} else {
+			excludeList = excludeListOnWorkSpace;
 		}
+		
+		if (excludeList.hasOwnProperty('absolutepath')) {
+			if (excludeList.absolutepath.hasOwnProperty(pathstr)) {
+				return true;
+			}
+		}
+		if (excludeList.hasOwnProperty('relativepath')) {
+			if (excludeList.relativepath.hasOwnProperty(pathstr)) {
+				return true;
+			}
+		}
+		
+		
 		for (i in excludeList.wildcard) {
 			if (excludeList.wildcard.hasOwnProperty(i)) {
 				wild1 = excludeList.wildcard[i].wild1;
 				wild2 = excludeList.wildcard[i].wild2;
-				//console.log("fullpath:", fullpath);
+				//console.log("pathstr:", pathstr);
 				//console.log("wild1:", wild1);
 				//console.log("wild2:", wild2, wild2.length);
-				if (fullpath.indexOf(wild1) >= 0) {
+				if (pathstr.indexOf(wild1) >= 0) {
 					if (wild2.length === 0) {
 						return true;
 					}
-					if (fullpath.slice(wild1).indexOf(wild2) >= 0) {
+					if (pathstr.slice(wild1).indexOf(wild2) >= 0) {
 						return true;
 					}
 				}
@@ -46,10 +71,7 @@
 	
 	function loadExcludeFileList() {
 		console.log("loadExcludeFileList");
-		excludeList = {
-			absolutepath : {},
-			wildcard : {}
-		};
+		var excludeList;
 		if (fs.existsSync(excludeListPath)) {
 			fs.readFile(excludeListPath, function (err, data) {
 				var listData,
@@ -61,26 +83,58 @@
 					return;
 				}
 				listData = JSON.parse(data.toString());
-				// to find speedy
-				for (i = 0; i < listData.length; i = i + 1) {
-					slashPath = toSlashPath(listData[i]);
-					if (slashPath.indexOf('*') >= 0) {
-						// wild card
-						excludeList.wildcard[slashPath] = {
-							wild1 : slashPath.slice(0, slashPath.indexOf('*')),
-							wild2 : slashPath.slice(slashPath.lastIndexOf('*') + 1)
-						};
-					} else {
-						// absolute path
-						excludeList.absolutepath[slashPath] = "1";
+				if (listData.hasOwnProperty('browser')) {
+					excludeList = {
+						absolutepath : {},
+						wildcard : {}
+					};
+					// to find speedy
+					for (i = 0; i < listData.browser.length; i = i + 1) {
+						slashPath = toSlashPath(listData.browser[i]);
+						if (slashPath.indexOf('*') >= 0) {
+							// wild card
+							excludeList.wildcard[slashPath] = {
+								wild1 : slashPath.slice(0, slashPath.indexOf('*')),
+								wild2 : slashPath.slice(slashPath.lastIndexOf('*') + 1)
+							};
+						} else {
+							// absolute path
+							excludeList.absolutepath[slashPath] = "1";
+						}
 					}
+					console.log("loadexcludeFileList", excludeList);
+					excludeListOnBrowser = excludeList;
 				}
-				console.log("loadexcludeFileList", excludeList);
+				if (listData.hasOwnProperty('workspace')) {
+					excludeList = {
+						relativepath : {},
+						wildcard : {}
+					};
+					// to find speedy
+					for (i = 0; i < listData.workspace.length; i = i + 1) {
+						slashPath = toSlashPathRelative(listData.workspace[i]);
+						if (slashPath.indexOf('*') >= 0) {
+							// wild card
+							excludeList.wildcard[slashPath] = {
+								wild1 : slashPath.slice(0, slashPath.indexOf('*')),
+								wild2 : slashPath.slice(slashPath.lastIndexOf('*') + 1)
+							};
+						} else {
+							// absolute path
+							excludeList.relativepath[slashPath] = "1";
+						}
+					}
+					console.log("loadexcludeFileList", excludeList);
+					excludeListOnWorkSpace = excludeList;
+				}
 			});
 		}
 	}
 
 	module.exports = exclude_path;
 	module.exports.loadExcludeFileList = loadExcludeFileList;
+	module.exports.TypeBrowser = "browser";
+	module.exports.TypeWorkSpace = "workspace";
+
 	module.exports.isExcludePath = isExcludePath;
 }());

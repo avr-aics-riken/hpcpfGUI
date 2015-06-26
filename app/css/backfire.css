@@ -101,9 +101,17 @@
 	flex-direction: row;
 }
 
+.fileitem_disabled {
+	color: darkgray;
+}
+
 .filelabel{
 	margin: 10px 0px 0px 10px;
 	color: white;
+}
+
+.filelabel_disabled {
+	color: darkgray;
 }
 
 .nodesizer{

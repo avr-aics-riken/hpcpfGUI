@@ -37,25 +37,25 @@ if (typeof window === 'undefined') { // Node.js
 						dom,
 						lst = [],
 						//childlist,
-						files = fs.readdirSync(dir);
+						files = fs.readdirSync(dir),
+						isExcludePath = false;
 					if (!files) {
 						return;
 					}
 					for (i in files) {
 						if (files.hasOwnProperty(i)) {
 							name = dir + files[i];
-							if (!excludePath.isExcludePath(name)) {
-								relativePath = path.relative(workpath, name).split(path.sep).join('/');
-								try {
-									if (fs.statSync(name).isDirectory()) {
-										dom = {"name": files[i], "type": "dir", "path": relativePath, "extract": false, "child": null};
-										lst.push(dom);
-									} else if (files[i].substring(0, 1) !== '.') {
-										lst.push({"name": files[i], "type": "file", "path": relativePath});
-									}
-								} catch (err) {
-									console.log("not found dir:" + dir, err);
+							relativePath = path.relative(workpath, name).split(path.sep).join('/');
+							isExcludePath = excludePath.isExcludePath(excludePath.TypeWorkSpace, relativePath);
+							try {
+								if (fs.statSync(name).isDirectory()) {
+									dom = {"name": files[i], "type": "dir", "path": relativePath, "extract": false, "child": null, "exclude" : isExcludePath};
+									lst.push(dom);
+								} else if (files[i].substring(0, 1) !== '.') {
+									lst.push({"name": files[i], "type": "file", "path": relativePath, "exclude" : isExcludePath});
 								}
+							} catch (err) {
+								console.log("not found dir:" + dir, err);
 							}
 						}
 					}
@@ -315,6 +315,7 @@ if (typeof window === 'undefined') { // Node.js
 				relativePath    = listitem.path,
 				type    = listitem.type,
 				extract = listitem.extract,
+				isdisable = listitem.exclude,
 				newbtn    = document.createElement('div'),
 				fileicon  = document.createElement('div'),
 				filelabel = document.createElement('p'),
@@ -330,12 +331,22 @@ if (typeof window === 'undefined') { // Node.js
 				newbtn.appendChild(sizer);
 			}
 			
-			newbtn.setAttribute('class', "fileitem");
+			console.log("disableddisableddisableddisableddisableddisabled");
+			
+			if (isdisable) {
+				newbtn.setAttribute('class', "fileitem fileitem_disabled");
+			} else {
+				newbtn.setAttribute('class', "fileitem");
+			}
 			newbtn.setAttribute('draggable', "false");
 			fileicon.setAttribute('class', type);
 			newbtn.appendChild(fileicon);
 
-			filelabel.setAttribute('class', "filelabel");
+			if (isdisable) {
+				filelabel.setAttribute('class', "filelabel filelabel_disabled");
+			} else {
+				filelabel.setAttribute('class', "filelabel");
+			}
 			filelabel.innerHTML = name;
 			newbtn.appendChild(filelabel);
 			if (type === "dir") {
