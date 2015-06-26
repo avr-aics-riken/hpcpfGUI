@@ -85,7 +85,7 @@ if (typeof window === 'undefined') { // Node.js
 			console.log('not found path>' + src);
 			return;
 		}
-		if (excludePath.isExcludePath(src)) {
+		if (excludePath.isExcludePath(src) || excludePath.isExcludePath(dst)) {
 			console.log('cannot excute for excluding path>' + src);
 			return;
 		}
@@ -97,7 +97,7 @@ if (typeof window === 'undefined') { // Node.js
 		}
 	};
 	var localMoveFile     = function (src, dst, callback) {
-		if (excludePath.isExcludePath(src)) {
+		if (excludePath.isExcludePath(src) || excludePath.isExcludePath(dst)) {
 			console.log('cannot excute for excluding path>' + src);
 			return;
 		}
@@ -118,7 +118,7 @@ if (typeof window === 'undefined') { // Node.js
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath),
 			cmdstr;
-		if (excludePath.isExcludePath(srcpath)) {
+		if (excludePath.isExcludePath(srcpath) || excludePath.isExcludePath(expath)) {
 			console.log('cannot excute for excluding path>' + srcpath);
 			return;
 		}
@@ -135,7 +135,7 @@ if (typeof window === 'undefined') { // Node.js
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath),
 			cmdstr;
-		if (excludePath.isExcludePath(srcpath)) {
+		if (excludePath.isExcludePath(srcpath) || excludePath.isExcludePath(cpath)) {
 			console.log('cannot excute for excluding path>' + srcpath);
 			return;
 		}
@@ -199,14 +199,14 @@ if (typeof window === 'undefined') { // Node.js
 	};
 
 	var remoteCopyFile     = function (conn, src, dst, callback) {
-		if (excludePath.isExcludePath(src)) {
+		if (excludePath.isExcludePath(src) || excludePath.isExcludePath(dst)) {
 			console.log('cannot excute for excluding path>' + src);
 			return;
 		}
 		remoteCmd(conn, 'cp -Rf "' + src + '" "' + dst + '"', callback);
 	};
 	var remoteMoveFile     = function (conn, src, dst, callback) {
-		if (excludePath.isExcludePath(src)) {
+		if (excludePath.isExcludePath(src) || excludePath.isExcludePath(dst)) {
 			console.log('cannot excute for excluding path>' + src);
 			return;
 		}
@@ -219,7 +219,7 @@ if (typeof window === 'undefined') { // Node.js
 	var remoteExtractFile  = function (conn, srcpath, expath, callback) {
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath);
-		if (excludePath.isExcludePath(srcpath)) {
+		if (excludePath.isExcludePath(srcpath) || excludePath.isExcludePath(expath)) {
 			console.log('cannot excute for excluding path>' + srcpath);
 			return;
 		}
@@ -230,7 +230,7 @@ if (typeof window === 'undefined') { // Node.js
 	var remoteCompressFile = function (conn, srcpath, cpath, callback) {
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath);
-		if (excludePath.isExcludePath(srcpath)) {
+		if (excludePath.isExcludePath(srcpath) || excludePath.isExcludePath(cpath)) {
 			console.log('cannot excute for excluding path>' + srcpath);
 			return;
 		}
@@ -324,15 +324,19 @@ if (typeof window === 'undefined') { // Node.js
 					function readLocalDir(path, list, callback) {
 						var lists = [],
 							i,
-							stat;
+							stat,
+							fullpath,
+							isExcludePath = false;
 						if (list) {
 							for (i = 0; i < list.length; i = i + 1) {
 								try {
-									stat = fs.statSync(path + list[i]);
+									fullpath = path + list[i];
+									stat = fs.statSync(fullpath);
+									isExcludePath = excludePath.isExcludePath(fullpath);
 									if (stat && stat.isDirectory()) {
-										lists.push({filename: list[i], longname: "d"});
+										lists.push({filename: list[i], longname: "d", excludepath : isExcludePath});
 									} else {
-										lists.push({filename: list[i], longname: "-"});
+										lists.push({filename: list[i], longname: "-", excludepath : isExcludePath});
 									}
 								} catch (e) {
 									console.log('Failed stat:' + list[i]);
@@ -363,6 +367,7 @@ if (typeof window === 'undefined') { // Node.js
 					}
 					readLocalDir(path, list, callback);
 				};
+				
 			}(path, this)));
 		};
 		this.Connect = function (args) {

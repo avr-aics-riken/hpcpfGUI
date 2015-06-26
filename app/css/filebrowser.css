@@ -70,6 +70,10 @@
 	overflow: hidden;
 }
 
+.filelabel_disabled {
+	color: gray;
+}
+
 .filelabel_short{
 	width:120px;
 	line-height:70px;

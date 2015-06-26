@@ -280,7 +280,7 @@ function showRenameBox(filelabel, fpath, ftp) {
 	renameBox.addEventListener('keydown', renamefunc);
 }
 
-function makeNode(name, type, filepath, rftp, argftp, side, another_rftp) {
+function makeNode(name, type, isdisabled, filepath, rftp, argftp, side, another_rftp) {
 	"use strict";
 //	<div class="fileitem" id="dir2" draggable="true" ><div class="dir" ></div><p class="filelabel">dir1</p><button type="button" class="dustbox"></button></div>
 	var newbtn = document.createElement('div'),
@@ -288,8 +288,12 @@ function makeNode(name, type, filepath, rftp, argftp, side, another_rftp) {
 		filelabel,
 		dustbtn;
 	
-	newbtn.setAttribute('class', "fileitem");
-	newbtn.setAttribute('draggable', "true");
+	if (isdisabled) {
+		newbtn.setAttribute('class', "fileitem fileitem_disabled");
+	} else {
+		newbtn.setAttribute('class', "fileitem");
+		newbtn.setAttribute('draggable', "true");
+	}
 	fileicon = document.createElement('div');
 	if (type !== "file" && type !== "dir") {
 		console.log("Unknown file type -> " + type);
@@ -299,7 +303,11 @@ function makeNode(name, type, filepath, rftp, argftp, side, another_rftp) {
 	fileicon.setAttribute('class', type);
 	newbtn.appendChild(fileicon);
 	filelabel = document.createElement('p');
-	filelabel.setAttribute('class', "filelabel");
+	if (isdisabled) {
+		filelabel.setAttribute('class', "filelabel filelabel_disabled");
+	} else {
+		filelabel.setAttribute('class', "filelabel");
+	}
 	filelabel.innerHTML = name;
 	newbtn.appendChild(filelabel);
 	
@@ -309,43 +317,48 @@ function makeNode(name, type, filepath, rftp, argftp, side, another_rftp) {
 		closeRenameBox();
 		showRenameBox(filelabel, filepath, rftp);
 	}
-	filelabel.oncontextmenu = (function (label, fpath, ftp) {
-		return function () {
-			renameboxfunc(label, fpath, ftp);
-		};
-	}(filelabel, filepath, rftp));
 	
-	dustbtn = document.createElement('button');
-	dustbtn.setAttribute('class', 'dustbox');
-	dustbtn.setAttribute('type', 'button');
-	dustbtn.addEventListener('click', (function (fpath, ftp) {
-		return function (e) {
-			e.stopPropagation();
-			if (this.getAttribute('class') === 'dustbox_ok') {
-				console.log('DEL>:' + fpath);
-				ftp.DeleteFile(fpath, (function (rftp, filepath) {
-					console.log(rftp, filepath);
-					fbOpenDir(rftp, filepath);
-				}(rftp, getUpDir(filepath))));
-			} else {
-				this.setAttribute('class', 'dustbox_ok');
-			}
-		};
-	}(filepath, rftp)));
-	newbtn.appendChild(dustbtn);
+	if (!isdisabled) {
+		filelabel.oncontextmenu = (function (label, fpath, ftp) {
+			return function () {
+				renameboxfunc(label, fpath, ftp);
+			};
+		}(filelabel, filepath, rftp));
 
-	addItemDragEvents(newbtn, side, filepath, rftp, another_rftp);
+		dustbtn = document.createElement('button');
+		dustbtn.setAttribute('class', 'dustbox');
+		dustbtn.setAttribute('type', 'button');
+		dustbtn.addEventListener('click', (function (fpath, ftp) {
+			return function (e) {
+				e.stopPropagation();
+				if (this.getAttribute('class') === 'dustbox_ok') {
+					console.log('DEL>:' + fpath);
+					ftp.DeleteFile(fpath, (function (rftp, filepath) {
+						console.log(rftp, filepath);
+						fbOpenDir(rftp, filepath);
+					}(rftp, getUpDir(filepath))));
+				} else {
+					this.setAttribute('class', 'dustbox_ok');
+				}
+			};
+		}(filepath, rftp)));
+		newbtn.appendChild(dustbtn);
 
-	if (type === 'dir') {
-		newbtn.setAttribute('onclick', 'fbOpenDir(' + argftp + ',"' + filepath + '")');
+		addItemDragEvents(newbtn, side, filepath, rftp, another_rftp);
+
+		if (type === 'dir') {
+			newbtn.setAttribute('onclick', 'fbOpenDir(' + argftp + ',"' + filepath + '")');
+		}
+
+		newbtn.addEventListener('click', (function (d) {
+			return function () {
+				d.setAttribute('class', 'dustbox');
+			};
+		}(dustbtn)));
 	}
 	
-	newbtn.addEventListener('click', (function (d) {
-		return function () {
-			d.setAttribute('class', 'dustbox');
-		};
-	}(dustbtn)));
-
+	newbtn.disabled = isdisabled;
+	filelabel.disabled = isdisabled;
 	return newbtn;
 }
 
@@ -663,7 +676,8 @@ function startFileList(nameA, nameB) {
 				flist,
 				i,
 				type,
-				node;
+				node,
+				isdisabled = false;
 			
 			clearListA();
 			pnode = document.getElementById("leftPath");
@@ -681,7 +695,8 @@ function startFileList(nameA, nameB) {
 						} else { // file
 							type = 'file';
 						}
-						node = makeNode(data[i].filename, type, rftpA.GetDir() + data[i].filename, rftpA, 'rftpA', 'left', rftpB);
+						isdisabled = data[i].excludepath;
+						node = makeNode(data[i].filename, type, isdisabled, rftpA.GetDir() + data[i].filename, rftpA, 'rftpA', 'left', rftpB);
 						if (node) {
 							flist.appendChild(node);
 						}
@@ -716,7 +731,8 @@ function startFileList(nameA, nameB) {
 				flist,
 				i,
 				type,
-				node;
+				node,
+				isdisabled = false;
 			
 			clearListB();
 			pnode = document.getElementById("rightPath");
@@ -734,7 +750,8 @@ function startFileList(nameA, nameB) {
 						} else { // file
 							type = 'file';
 						}
-						node = makeNode(data[i].filename, type, rftpB.GetDir() + data[i].filename, rftpB, 'rftpB', 'right', rftpA);
+						isdisabled = data[i].excludepath;
+						node = makeNode(data[i].filename, type, isdisabled, rftpB.GetDir() + data[i].filename, rftpB, 'rftpB', 'right', rftpA);
 						if (node) {
 							flist.appendChild(node);
 						}
