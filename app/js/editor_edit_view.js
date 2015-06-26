@@ -227,6 +227,9 @@
 	editor.socket.on('fileopen', function (data) {
 		console.log("fileopen : " + data);
 		fileopen(data);
+		if (window.editor_edit_view.onFileOpened) {
+			window.editor_edit_view.onFileOpened();
+		}
 	});
 
 	function getFileList() {
@@ -236,6 +239,7 @@
 	window.editor_edit_view = edit_view;
 	window.editor_edit_view.ace_editor = ace_editor;
 	window.editor_edit_view.fileselect = fileselect;
+	window.editor_edit_view.onFileOpened = null;
 	window.editor_edit_view.changeEditor = changeEditor;
 	window.editor_edit_view.modeChange = modeChange;
 }(window.editor));

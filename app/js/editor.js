@@ -228,11 +228,13 @@
 	function disableFileEdit() {
 		$('button_rename').disabled = true;
 		$('button_delete').disabled = true;
+		edit_view.ace_editor.setReadOnly(true);
 	}
 	
 	function enableFileEdit() {
 		$('button_rename').disabled = false;
 		$('button_delete').disabled = false;
+		edit_view.ace_editor.setReadOnly(false);
 	}
 
 	function disableDirEdit() {
@@ -240,7 +242,6 @@
 		$('button_newfile').disabled = true;
 		$('button_rename').disabled = true;
 		$('button_delete').disabled = true;
-		console.log("disableDirEditdisableDirEditdisableDirEdit");
 	}
 	
 	function enableDirEdit() {
@@ -248,7 +249,6 @@
 		$('button_newfile').disabled = false;
 		$('button_rename').disabled = false;
 		$('button_delete').disabled = false;
-		console.log("enableDirEditenableDirEditenableDirEdit");
 	}
 
 	/// save file
@@ -486,16 +486,18 @@
 			changeDir(fd, getWorkingPath() + parentDir);
 		}
 		
-		// disable edit for excluding file item
-		enableFileEdit();
-		if (isFileItemDisabled(element)) {
-			disableFileEdit();
-		}
-		
 		edit_view.fileselect(path);
 		document.getElementById('filename').value = path.split("/").pop();
 		showEditView();
 		changeColor(element);
+		
+		// disable edit for excluding file item
+		edit_view.onFileOpened = function () {
+			enableFileEdit();
+			if (isFileItemDisabled(element)) {
+				disableFileEdit();
+			}
+		};
 	}
 
 
