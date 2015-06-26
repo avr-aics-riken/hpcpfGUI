@@ -7,7 +7,8 @@ if (typeof window === 'undefined') { // Node.js
 		ssh2 = require('ssh2'),
 		exec = require('child_process').exec,
 		path = require('path'),
-		os = require('os');
+		os = require('os'),
+		excludePath = require('./exclude_path');
 
 	// default commands
 	var cpFileCmd = 'cp',
@@ -84,6 +85,10 @@ if (typeof window === 'undefined') { // Node.js
 			console.log('not found path>' + src);
 			return;
 		}
+		if (excludePath.isExcludePath(src)) {
+			console.log('cannot excute for excluding path>' + src);
+			return;
+		}
 
 		if (fs.lstatSync(src).isDirectory()) {
 			localCmd(cpDirCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
@@ -92,6 +97,10 @@ if (typeof window === 'undefined') { // Node.js
 		}
 	};
 	var localMoveFile     = function (src, dst, callback) {
+		if (excludePath.isExcludePath(src)) {
+			console.log('cannot excute for excluding path>' + src);
+			return;
+		}
 		localCmd(mvCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
 	};
 	var localExistsFile = function (src, dstFileList, callback) {
@@ -109,6 +118,10 @@ if (typeof window === 'undefined') { // Node.js
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath),
 			cmdstr;
+		if (excludePath.isExcludePath(srcpath)) {
+			console.log('cannot excute for excluding path>' + srcpath);
+			return;
+		}
 		expath = expath + (expath.charAt(expath.length - 1) === '/' ? '' : '/');
 		if (os.platform().indexOf('win') === 0) {
 			cmdstr = tarExtractCmd + ' "' + getRealPath(parentpath + '/' + srcfile).split("\\").join("/") + '" -C "' + getRealPath(expath).split("\\").join("/") + '"';
@@ -122,6 +135,10 @@ if (typeof window === 'undefined') { // Node.js
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath),
 			cmdstr;
+		if (excludePath.isExcludePath(srcpath)) {
+			console.log('cannot excute for excluding path>' + srcpath);
+			return;
+		}
 		cpath = cpath + (cpath.charAt(cpath.length - 1) === '/' ? '' : '/');
 		if (os.platform().indexOf('win') === 0) {
 			cmdstr = 'cd "' + getRealPath(parentpath) + '" & ' + __dirname + '/../' + tarCompressCmd + ' "' + getRealPath(cpath + srcfile).split("\\").join("/") + '.tar.gz" "' + srcfile + '"';
@@ -136,13 +153,23 @@ if (typeof window === 'undefined') { // Node.js
 			console.log('not found path>' + path);
 			return;
 		}
+		if (excludePath.isExcludePath(path)) {
+			console.log('cannot excute for excluding path>' + path);
+			return;
+		}
 		if (fs.lstatSync(path).isDirectory()) {
 			localCmd(rmDirCmd + ' "' + getRealPath(path) + '"', callback);
 		} else {
 			localCmd(rmFileCmd + ' "' + getRealPath(path) + '"', callback);
 		}
 	};
-	var localMakeDir      = function (path, callback) { localCmd(mkdirCmd + ' "' + getRealPath(path) + '"', callback);            };
+	var localMakeDir      = function (path, callback) {
+		if (excludePath.isExcludePath(path)) {
+			console.log('cannot excute for excluding path>' + path);
+			return;
+		}
+		localCmd(mkdirCmd + ' "' + getRealPath(path) + '"', callback);
+	};
 
 	//-----------------------------------------------------------------
 	/*
@@ -171,8 +198,20 @@ if (typeof window === 'undefined') { // Node.js
 		}(callback)));
 	};
 
-	var remoteCopyFile     = function (conn, src, dst, callback) { remoteCmd(conn, 'cp -Rf "' + src + '" "' + dst + '"', callback);        };
-	var remoteMoveFile     = function (conn, src, dst, callback) { remoteCmd(conn, 'mv "' + src + '" "' + dst + '"', callback);        };
+	var remoteCopyFile     = function (conn, src, dst, callback) {
+		if (excludePath.isExcludePath(src)) {
+			console.log('cannot excute for excluding path>' + src);
+			return;
+		}
+		remoteCmd(conn, 'cp -Rf "' + src + '" "' + dst + '"', callback);
+	};
+	var remoteMoveFile     = function (conn, src, dst, callback) {
+		if (excludePath.isExcludePath(src)) {
+			console.log('cannot excute for excluding path>' + src);
+			return;
+		}
+		remoteCmd(conn, 'mv "' + src + '" "' + dst + '"', callback);
+	};
 	var remoteExistsFile     = function (src, dstFileList, callback) {
 		console.log("remoteExistsFile");
 		return localExistsFile(src, dstFileList, callback);
@@ -180,6 +219,10 @@ if (typeof window === 'undefined') { // Node.js
 	var remoteExtractFile  = function (conn, srcpath, expath, callback) {
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath);
+		if (excludePath.isExcludePath(srcpath)) {
+			console.log('cannot excute for excluding path>' + srcpath);
+			return;
+		}
 		expath = expath + (expath.charAt(expath.length - 1) === '/' ? '' : '/');
 		console.log('remoteCMD>' + 'cd "' + parentpath + '";tar xvf "' + srcfile + '" -C "' + expath + '"');
 		remoteCmd(conn, 'cd "' + parentpath + '";tar xvf "' + srcfile + '" -C "' + expath + '"', callback);
@@ -187,18 +230,36 @@ if (typeof window === 'undefined') { // Node.js
 	var remoteCompressFile = function (conn, srcpath, cpath, callback) {
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath);
+		if (excludePath.isExcludePath(srcpath)) {
+			console.log('cannot excute for excluding path>' + srcpath);
+			return;
+		}
 		cpath = cpath + (cpath.charAt(cpath.length - 1) === '/' ? '' : '/');
 		console.log('remoteCMD>' + 'cd "' + parentpath + '";pwd;tar czvf "' + cpath + srcfile + '.tar.gz" "' + srcfile + '"');
 		remoteCmd(conn, 'cd "' + parentpath + '";tar czvf "' + cpath + srcfile + '.tar.gz" "' + srcfile + '"', callback);
 	};
 	var remoteDeleteFile   = function (conn, path, callback) {
+		if (excludePath.isExcludePath(path)) {
+			console.log('cannot excute for excluding path>' + path);
+			return;
+		}
 		remoteCmd(conn, 'rm "' + path + '"', callback);
 	};
 	var remoteDeleteDir = function (conn, path, callback) {
+		if (excludePath.isExcludePath(path)) {
+			console.log('cannot excute for excluding path>' + path);
+			return;
+		}
 		remoteCmd(conn, 'rm -rf "' + path + '"', callback);
 	};
 
-	var remoteMakeDir      = function (conn, path, callback) { remoteCmd(conn, 'mkdir "' + path + '"', callback);             };
+	var remoteMakeDir      = function (conn, path, callback) {
+		if (excludePath.isExcludePath(path)) {
+			console.log('cannot excute for excluding path>' + path);
+			return;
+		}
+		remoteCmd(conn, 'mkdir "' + path + '"', callback);
+	};
 
 	//-----------------------------------------------------------------
 
