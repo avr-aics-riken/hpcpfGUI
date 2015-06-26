@@ -2,7 +2,8 @@
 /*global require, global, $, io, socket, FileDialog, RemoteFTP */
 
 var socket = io.connect(),
-	filedialog = new FileDialog('remotedlg', false, false);
+	filedialog = new FileDialog('remotedlg', false, false),
+	tarPath = '';
 
 function openFileDialog(path, type) {
 	"use strict";
@@ -160,7 +161,6 @@ socket.on('updateRemoteHostList', function (sdata) {
 
 //-----------------------------------
 filedialog.registerSocketEvent(socket);
-var tarPath = '';
 function openfileDialog(path) {
 	"use strict";
 	var c,
