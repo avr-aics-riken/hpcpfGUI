@@ -144,6 +144,79 @@ function closeRenameBox() {
 	background.removeEventListener('click', closeRenameBox);
 }
 
+function fbOpenDir(rftp, path) {
+	"use strict";
+	rftp.UpdateList(path);
+}
+
+function getFilename(path) {
+	"use strict";
+	var dirs = path.split('/');
+	return dirs[dirs.length - 1];
+}
+
+/// show overwrite-confirm dialog
+function showConfirm(callback) {
+	"use strict";
+	var save = document.getElementById('button_save'),
+		cancel = document.getElementById('button_cancel'),
+		savefunc,
+		cancelfunc;
+	
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("confirm_dialog").style.visibility = "visible";
+
+	savefunc = function () {
+		callback(true);
+		save.removeEventListener("click", savefunc, true);
+		cancel.removeEventListener("click", cancelfunc, true);
+	};
+	cancelfunc = function () {
+		callback(false);
+		save.removeEventListener("click", savefunc, true);
+		cancel.removeEventListener("click", cancelfunc, true);
+	};
+	save.addEventListener("click", savefunc, true);
+	cancel.addEventListener("click", cancelfunc, true);
+}
+
+/// hidden exist warning dialog
+function hiddenExistWarning(callback) {
+	"use strict";
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("exist_warning_dialog").style.visibility = "hidden";
+}
+
+/// show same file/directory exists dialog
+function showExistWarning(callback) {
+	"use strict";
+	var ok = document.getElementById('button_ok');
+	document.getElementById("confirm_area").style.visibility = "visible";
+	document.getElementById("exist_warning_dialog").style.visibility = "visible";
+
+	function okfunc() {
+		callback();
+		ok.removeEventListener("click", okfunc, true);
+	}
+	ok.addEventListener("click", okfunc, true);
+}
+
+function withExistWarning(target, src, dest, doFunction) {
+	"use strict";
+	target.ExistsFile(target.GetDir(), src, function (exists) {
+		// if file is existed, show confirm dialog
+		if (exists) {
+			showExistWarning(function () {
+				hiddenExistWarning();
+			});
+		} else {
+			doFunction(src, dest);
+		}
+	});
+}
+
+
 function showRenameBox(filelabel, fpath, ftp) {
 	"use strict";
 	var container = document.getElementById('rename_box_container'),
@@ -280,17 +353,6 @@ function makeNode(name, type, filepath, rftp, argftp, side, another_rftp) {
 var rftpA = null;
 var rftpB = null;
 
-function fbOpenDir(rftp, path) {
-	"use strict";
-	rftp.UpdateList(path);
-}
-
-function getFilename(path) {
-	"use strict";
-	var dirs = path.split('/');
-	return dirs[dirs.length - 1];
-}
-
 
 function getHostList() {
 	"use strict";
@@ -302,52 +364,6 @@ function getHostList() {
 
 }
 
-socket.on('updateRemoteHostList', function (sdata) {
-	"use strict";
-	var data = JSON.parse(sdata),
-		txt = "",
-		s_left  = document.getElementById('select_host_left'),
-		s_right = document.getElementById('select_host_right'),
-		name_left = '',
-		name_right = '',
-		i,
-		c1,
-		c2;
-
-	s_left.innerHTML = "";
-	s_right.innerHTML = "";
-	for (i = 0; i < data.length; i = i + 1) {
-		//txt = txt + data.item[i].itemName + "　" + myData.item[i].itemPrice+"円<br>";
-		console.log(data[i].name);
-
-		c1 = document.createElement('option');
-		c1.setAttribute('class', 'option_host');
-		c1.innerHTML = data[i].name;
-		c2 = document.createElement('option');
-		c2.setAttribute('class', 'option_host');
-		c2.innerHTML = data[i].name;
-		s_left.appendChild(c1);
-		s_right.appendChild(c2);
-	}
-
-	if (data.length > 0) {
-		name_left = name_right = data[0].name;
-	}
-
-	s_left.addEventListener('change', function () {
-		name_left = this.value;
-		startFileList(name_left, name_right);
-	});
-	s_right.addEventListener('change', function () {
-		name_right = this.value;
-		startFileList(name_left, name_right);
-	});
-
-	// init
-	console.log(name_left, name_right);
-	startFileList(name_left, name_right);
-});
-
 
 function bootstrap() {
 	"use strict";
@@ -355,6 +371,16 @@ function bootstrap() {
 	document.oncontextmenu = function () {
 		return false;
 	};
+}
+
+/// hidden overwrite-confirm dialog
+function hiddenConfirm(callback) {
+	"use strict";
+	var save = document.getElementById('button_save'),
+		cancel = document.getElementById('button_cancel');
+	
+	document.getElementById("confirm_area").style.visibility = "hidden";
+	document.getElementById("confirm_dialog").style.visibility = "hidden";
 }
 
 /// @param target L or R for existence check
@@ -370,20 +396,6 @@ function withConfirm(target, src, dest, doFunction) {
 					doFunction(src, dest);
 				}
 				hiddenConfirm();
-			});
-		} else {
-			doFunction(src, dest);
-		}
-	});
-}
-
-function withExistWarning(target, src, dest, doFunction) {
-	"use strict";
-	target.ExistsFile(target.GetDir(), src, function (exists) {
-		// if file is existed, show confirm dialog
-		if (exists) {
-			showExistWarning(function () {
-				hiddenExistWarning();
 			});
 		} else {
 			doFunction(src, dest);
@@ -742,61 +754,51 @@ function startFileList(nameA, nameB) {
 	}
 } // bootstrap
 
-/// hidden overwrite-confirm dialog
-function hiddenConfirm(callback) {
+socket.on('updateRemoteHostList', function (sdata) {
 	"use strict";
-	var save = document.getElementById('button_save'),
-		cancel = document.getElementById('button_cancel');
-	
-	document.getElementById("confirm_area").style.visibility = "hidden";
-	document.getElementById("confirm_dialog").style.visibility = "hidden";
-}
+	var data = JSON.parse(sdata),
+		txt = "",
+		s_left  = document.getElementById('select_host_left'),
+		s_right = document.getElementById('select_host_right'),
+		name_left = '',
+		name_right = '',
+		i,
+		c1,
+		c2;
 
-/// show overwrite-confirm dialog
-function showConfirm(callback) {
-	"use strict";
-	var save = document.getElementById('button_save'),
-		cancel = document.getElementById('button_cancel'),
-		savefunc,
-		cancelfunc;
-	
-	document.getElementById("confirm_area").style.visibility = "visible";
-	document.getElementById("confirm_dialog").style.visibility = "visible";
+	s_left.innerHTML = "";
+	s_right.innerHTML = "";
+	for (i = 0; i < data.length; i = i + 1) {
+		//txt = txt + data.item[i].itemName + "　" + myData.item[i].itemPrice+"円<br>";
+		console.log(data[i].name);
 
-	savefunc = function () {
-		callback(true);
-		save.removeEventListener("click", savefunc, true);
-		cancel.removeEventListener("click", cancelfunc, true);
-	};
-	cancelfunc = function () {
-		callback(false);
-		save.removeEventListener("click", savefunc, true);
-		cancel.removeEventListener("click", cancelfunc, true);
-	};
-	save.addEventListener("click", savefunc, true);
-	cancel.addEventListener("click", cancelfunc, true);
-}
-
-/// hidden exist warning dialog
-function hiddenExistWarning(callback) {
-	"use strict";
-	var ok = document.getElementById('button_ok');
-	document.getElementById("confirm_area").style.visibility = "hidden";
-	document.getElementById("exist_warning_dialog").style.visibility = "hidden";
-}
-
-/// show same file/directory exists dialog
-function showExistWarning(callback) {
-	"use strict";
-	var ok = document.getElementById('button_ok');
-	document.getElementById("confirm_area").style.visibility = "visible";
-	document.getElementById("exist_warning_dialog").style.visibility = "visible";
-
-	function okfunc() {
-		callback();
-		ok.removeEventListener("click", okfunc, true);
+		c1 = document.createElement('option');
+		c1.setAttribute('class', 'option_host');
+		c1.innerHTML = data[i].name;
+		c2 = document.createElement('option');
+		c2.setAttribute('class', 'option_host');
+		c2.innerHTML = data[i].name;
+		s_left.appendChild(c1);
+		s_right.appendChild(c2);
 	}
-	ok.addEventListener("click", okfunc, true);
-}
+
+	if (data.length > 0) {
+		name_left = name_right = data[0].name;
+	}
+
+	s_left.addEventListener('change', function () {
+		name_left = this.value;
+		startFileList(name_left, name_right);
+	});
+	s_right.addEventListener('change', function () {
+		name_right = this.value;
+		startFileList(name_left, name_right);
+	});
+
+	// init
+	console.log(name_left, name_right);
+	startFileList(name_left, name_right);
+});
+
 
 
