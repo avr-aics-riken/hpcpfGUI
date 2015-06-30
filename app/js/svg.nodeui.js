@@ -269,7 +269,9 @@ function svgNodeUI(draw) {
 	
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
-			nodeback = draw.rect(226, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}),
+			nodeback1 = draw.rect(212, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(14, 0),
+			nodeback2 = draw.rect(30, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(0, 14),
+			nodeback3 = draw.rect(24, 24).radius(4).attr({'fill': '#72ca29', 'fill-opacity': "1.0", 'stroke': "none"}).move(4.5, 4.5).rotate(45, 16, 16),
 			nodebase = draw.rect(220, 60).radius(4).attr({'fill': "#4d4d4c", 'fill-opacity': "1.0", 'stroke': "none"}).move(3, 30),
 			erasebtn = draw.rect(16, 16).radius(5).attr({'fill': "#ffffff", 'fill-opacity': "0.8", 'stroke': "none"}).move(0, 4),
 			eraseA = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(45, 1 + 7, 1 + 11),
@@ -322,7 +324,9 @@ function svgNodeUI(draw) {
 			};
 		}(this)));
 		
-		group.add(nodeback);
+		group.add(nodeback1);
+		group.add(nodeback2);
+		group.add(nodeback3);
 		group.add(nodebase);
 		group.add(titletext);
 		group.add(eraseG);
@@ -374,7 +378,8 @@ function svgNodeUI(draw) {
 				}
 			}
 		}
-		nodeback.size(nodeback.width(), 40 + 20 * inoutNum);
+		nodeback1.size(nodeback1.width(), 40 + 20 * inoutNum);
+		nodeback2.size(nodeback2.width(), 40 + 20 * inoutNum - 14);
 		nodebase.size(nodebase.width(), 7 + 20 * inoutNum);
 		
 		for (i in plugConnectors) {
