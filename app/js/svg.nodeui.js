@@ -269,11 +269,12 @@ function svgNodeUI(draw) {
 	
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
-			nodebase = draw.rect(220, 60).radius(10).attr({'fill': "#4d4d4c", 'fill-opacity': "0.8", 'stroke': "none"}),
-			erasebtn = draw.rect(15, 15).radius(5).attr({'fill': "#ea4412", 'fill-opacity': "0.8", 'stroke': "none"}),
-			eraseA = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(45),
-			eraseB = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(-45),
-			titletext = draw.text(typename).fill('#ef8815').move(15, 5),
+			nodeback = draw.rect(226, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}),
+			nodebase = draw.rect(220, 60).radius(4).attr({'fill': "#4d4d4c", 'fill-opacity': "1.0", 'stroke': "none"}).move(3, 30),
+			erasebtn = draw.rect(16, 16).radius(5).attr({'fill': "#ffffff", 'fill-opacity': "0.8", 'stroke': "none"}).move(0, 4),
+			eraseA = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(45, 1 + 7, 1 + 11),
+			eraseB = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(-45, 1 + 7, 1 + 11),
+			titletext = draw.text(typename).fill('#4d4d4c').move(15, 2),
 			eraseG = draw.group().move(200, 5),
 			group = draw.group(),
 			groupDragStart = function (self) {
@@ -321,6 +322,7 @@ function svgNodeUI(draw) {
 			};
 		}(this)));
 		
+		group.add(nodeback);
 		group.add(nodebase);
 		group.add(titletext);
 		group.add(eraseG);
@@ -372,7 +374,8 @@ function svgNodeUI(draw) {
 				}
 			}
 		}
-		nodebase.size(nodebase.width(), 40 + 20 * inoutNum);
+		nodeback.size(nodeback.width(), 40 + 20 * inoutNum);
+		nodebase.size(nodebase.width(), 7 + 20 * inoutNum);
 		
 		for (i in plugConnectors) {
 			if (plugConnectors.hasOwnProperty(i)) {
