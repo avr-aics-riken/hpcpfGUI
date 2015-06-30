@@ -653,6 +653,7 @@
 				imageArea,
 				exeArea,
 				infoArea,
+				nodeArea,
 				backButtonArea,
 				filelistArea,
 				buttonBack,
@@ -663,6 +664,7 @@
 				filelistArea = document.getElementById('filelistArea');
 				exeArea = document.getElementById('exe_area');
 				infoArea = document.getElementById('info_area');
+				nodeArea = document.getElementById('node_area');
 				editor = document.getElementById('editor');
 				launchButtonArea = document.getElementById('launchButtonArea');
 				imageArea = document.getElementById('imageArea');
@@ -677,6 +679,7 @@
 					imageArea.style.left = editor.style.left;
 					exeArea.style.left = editor.style.left;
 					infoArea.style.left = editor.style.left;
+					nodeArea.style.left = editor.style.left;
 					buttonBack.style.left = (pos + 20) + "px";
 				}
 			}
