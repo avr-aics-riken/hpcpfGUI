@@ -26,9 +26,9 @@
 		</div>
 		<div class="change_mode_area_container">
 			<div class="change_mode_area">
+				<button class="button_change_mode" id="show_node_button">Workflow</button>
 				<button class="button_change_mode" id="show_info_button">Info</button>
 				<button class="button_change_mode" id="show_log_button">Log</button>
-				<button class="button_change_mode" id="show_node_button">Node</button>
 				<button class="button_vim_mode" onclick="window.editor_edit_view.modeChange(this.value);" disabled value="vim" id="button_vimmode">
 					<span class="vim_mode_text">Vim</span></button>
 			</div>
@@ -241,7 +241,7 @@
 	<span id="exe_mode" style="display:none">
 		<div id="exe_area" class="exe_area">
 			<div class="project_title">
-				<div class="info_project_title_log">
+				<div class="log_project_title">
 					Log:
 					<span id="exe_project_title_text" class="project_title_text">
 						Project Title
@@ -259,6 +259,15 @@
 	<!--------------------------- NodeEdit --------------------------------->
 	<span id="node_mode" style="display:none">
 		<div id="node_area" class="node_area">
+			<div class="project_title">
+				<span class="node_project_title" id="node_project_title">
+				Project Name:
+				</span>
+				<span id="node_title_text" class="node_project_title_text">
+					Project Title
+				</span>
+			</div>
+			<div class="info_bar"></div>
 			<svg id="nodecanvas" class="NodeCanvas noneselect"></svg>
 		</div>
 	</span>

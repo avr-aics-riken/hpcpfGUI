@@ -13,7 +13,7 @@
 	border-radius:2px;
 	border-width:3px;
 	border-color:#000;
-	background-color:#444;
+	background-color:rgba(49, 49, 49, 1.0);
 	-webkit-touch-callout: text;
 	-webkit-user-select: text;
 	-khtml-user-select: text;
@@ -31,6 +31,18 @@
 	top:5px;
 	right:0px;
 	bottom:0px;
+}
+
+.node_project_title {
+	margin-left:35px;
+	text-align:left;
+	font-size:16px;
+	height:30px;
+	color: white;
+}
+
+.node_project_title_text {
+	color: white;
 }
 
 /*

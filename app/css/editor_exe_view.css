@@ -22,6 +22,14 @@
 	user-select: text;
 }
 
+.log_project_title {
+	margin-left:30px;
+	text-align:left;
+	font-size:16px;
+	height:30px;
+	color: #FFF;
+}
+
 .project_title_log {
 	position:relative;
 	margin-top:30px;
