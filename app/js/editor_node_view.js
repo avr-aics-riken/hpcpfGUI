@@ -65,6 +65,36 @@
 		nui.makeNodes(nodeData);
 	}
 	
+	function colorFunction(type) {
+		if (type === "string") {
+			return "#14a271";
+		} else if (type === "float") {
+			return "#139aa5";
+		} else if (type === "vec4") {
+			return "#1b6ad6";
+		} else if (type === "vec3") {
+			return "#566f9f";
+		} else if (type === "vec2") {
+			return "#8222a7";
+		} else if (type === "RenderObject") {
+			return "#ad3b78";
+		} else if (type === "Uniform") {
+			return "#b19e14";
+		} else if (type === "BufferMeshData") {
+			return "#be1656";
+		} else if (type === "BufferPointData") {
+			return "#e023e0";
+		} else if (type === "BufferLineData") {
+			return "#20cae0";
+		} else if (type === "BufferVolumeData") {
+			return "#17d042";
+		} else if (type === "Any") {
+			return "#ef8815";
+		} else { // Object
+			return "#c12417";
+		}
+	}
+	
 	editor.socket.on('connect', function () {
 	});
 	
@@ -72,9 +102,7 @@
 		var draw = SVG('nodecanvas');
 		nui = svgNodeUI(draw);
 		nui.clearNodes();
-		nui.setTypeColorFunction(function () {
-			console.log("node type color");
-		});
+		nui.setTypeColorFunction(colorFunction);
 		nui.nodeClickEvent(function () {
 			console.log("node cliecked");
 		});
@@ -82,6 +110,29 @@
 			console.log("node deleted");
 		});
 		
+		nodeListTable = {
+			CreateCamera : {
+				"name": "CreateCamera",
+				"funcname": "CreateCamera",
+				"info": "カメラをつくるためのノード",
+				"pos": [100, 100],
+				"varname": "instCreateCamera",
+				"customfuncfile": "createcamera.lua",
+				"input": [
+					{"name": "position", "type": "vec3", "value": [0, 0, 300]},
+					{"name": "target", "type": "vec3", "value": [0, 0, 0]},
+					{"name": "up", "type": "vec3", "value": [0, 1, 0]},
+					{"name": "fov", "type": "float", "value": 60},
+					{"name": "screensize", "type": "vec2", "value": [512, 512]},
+					{"name": "filename", "type": "string", "value": "output.jpg"}
+				],
+				"output": [
+					{"name": "camera", "type": "RenderObject"}
+				]
+			}
+		};
+		
+		addNode("CreateCamera", 500, 500);
 	});
 	
 }(window.editor));

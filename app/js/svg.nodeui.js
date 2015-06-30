@@ -213,7 +213,8 @@ function svgNodeUI(draw) {
 		pole.dragstart = poleDragstart(this);
 		pole.dragmove = function (delta, event) {
 			event.stopPropagation();
-			this.line[this.line.length - 1].endPos(event.pageX, event.pageY);
+			//this.line[this.line.length - 1].endPos(event.pageX, event.pageY);
+			this.line[this.line.length - 1].endPos(event.offsetX, event.offsetY);
 		};
 		pole.dragend = poleDragend(this);
 	}
@@ -268,7 +269,7 @@ function svgNodeUI(draw) {
 	
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
-			nodebase = draw.rect(220, 60).radius(10).attr({'fill': "#424542", 'fill-opacity': "0.8", 'stroke': "none"}),
+			nodebase = draw.rect(220, 60).radius(10).attr({'fill': "#4d4d4c", 'fill-opacity': "0.8", 'stroke': "none"}),
 			erasebtn = draw.rect(15, 15).radius(5).attr({'fill': "#ea4412", 'fill-opacity': "0.8", 'stroke': "none"}),
 			eraseA = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(45),
 			eraseB = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(-45),

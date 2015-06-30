@@ -24,7 +24,7 @@
 	border-radius:2px;
 	border-width:3px;
 	border-color:#72ca2a;
-	background-color:#4d4d4d;
+	background-color:#4d4d4c;
 	
 	top:110px;
 	left:10px;
@@ -51,7 +51,7 @@
 	left:10px;
 	bottom:10px;
 	*/
-	background-color:#4d4d4d;
+	background-color:#4d4d4c;
 	top:40px;
 	width:290px;
 	bottom: 58px;
@@ -192,7 +192,7 @@
 	position:absolute;
 	top:30px;
 	width:180px;
-	background-color:#4d4d4d;
+	background-color:#4d4d4c;
 	border-style:none;
 	line-height:30px;
 	border-radius:2px;
