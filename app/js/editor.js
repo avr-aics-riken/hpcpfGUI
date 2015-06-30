@@ -4,11 +4,13 @@
 (function () {
 	"use strict";
 	var socket = io.connect(),
-		isFolderSelected = false,
-		edit_view;
-
+		isFolderSelected = false;
+	
+	function getEditView() {
+		return window.editor_edit_view;
+	}
+	
 	function init() {
-		edit_view = window.editor_edit_view;
 		socket.emit('reqInit');
 	}
 
@@ -168,7 +170,7 @@
 		$('newfilename').value = "";
 		$('newdirname').value = "";
 		$('renameitem').value = "";
-		edit_view.ace_editor.setReadOnly(false);
+		getEditView().ace_editor.setReadOnly(false);
 	}
 
 	function hideEditArea() {
@@ -183,6 +185,7 @@
 		$("info_mode").style.display = "block";
 		$("exe_mode").style.display = "none";
 		$("edit_mode").style.display = "none";
+		$("node_mode").style.display = "none";
 		hideEditArea();
 		hideNewNameArea();
 		socket.emit('reqUpdateInformation');
@@ -195,6 +198,7 @@
 		$("info_mode").style.display = "none";
 		$("exe_mode").style.display = "block";
 		$("edit_mode").style.display = "none";
+		$("node_mode").style.display = "none";
 		$("info_back_button_area").style.display = "none";
 		hideEditArea();
 		hideNewNameArea();
@@ -207,9 +211,23 @@
 		$("info_mode").style.display = "none";
 		$("exe_mode").style.display = "none";
 		$("edit_mode").style.display = "block";
+		$("node_mode").style.display = "none";
 		$("info_back_button_area").style.display = "none";
 		hideNewNameArea();
 		validateModeChangeButton(true);
+	}
+	
+	function showNodeView() {
+		$("info_mode").style.display = "none";
+		$("exe_mode").style.display = "none";
+		$("edit_mode").style.display = "none";
+		$("node_mode").style.display = "block";
+		$("info_back_button_area").style.display = "none";
+		hideEditArea();
+		hideNewNameArea();
+		window.editor.openedfile = "";
+		window.editor.clickedfile = "";
+		isFolderSelected = false;
 	}
 
 	function setProjectName(name) {
@@ -228,13 +246,13 @@
 	function disableFileEdit() {
 		$('button_rename').disabled = true;
 		$('button_delete').disabled = true;
-		edit_view.ace_editor.setReadOnly(true);
+		getEditView().ace_editor.setReadOnly(true);
 	}
 	
 	function enableFileEdit() {
 		$('button_rename').disabled = false;
 		$('button_delete').disabled = false;
-		edit_view.ace_editor.setReadOnly(false);
+		getEditView().ace_editor.setReadOnly(false);
 	}
 
 	function disableDirEdit() {
@@ -262,7 +280,7 @@
 			return;
 		}
 		console.log("Save:" + window.editor.openedfile);
-		socket.emit('reqFileSave', JSON.stringify({file : window.editor.openedfile, data : edit_view.ace_editor.getValue()}));
+		socket.emit('reqFileSave', JSON.stringify({file : window.editor.openedfile, data : getEditView().ace_editor.getValue()}));
 		socket.once('filesavedone', function (success) {
 			if (success) {
 				showSavedMessage();
@@ -273,7 +291,7 @@
 			}
 		});
 		window.editor.edited = false;
-		edit_view.changeEditor(false);
+		getEditView().changeEditor(false);
 	}
 
 	function showNewNameArea(id) {
@@ -296,7 +314,7 @@
 			showOpenWarningMessage(function (isOK) {
 				if (isOK) {
 					hiddenOpenWarningMessage();
-					edit_view.ace_editor.setReadOnly(true);
+					getEditView().ace_editor.setReadOnly(true);
 					saveFile(function () {
 						showNewNameAreaInternal();
 					});
@@ -486,13 +504,13 @@
 			changeDir(fd, getWorkingPath() + parentDir);
 		}
 		
-		edit_view.fileselect(path);
+		getEditView().fileselect(path);
 		document.getElementById('filename').value = path.split("/").pop();
 		showEditView();
 		changeColor(element);
 		
 		// disable edit for excluding file item
-		edit_view.onFileOpened = function () {
+		getEditView().onFileOpened = function () {
 			enableFileEdit();
 			if (isFileItemDisabled(element)) {
 				disableFileEdit();
@@ -503,7 +521,7 @@
 
 	function dirStatusChanged(fd, dirpath) {
 		var elem = null;
-		console.log(edit_view);
+		console.log(getEditView());
 		
 		if (window.editor.clickedfile && window.editor.clickedfile.indexOf(dirpath) >= 0) {
 			console.log("dirchanged:", window.editor.clickedfile);
@@ -553,7 +571,7 @@
 						console.log(isOK);
 						if (isOK) {
 							hiddenOpenWarningMessage();
-							edit_view.ace_editor.setReadOnly(false);
+							getEditView().ace_editor.setReadOnly(false);
 							saveFile(function () {
 								openFile(fd, element, parentDir, path);
 								dirStatusChanged(fd, getWorkingPath() + parentDir);
@@ -667,47 +685,34 @@
 
 	function initButton(fd) {
 		var infoButton = document.getElementById('show_info_button'),
-			logButton = document.getElementById('show_log_button');
-		infoButton.onclick = function () {
-			if (window.editor.edited) {
-				showOpenWarningMessage(function (isOK) {
-					console.log(isOK);
-					if (isOK) {
-						hiddenOpenWarningMessage();
-						edit_view.ace_editor.setReadOnly(false);
-						saveFile(function () {
-							window.editor.openedfile = "";
-							window.editor.clickedfile = "";
-							showInfoView();
+			logButton = document.getElementById('show_log_button'),
+			nodeButton = document.getElementById('show_node_button'),
+			modeChangeFunc = function (endCallback) {
+				return function (evt) {
+					if (window.editor.edited) {
+						showOpenWarningMessage(function (isOK) {
+							console.log(isOK);
+							if (isOK) {
+								hiddenOpenWarningMessage();
+								getEditView().ace_editor.setReadOnly(false);
+								saveFile(function () {
+									window.editor.openedfile = "";
+									window.editor.clickedfile = "";
+									endCallback();
+								});
+							} else {
+								hiddenOpenWarningMessage();
+							}
 						});
 					} else {
-						hiddenOpenWarningMessage();
+						endCallback();
 					}
-				});
-			} else {
-				showInfoView();
-			}
-		};
-		logButton.onclick = function () {
-			if (window.editor.edited) {
-				showOpenWarningMessage(function (isOK) {
-					console.log(isOK);
-					if (isOK) {
-						hiddenOpenWarningMessage();
-						edit_view.ace_editor.setReadOnly(false);
-						saveFile(function () {
-							window.editor.openedfile = "";
-							window.editor.clickedfile = "";
-							showExeView();
-						});
-					} else {
-						hiddenOpenWarningMessage();
-					}
-				});
-			} else {
-				showExeView();
-			}
-		};
+				};
+			};
+		
+		infoButton.onclick = modeChangeFunc(showInfoView);
+		logButton.onclick = modeChangeFunc(showExeView);
+		nodeButton.onclick = modeChangeFunc(showNodeView);
 	}
 
 	socket.on('connect', function () {

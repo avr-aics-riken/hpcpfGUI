@@ -27,6 +27,7 @@
 			<div class="change_mode_area">
 				<button class="button_change_mode" id="show_info_button">Info</button>
 				<button class="button_change_mode" id="show_log_button">Log</button>
+				<button class="button_change_mode" id="show_node_button">Node</button>
 				<button class="button_vim_mode" onclick="window.editor_edit_view.modeChange(this.value);" disabled value="vim" id="button_vimmode">
 					<span class="vim_mode_text">Vim</span></button>
 			</div>
@@ -254,6 +255,13 @@
 		</div>
 	</span>
 	
+	<!--------------------------- NodeEdit --------------------------------->
+	<span id="node_mode" style="display:none">
+		<div>
+			<svg id="nodecanvas" class="NodeCanvas noneselect">
+			</svg>
+		</div>
+	</span>
 		
 	<!---- End of fontchange -->
 	</span>
@@ -273,9 +281,9 @@
 		<div id="exeViewArea">
 		</div>
 	</span>
-	<!------------------------------------------------------------------------------>
-
-
+	
+	<!---------------------------------------------------------------------->
+	
 	<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="js/backfire_filedialog.js"></script>
@@ -283,5 +291,8 @@
 	<script type="text/javascript" src="js/editor_info_view.js"></script>
 	<script type="text/javascript" src="js/editor_exe_view.js"></script>
 	<script type="text/javascript" src="js/editor_edit_view.js"></script>
+	<script type="text/javascript" src="js/svg.min.js"></script>
+	<script type="text/javascript" src="js/svg.draggable.js"></script>
+	<script type="text/javascript" src="js/svg.nodeui.js"></script>
 </body>
 </html>
