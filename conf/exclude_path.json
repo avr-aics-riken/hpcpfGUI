@@ -4,9 +4,5 @@
 		"/Program Files",
 		"/Program Files (x86)",
 		"C:/ProgramData"
-	],
-	"workspace" : [
-		"case02",
-		"*.lua"
 	]
 }

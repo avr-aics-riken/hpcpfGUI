@@ -16,13 +16,15 @@
 		return JSON.parse(JSON.stringify(obj));
 	}
 	
-	function addNode(nodename, nx, ny) {
+	function addNode(nodename, nodeName, nx, ny) {
 		var node = nodeListTable[nodename],
 			instNode,
 			nodeData;
 		if (!node) {
 			return;
 		}
+		node.name = nodeName;
+		node.varname = nodeName;
 		nodeData = nui.getNodeData();
 		instNode = clone(node);
 		//console.log(instNode);
@@ -106,33 +108,129 @@
 		nui.nodeClickEvent(function () {
 			console.log("node cliecked");
 		});
-		nui.nodeDeleteEvent(function () {
-			console.log("node deleted");
+		nui.nodeDeleteEvent(function (data) {
+			var node = nui.getNode(data.varname);
+			//console.log(data);
+			node.erase();
 		});
 		
 		nodeListTable = {
-			CreateCamera : {
-				"name": "CreateCamera",
+			Case1 : {
+				"name": "Case01",
+				"funcname": "CreateCamera",
+				"info": "カメラをつくるためのノード",
+				"pos": [100, 100],
+				"varname": "GetFiles",
+				"customfuncfile": "createcamera.lua",
+				"input": [
+					{"name": "files", "type": "vec2", "value": [0, 0, 300]},
+					{"name": "connetion", "type": "string", "value":  "output.jpg"}
+					/*
+					{"name": "target", "type": "vec3", "value": [0, 0, 0]},
+					{"name": "up", "type": "vec3", "value": [0, 1, 0]},
+					{"name": "fov", "type": "float", "value": 60},
+					{"name": "screensize", "type": "vec2", "value": [512, 512]},
+					{"name": "filename", "type": "string", "value": "output.jpg"}
+					*/
+				],
+				"output": [	]
+			},
+			Case2 : {
+				"name": "ffvc solve",
 				"funcname": "CreateCamera",
 				"info": "カメラをつくるためのノード",
 				"pos": [100, 100],
 				"varname": "instCreateCamera",
 				"customfuncfile": "createcamera.lua",
 				"input": [
-					{"name": "position", "type": "vec3", "value": [0, 0, 300]},
+					{"name": "input", "type": "RenderObject", "value": [0, 0, 300]},
+					{"name": "connetion", "type": "string", "value":  "output.jpg"}
+					/*
 					{"name": "target", "type": "vec3", "value": [0, 0, 0]},
 					{"name": "up", "type": "vec3", "value": [0, 1, 0]},
 					{"name": "fov", "type": "float", "value": 60},
 					{"name": "screensize", "type": "vec2", "value": [512, 512]},
 					{"name": "filename", "type": "string", "value": "output.jpg"}
+					*/
 				],
 				"output": [
-					{"name": "camera", "type": "RenderObject"}
+					{"name": "vel_sph", "type": "float"},
+					{"name": "press_sph", "type": "vec4"}
+				]
+			},
+			hrender1 : {
+				"name": "krenderCASE",
+				"funcname": "CreateCamera",
+				"info": "カメラをつくるためのノード",
+				"pos": [100, 100],
+				"varname": "instCreateCamera",
+				"customfuncfile": "createcamera.lua",
+				"input": [
+					{"name": "vel_sph", "type": "float", "value": [0, 0, 300]},
+					{"name": "connetion", "type": "string", "value":  "output.jpg"}
+					/*
+					{"name": "target", "type": "vec3", "value": [0, 0, 0]},
+					{"name": "up", "type": "vec3", "value": [0, 1, 0]},
+					{"name": "fov", "type": "float", "value": 60},
+					{"name": "screensize", "type": "vec2", "value": [512, 512]},
+					{"name": "filename", "type": "string", "value": "output.jpg"}
+					*/
+				],
+				"output": [
+					{"name": "image", "type": "vec2"}
+				]
+			},
+			hrender2 : {
+				"name": "hrender",
+				"funcname": "CreateCamera",
+				"info": "カメラをつくるためのノード",
+				"pos": [100, 100],
+				"varname": "instCreateCamera",
+				"customfuncfile": "createcamera.lua",
+				"input": [
+					{"name": "press_sph", "type": "vec4", "value": [0, 0, 300]},
+					{"name": "connetion", "type": "string", "value":  "output.jpg"}
+					/*
+					{"name": "target", "type": "vec3", "value": [0, 0, 0]},
+					{"name": "up", "type": "vec3", "value": [0, 1, 0]},
+					{"name": "fov", "type": "float", "value": 60},
+					{"name": "screensize", "type": "vec2", "value": [512, 512]},
+					{"name": "filename", "type": "string", "value": "output.jpg"}
+					*/
+				],
+				"output": [
+					{"name": "image", "type": "vec2"}
+				]
+			},
+			RemoteSetting : {
+				"name": "RemoteSetting",
+				"funcname": "RemoteSetting",
+				"info": "カメラをつくるためのノード",
+				"pos": [100, 100],
+				"varname": "instCreateCamera",
+				"customfuncfile": "createcamera.lua",
+				"input": [
+					/*
+					{"name": "target", "type": "vec3", "value": [0, 0, 0]},
+					{"name": "up", "type": "vec3", "value": [0, 1, 0]},
+					{"name": "fov", "type": "float", "value": 60},
+					{"name": "screensize", "type": "vec2", "value": [512, 512]},
+					{"name": "filename", "type": "string", "value": "output.jpg"}
+					*/
+				],
+				"output": [
+					{"name": "connetion", "type": "string"}
 				]
 			}
 		};
 		
-		addNode("CreateCamera", 500, 500);
+		addNode("Case1", "GetFiles", 500, 100);
+		addNode("Case1", "GetFiles", 500, 200);
+		addNode("Case2", "ffv_cyl_new", 500, 100);
+		addNode("hrender1", "krenderCASE", 500, 100);
+		addNode("hrender2", "krenderCASE", 500, 150);
+		addNode("RemoteSetting", "RemoteSetting", 500, 100);
+		
 	});
 	
 }(window.editor));
