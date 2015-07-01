@@ -1,0 +1,75 @@
+﻿{
+	"nodeData": [
+		{
+			"name": "Case1",
+			"funcname": "CreateCamera",
+			"info": "カメラをつくるためのノード",
+			"pos": [100, 100],
+			"varname": "GetFiles",
+			"customfuncfile": "createcamera.lua",
+			"input": [
+				{"name": "files", "type": "vec2", "value": [0, 0, 300]},
+				{"name": "connetion", "type": "string", "value":  "output.jpg"}
+			],
+			"output": []
+		},
+		{
+			"name": "Case2",
+			"funcname": "CreateCamera",
+			"info": "カメラをつくるためのノード",
+			"pos": [100, 100],
+			"varname": "instCreateCamera",
+			"customfuncfile": "createcamera.lua",
+			"input": [
+				{"name": "input", "type": "RenderObject", "value": [0, 0, 300]},
+				{"name": "connetion", "type": "string", "value":  "output.jpg"}
+			],
+			"output": [
+				{"name": "vel_sph", "type": "float"},
+				{"name": "press_sph", "type": "vec4"}
+			]
+		},
+		{
+			"name": "krenderCASE",
+			"funcname": "CreateCamera",
+			"info": "カメラをつくるためのノード",
+			"pos": [100, 100],
+			"varname": "instCreateCamera",
+			"customfuncfile": "createcamera.lua",
+			"input": [
+				{"name": "vel_sph", "type": "float", "value": [0, 0, 300]},
+				{"name": "connetion", "type": "string", "value":  "output.jpg"}
+			],
+			"output": [
+				{"name": "image", "type": "vec2"}
+			]
+		},
+		{
+			"name": "hrender",
+			"funcname": "CreateCamera",
+			"info": "カメラをつくるためのノード",
+			"pos": [100, 100],
+			"varname": "instCreateCamera",
+			"customfuncfile": "createcamera.lua",
+			"input": [
+				{"name": "press_sph", "type": "vec4", "value": [0, 0, 300]},
+				{"name": "connetion", "type": "string", "value":  "output.jpg"}
+			],
+			"output": [
+				{"name": "image", "type": "vec2"}
+			]
+		},
+		{
+			"name": "RemoteSetting",
+			"funcname": "RemoteSetting",
+			"info": "カメラをつくるためのノード",
+			"pos": [100, 100],
+			"varname": "instCreateCamera",
+			"customfuncfile": "createcamera.lua",
+			"input": [],
+			"output": [
+				{"name": "connetion", "type": "string"}
+			]
+		}
+	]
+}
