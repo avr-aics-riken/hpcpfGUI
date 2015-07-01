@@ -92,6 +92,13 @@ function svgNodeUI(draw) {
 		}
 	};
 
+	function createPlugSVG(x, y, color) {
+		var hole = draw.path("m 112,425 0,15 c 0,0 0.2,0.8 0.6,1.4 0.4,0.4 1.2,0.6 1.2,0.6 l 7.4,0 c 0,0 0.5,0 0.6,0.2 0.2,0 0.5,-0.2 0.5,-0.2 l 8.8,-8 c 0,0 0.7,-0.7 0.7,-1.3 0,-0.6 -0.7,-1.3 -0.7,-1.3 l -8.3,-8.0 c 0,0 0,0 -0.7,-0.3 -0.6,-0.3 -1,-0.2 -1,-0.2 l -7.3,0 c 0,0 -0.4,0.2 -1,0.6 -0.5,0.5 -0.7,1.3 -0.7,1.3 z");
+		console.log("center", x, y);
+		hole.center(x, y).fill(color);
+		return hole;
+	}
+	
 	function NodeConnector(varname, vartype, svgparent, parentNode, x, y) {
 		this.type = 'NodeConnector';
 		this.varname = varname;
@@ -103,7 +110,7 @@ function svgNodeUI(draw) {
 		this.connected = null;
 		this.line = null;
 
-		var hole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
+		var hole = createPlugSVG(svgparent.x() + x, svgparent.y() + y, getTypeColor(vartype)), //draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
 			holeMouseUp = function (self) {
 				return function () {
 					if (self.connected) {
@@ -123,7 +130,7 @@ function svgNodeUI(draw) {
 
 	NodeConnector.prototype = {
 		fit: function () {
-			this.hole.center(this.px + this.svgparent.x(), this.py + this.svgparent.y());
+			this.hole.move(this.px + this.svgparent.x() - 10, this.py + this.svgparent.y() - 10);
 			if (this.connected && this.line) {
 				this.line.endPos(this.px + this.svgparent.x(), this.py + this.svgparent.y());
 			}
@@ -178,8 +185,8 @@ function svgNodeUI(draw) {
 		this.py = y;
 		this.line = [];
 
-		var hole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill('#c7c7c7'),
-			pole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
+		var hole = createPlugSVG(svgparent.x() + x, svgparent.y() + y, '#c7c7c7'),//draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill('#c7c7c7'),
+			pole = createPlugSVG(svgparent.x() + x, svgparent.y() + y, getTypeColor(vartype)),//draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
 			newline,
 			poleDragstart = function (self) {
 				return function (delta, event) {
@@ -224,8 +231,8 @@ function svgNodeUI(draw) {
 			for (i = 0; i < this.line.length; i = i + 1) {
 				this.line[i].startPos(this.px + this.svgparent.x(), this.py + this.svgparent.y());
 			}
-			this.hole.center(this.px + this.svgparent.x(), this.py + this.svgparent.y());
-			this.pole.center(this.px + this.svgparent.x(), this.py + this.svgparent.y());
+			this.hole.move(this.px + this.svgparent.x() - 10, this.py + this.svgparent.y() - 10);
+			this.pole.move(this.px + this.svgparent.x() - 10, this.py + this.svgparent.y() - 10);
 			for (i = 0; i < this.line.length; i = i + 1) {
 				if (!this.line[i].connected) {
 					this.line[i].endPos(this.px + this.svgparent.x(), this.py + this.svgparent.y());
@@ -272,7 +279,7 @@ function svgNodeUI(draw) {
 			nodeback1 = draw.rect(212, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(14, 0),
 			nodeback2 = draw.rect(30, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(0, 14),
 			nodeback3 = draw.rect(24, 24).radius(4).attr({'fill': '#72ca29', 'fill-opacity': "1.0", 'stroke': "none"}).move(4.5, 4.5).rotate(45, 16, 16),
-			nodebase = draw.rect(220, 60).radius(4).attr({'fill': "#4d4d4c", 'fill-opacity': "1.0", 'stroke': "none"}).move(3, 30),
+			nodebase = draw.rect(220, 60).attr({'fill': "#4d4d4c", 'fill-opacity': "1.0", 'stroke': "none"}).move(3, 30),
 			erasebtn = draw.rect(16, 16).radius(5).attr({'fill': "#ffffff", 'fill-opacity': "0.8", 'stroke': "none"}).move(0, 4),
 			eraseA = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(45, 1 + 7, 1 + 11),
 			eraseB = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(-45, 1 + 7, 1 + 11),
@@ -344,13 +351,13 @@ function svgNodeUI(draw) {
 			var nodeText = draw.text(inNode.name).fill('#eee').move(20, 30 + i * 20),
 				nodeVarName = getPlugVarName(varName, inNode.name);
 			group.add(nodeText);
-			return new NodeConnector(nodeVarName, inNode.type, group, thisptr, 0, 40 + i * 20);
+			return new NodeConnector(nodeVarName, inNode.type, group, thisptr, 0, 45 + i * 20);
 		}
 		function newNodeOutConnector(group, outNode, thisptr, i) {
 			var nodeText = draw.text(outNode.name).fill('#eee').move(130, 30 + i * 20),
 				nodeVarName = getPlugVarName(varName, outNode.name);
 			group.add(nodeText);
-			return new NodePlug(nodeVarName, outNode.type, group, thisptr, 220, 40 + i * 20);
+			return new NodePlug(nodeVarName, outNode.type, group, thisptr, 220, 45 + i * 20);
 		}
 		
 		// Node Params
