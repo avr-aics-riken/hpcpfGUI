@@ -98,13 +98,17 @@
 		}
 	}
 	
-	function storeNodeList(resp, callback) {
+	function storeNodeList(nodes, callback) {
 		var i;
 		// store node list
-		nodeList = JSON.parse(resp).nodeData;
+		nodeList = nodes;
 		
-		console.log("nodeList", nodeList);
+		console.log("nodeList", nodes);
 		// sort list
+		if (!nodeList) {
+			console.log("Not found node list");
+			return;
+		}
 		nodeList.sort(
 			function (a, b) {
 				return a.name > b.name;
@@ -154,14 +158,16 @@
 			node.erase();
 		});
 		
-		reloadNodeList("nodelist.json", function () {
-			console.log("done reload");
-			addNode("Case1", "GetFiles", 500, 100);
-			addNode("Case1", "GetFiles", 500, 200);
-			addNode("Case2", "ffv_cyl_new", 500, 100);
-			addNode("krenderCASE", "krenderCASE1", 500, 100);
-			addNode("krenderCASE", "krenderCASE2", 500, 150);
-			addNode("RemoteSetting", "RemoteSetting", 500, 100);
+		editor.socket.emit('reqReloadNodeList');
+		editor.socket.on('reloadNodeList', function (data) {
+			storeNodeList(JSON.parse(data), function () {
+				addNode("Case1", "GetFiles", 500, 100);
+				addNode("Case1", "GetFiles", 500, 200);
+				addNode("Case2", "ffv_cyl_new", 500, 100);
+				addNode("krenderCASE", "krenderCASE1", 500, 100);
+				addNode("krenderCASE", "krenderCASE2", 500, 150);
+				addNode("RemoteSetting", "RemoteSetting", 500, 100);
+			});
 		});
 	});
 	
