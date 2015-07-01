@@ -161,9 +161,9 @@
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.on('reloadNodeList', function (data) {
 			storeNodeList(JSON.parse(data), function () {
-				addNode("Case1", "GetFiles", 500, 100);
-				addNode("Case1", "GetFiles", 500, 200);
-				addNode("Case2", "ffv_cyl_new", 500, 100);
+				addNode("Case", "Case01", 500, 100);
+				addNode("Case", "Case02", 500, 200);
+				addNode("Case", "ffv_cyl_new", 500, 100);
 				addNode("krenderCASE", "krenderCASE1", 500, 100);
 				addNode("krenderCASE", "krenderCASE2", 500, 150);
 				addNode("RemoteSetting", "RemoteSetting", 500, 100);
