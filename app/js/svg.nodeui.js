@@ -94,7 +94,6 @@ function svgNodeUI(draw) {
 
 	function createPlugSVG(x, y, color) {
 		var hole = draw.path("m 112,425 0,15 c 0,0 0.2,0.8 0.6,1.4 0.4,0.4 1.2,0.6 1.2,0.6 l 7.4,0 c 0,0 0.5,0 0.6,0.2 0.2,0 0.5,-0.2 0.5,-0.2 l 8.8,-8 c 0,0 0.7,-0.7 0.7,-1.3 0,-0.6 -0.7,-1.3 -0.7,-1.3 l -8.3,-8.0 c 0,0 0,0 -0.7,-0.3 -0.6,-0.3 -1,-0.2 -1,-0.2 l -7.3,0 c 0,0 -0.4,0.2 -1,0.6 -0.5,0.5 -0.7,1.3 -0.7,1.3 z");
-		console.log("center", x, y);
 		hole.center(x, y).fill(color);
 		return hole;
 	}
