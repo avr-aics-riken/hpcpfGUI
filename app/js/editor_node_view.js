@@ -5,7 +5,6 @@
 (function (editor) {
 	"use strict";
 	var nui, // node ui
-		nodeList,
 		nodeListTable,
 		instance_no = 1,
 		edit_view = {};
@@ -45,11 +44,11 @@
 		console.log('DELETE:', node);
 		
 		var nodeData = nui.getNodeData(),
-			nodeList = nodeData.nodeData,
+			data = nodeData.nodeData,
 			i;
-		for (i = 0; i < nodeList.length; i = i + 1) {
-			if (nodeList[i].varname === node.varname) {
-				nodeList.splice(i, 1);
+		for (i = 0; i < data.length; i = i + 1) {
+			if (data[i].varname === node.varname) {
+				data.splice(i, 1);
 			}
 		}
 		nui.clearNodes();
@@ -101,16 +100,7 @@
 	
 	function storeNodeList(nodes, callback) {
 		var i;
-		// store node list
-		nodeList = nodes;
-		
-		console.log("nodeList", nodes);
-		// sort list
-		if (!nodeList) {
-			console.log("Not found node list");
-			return;
-		}
-		nodeList.sort(
+		nodes.sort(
 			function (a, b) {
 				return a.name > b.name;
 			}
@@ -118,14 +108,14 @@
 
 		// create nodelist table
 		nodeListTable = {};
-		for (i = 0; i < nodeList.length; i = i + 1) {
-			nodeListTable[nodeList[i].varname] = nodeList[i];
+		for (i = 0; i < nodes.length; i = i + 1) {
+			nodeListTable[nodes[i].varname] = nodes[i];
 		}
 
 		console.log(nodeListTable);
 		
 		if (callback) {
-			callback();
+			callback(nodes);
 		}
 	}
 	
@@ -211,19 +201,23 @@
 		});
 		
 		editor.socket.emit('reqReloadNodeList');
-		editor.socket.on('reloadNodeList', function (data) {
-			storeNodeList(JSON.parse(data), function () {
+		editor.socket.on('reloadNodeList', function (systemNodeList, caseNodeList) {
+			storeNodeList(JSON.parse(systemNodeList), function (nodes) {
+				addNode("Render", "hrender", 100, 100);
+				addNode("Render", "hrender", 100, 100);
+				addNode("File", "File", 200, 100);
+				addNode("File", "File", 200, 100);
+			});
+			storeNodeList(JSON.parse(caseNodeList), function (nodes) {
 				var headerNode = null,
-					footerNode = null;
+					footerNode = null,
+					i;
 				
-				addNode("Case", "Case01", 500, 100);
-				/*
-				addNode("Case", "Case02", 500, 200);
-				addNode("Case", "ffv_cyl_new", 500, 100);
-				addNode("krenderCASE", "krenderCASE1", 500, 100);
-				addNode("krenderCASE", "krenderCASE2", 500, 150);
-				addNode("RemoteSetting", "RemoteSetting", 500, 100);
-					*/
+				console.log(nodes);
+				for (i = 0; i < nodes.length; i = i + 1) {
+					console.log(nodes[i].varname);
+					addNode(nodes[i].varname, nodes[i].name, 300, 100);
+				}
 				
 				if (nodeListTable.hasOwnProperty('headerNode')) {
 					nui.setHeaderCode(headerNode.customfunc);
@@ -232,7 +226,7 @@
 					nui.setFooterCode(footerNode.customfunc);
 				}
 				
-				test_lua();
+				//test_lua();
 				//clearProperty()
 			});
 		});

@@ -1,7 +1,7 @@
 {
     "hpcpf":{
          "case_meta_data":{
-            "name_hr":"human-readableなケースの名前を記述します",
+            "name_hr":"case01",
             "description_hr":"human-readableなケースの詳細な説明を記述します",
             "type":"simulation",
             "softwares":[
