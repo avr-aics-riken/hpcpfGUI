@@ -64,6 +64,27 @@
 	user-select: none;
 }
 
+.nodeProperty {
+	color : ghostwhite;
+}
+
+.nodeKey2 {
+	text-align: left;
+	left : 30px;
+	position : relative;
+}
+
+.innerHr {
+	width : 80%;
+	right : 30px;
+	position : absolute;
+}
+
+.nodeValue {
+	color : lightgray;
+	text-align: right;
+}
+
 .rightTab
 {
 	font-size: 14px;

@@ -143,6 +143,65 @@
 		}(req, callback)));
 	}
 	
+	function updateProperty(nodeData) {
+		var property = document.getElementById('nodeProperty'),
+			key,
+			value,
+			div,
+			divkey,
+			divval,
+			iokey,
+			ioval,
+			diviokey,
+			divioval,
+			iokey2,
+			ioval2,
+			hr;
+		console.log(nodeData);
+		property.innerHTML = "";
+		for (key in nodeData) {
+			if (nodeData.hasOwnProperty(key)) {
+				value = nodeData[key];
+				div = document.createElement('div');
+				divkey = document.createElement('div');
+				divkey.innerHTML = key;
+				divkey.className = 'nodeKey';
+				divval = document.createElement('div');
+				divval.className = 'nodeValue';
+				
+				if (key === 'input' || key === 'output') {
+					for (iokey in value) {
+						if (value.hasOwnProperty(iokey)) {
+							ioval = value[iokey];
+							for (iokey2 in ioval) {
+								if (ioval.hasOwnProperty(iokey2)) {
+									ioval2 = ioval[iokey2];
+									diviokey = document.createElement('div');
+									diviokey.innerHTML = iokey2;
+									diviokey.className = 'nodeKey2';
+									divioval = document.createElement('div');
+									divioval.innerHTML = ioval2;
+									divioval.className = 'nodeValue';
+									divval.appendChild(diviokey);
+									divval.appendChild(divioval);
+								}
+							}
+							hr = document.createElement('hr');
+							hr.className = "innerHr";
+							divval.appendChild(hr);
+						}
+					}
+				} else {
+					divval.innerHTML = value;
+				}
+				div.appendChild(divkey);
+				div.appendChild(divval);
+				property.appendChild(div);
+				property.appendChild(document.createElement('hr'));
+			}
+		}
+	}
+	
 	editor.socket.on('connect', function () {
 	});
 	
@@ -156,8 +215,9 @@
 		nui = svgNodeUI(draw);
 		nui.clearNodes();
 		nui.setTypeColorFunction(colorFunction);
-		nui.nodeClickEvent(function () {
+		nui.nodeClickEvent(function (nodeData) {
 			console.log("node cliecked");
+			updateProperty(nodeData);
 		});
 		nui.nodeDeleteEvent(function (data) {
 			var node = nui.getNode(data.varname);
