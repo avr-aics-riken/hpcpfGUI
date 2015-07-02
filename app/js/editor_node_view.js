@@ -129,20 +129,6 @@
 		}
 	}
 	
-	function reloadNodeList(url, callback) {
-		var req = new XMLHttpRequest(),
-			now = new Date();
-		req.open('GET', url + "?&timestamp=" + now.getTime());
-		
-		req.send();
-		req.addEventListener("load", (function (req, callback) {
-			return function (ev) {
-				var resp = req.responseText;
-				storeNodeList(resp, callback);
-			};
-		}(req, callback)));
-	}
-	
 	function updateProperty(nodeData) {
 		var property = document.getElementById('nodeProperty'),
 			key,

@@ -209,7 +209,7 @@
 		return null;
 	}
 	
-	function makeNodeList2(srcdir, callback) {
+	function makeNodeList(srcdir, callback) {
 		var files = [],
 			caseFiles = [],
 			cmdData,
@@ -220,12 +220,12 @@
 		util.getFiles(srcdir, files);
 		for (i = 0; i < files.length; i = i + 1) {
 			if (files[i].type === "dir") {
+				caseFiles = [];
 				util.getFiles(files[i].path, caseFiles);
 				for (k = 0; k < caseFiles.length; k = k + 1) {
 					if (caseFiles[k].type === "file" && caseFiles[k].name === "cmd.json") {
 						// found case dir
 						cmdData = fs.readFileSync(caseFiles[k].path, 'utf8');
-						console.log("cmdData", cmdData);
 						node = makeNodeFromCMD(JSON.parse(cmdData));
 						if (node) {
 							nodeList.push(node);
@@ -240,55 +240,6 @@
 		}
 	}
 	
-	function makeNodeList(srcdir, callback) {
-		var nodeDir = path.join(srcdir, 'nodes');
-		//console.log("makeNodeList");
-		fs.readdir(nodeDir, function (err, files) {
-			var infofile,
-				nodeDirPath,
-				fileCounter,
-				customFuncLua,
-				nodelist = [],
-				i;
-			if (err) {
-				return;
-			}
-
-			fileCounter = 0;
-			function finishLoad() {
-				fileCounter = fileCounter - 1;
-				if (fileCounter === 0) {
-					callback(null, nodelist);
-				}
-			}
-			function loadFunc(nodeDirPath) {
-				return function (err, data) {
-					try {
-						var json = JSON.parse(data);
-						if (json.customfuncfile !== undefined) {
-							customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
-							json.customfunc = customFuncLua;
-						}
-						nodelist.push(json);
-					} catch (e) {
-						console.log('[Error] Failed Load:' + nodeDirPath + "/info.json", e);
-					}
-					finishLoad();
-				};
-			}
-			for (i in files) {
-				if (files.hasOwnProperty(i)) {
-					if (files[i].substr(0, 1) !== '.') {
-						nodeDirPath = nodeDir + "/" + files[i];
-						infofile = nodeDirPath + "/info.json";
-						fileCounter = fileCounter + 1;
-						fs.readFile(infofile, 'utf8', loadFunc(nodeDirPath));
-					}
-				}
-			}
-		});
-	}
-
 	function registerEditorEvent(socket, appCommands, appExtensions) {
 		var def_srcdir = __dirname;// + '/work/'
 		console.log('Working Dir=' + def_srcdir);
@@ -541,7 +492,7 @@
 		socket.on('reqReloadNodeList', function () {
 			var srcdir = sesstionTable[socket.id].dir;
 			try {
-				makeNodeList2(srcdir, function (err, nodelist) {
+				makeNodeList(srcdir, function (err, nodelist) {
 					if (err) {
 						console.log("ReloadNodeList error:", err);
 						return;
