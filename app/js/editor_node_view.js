@@ -80,17 +80,17 @@
 			return "#566f9f";
 		} else if (type === "vec2") {
 			return "#8222a7";
-		} else if (type === "RenderObject") {
+		} else if (type === "initial_data") {
 			return "#ad3b78";
-		} else if (type === "Uniform") {
+		} else if (type === "geometry") {
 			return "#b19e14";
-		} else if (type === "BufferMeshData") {
+		} else if (type === "Any") {
 			return "#be1656";
-		} else if (type === "BufferPointData") {
+		} else if (type === "volume") {
 			return "#e023e0";
-		} else if (type === "BufferLineData") {
+		} else if (type === "target_machine") {
 			return "#20cae0";
-		} else if (type === "BufferVolumeData") {
+		} else if (type === "geometory") {
 			return "#17d042";
 		} else if (type === "Any") {
 			return "#ef8815";
@@ -231,11 +231,13 @@
 					footerNode = null;
 				
 				addNode("Case", "Case01", 500, 100);
+				/*
 				addNode("Case", "Case02", 500, 200);
 				addNode("Case", "ffv_cyl_new", 500, 100);
 				addNode("krenderCASE", "krenderCASE1", 500, 100);
 				addNode("krenderCASE", "krenderCASE2", 500, 150);
 				addNode("RemoteSetting", "RemoteSetting", 500, 100);
+					*/
 				
 				if (nodeListTable.hasOwnProperty('headerNode')) {
 					nui.setHeaderCode(headerNode.customfunc);

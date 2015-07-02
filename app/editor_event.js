@@ -162,7 +162,7 @@
 						if (inputElem.hasOwnProperty('description_hr')) {
 							nodeInput.description = inputElem.description_hr;
 						}
-						// file type
+						/*
 						if (nodeInput.hasOwnProperty('file_pattern')) {
 							//nodeInput.name = "file_pattern";
 							nodeInput.type = "string";
@@ -173,6 +173,7 @@
 							nodeInput.type = "vec4";
 							nodeInput.value = "";
 						}
+						*/
 						node.input.push(nodeInput);
 					}
 				}
@@ -188,11 +189,13 @@
 						if (outputElem.hasOwnProperty('description_hr')) {
 							nodeOutput.description = outputElem.description_hr;
 						}
+						/*
 						if (outputElem.hasOwnProperty('file')) {
 							//nodeOutput.name = "file";
 							nodeOutput.type = "string";
 							nodeOutput.value = outputElem.file;
 						}
+						*/
 						node.output.push(nodeOutput);
 					}
 				}
