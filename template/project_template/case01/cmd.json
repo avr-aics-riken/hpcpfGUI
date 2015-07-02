@@ -1,0 +1,96 @@
+{
+    "hpcpf":{
+         "case_meta_data":{
+             "name_hr":"human-readableなケースの名前を記述します",
+             "description_hr":"human-readableなケースの詳細な説明を記述します",
+            "type":"simulation",
+            "softwares":[
+                {
+                    "name_hr":"FFV-C",
+                    "description_hr":"熱流体ソルバーFrontflow/violet-Cartesian",
+                    "type":"ffv-c",
+                    "version":"1.0.0" 
+                }
+            ],
+
+            "inputs":[
+                {
+                    "name_hr":"格子生成情報",
+                    "description_hr":"",
+                    "type":"initial_data",
+                    "file_pattern":"*-domain-parameter.tp",
+                    "required":true
+               },
+               {
+                    "name_hr":"物体形状",
+                    "description_hr":"流れ場中の物体形状STLファイル",
+                    "type":"geometory",
+                    "file_pattern":"*.stl",
+                    "required":true
+               },
+               {
+                    "name_hr":"利用計算機情報",    
+                    "description_hr":"",
+                    "type":"target_machine",
+                    "required":true
+               },
+           ],
+
+            "polling_files":[
+                {
+                    "name_hr":"計算履歴ファイル",
+                    "description_hr":"",
+                    "file_pattern":"history_*.txt", 
+                }
+            ],
+
+            "collection_files":[
+                 {
+                     "name_hr":"時間平均圧力データ",
+                     "description_hr":"",
+                     "type":"solver_result",
+                     "file_pattern":"2d/prsa_*.sph",
+                 },
+                 {
+                     "name_hr":"時間平均速度場データ",
+                     "description_hr":"",
+                     "type":"solver_result",
+                     "file_pattern":"2d/vela_*.sph",
+                },
+                {
+                     "name_hr":"結果ファイル分割情報",
+                     "description_hr":"",
+                     "type":"solver_result",
+                     "file_pattern":"*.dfi",
+                 },
+                 {
+                     "name_hr":"実行結果統計情報",
+                     "description_hr":"",
+                     "type":"solver_result",
+                     "file_pattern":"profiling.txt",
+                 }
+             ],
+
+             "outputs":[
+                 {
+                      "name_hr":"結果ファイル分割情報(速度場）",
+                      "description_hr":"",
+                      "type":"solver_result",
+                      "file":"fvel.dfi",
+                 },
+                 {
+                      "name_hr":"結果ファイル分割情報（圧力）",
+                      "description_hr":"",
+                      "type":"solver_result",
+                      "file":"prs.dfi",
+                 }
+             ],
+
+            "clean":[
+                { "type":"dir", "path":"./2d" },
+                { "type":"file", "path":"./history_*.txt" },
+                { "type":"file", "path":"./*.log" }
+            ]
+        }
+    }
+}

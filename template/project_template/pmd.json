@@ -1,0 +1,12 @@
+{
+     "hpcpf":{
+         "project_meta_data":{
+             "name_hr":"human-readableなプロジェクトの名前を記述します",
+             "description_hr":"human-readableなプロジェクトの詳細な説明を記述します",
+             "clean": [
+                 { "type":"file", "path":"./*.log" },
+                 { "type":"dir", "path":"./tmp" }
+             ]
+        }
+    }
+}

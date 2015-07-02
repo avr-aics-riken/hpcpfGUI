@@ -1,0 +1,10 @@
+{
+    "hpcpf":{
+         "history":[    /* ケースの履歴・来歴 */
+             { "status":"created", "uri":"file:///home/kawanabe/hpcpf/proj/ffvc-2DCavity/case01",  "date":"2015-04-01T10:00:00+09:00" },
+             { "status":"copied", "uri":"file:///home/kawanabe/hpcpf/proj/ffvc-2DCavity_01/case01",  "date":"2015-05-01T12:59:59+09:00" },
+             { "status":"copied", "uri":"file:///home/kawanabe/hpcpf/proj/ffvc-3DCavity/case01",  "date":"2015-05-01T15:00:00+09:00" },
+             { "status":"copied", "uri":"file:///c:/user/foobar/ffvc-3DCavity/case01",  "date":"2015-06-01T12:59:59+09:00" }
+        ]
+    }
+}
