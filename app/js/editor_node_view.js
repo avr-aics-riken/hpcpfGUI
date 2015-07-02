@@ -187,7 +187,10 @@
 	
 	editor.socket.on('init', function () {
 		var draw = SVG('nodecanvas'),
-			propertyTab;
+			propertyTab,
+			pos = { x : 0, y : 0 },
+			onMiddleButtonDown = false;
+		
 		nui = svgNodeUI(draw);
 		nui.clearNodes();
 		nui.setTypeColorFunction(colorFunction);
@@ -238,6 +241,29 @@
 		}, 'property');
 		propertyTab(false);
 		
+		
+		document.getElementById('node_area').onmousedown = function (evt) {
+			onMiddleButtonDown = (evt.button === 1);
+			if (onMiddleButtonDown) {
+				evt.preventDefault();
+				pos.x = evt.pageX;
+				pos.y = evt.pageY;
+			}
+		};
+		document.getElementById('node_area').onmousemove = function (evt) {
+			var mx, my;
+			if (onMiddleButtonDown) {
+				evt.preventDefault();
+				mx = evt.pageX - pos.x;
+				my = evt.pageY - pos.y;
+				nui.moveAll(mx, my);
+				pos.x = evt.pageX;
+				pos.y = evt.pageY;
+			}
+		};
+		document.getElementById('node_area').onmouseup = function (evt) {
+			onMiddleButtonDown = false;
+		};
 		
 	});
 	

@@ -273,6 +273,18 @@ function svgNodeUI(draw) {
 		}
 	}
 	
+	function moveAll(mx, my) {
+		var i;
+		for (i in nodeArray) {
+			if (nodeArray.hasOwnProperty(i)) {
+				nodeArray[i].nodeData.pos[0] = nodeArray[i].nodeData.pos[0] + mx;
+				nodeArray[i].nodeData.pos[1] = nodeArray[i].nodeData.pos[1] + my;
+				nodeArray[i].move(nodeArray[i].nodeData.pos[0], nodeArray[i].nodeData.pos[1]);
+				//console.log(mx, my);
+			}
+		}
+	}
+	
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
 			nodeback1 = draw.rect(212, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(14, 0),
@@ -764,7 +776,8 @@ function svgNodeUI(draw) {
 		nodeDeleteEvent: nodeDeleteEvent,
 		setTypeColorFunction: setTypeColorFunction,
 		setHeaderCode: setHeaderCode,
-		setFooterCode: setFooterCode
+		setFooterCode: setFooterCode,
+		moveAll: moveAll
 	};
 }
 
