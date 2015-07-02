@@ -133,6 +133,110 @@
 		}
 	}
 	
+	/**
+	 * convert cmd.json(user values) to node(system values)
+	 */
+	function makeNodeFromCMD(cmd) {
+		var elem,
+			node = {},
+			inputElem,
+			outputElem,
+			nodeInput,
+			nodeOutput,
+			i;
+		if (cmd.hasOwnProperty('hpcpf')) {
+			if (cmd.hpcpf.hasOwnProperty('case_meta_data')) {
+				elem = cmd.hpcpf.case_meta_data;
+				if (elem.hasOwnProperty('name_hr')) {
+					node.name = elem.name_hr;
+				}
+				node.input = [];
+				if (elem.hasOwnProperty('inputs')) {
+					for (i = 0; i < elem.inputs.length; i = i + 1) {
+						inputElem = elem.inputs[i];
+						nodeInput = JSON.parse(JSON.stringify(inputElem));
+						
+						if (inputElem.hasOwnProperty('name_hr')) {
+							nodeInput.name = inputElem.name_hr;
+						}
+						if (inputElem.hasOwnProperty('description_hr')) {
+							nodeInput.description = inputElem.description_hr;
+						}
+						// file type
+						if (nodeInput.hasOwnProperty('file_pattern')) {
+							//nodeInput.name = "file_pattern";
+							nodeInput.type = "string";
+							nodeInput.value = nodeInput.file_pattern;
+						} else {
+							// connect type
+							//nodeInput.name = "connection";
+							nodeInput.type = "vec4";
+							nodeInput.value = "";
+						}
+						node.input.push(nodeInput);
+					}
+				}
+				node.output = [];
+				if (elem.hasOwnProperty('outputs')) {
+					for (i = 0; i < elem.outputs.length; i = i + 1) {
+						outputElem = elem.outputs[i];
+						nodeOutput = JSON.parse(JSON.stringify(outputElem));
+						
+						if (outputElem.hasOwnProperty('name_hr')) {
+							nodeOutput.name = outputElem.name_hr;
+						}
+						if (outputElem.hasOwnProperty('description_hr')) {
+							nodeOutput.description = outputElem.description_hr;
+						}
+						if (outputElem.hasOwnProperty('file')) {
+							//nodeOutput.name = "file";
+							nodeOutput.type = "string";
+							nodeOutput.value = outputElem.file;
+						}
+						node.output.push(nodeOutput);
+					}
+				}
+				node.customfuncfile = "case.lua";
+				node.pos = [100, 100];
+				node.funcname = "Case";
+				node.varname = "Case";
+			}
+			return node;
+		}
+		return null;
+	}
+	
+	function makeNodeList2(srcdir, callback) {
+		var files = [],
+			caseFiles = [],
+			cmdData,
+			node,
+			nodeList = [],
+			i,
+			k;
+		util.getFiles(srcdir, files);
+		for (i = 0; i < files.length; i = i + 1) {
+			if (files[i].type === "dir") {
+				util.getFiles(files[i].path, caseFiles);
+				for (k = 0; k < caseFiles.length; k = k + 1) {
+					if (caseFiles[k].type === "file" && caseFiles[k].name === "cmd.json") {
+						// found case dir
+						cmdData = fs.readFileSync(caseFiles[k].path, 'utf8');
+						console.log("cmdData", cmdData);
+						node = makeNodeFromCMD(JSON.parse(cmdData));
+						if (node) {
+							nodeList.push(node);
+						}
+					}
+				}
+			}
+		}
+		if (callback) {
+			console.log("nodelist:", nodeList);
+			callback(null, nodeList);
+		}
+	}
+	
 	function makeNodeList(srcdir, callback) {
 		var nodeDir = path.join(srcdir, 'nodes');
 		//console.log("makeNodeList");
@@ -433,17 +537,21 @@
 		
 		socket.on('reqReloadNodeList', function () {
 			var srcdir = sesstionTable[socket.id].dir;
-			makeNodeList(srcdir, function (err, nodelist) {
-				if (err) {
-					console.log("ReloadNodeList error:", err);
-					return;
-				}
-				try {
-					socket.emit('reloadNodeList', JSON.stringify(nodelist));
-				} catch (e) {
-					console.log("JSON parse error:", e);
-				}
-			});
+			try {
+				makeNodeList2(srcdir, function (err, nodelist) {
+					if (err) {
+						console.log("ReloadNodeList error:", err);
+						return;
+					}
+					try {
+						socket.emit('reloadNodeList', JSON.stringify(nodelist));
+					} catch (e) {
+						console.log("JSON parse error:", e);
+					}
+				});
+			} catch (e) {
+				console.log("JSON parse error");
+			}
 		});
 
 		socket.on('stop', function (data) {

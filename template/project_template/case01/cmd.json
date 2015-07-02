@@ -1,8 +1,8 @@
 {
     "hpcpf":{
          "case_meta_data":{
-             "name_hr":"human-readableなケースの名前を記述します",
-             "description_hr":"human-readableなケースの詳細な説明を記述します",
+            "name_hr":"human-readableなケースの名前を記述します",
+            "description_hr":"human-readableなケースの詳細な説明を記述します",
             "type":"simulation",
             "softwares":[
                 {
@@ -13,7 +13,7 @@
                 }
             ],
 
-            "inputs":[
+            "inputs": [
                 {
                     "name_hr":"格子生成情報",
                     "description_hr":"",
@@ -29,18 +29,18 @@
                     "required":true
                },
                {
-                    "name_hr":"利用計算機情報",    
+                    "name_hr":"利用計算機情報",
                     "description_hr":"",
                     "type":"target_machine",
                     "required":true
-               },
-           ],
+               }
+            ],
 
-            "polling_files":[
+            "polling_files": [
                 {
                     "name_hr":"計算履歴ファイル",
                     "description_hr":"",
-                    "file_pattern":"history_*.txt", 
+                    "file_pattern":"history_*.txt"
                 }
             ],
 
@@ -49,40 +49,40 @@
                      "name_hr":"時間平均圧力データ",
                      "description_hr":"",
                      "type":"solver_result",
-                     "file_pattern":"2d/prsa_*.sph",
+                     "file_pattern":"2d/prsa_*.sph"
                  },
                  {
                      "name_hr":"時間平均速度場データ",
                      "description_hr":"",
                      "type":"solver_result",
-                     "file_pattern":"2d/vela_*.sph",
+                     "file_pattern":"2d/vela_*.sph"
                 },
                 {
                      "name_hr":"結果ファイル分割情報",
                      "description_hr":"",
                      "type":"solver_result",
-                     "file_pattern":"*.dfi",
+                     "file_pattern":"*.dfi"
                  },
                  {
                      "name_hr":"実行結果統計情報",
                      "description_hr":"",
                      "type":"solver_result",
-                     "file_pattern":"profiling.txt",
+                     "file_pattern":"profiling.txt"
                  }
              ],
 
              "outputs":[
                  {
-                      "name_hr":"結果ファイル分割情報(速度場）",
-                      "description_hr":"",
+                      "name_hr":"速度場",
+                      "description_hr":"結果ファイル分割情報",
                       "type":"solver_result",
-                      "file":"fvel.dfi",
+                      "file":"fvel.dfi"
                  },
                  {
-                      "name_hr":"結果ファイル分割情報（圧力）",
-                      "description_hr":"",
+                      "name_hr":"圧力",
+                      "description_hr":"結果ファイル分割情報",
                       "type":"solver_result",
-                      "file":"prs.dfi",
+                      "file":"prs.dfi"
                  }
              ],
 

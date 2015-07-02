@@ -119,7 +119,7 @@
 		// create nodelist table
 		nodeListTable = {};
 		for (i = 0; i < nodeList.length; i = i + 1) {
-			nodeListTable[nodeList[i].name] = nodeList[i];
+			nodeListTable[nodeList[i].varname] = nodeList[i];
 		}
 
 		console.log(nodeListTable);
