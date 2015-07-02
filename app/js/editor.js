@@ -186,6 +186,7 @@
 		$("exe_mode").style.display = "none";
 		$("edit_mode").style.display = "none";
 		$("node_mode").style.display = "none";
+		$("rightTab").style.display = "none";
 		hideEditArea();
 		hideNewNameArea();
 		socket.emit('reqUpdateInformation');
@@ -199,6 +200,7 @@
 		$("exe_mode").style.display = "block";
 		$("edit_mode").style.display = "none";
 		$("node_mode").style.display = "none";
+		$("rightTab").style.display = "none";
 		$("info_back_button_area").style.display = "none";
 		hideEditArea();
 		hideNewNameArea();
@@ -212,6 +214,7 @@
 		$("exe_mode").style.display = "none";
 		$("edit_mode").style.display = "block";
 		$("node_mode").style.display = "none";
+		$("rightTab").style.display = "none";
 		$("info_back_button_area").style.display = "none";
 		hideNewNameArea();
 		validateModeChangeButton(true);
@@ -222,6 +225,7 @@
 		$("exe_mode").style.display = "none";
 		$("edit_mode").style.display = "none";
 		$("node_mode").style.display = "block";
+		$("rightTab").style.display = "block";
 		$("info_back_button_area").style.display = "none";
 		hideEditArea();
 		hideNewNameArea();

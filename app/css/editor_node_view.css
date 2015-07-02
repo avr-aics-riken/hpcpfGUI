@@ -45,6 +45,54 @@
 	color: white;
 }
 
+.nodePropertyTab
+{
+	background-color:rgba(100, 100, 100, 0.5);
+	position:absolute;
+	right:0px;
+	top:0px;
+	width:200px;
+	bottom:0px;
+	overflow:auto;
+	z-index: 1;
+	
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.rightTab
+{
+	font-size: 14px;
+	padding: 0px 20px 0px 35px;
+	top : 160px;
+	right : 0px;
+	width: 50px;
+	height : 20px;
+	bottom: 0px;
+	z-index: 2;
+	background-color: rgba(100, 100, 100, 0.5);
+	color: #b2b2b2;
+	border: solid 1px;
+	border-radius:1px;
+	color : white;
+	display: none;
+	
+	-moz-transform-origin: 80% 50%;
+	-webkit-transform-origin: 80% 50%;
+	-o-transform-origin: 80% 50%;
+	-ms-transform-origin: 80% 50%;
+	transform-origin: 80% 50%;
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+}
+
 /*
 .project_title_log {
 	position:relative;

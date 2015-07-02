@@ -7,7 +7,8 @@
 	var nui, // node ui
 		nodeList,
 		nodeListTable,
-		instance_no = 1;
+		instance_no = 1,
+		edit_view = {};
 	
 	function $(id) {
 		return document.getElementById(id);
@@ -145,8 +146,13 @@
 	editor.socket.on('connect', function () {
 	});
 	
+	function test_lua() {
+		console.log("test_lua:", nui.exportLua());
+	}
+	
 	editor.socket.on('init', function () {
-		var draw = SVG('nodecanvas');
+		var draw = SVG('nodecanvas'),
+			propertyTab;
 		nui = svgNodeUI(draw);
 		nui.clearNodes();
 		nui.setTypeColorFunction(colorFunction);
@@ -161,14 +167,39 @@
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.on('reloadNodeList', function (data) {
 			storeNodeList(JSON.parse(data), function () {
+				var headerNode = null,
+					footerNode = null;
+				
 				addNode("Case", "Case01", 500, 100);
 				addNode("Case", "Case02", 500, 200);
 				addNode("Case", "ffv_cyl_new", 500, 100);
 				addNode("krenderCASE", "krenderCASE1", 500, 100);
 				addNode("krenderCASE", "krenderCASE2", 500, 150);
 				addNode("RemoteSetting", "RemoteSetting", 500, 100);
+				
+				if (nodeListTable.hasOwnProperty('headerNode')) {
+					nui.setHeaderCode(headerNode.customfunc);
+				}
+				if (nodeListTable.hasOwnProperty('footerNode')) {
+					nui.setFooterCode(footerNode.customfunc);
+				}
+				
+				test_lua();
+				//clearProperty()
 			});
 		});
+		
+		propertyTab = window.animtab.create('right', {
+			'rightTab' : { min : '0px', max : 'auto' }
+		}, {
+			'nodePropertyTab' : { min : '0px', max : '200px' }
+		}, 'property');
+		propertyTab(false);
+		
+		
 	});
+	
+	window.node_edit_view = edit_view;
+	window.node_edit_view.test_lua = test_lua;
 	
 }(window.editor));
