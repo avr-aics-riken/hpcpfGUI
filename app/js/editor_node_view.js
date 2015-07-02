@@ -157,7 +157,7 @@
 			iokey2,
 			ioval2,
 			hr;
-		console.log(nodeData);
+		//console.log(nodeData);
 		property.innerHTML = "";
 		for (key in nodeData) {
 			if (nodeData.hasOwnProperty(key)) {
