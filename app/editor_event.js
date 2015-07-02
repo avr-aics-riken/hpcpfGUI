@@ -15,8 +15,8 @@
 		LUA_CMD     = __dirname + '/lua_mac',
 		TAR_CMD     = 'tar',
 		SH_CMD = 'sh',
-		PIF_FILENAME = 'pif.json',
-		CIF_FILENAME = 'cif.json',
+		PMD_FILENAME = 'pmd.json',
+		CMD_FILENAME = 'cmd.json',
 		sesstionTable = {};
 
 	if (os.platform() === 'linux') { // Linux setting
@@ -414,19 +414,19 @@
 		});
 
 		socket.on('reqUpdateInformation', function () {
-			var pifFile = path.join(sesstionTable[socket.id].dir, PIF_FILENAME),
-				pifData,
-				pifStr;
-			console.log("reqUpdateInformation:" + pifFile);
-			if (pifFile && fs.existsSync(pifFile)) {
+			var pmdFile = path.join(sesstionTable[socket.id].dir, PMD_FILENAME),
+				pmdData,
+				pmdStr;
+			console.log("reqUpdateInformation:" + pmdFile);
+			if (pmdFile && fs.existsSync(pmdFile)) {
 				console.log("reqUpdateInformation exists");
-				pifData = fs.readFileSync(pifFile);
+				pmdData = fs.readFileSync(pmdFile);
 				try {
-					pifStr = JSON.parse(pifData);
-					//console.log(pifStr);
-					socket.emit('updateInformation', JSON.stringify(pifStr));
+					pmdStr = JSON.parse(pmdData);
+					//console.log(pmdStr);
+					socket.emit('updateInformation', JSON.stringify(pmdStr));
 				} catch (e) {
-					console.log("JSON parse error:" + pifData);
+					console.log("JSON parse error:" + pmdData);
 				}
 			}
 		});

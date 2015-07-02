@@ -44,14 +44,15 @@
 		$('info_opened_text_area').style.display = "none";
 		if (info.hasOwnProperty("hpcpf")) {
 			elem = info.hpcpf;
-			if (elem.hasOwnProperty("project_info")) {
-				elem = elem.project_info;
+			if (elem.hasOwnProperty('project_meta_data')) {
+				elem = elem.project_meta_data;
 				if (elem.hasOwnProperty("name_hr")) {
 					editor.setProjectName(elem.name_hr); // editor.js
 				}
 				if (elem.hasOwnProperty("description_hr")) {
 					$('info_description').innerHTML = elem.description_hr;
 				}
+				/*
 				if (elem.hasOwnProperty("workflow")) {
 					$('info_workflow').innerHTML = "";
 					for (i = 0; i < elem.workflow.length; i = i + 1) {
@@ -81,6 +82,7 @@
 						$('info_log').innerHTML = createInfoLink(elem.log.conf, false);
 					}
 				}
+				*/
 			}
 		}
 	});

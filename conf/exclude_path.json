@@ -4,5 +4,9 @@
 		"/Program Files",
 		"/Program Files (x86)",
 		"C:/ProgramData"
+	],
+	"workspace" : [
+		"history.json",
+		"*/history.json"
 	]
 }
