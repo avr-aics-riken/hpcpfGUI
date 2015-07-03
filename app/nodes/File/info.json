@@ -1,0 +1,14 @@
+{
+	"name": "File",
+	"funcname": "LoadFile",
+	"info":"ファイルを読み込むためのノード",
+	"pos": [100, 100],
+	"varname": "File",
+	"customfuncfile":"objloader.lua",
+	"input": [
+		{"name": "filepath", "type": "string", "value": "bunny.obj"}
+	],
+	"output": [
+		{"name": "geometry",  "type": "geometry"}
+	]
+}

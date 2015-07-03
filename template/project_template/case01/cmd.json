@@ -24,7 +24,7 @@
                {
                     "name_hr":"物体形状",
                     "description_hr":"流れ場中の物体形状STLファイル",
-                    "type":"geometory",
+                    "type":"geometry",
                     "file_pattern":"*.stl",
                     "required":true
                },
