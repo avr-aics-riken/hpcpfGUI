@@ -14,7 +14,8 @@ function svgNodeUI(draw) {
 		nodeDeleteFunction = null,
 		colorTableFunction = null,
 		headerCode = '',
-		footerCode = '';
+		footerCode = '',
+		detectLoopFunc;
 	
 	/*
 		TODO: read from setting JSON file
@@ -119,6 +120,10 @@ function svgNodeUI(draw) {
 					if (draggingPlug !== null) {
 						self.connectPlug(draggingPlug);
 						draggingPlug = null;
+					}
+					if (detectLoopFunc(self.parentNode, self.parentNode, self)) {
+						self.connected.disconnect();
+						self.disconnect();
 					}
 				};
 			};
@@ -264,6 +269,43 @@ function svgNodeUI(draw) {
 			}
 			this.line = [];
 		}
+	};
+	
+	detectLoopFunc = function (node, tempNode, currentConnector) {
+		var i,
+			connector,
+			nextNode,
+			k;
+		if (!tempNode) {
+			return false;
+		}
+		//console.log("detectLoop", tempNode.plugConnectors);
+		//console.log("detectLoop", currentConnector);
+		for (i in tempNode.plugConnectors) {
+			if (tempNode.plugConnectors.hasOwnProperty(i)) {
+				connector = tempNode.plugConnectors[i];
+				if (connector && connector instanceof NodePlug && connector !== currentConnector) {
+					//console.log("aaa", connector);
+					for (k = 0; k < connector.line.length; k = k + 1) {
+						if (connector.line[k].connected) {
+							nextNode = connector.line[k].connected.parentNode;
+							if (nextNode) {
+								if (nextNode === node) {
+									console.log('Loop Node Found!');
+									return true;
+								}
+								if (detectLoopFunc(node, nextNode, connector.line[k].connected)) {
+									return true;
+								} else {
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	};
 	
 	function getNodeInfo(data) {
