@@ -275,11 +275,11 @@
 		property.appendChild(makeItemNode('Property Name', 'Value', true));
 		
 		if (nodeData.hasOwnProperty('name')) {
-			value = nodeData['name'];
+			value = nodeData.name;
 			property.appendChild(makeItemNode('name', value));
 		}
 		if (nodeData.hasOwnProperty('varname')) {
-			value = nodeData['varname'];
+			value = nodeData.varname;
 			property.appendChild(makeItemNode('varname', value));
 		}
 		
@@ -293,14 +293,16 @@
 							ioval = value[iokey];
 							if (ioval.hasOwnProperty('name')) {
 								iokey2 = 'Input';
-								ioval2 = ioval['name'];
+								ioval2 = ioval.name;
 								property.appendChild(makeItemNode(iokey2, ioval2, true));
 							}
 							for (iokey2 in ioval) {
-								if (iokey2 !== 'name') {
-									if (ioval.hasOwnProperty(iokey2)) {
-										ioval2 = ioval[iokey2];
-										property.appendChild(makeItemNode(iokey2, ioval2));
+								if (ioval.hasOwnProperty(iokey2)) {
+									if (iokey2 !== 'name') {
+										if (ioval.hasOwnProperty(iokey2)) {
+											ioval2 = ioval[iokey2];
+											property.appendChild(makeItemNode(iokey2, ioval2));
+										}
 									}
 								}
 							}
@@ -332,10 +334,7 @@
 			//updatePropertyDebug(nodeData);
 			updateProperty(nodeData);
 		});
-		nui.nodeDeleteEvent(function (data) {
-			var node = nui.getNode(data.varname);
-			node.erase();
-		});
+		nui.nodeDeleteEvent(deleteNode);
 		
 		document.getElementById('nodeList').appendChild(createNodeList());
 		
