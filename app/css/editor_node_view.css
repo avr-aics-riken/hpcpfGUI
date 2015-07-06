@@ -65,7 +65,9 @@
 }
 
 .nodeProperty {
-	color : ghostwhite;
+	color : black;
+	display: table;
+	margin: 5px;
 }
 
 .nodeKey2 {
@@ -87,11 +89,11 @@
 
 .rightTab
 {
-	font-size: 14px;
-	padding: 0px 20px 0px 35px;
+	font-size: 20px;
+	margin: 6px;
 	top : 160px;
 	right : 0px;
-	width: 50px;
+	width: 80px;
 	height : 20px;
 	bottom: 0px;
 	z-index: 2;
@@ -112,6 +114,30 @@
 	-o-transform: rotate(-90deg);
 	-ms-transform: rotate(-90deg);
 	transform: rotate(-90deg);
+}
+
+.nodePropertyRow {
+	display: table-row;
+	background-color: #aeaeae;
+}
+
+.nodePropertyConst {
+	display: table-cell;
+	border: 1px solid #868686;
+	background-color: #aeaeae;
+	padding: 3px;
+}
+
+.nodePropertyName {
+	display:table-cell;
+	background-color: #ccc;
+	border: 1px solid #868686;
+	padding: 3px;
+}
+
+.nodePropertyTop
+{
+	background-color: #868686;
 }
 
 /*

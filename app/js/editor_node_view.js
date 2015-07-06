@@ -17,6 +17,25 @@
 		return JSON.parse(JSON.stringify(obj));
 	}
 	
+	function makeItemNode(name, text, top) {
+		var itemNode = document.createElement('div'),
+			nameNode = document.createElement('div'),
+			textNode = document.createElement('div');
+
+		itemNode.classList.add('nodePropertyRow');
+		nameNode.innerHTML = name;
+		textNode.innerHTML = text;
+		nameNode.classList.add('nodePropertyName');
+		textNode.classList.add('nodePropertyConst');
+		if (top) {
+			nameNode.classList.add('nodePropertyTop');
+			textNode.classList.add('nodePropertyTop');
+		}
+		itemNode.appendChild(nameNode);
+		itemNode.appendChild(textNode);
+		return itemNode;
+	}
+
 	function addNode(nodename, nodeName, nx, ny) {
 		var node = nodeListTable[nodename],
 			instNode,
@@ -133,17 +152,15 @@
 			iokey2,
 			ioval2,
 			hr;
-		//console.log(nodeData);
+
 		property.innerHTML = "";
 		for (key in nodeData) {
 			if (nodeData.hasOwnProperty(key)) {
 				value = nodeData[key];
+				
 				div = document.createElement('div');
-				divkey = document.createElement('div');
-				divkey.innerHTML = key;
-				divkey.className = 'nodeKey';
-				divval = document.createElement('div');
-				divval.className = 'nodeValue';
+				
+				property.appendChild(makeItemNode(key, "", true));
 				
 				if (key === 'input' || key === 'output') {
 					for (iokey in value) {
@@ -152,28 +169,15 @@
 							for (iokey2 in ioval) {
 								if (ioval.hasOwnProperty(iokey2)) {
 									ioval2 = ioval[iokey2];
-									diviokey = document.createElement('div');
-									diviokey.innerHTML = iokey2;
-									diviokey.className = 'nodeKey2';
-									divioval = document.createElement('div');
-									divioval.innerHTML = ioval2;
-									divioval.className = 'nodeValue';
-									divval.appendChild(diviokey);
-									divval.appendChild(divioval);
+									property.appendChild(makeItemNode(iokey2, ioval2));
 								}
 							}
-							hr = document.createElement('hr');
-							hr.className = "innerHr";
-							divval.appendChild(hr);
 						}
 					}
 				} else {
-					divval.innerHTML = value;
+					property.appendChild(makeItemNode(key, value));
 				}
-				div.appendChild(divkey);
-				div.appendChild(divval);
 				property.appendChild(div);
-				property.appendChild(document.createElement('hr'));
 			}
 		}
 	}
