@@ -156,24 +156,9 @@
 						inputElem = elem.inputs[i];
 						nodeInput = JSON.parse(JSON.stringify(inputElem));
 						
-						if (inputElem.hasOwnProperty('name_hr')) {
+						if (!inputElem.hasOwnProperty('name') && inputElem.hasOwnProperty('name_hr')) {
 							nodeInput.name = inputElem.name_hr;
 						}
-						if (inputElem.hasOwnProperty('description_hr')) {
-							nodeInput.description = inputElem.description_hr;
-						}
-						/*
-						if (nodeInput.hasOwnProperty('file_pattern')) {
-							//nodeInput.name = "file_pattern";
-							nodeInput.type = "string";
-							nodeInput.value = nodeInput.file_pattern;
-						} else {
-							// connect type
-							//nodeInput.name = "connection";
-							nodeInput.type = "vec4";
-							nodeInput.value = "";
-						}
-						*/
 						node.input.push(nodeInput);
 					}
 				}
@@ -183,19 +168,9 @@
 						outputElem = elem.outputs[i];
 						nodeOutput = JSON.parse(JSON.stringify(outputElem));
 						
-						if (outputElem.hasOwnProperty('name_hr')) {
+						if (!outputElem.hasOwnProperty('name') && outputElem.hasOwnProperty('name_hr')) {
 							nodeOutput.name = outputElem.name_hr;
 						}
-						if (outputElem.hasOwnProperty('description_hr')) {
-							nodeOutput.description = outputElem.description_hr;
-						}
-						/*
-						if (outputElem.hasOwnProperty('file')) {
-							//nodeOutput.name = "file";
-							nodeOutput.type = "string";
-							nodeOutput.value = outputElem.file;
-						}
-						*/
 						node.output.push(nodeOutput);
 					}
 				}

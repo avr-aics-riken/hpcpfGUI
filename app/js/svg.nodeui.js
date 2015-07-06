@@ -189,7 +189,7 @@ function svgNodeUI(draw) {
 		this.py = y;
 		this.line = [];
 
-		var hole = createPlugSVG(svgparent.x() + x, svgparent.y() + y, '#c7c7c7'),//draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill('#c7c7c7'),
+		var hole = createPlugSVG(svgparent.x() + x, svgparent.y() + y, getTypeColor(vartype)),//draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill('#c7c7c7'),
 			pole = createPlugSVG(svgparent.x() + x, svgparent.y() + y, getTypeColor(vartype)),//draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
 			newline,
 			poleDragstart = function (self) {

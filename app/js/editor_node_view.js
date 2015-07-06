@@ -144,7 +144,7 @@
 		}
 	}
 	
-	function storeNodeList(nodes, callback) {
+	function storeNodeToNodeListTable(nodes, callback) {
 		var i;
 		nodes.sort(
 			function (a, b) {
@@ -164,17 +164,22 @@
 			callback(nodes);
 		}
 	}
-
-	function updateNodeList(lst, txtval) {
-		var i, name, visible, item;
+	
+	function updateSelectNodeList(nodelist) {
+		var i,
+			name,
+			visible,
+			item,
+			lst = document.getElementById('selectNodeList');
+		
 		lst.innerHTML = ''; // clear
-		for (i in nodeListTable) {
-			if (nodeListTable.hasOwnProperty(i)) {
+		for (i in nodelist) {
+			if (nodelist.hasOwnProperty(i)) {
 				//console.log(nodeListTable[i]);
-				name = nodeListTable[i].name;
-				visible = nodeListTable[i].visible;
+				name = nodelist[i].name;
+				visible = nodelist[i].visible;
 				
-				if ((txtval === '' || name.toLowerCase().indexOf(txtval.toLocaleLowerCase()) >= 0) && visible !== false) {
+				if (visible !== false) {
 					item = document.createElement('option');
 					item.setAttribute('value', name);
 					item.appendChild(document.createTextNode(name));
@@ -183,7 +188,7 @@
 			}
 		}
 	}
-	
+
 	function createNodeList() {
 		var tray = document.createElement('div'),
 			addbtn = document.createElement('div'),
@@ -209,6 +214,7 @@
 		lst.style.width = width;
 		lst.setAttribute('size', 15);
 		lst.setAttribute('name', 'NodeList');
+		lst.id = 'selectNodeList';
 		
 		txt.timer    = null;
 		txt.prev_val = txt.value;
@@ -218,8 +224,6 @@
 				window.clearInterval(txt.timer);
 			};
 		}(lst, txt)), false);
-		
-		updateNodeList(lst, '');
 		
 		return tray;
 	}
@@ -340,13 +344,15 @@
 		
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.on('reloadNodeList', function (systemNodeList, caseNodeList) {
-			storeNodeList(JSON.parse(systemNodeList), function (nodes) {
-				addNode("Render", "hrender", 100, 100);
-				addNode("Render", "hrender", 100, 100);
-				addNode("File", "File", 200, 100);
-				addNode("File", "File", 200, 100);
+			
+			storeNodeToNodeListTable(JSON.parse(systemNodeList), function (nodes) {
+				updateSelectNodeList(nodes);
+				//addNode("Render", "hrender", 100, 100);
+				//addNode("Render", "hrender", 100, 100);
+				//addNode("File", "File", 200, 100);
+				//addNode("File", "File", 200, 100);
 			});
-			storeNodeList(JSON.parse(caseNodeList), function (nodes) {
+			storeNodeToNodeListTable(JSON.parse(caseNodeList), function (nodes) {
 				var headerNode = null,
 					footerNode = null,
 					i;
