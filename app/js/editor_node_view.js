@@ -35,6 +35,33 @@
 		itemNode.appendChild(textNode);
 		return itemNode;
 	}
+	
+	function makeItemTextNode(name, text, node, type) {
+		var itemNode = document.createElement('div'),
+			nameNode = document.createElement('div'),
+			textNode = document.createElement('input');
+		if (type) {
+			textNode.setAttribute('type', type);
+		} else {
+			textNode.setAttribute('type', 'text');
+		}
+		itemNode.classList.add('nodePropertyRow');
+		nameNode.innerHTML = '[' + name + ']';
+		textNode.value = text;
+		nameNode.classList.add('nodePropertyName');
+		textNode.classList.add('nodePropertyText');
+		itemNode.appendChild(nameNode);
+		itemNode.appendChild(textNode);
+		
+		/*
+		textNode.addEventListener('keyup', (function (nodeData, txt) {
+			return function (e) {
+				nodeData.value = txt.value;
+			};
+		}(node, textNode)));
+		*/
+		return itemNode;
+	}
 
 	function addNode(nodename, nodeName, nx, ny) {
 		var node = nodeListTable[nodename],
@@ -137,6 +164,25 @@
 			callback(nodes);
 		}
 	}
+
+	function updateNodeList(lst, txtval) {
+		var i, name, visible, item;
+		lst.innerHTML = ''; // clear
+		for (i in nodeListTable) {
+			if (nodeListTable.hasOwnProperty(i)) {
+				//console.log(nodeListTable[i]);
+				name = nodeListTable[i].name;
+				visible = nodeListTable[i].visible;
+				
+				if ((txtval === '' || name.toLowerCase().indexOf(txtval.toLocaleLowerCase()) >= 0) && visible !== false) {
+					item = document.createElement('option');
+					item.setAttribute('value', name);
+					item.appendChild(document.createTextNode(name));
+					lst.appendChild(item);
+				}
+			}
+		}
+	}
 	
 	function createNodeList() {
 		var tray = document.createElement('div'),
@@ -172,10 +218,13 @@
 				window.clearInterval(txt.timer);
 			};
 		}(lst, txt)), false);
+		
+		updateNodeList(lst, '');
+		
 		return tray;
 	}
 	
-	function updateProperty(nodeData) {
+	function updatePropertyDebug(nodeData) {
 		var property = document.getElementById('nodeProperty'),
 			key,
 			value,
@@ -212,6 +261,56 @@
 		}
 	}
 	
+	function updateProperty(nodeData) {
+		var property = document.getElementById('nodeProperty'),
+			key,
+			value,
+			iokey,
+			ioval,
+			iokey2,
+			ioval2,
+			hr;
+
+		property.innerHTML = "";
+		property.appendChild(makeItemNode('Property Name', 'Value', true));
+		
+		if (nodeData.hasOwnProperty('name')) {
+			value = nodeData['name'];
+			property.appendChild(makeItemNode('name', value));
+		}
+		if (nodeData.hasOwnProperty('varname')) {
+			value = nodeData['varname'];
+			property.appendChild(makeItemNode('varname', value));
+		}
+		
+		for (key in nodeData) {
+			if (nodeData.hasOwnProperty(key)) {
+				if (key === 'input') {
+					value = nodeData[key];
+
+					for (iokey in value) {
+						if (value.hasOwnProperty(iokey)) {
+							ioval = value[iokey];
+							if (ioval.hasOwnProperty('name')) {
+								iokey2 = 'Input';
+								ioval2 = ioval['name'];
+								property.appendChild(makeItemNode(iokey2, ioval2, true));
+							}
+							for (iokey2 in ioval) {
+								if (iokey2 !== 'name') {
+									if (ioval.hasOwnProperty(iokey2)) {
+										ioval2 = ioval[iokey2];
+										property.appendChild(makeItemNode(iokey2, ioval2));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	editor.socket.on('connect', function () {
 	});
 	
@@ -230,6 +329,7 @@
 		nui.setTypeColorFunction(colorFunction);
 		nui.nodeClickEvent(function (nodeData) {
 			console.log("node cliecked");
+			//updatePropertyDebug(nodeData);
 			updateProperty(nodeData);
 		});
 		nui.nodeDeleteEvent(function (data) {
