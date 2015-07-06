@@ -138,27 +138,58 @@
 		}
 	}
 	
+	function createNodeList() {
+		var tray = document.createElement('div'),
+			addbtn = document.createElement('div'),
+			txt = document.createElement('input'),
+			lst = document.createElement('select'),
+			item,
+			name,
+			i,
+			width = '100%';
+		
+		//addbtn.addEventListener('click', buttonAdd(lst, addcallback, mx, my));
+		addbtn.classList.add('menuButtonClass');
+		addbtn.classList.add('noneselect');
+		addbtn.classList.add('AddButton');
+		addbtn.innerHTML = 'Add';
+		tray.appendChild(addbtn);
+		tray.appendChild(txt);
+		tray.appendChild(document.createElement('div'));
+		tray.appendChild(lst);
+		txt.setAttribute('type', 'input');
+		txt.setAttribute('placeholder', 'filter...');
+		txt.style.width = width;
+		lst.style.width = width;
+		lst.setAttribute('size', 15);
+		lst.setAttribute('name', 'NodeList');
+		
+		txt.timer    = null;
+		txt.prev_val = txt.value;
+		txt.new_val  = '';
+		txt.addEventListener("blur", (function (lst, txt) {
+			return function () {
+				window.clearInterval(txt.timer);
+			};
+		}(lst, txt)), false);
+		return tray;
+	}
+	
 	function updateProperty(nodeData) {
 		var property = document.getElementById('nodeProperty'),
 			key,
 			value,
-			div,
-			divkey,
-			divval,
 			iokey,
 			ioval,
-			diviokey,
-			divioval,
 			iokey2,
 			ioval2,
 			hr;
 
 		property.innerHTML = "";
+		
 		for (key in nodeData) {
 			if (nodeData.hasOwnProperty(key)) {
 				value = nodeData[key];
-				
-				div = document.createElement('div');
 				
 				property.appendChild(makeItemNode(key, "", true));
 				
@@ -177,7 +208,6 @@
 				} else {
 					property.appendChild(makeItemNode(key, value));
 				}
-				property.appendChild(div);
 			}
 		}
 	}
@@ -206,6 +236,8 @@
 			var node = nui.getNode(data.varname);
 			node.erase();
 		});
+		
+		document.getElementById('nodeList').appendChild(createNodeList());
 		
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.on('reloadNodeList', function (systemNodeList, caseNodeList) {
