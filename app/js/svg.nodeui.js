@@ -333,11 +333,12 @@ function svgNodeUI(draw) {
 			nodeback2 = draw.rect(30, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(0, 14),
 			nodeback3 = draw.rect(24, 24).radius(4).attr({'fill': '#72ca29', 'fill-opacity': "1.0", 'stroke': "none"}).move(4.5, 4.5).rotate(45, 16, 16),
 			nodebase = draw.rect(220, 60).attr({'fill': "#4d4d4c", 'fill-opacity': "1.0", 'stroke': "none"}).move(3, 30),
-			erasebtn = draw.rect(16, 16).radius(5).attr({'fill': "#ffffff", 'fill-opacity': "0.8", 'stroke': "none"}).move(0, 4),
-			eraseA = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(45, 1 + 7, 1 + 11),
-			eraseB = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(-45, 1 + 7, 1 + 11),
+			canErase = true,
+			erasebtn,
+			eraseA,
+			eraseB,
 			titletext = draw.text(typename).fill('#4d4d4c').move(15, 2),
-			eraseG = draw.group().move(200, 5),
+			eraseG,
 			group = draw.group(),
 			groupDragStart = function (self) {
 				return function (delta, event) {
@@ -370,26 +371,39 @@ function svgNodeUI(draw) {
 			nodeVarName,
 			plugConnectors = {};
 		
+		if (inouts.hasOwnProperty('canErase')) {
+			canErase = inouts.canErase;
+		}
+		
 		nodeArray[varName] = this;
-		eraseG.add(erasebtn);
-		eraseG.add(eraseA);
-		eraseG.add(eraseB);
-		eraseG.on('mousedown', (function (node) {
-			return function () {
-				if (nodeDeleteFunction) {
-					setTimeout(function () {
-						nodeDeleteFunction(node.nodeData);
-					}, 0);
-				}
-			};
-		}(this)));
+		if (canErase) {
+			erasebtn = draw.rect(16, 16).radius(5).attr({'fill': "#ffffff", 'fill-opacity': "0.8", 'stroke': "none"}).move(0, 4);
+			eraseA = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(45, 1 + 7, 1 + 11);
+			eraseB = draw.rect(14, 2).radius(1).attr({'fill': "#000000", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 11).rotate(-45, 1 + 7, 1 + 11);
+			eraseG = draw.group().move(200, 5);
+			
+			eraseG.add(erasebtn);
+			eraseG.add(eraseA);
+			eraseG.add(eraseB);
+			eraseG.on('mousedown', (function (node) {
+				return function () {
+					if (nodeDeleteFunction) {
+						setTimeout(function () {
+							nodeDeleteFunction(node.nodeData);
+						}, 0);
+					}
+				};
+			}(this)));
+		}
 		
 		group.add(nodeback1);
 		group.add(nodeback2);
 		group.add(nodeback3);
 		group.add(nodebase);
 		group.add(titletext);
-		group.add(eraseG);
+		if (canErase) {
+			group.add(eraseG);
+		}
 		group.draggable();
 		group.dragstart = groupDragStart(this);
 		group.dragmove = groupDragMove(this);

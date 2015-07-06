@@ -63,7 +63,7 @@
 		return itemNode;
 	}
 
-	function addNode(nodename, nodeName, nx, ny) {
+	function addNode(nodename, nodeName, nx, ny, canErase) {
 		var node = nodeListTable[nodename],
 			instNode,
 			nodeData;
@@ -75,6 +75,7 @@
 		nodeData = nui.getNodeData();
 		instNode = clone(node);
 		//console.log(instNode);
+		instNode.canErase = canErase;
 		nodeData.nodeData.push(instNode);
 		instNode.varname = instNode.varname + instance_no;
 		instance_no += 1;
@@ -110,6 +111,7 @@
 	
 	function updateNode() {
 		var nodeData = nui.getNodeData();
+		console.log('updateNode');
 		nui.clearNodes();
 		nui.makeNodes(nodeData);
 	}
@@ -347,10 +349,10 @@
 			
 			storeNodeToNodeListTable(JSON.parse(systemNodeList), function (nodes) {
 				updateSelectNodeList(nodes);
-				//addNode("Render", "hrender", 100, 100);
-				//addNode("Render", "hrender", 100, 100);
-				//addNode("File", "File", 200, 100);
-				//addNode("File", "File", 200, 100);
+				addNode("Render", "hrender", 100, 100, true);
+				//addNode("Render", "hrender", 100, 100, true);
+				addNode("File", "File", 200, 100, true);
+				//addNode("File", "File", 200, 100, true);
 			});
 			storeNodeToNodeListTable(JSON.parse(caseNodeList), function (nodes) {
 				var headerNode = null,
@@ -360,7 +362,7 @@
 				console.log(nodes);
 				for (i = 0; i < nodes.length; i = i + 1) {
 					console.log(nodes[i].varname);
-					addNode(nodes[i].varname, nodes[i].name, 300, 100);
+					addNode(nodes[i].varname, nodes[i].name, 300, 100, false);
 				}
 				
 				if (nodeListTable.hasOwnProperty('headerNode')) {
