@@ -148,7 +148,7 @@
 			if (cmd.hpcpf.hasOwnProperty('case_meta_data')) {
 				elem = cmd.hpcpf.case_meta_data;
 				if (elem.hasOwnProperty('name_hr')) {
-					node.name = elem.name_hr;
+					node.name_hr = elem.name_hr;
 				}
 				node.input = [];
 				if (elem.hasOwnProperty('inputs')) {
@@ -177,6 +177,7 @@
 				node.customfuncfile = "case.lua";
 				node.pos = [100, 100];
 				node.funcname = "Case";
+				node.name = "Case";
 				node.varname = "Case";
 			}
 			return node;

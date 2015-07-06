@@ -5,9 +5,10 @@
 (function (editor) {
 	"use strict";
 	var nui, // node ui
-		nodeListTable,
+		nodeListTable = {},
 		instance_no = 1,
-		edit_view = {};
+		edit_view = {},
+		popupNodeList = null;
 	
 	function $(id) {
 		return document.getElementById(id);
@@ -63,15 +64,14 @@
 		return itemNode;
 	}
 
-	function addNode(nodename, nodeName, nx, ny, canErase) {
+	function addNode(nodename, nodename_hr, nx, ny, canErase) {
 		var node = nodeListTable[nodename],
 			instNode,
 			nodeData;
 		if (!node) {
 			return;
 		}
-		node.name = nodeName;
-		node.varname = nodeName;
+		node.name = nodename_hr;
 		nodeData = nui.getNodeData();
 		instNode = clone(node);
 		//console.log(instNode);
@@ -155,9 +155,8 @@
 		);
 
 		// create nodelist table
-		nodeListTable = {};
 		for (i = 0; i < nodes.length; i = i + 1) {
-			nodeListTable[nodes[i].varname] = nodes[i];
+			nodeListTable[nodes[i].name] = nodes[i];
 		}
 
 		console.log(nodeListTable);
@@ -191,9 +190,34 @@
 		}
 	}
 
-	function createNodeList() {
+	function addSystemNode(cb, nx, ny) {
+		return function (e) {
+			var lst = document.getElementById('selectNodeList'),
+				index = lst.selectedIndex,
+				text,
+				node,
+				instNode;
+			
+			if (index === -1) {
+				return;
+			}
+			text = lst.options[index].text;
+			if (nx === undefined || ny === undefined) {
+				// center
+				addNode(text, text, window.innerWidth / 4, window.innerHeight / 4, true);
+			} else {
+				// specific pos
+				addNode(text, text, nx, ny, true);
+			}
+			if (cb) {
+				cb();
+			}
+		};
+	}
+
+	function createNodeList(callback, mx, my) {
 		var tray = document.createElement('div'),
-			addbtn = document.createElement('div'),
+			addbtn = document.createElement('button'),
 			txt = document.createElement('input'),
 			lst = document.createElement('select'),
 			item,
@@ -201,10 +225,10 @@
 			i,
 			width = '100%';
 		
-		//addbtn.addEventListener('click', buttonAdd(lst, addcallback, mx, my));
+		addbtn.addEventListener('click', addSystemNode(callback, mx, my));
 		addbtn.classList.add('menuButtonClass');
 		addbtn.classList.add('noneselect');
-		addbtn.classList.add('AddButton');
+		addbtn.classList.add('nodeAddButton');
 		addbtn.innerHTML = 'Add';
 		tray.appendChild(addbtn);
 		tray.appendChild(txt);
@@ -212,6 +236,7 @@
 		tray.appendChild(lst);
 		txt.setAttribute('type', 'input');
 		txt.setAttribute('placeholder', 'filter...');
+		txt.className = "nodeFilterInput";
 		txt.style.width = width;
 		lst.style.width = width;
 		lst.setAttribute('size', 15);
@@ -326,11 +351,45 @@
 		console.log("test_lua:", nui.exportLua());
 	}
 	
+	function showAddNodeMenu(show, sx, sy, popupmode) {
+		var callback = null;
+		if (show === true) {
+			if (popupmode) {
+				callback = function () {
+					document.body.removeChild(popupNodeList);
+					popupNodeList = null;
+				};
+			}
+			popupNodeList = createNodeList(callback, sx, sy);
+			popupNodeList.setAttribute('style', 'position:absolute;top:' + sy + 'px;left:' + sx + 'px');
+			document.body.appendChild(popupNodeList);
+			
+			// filter focus
+			if (popupmode) {
+				popupNodeList.children[1].focus();
+			}
+		} else {
+			if (popupNodeList !== null) {
+				document.body.removeChild(popupNodeList);
+			}
+			popupNodeList = null;
+		}
+	}
+	
+	function doubleClickCanvas(e) {
+		showAddNodeMenu(true, e.clientX, e.clientY, true);
+	}
+	function clickCanvas(e) {
+		//console.log(e.clientX, e.clientY);
+		showAddNodeMenu(false);
+	}
+	
 	editor.socket.on('init', function () {
 		var draw = SVG('nodecanvas'),
 			propertyTab,
 			pos = { x : 0, y : 0 },
-			onMiddleButtonDown = false;
+			onMiddleButtonDown = false,
+			nodecanvas   = document.getElementById('nodecanvas');
 		
 		nui = svgNodeUI(draw);
 		nui.clearNodes();
@@ -342,6 +401,8 @@
 		});
 		nui.nodeDeleteEvent(deleteNode);
 		
+		nodecanvas.onclick = clickCanvas;
+		nodecanvas.ondblclick = doubleClickCanvas;
 		document.getElementById('nodeList').appendChild(createNodeList());
 		
 		editor.socket.emit('reqReloadNodeList');
@@ -349,9 +410,9 @@
 			
 			storeNodeToNodeListTable(JSON.parse(systemNodeList), function (nodes) {
 				updateSelectNodeList(nodes);
-				addNode("Render", "hrender", 100, 100, true);
+				//addNode("Render", 100, 100, true);
 				//addNode("Render", "hrender", 100, 100, true);
-				addNode("File", "File", 200, 100, true);
+				//addNode("File", 200, 100, true);
 				//addNode("File", "File", 200, 100, true);
 			});
 			storeNodeToNodeListTable(JSON.parse(caseNodeList), function (nodes) {
@@ -361,8 +422,8 @@
 				
 				console.log(nodes);
 				for (i = 0; i < nodes.length; i = i + 1) {
-					console.log(nodes[i].varname);
-					addNode(nodes[i].varname, nodes[i].name, 300, 100, false);
+					console.log(nodes[i]);
+					addNode(nodes[i].name, nodes[i].name_hr, 300, 100, false);
 				}
 				
 				if (nodeListTable.hasOwnProperty('headerNode')) {

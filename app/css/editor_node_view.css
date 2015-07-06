@@ -47,7 +47,7 @@
 
 .nodePropertyTab
 {
-	background-color:rgba(100, 100, 100, 0.5);
+	background-color:rgba(80, 80, 80, 1.0);
 	position:fixed;
 	right: 10px;
 	top: 115px;
@@ -98,7 +98,7 @@
 	height : 20px;
 	bottom: 0px;
 	z-index: 2;
-	background-color: rgba(100, 100, 100, 0.5);
+	background-color: rgba(80, 80, 80, 1.0);
 	color: #b2b2b2;
 	border: solid 1px;
 	border-radius:1px;
@@ -143,6 +143,40 @@
 
 .nodeList{
 	margin: 5px;
+	background-color: rgba(80, 80, 80, 1.0);
+}
+
+.menuButtonClass {
+	font-size:20px;
+	padding: 2px;
+	text-align: center;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.nodeAddButton {
+	width: 71px;
+	height: 46px;
+	text-align: center;
+	padding-bottom: 15px;
+	background-image: url("../image/button_bg_action.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+	color: #fff;
+	font-weight: 300;
+	font-size: 16px;
+}
+
+.nodeAddButton:active {
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+
+.nodeFilterInput {
+	border-color: white;
+	border-width: 2px;
 }
 
 /*
