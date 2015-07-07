@@ -6,6 +6,7 @@
 	"use strict";
 	var nui, // node ui
 		nodeListTable = {},
+		systemNodeListTable = {},
 		instance_no = 1,
 		edit_view = {},
 		popupNodeList = null;
@@ -146,7 +147,7 @@
 		}
 	}
 	
-	function storeNodeToNodeListTable(nodes, callback) {
+	function storeNodeToNodeListTable(nodes, callback, isSystemNode) {
 		var i;
 		nodes.sort(
 			function (a, b) {
@@ -158,6 +159,11 @@
 		for (i = 0; i < nodes.length; i = i + 1) {
 			nodeListTable[nodes[i].name] = nodes[i];
 		}
+		if (isSystemNode) {
+			for (i = 0; i < nodes.length; i = i + 1) {
+				systemNodeListTable[nodes[i].name] = nodes[i];
+			}
+		}
 
 		console.log(nodeListTable);
 		
@@ -166,14 +172,16 @@
 		}
 	}
 	
-	function updateSelectNodeList(nodelist) {
+	function updateSelectNodeList(listElement) {
 		var i,
 			name,
 			visible,
 			item,
-			lst = document.getElementById('selectNodeList');
+			nodelist = systemNodeListTable;
 		
-		lst.innerHTML = ''; // clear
+		if (!listElement) { return; }
+		
+		listElement.innerHTML = ''; // clear
 		for (i in nodelist) {
 			if (nodelist.hasOwnProperty(i)) {
 				//console.log(nodeListTable[i]);
@@ -184,16 +192,15 @@
 					item = document.createElement('option');
 					item.setAttribute('value', name);
 					item.appendChild(document.createTextNode(name));
-					lst.appendChild(item);
+					listElement.appendChild(item);
 				}
 			}
 		}
 	}
 
-	function addSystemNode(cb, nx, ny) {
+	function addSystemNode(listElement, cb, nx, ny) {
 		return function (e) {
-			var lst = document.getElementById('selectNodeList'),
-				index = lst.selectedIndex,
+			var index = listElement.selectedIndex,
 				text,
 				node,
 				instNode;
@@ -201,7 +208,7 @@
 			if (index === -1) {
 				return;
 			}
-			text = lst.options[index].text;
+			text = listElement.options[index].text;
 			if (nx === undefined || ny === undefined) {
 				// center
 				addNode(text, text, window.innerWidth / 4, window.innerHeight / 4, true);
@@ -215,17 +222,16 @@
 		};
 	}
 
-	function createNodeList(callback, mx, my) {
+	function createSelectNodeList(callback, mx, my) {
 		var tray = document.createElement('div'),
 			addbtn = document.createElement('button'),
 			txt = document.createElement('input'),
-			lst = document.createElement('select'),
+			listElement = document.createElement('select'),
 			item,
 			name,
 			i,
 			width = '100%';
 		
-		addbtn.addEventListener('click', addSystemNode(callback, mx, my));
 		addbtn.classList.add('menuButtonClass');
 		addbtn.classList.add('noneselect');
 		addbtn.classList.add('nodeAddButton');
@@ -233,25 +239,27 @@
 		tray.appendChild(addbtn);
 		tray.appendChild(txt);
 		tray.appendChild(document.createElement('div'));
-		tray.appendChild(lst);
+		tray.appendChild(listElement);
 		txt.setAttribute('type', 'input');
 		txt.setAttribute('placeholder', 'filter...');
 		txt.className = "nodeFilterInput";
 		txt.style.width = width;
-		lst.style.width = width;
-		lst.setAttribute('size', 15);
-		lst.setAttribute('name', 'NodeList');
-		lst.id = 'selectNodeList';
+		listElement.style.width = width;
+		listElement.setAttribute('size', 15);
+		listElement.setAttribute('name', 'NodeList');
+		listElement.className = 'selectNodeList';
+		addbtn.addEventListener('click', addSystemNode(listElement, callback, mx, my));
 		
 		txt.timer    = null;
 		txt.prev_val = txt.value;
 		txt.new_val  = '';
-		txt.addEventListener("blur", (function (lst, txt) {
+		txt.addEventListener("blur", (function (listElement, txt) {
 			return function () {
 				window.clearInterval(txt.timer);
 			};
-		}(lst, txt)), false);
+		}(listElement, txt)), false);
 		
+		updateSelectNodeList(listElement);
 		return tray;
 	}
 	
@@ -360,7 +368,7 @@
 					popupNodeList = null;
 				};
 			}
-			popupNodeList = createNodeList(callback, sx, sy);
+			popupNodeList = createSelectNodeList(callback, sx, sy);
 			popupNodeList.setAttribute('style', 'position:absolute;top:' + sy + 'px;left:' + sx + 'px');
 			document.body.appendChild(popupNodeList);
 			
@@ -389,7 +397,8 @@
 			propertyTab,
 			pos = { x : 0, y : 0 },
 			onMiddleButtonDown = false,
-			nodecanvas   = document.getElementById('nodecanvas');
+			nodecanvas   = document.getElementById('nodecanvas'),
+			selectNodeList;
 		
 		nui = svgNodeUI(draw);
 		nui.clearNodes();
@@ -403,18 +412,17 @@
 		
 		nodecanvas.onclick = clickCanvas;
 		nodecanvas.ondblclick = doubleClickCanvas;
-		document.getElementById('nodeList').appendChild(createNodeList());
+		
+		selectNodeList = createSelectNodeList();
+		document.getElementById('nodeList').appendChild(selectNodeList);
 		
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.on('reloadNodeList', function (systemNodeList, caseNodeList) {
 			
 			storeNodeToNodeListTable(JSON.parse(systemNodeList), function (nodes) {
-				updateSelectNodeList(nodes);
-				//addNode("Render", 100, 100, true);
-				//addNode("Render", "hrender", 100, 100, true);
-				//addNode("File", 200, 100, true);
-				//addNode("File", "File", 200, 100, true);
-			});
+				var listElement = selectNodeList.getElementsByClassName('selectNodeList')[0];
+				updateSelectNodeList(listElement);
+			}, true);
 			storeNodeToNodeListTable(JSON.parse(caseNodeList), function (nodes) {
 				var headerNode = null,
 					footerNode = null,
@@ -425,16 +433,6 @@
 					console.log(nodes[i]);
 					addNode(nodes[i].name, nodes[i].name_hr, 300, 100, false);
 				}
-				
-				if (nodeListTable.hasOwnProperty('headerNode')) {
-					nui.setHeaderCode(headerNode.customfunc);
-				}
-				if (nodeListTable.hasOwnProperty('footerNode')) {
-					nui.setFooterCode(footerNode.customfunc);
-				}
-				
-				//test_lua();
-				//clearProperty()
 			});
 		});
 		
