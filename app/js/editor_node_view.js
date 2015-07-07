@@ -172,7 +172,7 @@
 		}
 	}
 	
-	function updateSelectNodeList(listElement) {
+	function updateSelectNodeList(listElement, txtval) {
 		var i,
 			name,
 			visible,
@@ -188,7 +188,7 @@
 				name = nodelist[i].name;
 				visible = nodelist[i].visible;
 				
-				if (visible !== false) {
+				if ((txtval === '' || name.toLowerCase().indexOf(txtval.toLocaleLowerCase()) >= 0) && visible !== false) {
 					item = document.createElement('option');
 					item.setAttribute('value', name);
 					item.appendChild(document.createTextNode(name));
@@ -253,13 +253,25 @@
 		txt.timer    = null;
 		txt.prev_val = txt.value;
 		txt.new_val  = '';
+		txt.addEventListener("focus", (function (listElement, txt) {
+			return function () {
+				window.clearInterval(txt.timer);
+				txt.timer = window.setInterval(function () {
+					txt.new_val = txt.value;
+					if (txt.prev_val !== txt.new_val) {
+						updateSelectNodeList(listElement, txt.new_val);
+					}
+					txt.prev_val = txt.new_val;
+				}, 10);
+			};
+		}(listElement, txt)), false);
 		txt.addEventListener("blur", (function (listElement, txt) {
 			return function () {
 				window.clearInterval(txt.timer);
 			};
 		}(listElement, txt)), false);
 		
-		updateSelectNodeList(listElement);
+		updateSelectNodeList(listElement, '');
 		return tray;
 	}
 	
@@ -421,7 +433,7 @@
 			
 			storeNodeToNodeListTable(JSON.parse(systemNodeList), function (nodes) {
 				var listElement = selectNodeList.getElementsByClassName('selectNodeList')[0];
-				updateSelectNodeList(listElement);
+				updateSelectNodeList(listElement, '');
 			}, true);
 			storeNodeToNodeListTable(JSON.parse(caseNodeList), function (nodes) {
 				var headerNode = null,
