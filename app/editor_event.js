@@ -179,6 +179,7 @@
 				node.funcname = "Case";
 				node.name = "Case";
 				node.varname = "Case";
+				node.status = "Pending";
 			}
 			return node;
 		}

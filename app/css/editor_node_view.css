@@ -88,8 +88,7 @@
 	text-align: right;
 }
 
-.rightTab
-{
+.rightTab {
 	font-size: 20px;
 	margin: 6px;
 	top : 160px;
@@ -141,9 +140,15 @@
 	background-color: #868686;
 }
 
-.nodeList{
+.nodeList {
 	margin: 5px;
 	background-color: rgba(80, 80, 80, 1.0);
+}
+
+.popupNodeList {
+	margin: 5px;
+	background-color: rgba(80, 80, 80, 1.0);
+	width : 275px;
 }
 
 .menuButtonClass {
@@ -177,6 +182,22 @@
 .nodeFilterInput {
 	border-color: white;
 	border-width: 2px;
+	width : 250px;
+}
+
+/* button - stop */ 
+.button_stop {
+	width:71px;
+	height:46px;
+	position:absolute;
+	left:360px;
+	top:40px;
+	text-align:center;
+	background-image:url("../image/button_bg_action.png");
+}
+
+.button_stop:active {
+	background-image:url("../image/button_bg_action_press.png");
 }
 
 /*

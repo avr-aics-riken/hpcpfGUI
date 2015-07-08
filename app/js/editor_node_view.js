@@ -243,7 +243,7 @@
 		txt.setAttribute('type', 'input');
 		txt.setAttribute('placeholder', 'filter...');
 		txt.className = "nodeFilterInput";
-		txt.style.width = width;
+		//txt.style.width = width;
 		listElement.style.width = width;
 		listElement.setAttribute('size', 15);
 		listElement.setAttribute('name', 'NodeList');
@@ -323,7 +323,7 @@
 			hr;
 
 		property.innerHTML = "";
-		property.appendChild(makeItemNode('Property Name', 'Value', true));
+		property.appendChild(makeItemNode('Property', 'Value', true));
 		
 		if (nodeData.hasOwnProperty('name')) {
 			value = nodeData.name;
@@ -332,6 +332,10 @@
 		if (nodeData.hasOwnProperty('varname')) {
 			value = nodeData.varname;
 			property.appendChild(makeItemNode('varname', value));
+		}
+		if (nodeData.hasOwnProperty('status')) {
+			value = nodeData.status;
+			property.appendChild(makeItemNode('status', value));
 		}
 		
 		for (key in nodeData) {
@@ -345,7 +349,7 @@
 							if (ioval.hasOwnProperty('name')) {
 								iokey2 = 'Input';
 								ioval2 = ioval.name;
-								property.appendChild(makeItemNode(iokey2, ioval2, true));
+								property.appendChild(makeItemNode(iokey2, "", true));
 							}
 							for (iokey2 in ioval) {
 								if (ioval.hasOwnProperty(iokey2)) {
@@ -382,6 +386,7 @@
 			}
 			popupNodeList = createSelectNodeList(callback, sx, sy);
 			popupNodeList.setAttribute('style', 'position:absolute;top:' + sy + 'px;left:' + sx + 'px');
+			popupNodeList.className = "popupNodeList";
 			document.body.appendChild(popupNodeList);
 			
 			// filter focus
