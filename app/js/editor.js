@@ -180,58 +180,64 @@
 		$('launchButtonView').src = "";
 		validateModeChangeButton(false);
 	}
-
-	function showInfoView() {
-		$("info_mode").style.display = "block";
+	
+	function changeView(viewtype) {
+		$("info_mode").style.display = "none";
 		$("exe_mode").style.display = "none";
 		$("edit_mode").style.display = "none";
 		$("node_mode").style.display = "none";
 		$("rightTab").style.display = "none";
-		hideEditArea();
 		hideNewNameArea();
-		socket.emit('reqUpdateInformation');
-		window.editor.openedfile = "";
-		window.editor.clickedfile = "";
-		isFolderSelected = false;
+		if (viewtype !== window.editor.ViewTypes.edit) {
+			hideEditArea();
+			window.editor.openedfile = "";
+			window.editor.clickedfile = "";
+			isFolderSelected = false;
+		}
+		if (viewtype === window.editor.ViewTypes.info) {
+			$("info_mode").style.display = "block";
+			socket.emit('reqUpdateInformation');
+		} else if (viewtype === window.editor.ViewTypes.log) {
+			$("exe_mode").style.display = "block";
+			$("info_back_button_area").style.display = "none";
+		} else if (viewtype === window.editor.ViewTypes.edit) {
+			$("edit_mode").style.display = "block";
+			$("info_back_button_area").style.display = "none";
+			validateModeChangeButton(true);
+		} else if (viewtype === window.editor.ViewTypes.node) {
+			$("node_mode").style.display = "block";
+			$("rightTab").style.display = "block";
+			$("info_back_button_area").style.display = "none";
+		}
+	}
+	
+	function getCurrentViewType() {
+		if ($("info_mode").style.display !== "none") {
+			return window.editor.ViewTypes.info;
+		} else if ($("exe_mode").style.display !== "none") {
+			return window.editor.ViewTypes.log;
+		} else if ($("edit_mode").style.display !== "none") {
+			return window.editor.ViewTypes.edit;
+		} else if ($("node_mode").style.display !== "none") {
+			return window.editor.ViewTypes.node;
+		}
+		return "unknown";
+	}
+
+	function showInfoView() {
+		changeView(window.editor.ViewTypes.info);
 	}
 
 	function showExeView() {
-		$("info_mode").style.display = "none";
-		$("exe_mode").style.display = "block";
-		$("edit_mode").style.display = "none";
-		$("node_mode").style.display = "none";
-		$("rightTab").style.display = "none";
-		$("info_back_button_area").style.display = "none";
-		hideEditArea();
-		hideNewNameArea();
-		window.editor.openedfile = "";
-		window.editor.clickedfile = "";
-		isFolderSelected = false;
+		changeView(window.editor.ViewTypes.log);
 	}
 
 	function showEditView() {
-		$("info_mode").style.display = "none";
-		$("exe_mode").style.display = "none";
-		$("edit_mode").style.display = "block";
-		$("node_mode").style.display = "none";
-		$("rightTab").style.display = "none";
-		$("info_back_button_area").style.display = "none";
-		hideNewNameArea();
-		validateModeChangeButton(true);
+		changeView(window.editor.ViewTypes.edit);
 	}
 	
 	function showNodeView() {
-		$("info_mode").style.display = "none";
-		$("exe_mode").style.display = "none";
-		$("edit_mode").style.display = "none";
-		$("node_mode").style.display = "block";
-		$("rightTab").style.display = "block";
-		$("info_back_button_area").style.display = "none";
-		hideEditArea();
-		hideNewNameArea();
-		window.editor.openedfile = "";
-		window.editor.clickedfile = "";
-		isFolderSelected = false;
+		changeView(window.editor.ViewTypes.node);
 	}
 
 	function setProjectName(name) {
@@ -737,6 +743,8 @@
 	window.onload = init;
 	
 	window.editor = {};
+	window.editor.ViewTypes = { node : 'node', info : 'info', log : 'log', edit : 'edit' };
+	window.editor.getCurrentViewType = getCurrentViewType;
 	window.editor.showStoppedMessage = showStoppedMessage;
 	window.editor.hideEditArea = hideEditArea;
 	window.editor.showExeView = showExeView;

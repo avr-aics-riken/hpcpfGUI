@@ -49,19 +49,23 @@
 	}
 	
 	executeProject = function () {
-		var exec = function () {
-			editor.showExeView();
-			runWorkflow();
-			executeButton.onclick = stopProject;
-			executeButton.style.backgroundImage = stopButtonURL;
-			executeButton.title = stopButtonTitle;
-		};
-		if (window.editor_edit_view.edited) {
-			editor.saveFile(function () {
+		if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
+			var exec = function () {
+				editor.showExeView();
+				runWorkflow();
+				executeButton.onclick = stopProject;
+				executeButton.style.backgroundImage = stopButtonURL;
+				executeButton.title = stopButtonTitle;
+			};
+			if (window.editor_edit_view.edited) {
+				editor.saveFile(function () {
+					exec();
+				});
+			} else {
 				exec();
-			});
+			}
 		} else {
-			exec();
+			window.node_edit_view.executeWorkflow();
 		}
 	};
 

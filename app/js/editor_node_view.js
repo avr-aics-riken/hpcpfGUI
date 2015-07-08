@@ -375,6 +375,10 @@
 		console.log("test_lua:", nui.exportLua());
 	}
 	
+	function executeWorkflow() {
+		console.log("test_lua:", nui.exportLua());
+	}
+	
 	function showAddNodeMenu(show, sx, sy, popupmode) {
 		var callback = null;
 		if (show === true) {
@@ -488,5 +492,6 @@
 	
 	window.node_edit_view = edit_view;
 	window.node_edit_view.test_lua = test_lua;
+	window.node_edit_view.executeWorkflow = executeWorkflow;
 	
 }(window.editor));
