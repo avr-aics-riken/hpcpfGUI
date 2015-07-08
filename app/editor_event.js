@@ -136,7 +136,7 @@
 	/**
 	 * convert cmd.json(user values) to node(system values)
 	 */
-	function makeNodeFromCMD(cmd) {
+	function makeNodeFromCMD(cmd, dirname) {
 		var elem,
 			node = {},
 			inputElem,
@@ -177,7 +177,7 @@
 				node.customfuncfile = "case.lua";
 				node.pos = [100, 100];
 				node.funcname = "Case";
-				node.name = "Case";
+				node.name = dirname;
 				node.varname = "Case";
 				node.status = "Pending";
 			}
@@ -203,7 +203,7 @@
 					if (caseFiles[k].type === "file" && caseFiles[k].name === "cmd.json") {
 						// found case dir
 						cmdData = fs.readFileSync(caseFiles[k].path, 'utf8');
-						node = makeNodeFromCMD(JSON.parse(cmdData));
+						node = makeNodeFromCMD(JSON.parse(cmdData), files[i].name);
 						if (node) {
 							nodeList.push(node);
 						}

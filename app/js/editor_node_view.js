@@ -439,22 +439,27 @@
 		
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.on('reloadNodeList', function (systemNodeList, caseNodeList) {
+			var i,
+				caseNodes = JSON.parse(caseNodeList);
 			
 			storeNodeToNodeListTable(JSON.parse(systemNodeList), function (nodes) {
 				var listElement = selectNodeList.getElementsByClassName('selectNodeList')[0];
 				updateSelectNodeList(listElement, '');
 			}, true);
-			storeNodeToNodeListTable(JSON.parse(caseNodeList), function (nodes) {
-				var headerNode = null,
-					footerNode = null,
-					i;
-				
-				console.log(nodes);
+			storeNodeToNodeListTable(caseNodes, function (nodes) {
 				for (i = 0; i < nodes.length; i = i + 1) {
-					console.log(nodes[i]);
+					console.log(nodes[i].name);
 					addNode(nodes[i].name, nodes[i].name_hr, 300, 100, false);
 				}
 			});
+
+			/*
+				var headerNode = null,
+					footerNode = null,
+					i;
+				console.log("caseNodeList", nodes);
+			});
+			*/
 		});
 		
 		propertyTab = window.animtab.create('right', {
