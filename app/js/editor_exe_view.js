@@ -49,23 +49,27 @@
 	}
 	
 	executeProject = function () {
-		if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
-			var exec = function () {
-				editor.showExeView();
-				runWorkflow();
-				executeButton.onclick = stopProject;
-				executeButton.style.backgroundImage = stopButtonURL;
-				executeButton.title = stopButtonTitle;
-			};
-			if (window.editor_edit_view.edited) {
-				editor.saveFile(function () {
-					exec();
-				});
-			} else {
-				exec();
-			}
+		var exec = function (runFunc) {
+			editor.showExeView();
+			runFunc();
+			executeButton.onclick = stopProject;
+			executeButton.style.backgroundImage = stopButtonURL;
+			executeButton.title = stopButtonTitle;
+		};
+		if (window.editor_edit_view.edited) {
+			editor.saveFile(function () {
+				if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
+					exec(runWorkflow);
+				} else {
+					exec(window.node_edit_view.executeWorkflow);
+				}
+			});
 		} else {
-			window.node_edit_view.executeWorkflow();
+			if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
+				exec(runWorkflow);
+			} else {
+				exec(window.node_edit_view.executeWorkflow);
+			}
 		}
 	};
 

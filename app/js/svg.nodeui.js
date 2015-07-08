@@ -567,7 +567,25 @@ function svgNodeUI(draw) {
 		return sorted;
 	};
 
-
+	function exportLua2() {
+		var i,
+			sorted = topologycalSort(),
+			node,
+			nodeData,
+			script = "require('hpcpf')\n";
+		if (!sorted) {
+			console.log("Error: found closed loop");
+		}
+		for (i = 0; i < sorted.length; i = i + 1) {
+			node = sorted[i];
+			nodeData = node.nodeData;
+			if (nodeData.varname.indexOf('Case') >= 0) {
+				script = script + "executeCASE('" + nodeData.name + "')\n";
+			}
+		}
+		return script;
+	}
+	
 	function exportLua() {
 		var i,
 			j,
@@ -582,8 +600,6 @@ function svgNodeUI(draw) {
 			fn,
 			temp,
 			rootList = [];
-	
-		console.log(topologycalSort());
 		
 		for (i in nodeArray) {
 			if (nodeArray.hasOwnProperty(i)) {
@@ -846,7 +862,7 @@ function svgNodeUI(draw) {
 		Node: Node,
 		getNode: getNode,
 		getPlug: getPlug,
-		exportLua: exportLua,
+		exportLua: exportLua2,
 		dump: dump,
 		makeNodes: makeNodes,
 		getNodeData: getNodeData,

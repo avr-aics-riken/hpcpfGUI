@@ -372,11 +372,13 @@
 	});
 	
 	function test_lua() {
-		console.log("test_lua:", nui.exportLua());
+		console.log("test_lua:\n", nui.exportLua());
 	}
 	
 	function executeWorkflow() {
-		console.log("test_lua:", nui.exportLua());
+		var script = nui.exportLua();
+		console.log(script);
+		editor.socket.emit('runWorkflow', script);
 	}
 	
 	function showAddNodeMenu(show, sx, sy, popupmode) {

@@ -553,6 +553,44 @@
 			});
 			sesstionTable[socket.id].proc = null;
 		});
+		
+		socket.on('runWorkflow', function (data) {
+			var srcdir = sesstionTable[socket.id].dir,
+				processspawn = sesstionTable[socket.id].proc,
+				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
+			if (processspawn) {
+				killSpawn(processspawn);
+				sesstionTable[socket.id].proc = null;
+			}
+			
+			processspawn = spawn(LUA_CMD, ['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', '-e', data], {cwd : srcdir});
+			sesstionTable[socket.id].proc = processspawn;
+			if (processspawn) {
+				processspawn.stdout.on('data', function (data) {
+					console.log('stdout: ' + data);
+					socket.emit('stdout', data.toString());
+				});
+				processspawn.stderr.on('data', function (data) {
+					console.log('stderr: ' + data);
+					socket.emit('stderr', data.toString());
+				});
+				processspawn.on('exit', function (code) {
+					console.log('exit code: ' + code);
+				});
+				processspawn.on('close', function (code, signal) {
+					console.log('close code: ' + code);
+					updateFileList(srcdir);
+					sesstionTable[socket.id].proc = null;
+					socket.emit('exit');
+				});
+				processspawn.on('error', function (err) {
+					console.log('process error', err);
+					socket.emit('stderr', "can't execute program\n");
+				});
+			} else {
+				socket.emit('stdout', 'Unknown file type. -> ' + data.file);
+			}
+		});
 
 		socket.on('run', function (data) {
 			var srcdir = sesstionTable[socket.id].dir,
