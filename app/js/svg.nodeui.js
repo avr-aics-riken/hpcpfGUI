@@ -15,7 +15,7 @@ function svgNodeUI(draw) {
 		colorTableFunction = null,
 		headerCode = '',
 		footerCode = '',
-		detectLoopFunc;
+		topologycalSort;
 	
 	/*
 		TODO: read from setting JSON file
@@ -121,7 +121,7 @@ function svgNodeUI(draw) {
 						self.connectPlug(draggingPlug);
 						draggingPlug = null;
 					}
-					if (detectLoopFunc(self.parentNode, self.parentNode, self)) {
+					if (!topologycalSort()) {
 						self.connected.disconnect();
 						self.disconnect();
 					}
@@ -271,43 +271,6 @@ function svgNodeUI(draw) {
 		}
 	};
 	
-	detectLoopFunc = function (node, tempNode, currentConnector) {
-		var i,
-			connector,
-			nextNode,
-			k;
-		if (!tempNode) {
-			return false;
-		}
-		//console.log("detectLoop", tempNode.plugConnectors);
-		//console.log("detectLoop", currentConnector);
-		for (i in tempNode.plugConnectors) {
-			if (tempNode.plugConnectors.hasOwnProperty(i)) {
-				connector = tempNode.plugConnectors[i];
-				if (connector && connector instanceof NodePlug && connector !== currentConnector) {
-					//console.log("aaa", connector);
-					for (k = 0; k < connector.line.length; k = k + 1) {
-						if (connector.line[k].connected) {
-							nextNode = connector.line[k].connected.parentNode;
-							if (nextNode) {
-								if (nextNode === node) {
-									console.log('Loop Node Found!');
-									return true;
-								}
-								if (detectLoopFunc(node, nextNode, connector.line[k].connected)) {
-									return true;
-								} else {
-									return false;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	};
-	
 	function getNodeInfo(data) {
 		var nodeData = data.nodeData;
 		if (nodeClickFunction) {
@@ -374,7 +337,6 @@ function svgNodeUI(draw) {
 		if (inouts.hasOwnProperty('canErase')) {
 			canErase = inouts.canErase;
 		}
-		
 		nodeArray[varName] = this;
 		if (canErase) {
 			erasebtn = draw.rect(16, 16).radius(5).attr({'fill': "#ffffff", 'fill-opacity': "0.8", 'stroke': "none"}).move(0, 4);
@@ -548,6 +510,62 @@ function svgNodeUI(draw) {
 			}
 		}
 	}
+	
+	topologycalSort = function () {
+		var i,
+			sorted = [],
+			nodeChecks = {},
+			temporary = 'temp',
+			permanent = 'perm',
+			visitFunc = function (varname, nodeChecks) {
+				var node = nodeArray[varname],
+					i,
+					connector,
+					nextConnector,
+					nextNode;
+				if (!varname || varname === undefined) {
+					return true;
+				}
+				if (nodeChecks.hasOwnProperty(varname)) {
+					if (nodeChecks[varname] === temporary) {
+						// closed loop
+						// this is not DAG
+						return false;
+					}
+				} else {
+					nodeChecks[varname] = temporary;
+					for (i in node.plugConnectors) {
+						if (node.plugConnectors.hasOwnProperty(i)) {
+							connector = node.plugConnectors[i];
+							if (connector.type === 'NodeConnector') {
+								if (plugArray.hasOwnProperty(connector.varname)) {
+									nextConnector = plugArray[connector.varname];
+									if (nextConnector.hasOwnProperty('parentNode')) {
+										if (!visitFunc(nextConnector.parentNode.nodeData.varname, nodeChecks)) {
+											return false;
+										}
+									}
+								}
+							}
+						}
+					}
+					nodeChecks[varname] = permanent;
+					sorted.push(node);
+				}
+				return true;
+			};
+		
+		for (i in nodeArray) {
+			if (nodeArray.hasOwnProperty(i)) {
+				if (!nodeChecks.hasOwnProperty(i)) {
+					if (!visitFunc(i, nodeChecks)) {
+						return false;
+					}
+				}
+			}
+		}
+		return sorted;
+	};
 
 
 	function exportLua() {
@@ -565,6 +583,8 @@ function svgNodeUI(draw) {
 			temp,
 			rootList = [];
 	
+		console.log(topologycalSort());
+		
 		for (i in nodeArray) {
 			if (nodeArray.hasOwnProperty(i)) {
 				if (nodeArray[i].nodeData.rootnode) {
@@ -572,6 +592,7 @@ function svgNodeUI(draw) {
 				}
 			}
 		}
+		
 		for (i = 0; i < rootList.length; i = i + 1) {
 			pushNextNode(rootList[i], dependency);
 		}
@@ -711,6 +732,7 @@ function svgNodeUI(draw) {
 		}
 	}
 
+	/*
 	function convertToLua(data) {
 		var nodeData = data.nodeData,
 			plugData = data.plugData,
@@ -732,6 +754,7 @@ function svgNodeUI(draw) {
 		// export denpendencies
 		
 	}
+	*/
 	
 	function makeNodes(data) {
 		var nodeData = data.nodeData,
