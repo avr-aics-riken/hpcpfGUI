@@ -1,0 +1,3 @@
+function GetTargetMachineInfo()
+	return ""
+end
