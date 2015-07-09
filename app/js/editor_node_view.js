@@ -55,13 +55,11 @@
 		itemNode.appendChild(nameNode);
 		itemNode.appendChild(textNode);
 		
-		/*
 		textNode.addEventListener('keyup', (function (nodeData, txt) {
 			return function (e) {
 				nodeData.value = txt.value;
 			};
 		}(node, textNode)));
-		*/
 		return itemNode;
 	}
 
@@ -312,6 +310,19 @@
 		}
 	}
 	
+	function makePropertyRow(type, key, val, inputNode) {
+		console.log("type key val", type, key, val);
+		if (key === 'value') {
+			if (type === 'string') {
+				return makeItemTextNode(key, val, inputNode);
+			} else {
+				return makeItemNode(key, val);
+			}
+		} else {
+			return makeItemNode(key, val);
+		}
+	}
+	
 	function updateProperty(nodeData) {
 		var property = document.getElementById('nodeProperty'),
 			key,
@@ -320,7 +331,8 @@
 			ioval,
 			iokey2,
 			ioval2,
-			hr;
+			hr,
+			inputtype;
 
 		property.innerHTML = "";
 		property.appendChild(makeItemNode('Property', 'Value', true));
@@ -351,12 +363,15 @@
 								ioval2 = ioval.name;
 								property.appendChild(makeItemNode(iokey2, "", true));
 							}
+							if (ioval.hasOwnProperty('type')) {
+								inputtype = ioval.type;
+							}
 							for (iokey2 in ioval) {
 								if (ioval.hasOwnProperty(iokey2)) {
 									if (iokey2 !== 'name') {
 										if (ioval.hasOwnProperty(iokey2)) {
 											ioval2 = ioval[iokey2];
-											property.appendChild(makeItemNode(iokey2, ioval2));
+											property.appendChild(makePropertyRow(inputtype, iokey2, ioval2, ioval));
 										}
 									}
 								}
