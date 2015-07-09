@@ -89,8 +89,9 @@
 }
 
 .rightTab {
-	font-size: 20px;
-	margin: 6px;
+	font-size: 16px;
+	margin: 5px;
+	padding-left:3px;
 	top : 160px;
 	right : 0px;
 	width: 80px;
@@ -101,7 +102,7 @@
 	color: #b2b2b2;
 	border: solid 1px;
 	border-radius:1px;
-	color : white;
+	color : #898989;
 	display: none;
 	
 	-moz-transform-origin: 80% 50%;
@@ -114,6 +115,7 @@
 	-o-transform: rotate(-90deg);
 	-ms-transform: rotate(-90deg);
 	transform: rotate(-90deg);
+	font-family: 'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
 }
 
 .nodePropertyRow {
@@ -183,6 +185,8 @@
 	border-color: white;
 	border-width: 2px;
 	width : 250px;
+	background-color: #868686;
+	color:black;
 }
 
 /* button - stop */ 
@@ -199,6 +203,12 @@
 .button_stop:active {
 	background-image:url("../image/button_bg_action_press.png");
 }
+
+.selectNodeList {
+	background-color: #868686;
+	margin-top:5px;
+}
+
 
 /*
 .project_title_log {
