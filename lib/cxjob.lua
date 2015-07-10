@@ -321,6 +321,10 @@ function cxjob:remoteJobSubmit(jobdata, pathtojob, jobsh)
 end
 
 function cxjob:remoteJobDel(jobdata)
+    if jobdata.server == 'localhost' then
+        -- nothing to do
+        return
+    end
     if jobdata == nil or jobdata.id == nil then
         errorlog('[Error] job or job.id is invalid (remoteJobDel)')
         debug.traceback()
@@ -332,6 +336,10 @@ function cxjob:remoteJobDel(jobdata)
 end
 
 function cxjob:remoteJobStat(jobdata)
+    if jobdata.server == 'localhost' then
+        -- can't get stat localhost
+        return 'END'
+    end
     if jobdata == nil or jobdata.id == nil then
         errorlog('[Error] job or job.id is invalid (remoteJobStat)')
         debug.traceback()
