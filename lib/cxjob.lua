@@ -321,7 +321,7 @@ function cxjob:remoteJobSubmit(jobdata, pathtojob, jobsh)
 end
 
 function cxjob:remoteJobDel(jobdata)
-    if jobdata.server == 'localhost' then
+    if self.jobinfo.delCmd == nil then
         -- nothing to do
         return
     end
@@ -336,7 +336,7 @@ function cxjob:remoteJobDel(jobdata)
 end
 
 function cxjob:remoteJobStat(jobdata)
-    if jobdata.server == 'localhost' then
+    if self.jobinfo.statCmd == nil then
         -- can't get stat localhost
         return 'END'
     end
