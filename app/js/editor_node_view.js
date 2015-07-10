@@ -92,6 +92,13 @@
 			optionElem.innerHTML = target.name_hr;
 			selectElem.appendChild(optionElem);
 		}
+		selectElem.onchange = (function (nodeData, targets) {
+			return function (e) {
+				nodeData.value = targets[this.selectedIndex];
+				console.log(nodeData);
+			};
+		}(node, node.target_machine_list.hpcpf.targets));
+		
 		valueNode.appendChild(selectElem);
 		
 		return itemNode;

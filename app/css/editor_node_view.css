@@ -133,8 +133,13 @@
 .nodePropertyTargetMachine {
 	width : 200px;
 	display: table-cell;
-	background-color: ghostwhite;
+	background-color: #4d4d4d;
 	padding: 3px;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#72ca2a;
+	border-style:solid;
+	color : white;
 }
 
 .nodePropertyName {
@@ -143,7 +148,6 @@
 	border: 1px solid #868686;
 	word-wrap: break-word;
 	max-width : 120px;
-	padding: 3px;
 }
 
 .nodePropertyTop
