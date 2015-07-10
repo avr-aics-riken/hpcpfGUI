@@ -130,10 +130,19 @@
 	padding: 3px;
 }
 
+.nodePropertyTargetMachine {
+	width : 200px;
+	display: table-cell;
+	background-color: ghostwhite;
+	padding: 3px;
+}
+
 .nodePropertyName {
 	display:table-cell;
 	background-color: #ccc;
 	border: 1px solid #868686;
+	word-wrap: break-word;
+	max-width : 120px;
 	padding: 3px;
 }
 

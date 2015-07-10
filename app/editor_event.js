@@ -17,6 +17,7 @@
 		SH_CMD = 'sh',
 		PMD_FILENAME = 'pmd.json',
 		CMD_FILENAME = 'cmd.json',
+		targetConfFile = path.resolve(__dirname, '../conf/targetconf.json'),
 		sesstionTable = {};
 
 	if (os.platform() === 'linux') { // Linux setting
@@ -136,7 +137,7 @@
 	/**
 	 * convert cmd.json(user values) to node(system values)
 	 */
-	function makeNodeFromCMD(cmd, dirname) {
+	function makeNodeFromCMD(cmd, dirname, targetConfData) {
 		var elem,
 			node = {},
 			inputElem,
@@ -158,6 +159,9 @@
 						
 						if (!inputElem.hasOwnProperty('name') && inputElem.hasOwnProperty('name_hr')) {
 							nodeInput.name = inputElem.name_hr;
+						}
+						if (inputElem.hasOwnProperty('type') && inputElem.type === 'target_machine') {
+							nodeInput.target_machine_list = targetConfData;
 						}
 						node.input.push(nodeInput);
 					}
@@ -186,7 +190,7 @@
 		return null;
 	}
 	
-	function makeCaseNodeList(srcdir, callback) {
+	function makeCaseNodeList(srcdir, targetConfData, callback) {
 		var files = [],
 			caseFiles = [],
 			cmdData,
@@ -203,7 +207,7 @@
 					if (caseFiles[k].type === "file" && caseFiles[k].name === "cmd.json") {
 						// found case dir
 						cmdData = fs.readFileSync(caseFiles[k].path, 'utf8');
-						node = makeNodeFromCMD(JSON.parse(cmdData), files[i].name);
+						node = makeNodeFromCMD(JSON.parse(cmdData), files[i].name, targetConfData);
 						if (node) {
 							nodeList.push(node);
 						}
@@ -515,10 +519,25 @@
 			}
 		});
 		
+		function readTargetConf() {
+			var confData,
+				confStr;
+			if (fs.existsSync(targetConfFile)) {
+				confStr = fs.readFileSync(targetConfFile);
+				try {
+					confData = JSON.parse(confStr);
+				} catch (e) {
+					console.log("JSON parse error:" + confData);
+				}
+			}
+			return confData;
+		}
+		
 		socket.on('reqReloadNodeList', function () {
-			var srcdir = sesstionTable[socket.id].dir;
+			var srcdir = sesstionTable[socket.id].dir,
+				confData = readTargetConf();
 			try {
-				makeCaseNodeList(srcdir, function (err, caseNodeList) {
+				makeCaseNodeList(srcdir, confData, function (err, caseNodeList) {
 					var i;
 					if (err) {
 						console.log("ReloadNodeList error:", err);

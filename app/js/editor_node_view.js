@@ -62,6 +62,40 @@
 		}(node, textNode)));
 		return itemNode;
 	}
+	
+	function makeTargetMachineNode(name, value, node, type) {
+		if (!node.target_machine_list) {
+			console.log(node);
+			return;
+		}
+		var itemNode = document.createElement('div'),
+			nameNode = document.createElement('div'),
+			valueNode = document.createElement('div'),
+			selectElem = document.createElement('select'),
+			optionElem,
+			target,
+			i;
+
+		itemNode.classList.add('nodePropertyRow');
+		
+		nameNode.innerHTML = name;
+		nameNode.classList.add('nodePropertyName');
+		itemNode.appendChild(nameNode);
+		
+		valueNode.className = "nodePropertyConst";
+		itemNode.appendChild(valueNode);
+		
+		selectElem.className = "nodePropertyTargetMachine";
+		for (i = 0; i < node.target_machine_list.hpcpf.targets.length; i = i + 1) {
+			target = node.target_machine_list.hpcpf.targets[i];
+			optionElem = document.createElement('option');
+			optionElem.innerHTML = target.name_hr;
+			selectElem.appendChild(optionElem);
+		}
+		valueNode.appendChild(selectElem);
+		
+		return itemNode;
+	}
 
 	function addNode(nodename, nodename_hr, nx, ny, canErase) {
 		var node = nodeListTable[nodename],
@@ -313,10 +347,10 @@
 	function makePropertyRow(type, key, val, inputNode) {
 		//console.log("type key val", type, key, val);
 		if (key === 'value') {
-			if (type === 'string') {
-				return makeItemTextNode(key, val, inputNode);
+			if (type === 'target_machine') {
+				return makeTargetMachineNode(key, val, inputNode);
 			} else {
-				return makeItemNode(key, val);
+				return makeItemTextNode(key, val, inputNode);
 			}
 		} else {
 			return makeItemNode(key, val);
@@ -365,6 +399,9 @@
 							}
 							if (ioval.hasOwnProperty('type')) {
 								inputtype = ioval.type;
+							}
+							if (!ioval.hasOwnProperty('value')) {
+								ioval.value = "";
 							}
 							for (iokey2 in ioval) {
 								if (ioval.hasOwnProperty(iokey2)) {
