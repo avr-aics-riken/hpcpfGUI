@@ -1,0 +1,28 @@
+{
+    "hpcpf":{
+        "targets":[
+            {
+                "type":"local",
+                "name_hr":"ローカルPC",
+                "server":"localhost",
+                "workpath":"~/hpcpf"
+            },
+            {
+                "type":"FOCUS_SSH",
+                "name_hr":"FOCUSスパコン（SSH多段接続）",
+                "server":"ff01.j-focus.jp",
+                "userid":"ulej0001",
+                "sshkey":"\/home\/hoge\/.ssh\/id_rsa.FOCUS",
+                "workpath":"\/home1\/glej\/ulej0001\/HPCPF_PROJ"
+            },
+            {
+                "type":"K_Computer_kadai0001",
+                "name_hr":"京コンピュータ（課題番号：0001）",
+                "server":"k.aics.riken.jp",
+                "userid":"user0001",
+                "sshkey":"\/home\/hoge\/.ssh\/id_rsa.K",
+                "workpath":"\/home\/kadai0001\/user0001\/HPCPF_PROJ"
+            }
+        ]
+    }
+}
