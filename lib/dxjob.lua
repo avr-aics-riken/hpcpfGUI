@@ -41,7 +41,7 @@ function dxjob:AddJob(job)
 end
 
 
-function dxjob:GenerateBootSh()
+function dxjob:GenerateBootSh(run)
 	for i,v in pairs(self.m_jobque) do
 		print(v.path, v.name, v.job)
 		if (v.path == nil) then
@@ -68,8 +68,12 @@ function dxjob:GenerateBootSh()
 			str = str:gsub("JOB.NODE", v.node)
 			str = str:gsub("JOB.CORE", v.core)
 			str = str:gsub("JOB.NAME", v.name)
-			str = str:gsub("JOB.JOB", v.job)
-			print(str)
+			if run == false then
+				str = str:gsub("JOB.JOB", '--version')
+			else
+				str = str:gsub("JOB.JOB", v.job)
+			end
+			--print('-------\n' .. str .. '-------\n')
 			f:write(str)
 			f:close()
 		end
