@@ -518,24 +518,26 @@
 		socket.on('reqReloadNodeList', function () {
 			var srcdir = sesstionTable[socket.id].dir;
 			try {
+				makeCaseNodeList(srcdir, function (err, caseNodeList) {
+					var i;
+					if (err) {
+						console.log("ReloadNodeList error:", err);
+						return;
+					}
+					try {
+						socket.emit('reloadNodeList', JSON.stringify(caseNodeList));
+					} catch (e) {
+						console.log("JSON parse error:", e);
+					}
+				});
+				/*
 				makeSystemNodeList(function (err, systemNodeList) {
 					if (err) {
 						console.log("ReloadNodeList error:", err);
 						return;
 					}
-					makeCaseNodeList(srcdir, function (err, caseNodeList) {
-						var i;
-						if (err) {
-							console.log("ReloadNodeList error:", err);
-							return;
-						}
-						try {
-							socket.emit('reloadNodeList', JSON.stringify(systemNodeList), JSON.stringify(caseNodeList));
-						} catch (e) {
-							console.log("JSON parse error:", e);
-						}
-					});
 				});
+				*/
 			} catch (e) {
 				console.log("JSON parse error");
 			}

@@ -311,7 +311,7 @@
 	}
 	
 	function makePropertyRow(type, key, val, inputNode) {
-		console.log("type key val", type, key, val);
+		//console.log("type key val", type, key, val);
 		if (key === 'value') {
 			if (type === 'string') {
 				return makeItemTextNode(key, val, inputNode);
@@ -422,6 +422,7 @@
 		}
 	}
 	
+	/*
 	function doubleClickCanvas(e) {
 		showAddNodeMenu(true, e.clientX, e.clientY, true);
 	}
@@ -429,6 +430,7 @@
 		//console.log(e.clientX, e.clientY);
 		showAddNodeMenu(false);
 	}
+	*/
 	
 	editor.socket.on('init', function () {
 		var draw = SVG('nodecanvas'),
@@ -448,35 +450,32 @@
 		});
 		nui.nodeDeleteEvent(deleteNode);
 		
+		/*
 		nodecanvas.onclick = clickCanvas;
 		nodecanvas.ondblclick = doubleClickCanvas;
+		*/
 		
-		selectNodeList = createSelectNodeList();
-		document.getElementById('nodeList').appendChild(selectNodeList);
+		//selectNodeList = createSelectNodeList();
+		//document.getElementById('nodeList').appendChild(selectNodeList);
 		
 		editor.socket.emit('reqReloadNodeList');
-		editor.socket.on('reloadNodeList', function (systemNodeList, caseNodeList) {
+		//editor.socket.on('reloadNodeList', function (caseNodeList, systemNodeList) {
+		editor.socket.on('reloadNodeList', function (caseNodeList) {
 			var i,
 				caseNodes = JSON.parse(caseNodeList);
 			
+			/*
 			storeNodeToNodeListTable(JSON.parse(systemNodeList), function (nodes) {
 				var listElement = selectNodeList.getElementsByClassName('selectNodeList')[0];
 				updateSelectNodeList(listElement, '');
 			}, true);
+			*/
 			storeNodeToNodeListTable(caseNodes, function (nodes) {
 				for (i = 0; i < nodes.length; i = i + 1) {
 					console.log(nodes[i].name);
 					addNode(nodes[i].name, nodes[i].name_hr, 300, 100, false);
 				}
-			});
-
-			/*
-				var headerNode = null,
-					footerNode = null,
-					i;
-				console.log("caseNodeList", nodes);
-			});
-			*/
+			}, false);
 		});
 		
 		propertyTab = window.animtab.create('right', {
