@@ -443,7 +443,13 @@
 	}
 	
 	function executeWorkflow() {
-		var script = nui.exportLua();
+		var script = nui.exportLua(function (parents, nodeData) {
+			console.log(nodeData.varname, parents);
+			if (nodeData.varname.indexOf('Case') >= 0) {
+				return "executeCASE('" + nodeData.name + "')\n";
+			}
+			return "";
+		});
 		console.log(script);
 		editor.socket.emit('runWorkflow', script);
 	}

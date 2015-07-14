@@ -233,8 +233,6 @@ function svgNodeUI(draw) {
 			rect = draw.parent().getBoundingClientRect();
 			positionX = rect.left;
 			positionY = rect.top;
-			console.log(event.position);
-			console.log(positionX, positionY);
 			this.line[this.line.length - 1].endPos(event.clientX - positionX, event.clientY - positionY);
 		};
 		pole.dragend = poleDragend(this);
@@ -495,6 +493,7 @@ function svgNodeUI(draw) {
 		}
 	}
 
+	/*
 	function pushNextNode(nextNode, dependency) {
 		if (!nextNode) {
 			return;
@@ -520,10 +519,12 @@ function svgNodeUI(draw) {
 			}
 		}
 	}
+	*/
 	
 	topologycalSort = function () {
 		var i,
 			sorted = [],
+			parents = {},
 			nodeChecks = {},
 			temporary = 'temp',
 			permanent = 'perm',
@@ -553,6 +554,11 @@ function svgNodeUI(draw) {
 									if (nextConnector.hasOwnProperty('parentNode')) {
 										if (!visitFunc(nextConnector.parentNode.nodeData.varname, nodeChecks)) {
 											return false;
+										} else {
+											if (!parents.hasOwnProperty('varname')) {
+												parents[varname] = [];
+											}
+											parents[varname].push(nextConnector.parentNode.nodeData);
 										}
 									}
 								}
@@ -574,14 +580,17 @@ function svgNodeUI(draw) {
 				}
 			}
 		}
-		return sorted;
+		return { sorted : sorted, parents : parents };
 	};
 
-	function exportLua2() {
+	function exportLua(scriptConverFunc) {
 		var i,
-			sorted = topologycalSort(),
+			data = topologycalSort(),
+			sorted = data.sorted,
+			parents = data.parents,
 			node,
 			nodeData,
+			preNode = null,
 			script = "require('hpcpf')\n";
 		if (!sorted) {
 			console.log("Error: found closed loop");
@@ -589,13 +598,20 @@ function svgNodeUI(draw) {
 		for (i = 0; i < sorted.length; i = i + 1) {
 			node = sorted[i];
 			nodeData = node.nodeData;
-			if (nodeData.varname.indexOf('Case') >= 0) {
-				script = script + "executeCASE('" + nodeData.name + "')\n";
+			if (scriptConverFunc) {
+				if (parents.hasOwnProperty(nodeData.varname)) {
+					// has parents
+					script = script + scriptConverFunc(parents[nodeData.varname], nodeData);
+				} else {
+					// root node
+					script = script + scriptConverFunc(null, nodeData);
+				}
 			}
 		}
 		return script;
 	}
 	
+	/*
 	function exportLua() {
 		var i,
 			j,
@@ -683,12 +699,12 @@ function svgNodeUI(draw) {
 			if (node.define) {
 				src += node.define;
 			}
-			/*src += 'local ' + node.varname + ' = ' + node.name + '()\n';
-			if (node.funcname) {
-				src += node.varname + ':' + node.funcname + '(';
-			} else {
-				src += node.varname + '(';
-			}*/
+			//src += 'local ' + node.varname + ' = ' + node.name + '()\n';
+			//if (node.funcname) {
+			//	src += node.varname + ':' + node.funcname + '(';
+			//} else {
+			//	src += node.varname + '(';
+			//}
 			src += 'local ' + node.varname + ' = ' + node.funcname + '({';
 			if (node.input) {
 				for (j = 0; j < node.input.length; j += 1) {
@@ -702,19 +718,6 @@ function svgNodeUI(draw) {
 						}
 						src += '}';
 					} else {
-						/*plugname = getPlugVarName(node.varname, node.input[j].name);
-						if (plugArray[plugname]) {
-							temp = plugArray[plugname].varname;
-							if (temp.substr(temp.length - 1, temp.length) === ':') {
-								src += node.input[j].name + '=' + temp.substr(0, temp.length - 1);
-							} else {
-								src += node.input[j].name + '=' + plugArray[plugname].varname + '()';
-							}
-						} else if (node.input[j].value) {
-							src += makeValueSrc(node.input[j]);
-						} else {
-							src += 'nil';
-						}*/
 						src += makePlugValueSrc(node.varname, node.input[j]);
 						if (j !== node.input.length - 1) {
 							src += ', ';
@@ -734,6 +737,7 @@ function svgNodeUI(draw) {
 		//console.log(src);
 		return src;
 	}
+	*/
 	
 	function pushDependencyNode(node, dependency, plugArray) {
 		if (!node) {
@@ -758,30 +762,6 @@ function svgNodeUI(draw) {
 		}
 	}
 
-	/*
-	function convertToLua(data) {
-		var nodeData = data.nodeData,
-			plugData = data.plugData,
-			node,
-			outputPlug,
-			inputNode,
-			i,
-			nodeA,
-			plugA;
-		
-		// TODO:
-		
-		// store nodeArray, plugArray
-		
-		// start from root node.
-		//var rootNode = nodeArray["root"];
-		//pushDependencyNode(rootNode, dependency, plugA);
-		
-		// export denpendencies
-		
-	}
-	*/
-	
 	function makeNodes(data) {
 		var nodeData = data.nodeData,
 			plugData = data.plugData,
@@ -872,7 +852,7 @@ function svgNodeUI(draw) {
 		Node: Node,
 		getNode: getNode,
 		getPlug: getPlug,
-		exportLua: exportLua2,
+		exportLua: exportLua,
 		dump: dump,
 		makeNodes: makeNodes,
 		getNodeData: getNodeData,
