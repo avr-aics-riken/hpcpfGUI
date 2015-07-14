@@ -74,6 +74,8 @@
 			selectElem = document.createElement('select'),
 			optionElem,
 			target,
+			targets,
+			initialIndex = 0,
 			i;
 
 		itemNode.classList.add('nodePropertyRow');
@@ -85,20 +87,26 @@
 		valueNode.className = "nodePropertyConst";
 		itemNode.appendChild(valueNode);
 		
+		targets = node.target_machine_list.hpcpf.targets;
 		selectElem.className = "nodePropertyTargetMachine";
-		for (i = 0; i < node.target_machine_list.hpcpf.targets.length; i = i + 1) {
-			target = node.target_machine_list.hpcpf.targets[i];
+		for (i = 0; i < targets.length; i = i + 1) {
+			target = targets[i];
 			optionElem = document.createElement('option');
 			optionElem.innerHTML = target.name_hr;
 			selectElem.appendChild(optionElem);
+			
+			if (node.value && node.value.hasOwnProperty('name_hr')) {
+				if (node.value.name_hr === target.name_hr) {
+					optionElem.selected = "true";
+				}
+			}
 		}
 		selectElem.onchange = (function (nodeData, targets) {
 			return function (e) {
 				nodeData.value = targets[this.selectedIndex];
 				console.log(nodeData);
 			};
-		}(node, node.target_machine_list.hpcpf.targets));
-		
+		}(node, targets));
 		valueNode.appendChild(selectElem);
 		
 		return itemNode;
