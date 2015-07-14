@@ -153,6 +153,9 @@ function svgNodeUI(draw) {
 				console.log('Error invalid data type.', this.vartype, plug.vartype);
 				return;
 			}
+			if (this.file_pattern) {
+				console.log("file_pattern_found:", plug);
+			}
 			
 			plugArray[this.varname] = plug;
 			
@@ -223,9 +226,16 @@ function svgNodeUI(draw) {
 		pole.draggable();
 		pole.dragstart = poleDragstart(this);
 		pole.dragmove = function (delta, event) {
+			var rect,
+				positionX,
+				positionY;
 			event.stopPropagation();
-			//this.line[this.line.length - 1].endPos(event.pageX, event.pageY);
-			this.line[this.line.length - 1].endPos(event.offsetX, event.offsetY);
+			rect = draw.parent().getBoundingClientRect();
+			positionX = rect.left;
+			positionY = rect.top;
+			console.log(event.position);
+			console.log(positionX, positionY);
+			this.line[this.line.length - 1].endPos(event.clientX - positionX, event.clientY - positionY);
 		};
 		pole.dragend = poleDragend(this);
 	}
