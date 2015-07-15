@@ -69,9 +69,12 @@
 			return;
 		}
 		var itemNode = document.createElement('div'),
+			itemNode2 = document.createElement('div'),
 			nameNode = document.createElement('div'),
+			nameNode2 = document.createElement('div'),
 			valueNode = document.createElement('div'),
 			selectElem = document.createElement('select'),
+			textNode = document.createElement('input'),
 			optionElem,
 			target,
 			targets,
@@ -79,13 +82,19 @@
 			i;
 
 		itemNode.classList.add('nodePropertyRow');
+		itemNode2.classList.add('nodePropertyRow');
 		
 		nameNode.innerHTML = name;
 		nameNode.classList.add('nodePropertyName');
 		itemNode.appendChild(nameNode);
+		nameNode2.classList.add('nodePropertyName');
+		itemNode2.appendChild(nameNode2);
 		
 		valueNode.className = "nodePropertyConst";
 		itemNode.appendChild(valueNode);
+		textNode.className = "nodePropertyText";
+		textNode.type = "password";
+		itemNode2.appendChild(textNode);
 		
 		targets = node.target_machine_list.hpcpf.targets;
 		selectElem.className = "nodePropertyTargetMachine";
@@ -97,19 +106,55 @@
 			
 			if (node.value && node.value.hasOwnProperty('name_hr')) {
 				if (node.value.name_hr === target.name_hr) {
-					optionElem.selected = "true";
+					initialIndex = i;
 				}
 			}
 		}
-		selectElem.onchange = (function (nodeData, targets) {
+		
+		selectElem.options[initialIndex].selected = "true";
+		node.value = targets[initialIndex];
+		console.log(node);
+		
+		selectElem.onchange = (function (nodeData, targets, textNode) {
 			return function (e) {
 				nodeData.value = targets[this.selectedIndex];
-				console.log(nodeData);
+				
+				if (nodeData.value.hasOwnProperty('password')) {
+					textNode.value = nodeData.value.password;
+				}
+				if (nodeData.value.hasOwnProperty('passphrase')) {
+					textNode.value = nodeData.value.passphrase;
+				}
 			};
-		}(node, targets));
+		}(node, targets, textNode));
 		valueNode.appendChild(selectElem);
 		
-		return itemNode;
+		// password/passphrase box
+		textNode.addEventListener('keyup', (function (nodeData, txt) {
+			return function (e) {
+				if (textNode.mode === 'password') {
+					nodeData.value.password = txt.value;
+				} else {
+					nodeData.value.passphrase = txt.value;
+				}
+			};
+		}(node, textNode)));
+		
+		if (node.value.hasOwnProperty('password')) {
+			nameNode2.innerHTML = "pass";
+			textNode.value = node.value.password;
+			textNode.mode = 'password';
+			console.log("password", node);
+			return [itemNode, itemNode2];
+		} else {
+			nameNode2.innerHTML = "pass";
+			if (node.value.hasOwnProperty('passphrase')) {
+				textNode.value = node.value.passphrase;
+				textNode.mode = 'passphrase';
+			}
+			console.log("passphrase", node);
+			return [itemNode, itemNode2];
+		}
 	}
 
 	function addNode(nodename, nodename_hr, nx, ny, canErase) {
@@ -365,10 +410,10 @@
 			if (type === 'target_machine') {
 				return makeTargetMachineNode(key, val, inputNode);
 			} else {
-				return makeItemTextNode(key, val, inputNode);
+				return [makeItemTextNode(key, val, inputNode)];
 			}
 		} else {
-			return makeItemNode(key, val);
+			return [makeItemNode(key, val)];
 		}
 	}
 	
@@ -381,7 +426,9 @@
 			iokey2,
 			ioval2,
 			hr,
-			inputtype;
+			inputtype,
+			propertyRows,
+			i;
 
 		property.innerHTML = "";
 		property.appendChild(makeItemNode('Property', 'Value', true));
@@ -423,7 +470,10 @@
 									if (iokey2 !== 'name') {
 										if (ioval.hasOwnProperty(iokey2)) {
 											ioval2 = ioval[iokey2];
-											property.appendChild(makePropertyRow(inputtype, iokey2, ioval2, ioval));
+											propertyRows = makePropertyRow(inputtype, iokey2, ioval2, ioval);
+											for (i = 0; i < propertyRows.length; i = i + 1) {
+												property.appendChild(propertyRows[i]);
+											}
 										}
 									}
 								}
