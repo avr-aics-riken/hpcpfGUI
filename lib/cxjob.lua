@@ -151,16 +151,10 @@ local function scpCmd(user, server, port, key, password, fromfile, tofile)
     local handle;
     local result;
 	if password ~= nil then
-		sshcmd = 'node /Users/khatta/Documents/digirea/hpcpf_digirea/app/ssh.js "' .. scpcmd .. '"' .. (disableErr and (' 2>'..nullDev) or '')
-		print('CMD>' .. sshcmd)
-    	handle = io.popen(sshcmd)
-		result = handle:read("*a")
-		print('OUT>' .. result)
-	else
-		handle = io.popen(scpcmd)
-		result = handle:read("*a")
+		scpcmd = 'sshpass -p "' .. password .. '" ' .. scpcmd
 	end
-	
+	handle = io.popen(scpcmd)
+	result = handle:read("*a")
     print(result)
     handle:close()
     return result
@@ -185,6 +179,11 @@ local function sshCmd(user, server, port, key, password, cmd, disableErr)
     end
 	local handle;
 	local result;
+	
+	if password ~= nil then
+		sshcmd = 'sshpass -p "' .. password .. '" ' .. sshcmd
+	end
+	--[[
 	if password ~= nil then
 		sshcmd = 'node /Users/khatta/Documents/digirea/hpcpf_digirea/app/ssh.js "' .. cmd .. '"' .. (disableErr and (' 2>'..nullDev) or '')
 		print('CMD>' .. sshcmd)
@@ -193,12 +192,12 @@ local function sshCmd(user, server, port, key, password, cmd, disableErr)
 		print('OUT>' .. result)
 		
 	else
-		sshcmd = sshcmd .. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
-		print('CMD>' .. sshcmd)
-    	handle = io.popen(sshcmd)
-		result = handle:read("*a")
-		print('OUT>' .. result)
-	end
+	--]]
+	sshcmd = sshcmd .. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
+	print('CMD>' .. sshcmd)
+	handle = io.popen(sshcmd)
+	result = handle:read("*a")
+	print('OUT>' .. result)
     handle:close()
     return result
 end
