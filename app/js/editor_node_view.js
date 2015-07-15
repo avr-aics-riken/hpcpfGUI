@@ -438,15 +438,56 @@
 	editor.socket.on('connect', function () {
 	});
 	
-	function test_lua() {
-		console.log("test_lua:\n", nui.exportLua());
+	function to_lua_json(json) {
+		var res = "{ \n",
+			i,
+			index = 0,
+			jsonLength = Object.keys(json).length;
+		
+		for (i in json) {
+			if (json.hasOwnProperty(i)) {
+				if (typeof json[i] === "object") {
+					res = res + "\t" + i + " = " + to_lua_json(json[i]);
+					if (index === (jsonLength - 1)) {
+						res = res + '\n';
+					} else {
+						res = res + ',\n';
+					}
+				} else {
+					res = res + "\t" + i + ' = "' + json[i];
+					if (index === (jsonLength - 1)) {
+						res = res + '"\n';
+					} else {
+						res = res + '",\n';
+					}
+				}
+			}
+			index = index + 1;
+		}
+		res = res + " }";
+		return res;
 	}
 	
 	function executeWorkflow() {
 		var script = nui.exportLua(function (parents, nodeData) {
-			console.log(nodeData.varname, parents);
+			var i = 0,
+				innode,
+				target_machine = {};
+			console.log(nodeData.varname, parents, nodeData);
 			if (nodeData.varname.indexOf('Case') >= 0) {
-				return "executeCASE('" + nodeData.name + "')\n";
+				for (i = 0; i < nodeData.input.length; i = i + 1) {
+					innode = nodeData.input[i];
+					if (innode.type === 'target_machine') {
+						if (innode.hasOwnProperty('value') && innode.value) {
+							target_machine.targetconf = innode.value;
+						}
+					}
+				}
+				
+				console.log("to_lua_json", to_lua_json(target_machine));
+				
+				return "local luajson = " + to_lua_json(target_machine) + ";\n" +
+					"executeCASE('" + nodeData.name + "', luajson)\n";
 			}
 			return "";
 		});
@@ -570,7 +611,6 @@
 	});
 	
 	window.node_edit_view = edit_view;
-	window.node_edit_view.test_lua = test_lua;
 	window.node_edit_view.executeWorkflow = executeWorkflow;
 	
 }(window.editor));

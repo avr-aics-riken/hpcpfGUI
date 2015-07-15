@@ -43,6 +43,7 @@ function cxjob.new(username_or_table, sshkey, server, port, workdir)
         server   = username_or_table.server
         port     = username_or_table.port
         workdir  = username_or_table.workpath
+		password = username_or_table.password
     else
         username = username_or_table -- this is username.
     end
@@ -52,7 +53,8 @@ function cxjob.new(username_or_table, sshkey, server, port, workdir)
         sshkey = sshkey,
         server = server,
         port   = port,
-        workdir = workdir 
+        workdir = workdir,
+		password = password
     }
     if inst.workdir == nil then
         inst.workdir = ""
@@ -135,7 +137,7 @@ end
 
 
 --- Remote(ssh) commands
-local function scpCmd(user, server, port, key, fromfile, tofile)
+local function scpCmd(user, server, port, key, password, fromfile, tofile)
     --local scpcmd = 'scp  -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
     local scpcmd = 'scp ';
     if key ~= nil then
@@ -146,14 +148,26 @@ local function scpCmd(user, server, port, key, fromfile, tofile)
     end
     scpcmd = scpcmd .. fromfile .. ' ' .. tofile;
     print(scpcmd)
-    local handle = io.popen(scpcmd)
-    local result = handle:read("*a")
+    local handle;
+    local result;
+	if password ~= nil then
+		sshcmd = 'node /Users/khatta/Documents/digirea/hpcpf_digirea/app/ssh.js "' .. scpcmd .. '"' .. (disableErr and (' 2>'..nullDev) or '')
+		print('CMD>' .. sshcmd)
+    	handle = io.popen(sshcmd)
+		result = handle:read("*a")
+		print('OUT>' .. result)
+	else
+		handle = io.popen(scpcmd)
+		result = handle:read("*a")
+	end
+	
     print(result)
     handle:close()
     return result
 end
 
-local function sshCmd(user, server, port, key, cmd, disableErr)
+
+local function sshCmd(user, server, port, key, password, cmd, disableErr)
     local nullDev = '/dev/null'
     if (getPlatform() == 'Windows') then
         disableErr = nil
@@ -169,11 +183,22 @@ local function sshCmd(user, server, port, key, cmd, disableErr)
     if user ~= nil then
         sshcmd = sshcmd .. user ..'@';
     end
-    sshcmd = sshcmd .. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
-    --print('CMD>' .. sshcmd)
-    local handle = io.popen(sshcmd)
-    local result = handle:read("*a")
-    --print('OUT>' .. result)
+	local handle;
+	local result;
+	if password ~= nil then
+		sshcmd = 'node /Users/khatta/Documents/digirea/hpcpf_digirea/app/ssh.js "' .. cmd .. '"' .. (disableErr and (' 2>'..nullDev) or '')
+		print('CMD>' .. sshcmd)
+    	handle = io.popen(sshcmd)
+		result = handle:read("*a")
+		print('OUT>' .. result)
+		
+	else
+		sshcmd = sshcmd .. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
+		print('CMD>' .. sshcmd)
+    	handle = io.popen(sshcmd)
+		result = handle:read("*a")
+		print('OUT>' .. result)
+	end
     handle:close()
     return result
 end
@@ -182,7 +207,7 @@ function cxjob:remoteExtractFile(filepath, verbose)
     local option = (verbose == true) and '-xvf' or '-xf'
     local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. filepath
     print(cmd)
-    return sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteCompressNewerFile(srcfile, tarfile, newdate, verbose)
@@ -191,14 +216,14 @@ function cxjob:remoteCompressNewerFile(srcfile, tarfile, newdate, verbose)
     option = newer .. option
     local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. tarfile .. ' ' .. srcfile
     print(cmd)
-    return sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteCompressFile(srcfile, tarfile, verbose)
     local option = (verbose == true) and '-czvf' or '-czf'
     local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. tarfile .. ' ' .. srcfile
     print(cmd)
-    return sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:sendFile(localfile, remotefile)
@@ -208,7 +233,7 @@ function cxjob:sendFile(localfile, remotefile)
     if self.user ~= nil then
         tofile = self.user .. '@' .. tofile;
     end
-    return scpCmd(self.user, self.server, self.port, self.sshkey, fromfile, tofile)
+    return scpCmd(self.user, self.server, self.port, self.sshkey, self.password, fromfile, tofile)
 end
 
 function cxjob:getFile(localfile, remotefile)
@@ -218,13 +243,13 @@ function cxjob:getFile(localfile, remotefile)
         fromfile = self.user .. '@' .. fromfile;
     end
     local tofile = localfile
-    return scpCmd(self.user, self.server, self.port, self.sshkey, fromfile, tofile)
+    return scpCmd(self.user, self.server, self.port, self.sshkey, self.password, fromfile, tofile)
 end
 
 
 function cxjob:remoteDeleteFile(filename)
     local cmd = 'rm -f ' .. self.workdir .. filename
-    return sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteMoveFile(fromFile, toFile)
@@ -239,7 +264,7 @@ end
 
 function cxjob:remoteMakeDir(dirpath)
     local cmd = 'mkdir -p ' .. dirpath
-    return sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteDeleteDir(dirname)
@@ -313,7 +338,7 @@ function cxjob:remoteJobSubmit(jobdata, pathtojob, jobsh)
     local cmdTarget = 'cd ' .. self.workdir .. jobpath .. '/' .. jobdata.path ..';'
     local cmdSubmit = cmdTarget ..  self.jobinfo.submitCmd .. ' ' .. jobsh
     print(cmdSubmit)
-    local cmdret = sshCmd(self.user, self.server, self.port, self.sshkey, cmdSubmit, true)
+    local cmdret = sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmdSubmit, true)
     local jobid = parseJobID(self.jobinfo, cmdret)
     jobdata.id = jobid
     --print('JOB ID = '.. jobid)
@@ -332,7 +357,7 @@ function cxjob:remoteJobDel(jobdata)
     end
     local cmdDel = self.jobinfo.delCmd .. ' ' .. jobdata.id
     --print(cmdDel)
-    local cmdret  = sshCmd(self.user, self.server, self.port, self.sshkey, cmdDel, true)
+    local cmdret  = sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmdDel, true)
 end
 
 function cxjob:remoteJobStat(jobdata)
@@ -348,7 +373,7 @@ function cxjob:remoteJobStat(jobdata)
 
     local cmdStat = self.jobinfo.statCmd .. ' ' .. (jobdata.id and jobdata.id or '')
     --print(cmdStat)
-    local cmdret  = sshCmd(self.user, self.server, self.port, self.sshkey, cmdStat, true)
+    local cmdret  = sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmdStat, true)
     local jobstat = parseJobStat(self.jobinfo, cmdret, jobdata.id)
     --print('JOB ST = ' .. jobstat)
     return jobstat
@@ -357,7 +382,7 @@ end
 function cxjob:remoteDate()
     local cmd = 'date \\"+%Y-%m-%d %H:%M:%S\\"'
     print(cmd)
-    local dateret = sshCmd(self.user, self.server, self.port, self.sshkey, cmd)
+    local dateret = sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
     dateret = dateret:gsub("\n","");
     print('DATERET:', dateret)
     return dateret
@@ -366,7 +391,7 @@ end
 function cxjob:isExistFile(remotefile)
     local cmdFile = 'file ' .. self.workdir .. remotefile
     --print(cmdFile)
-    local cmdret  = sshCmd(self.user, self.server, self.port, self.sshkey, cmdFile, true)
+    local cmdret  = sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmdFile, true)
     --print(cmdret)
     local fnd = string.find(cmdret, 'No such file or directory')
     --print(fnd)

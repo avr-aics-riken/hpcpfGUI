@@ -187,6 +187,7 @@
 		$("edit_mode").style.display = "none";
 		$("node_mode").style.display = "none";
 		$("rightTab").style.display = "none";
+		$("nodePropertyTab").style.display = "none";
 		hideNewNameArea();
 		if (viewtype !== window.editor.ViewTypes.edit) {
 			hideEditArea();
@@ -207,6 +208,7 @@
 		} else if (viewtype === window.editor.ViewTypes.node) {
 			$("node_mode").style.display = "block";
 			$("rightTab").style.display = "block";
+			$("nodePropertyTab").style.display = "block";
 			$("info_back_button_area").style.display = "none";
 		}
 	}
