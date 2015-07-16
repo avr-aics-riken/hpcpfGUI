@@ -52,7 +52,7 @@
 			textProp.setAttribute('type', 'text');
 		}
 		itemRow.classList.add(str_rowclass);
-		nameProp.innerHTML = '[' + name + ']';
+		nameProp.innerHTML = name;
 		textProp.value = text;
 		nameProp.classList.add(str_nameclass);
 		textProp.classList.add(str_textclass);
@@ -61,7 +61,7 @@
 		
 		textProp.addEventListener('keyup', (function (nodeData, txt) {
 			return function (e) {
-				nodeData.value = txt.value;
+				nodeData[name] = txt.value;
 			};
 		}(node, textProp)));
 		return itemRow;
@@ -489,8 +489,10 @@
 			if (type === 'target_machine') {
 				return makeTargetMachineNode(key, val, inputNode);
 			} else {
-				return [makeItemTextNode(key, val, inputNode)];
+				return [makeItemNode(key, val)];
 			}
+		} else if (key === 'file') {
+			return [makeItemTextNode(key, val, inputNode)];
 		} else {
 			return [makeItemNode(key, val)];
 		}
@@ -541,7 +543,7 @@
 							if (ioval.hasOwnProperty('type')) {
 								inputtype = ioval.type;
 							}
-							if (!ioval.hasOwnProperty('value')) {
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('value')) {
 								ioval.value = "";
 							}
 							for (iokey2 in ioval) {
