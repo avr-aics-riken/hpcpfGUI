@@ -20,47 +20,47 @@
 	}
 	
 	function makeItemNode(name, text, top) {
-		var itemNode = document.createElement('div'),
-			nameNode = document.createElement('div'),
-			textNode = document.createElement('div');
+		var itemRow = document.createElement('div'),
+			nameProp = document.createElement('div'),
+			textProp = document.createElement('div');
 
-		itemNode.classList.add('nodePropertyRow');
-		nameNode.innerHTML = name;
-		textNode.innerHTML = text;
-		nameNode.classList.add('nodePropertyName');
-		textNode.classList.add('nodePropertyConst');
+		itemRow.classList.add('nodePropertyRow');
+		nameProp.innerHTML = name;
+		textProp.innerHTML = text;
+		nameProp.classList.add('nodePropertyName');
+		textProp.classList.add('nodePropertyConst');
 		if (top) {
-			nameNode.classList.add('nodePropertyTop');
-			textNode.classList.add('nodePropertyTop');
+			nameProp.classList.add('nodePropertyTop');
+			textProp.classList.add('nodePropertyTop');
 		}
-		itemNode.appendChild(nameNode);
-		itemNode.appendChild(textNode);
-		return itemNode;
+		itemRow.appendChild(nameProp);
+		itemRow.appendChild(textProp);
+		return itemRow;
 	}
 	
 	function makeItemTextNode(name, text, node, type) {
-		var itemNode = document.createElement('div'),
-			nameNode = document.createElement('div'),
-			textNode = document.createElement('input');
+		var itemRow = document.createElement('div'),
+			nameProp = document.createElement('div'),
+			textProp = document.createElement('input');
 		if (type) {
-			textNode.setAttribute('type', type);
+			textProp.setAttribute('type', type);
 		} else {
-			textNode.setAttribute('type', 'text');
+			textProp.setAttribute('type', 'text');
 		}
-		itemNode.classList.add('nodePropertyRow');
-		nameNode.innerHTML = '[' + name + ']';
-		textNode.value = text;
-		nameNode.classList.add('nodePropertyName');
-		textNode.classList.add('nodePropertyText');
-		itemNode.appendChild(nameNode);
-		itemNode.appendChild(textNode);
+		itemRow.classList.add('nodePropertyRow');
+		nameProp.innerHTML = '[' + name + ']';
+		textProp.value = text;
+		nameProp.classList.add('nodePropertyName');
+		textProp.classList.add('nodePropertyText');
+		itemRow.appendChild(nameProp);
+		itemRow.appendChild(textProp);
 		
-		textNode.addEventListener('keyup', (function (nodeData, txt) {
+		textProp.addEventListener('keyup', (function (nodeData, txt) {
 			return function (e) {
 				nodeData.value = txt.value;
 			};
-		}(node, textNode)));
-		return itemNode;
+		}(node, textProp)));
+		return itemRow;
 	}
 	
 	function makeTargetMachineNode(name, value, node, type) {
@@ -68,33 +68,42 @@
 			console.log(node);
 			return;
 		}
-		var itemNode = document.createElement('div'),
-			itemNode2 = document.createElement('div'),
-			nameNode = document.createElement('div'),
-			nameNode2 = document.createElement('div'),
-			valueNode = document.createElement('div'),
+		var valueRow = document.createElement('div'),
+			passRow = document.createElement('div'),
+			sshkeyRow = document.createElement('div'),
+			nameProp = document.createElement('div'),
+			nameProp2 = document.createElement('div'),
+			nameProp3 = document.createElement('div'),
+			valueProp = document.createElement('div'),
 			selectElem = document.createElement('select'),
-			textNode = document.createElement('input'),
+			passProp = document.createElement('input'),
+			keyProp = document.createElement('input'),
 			optionElem,
 			target,
 			targets,
 			initialIndex = 0,
 			i;
 
-		itemNode.classList.add('nodePropertyRow');
-		itemNode2.classList.add('nodePropertyRow');
+		valueRow.classList.add('nodePropertyRow');
+		passRow.classList.add('nodePropertyRow');
+		sshkeyRow.classList.add('nodePropertyRow');
 		
-		nameNode.innerHTML = name;
-		nameNode.classList.add('nodePropertyName');
-		itemNode.appendChild(nameNode);
-		nameNode2.classList.add('nodePropertyName');
-		itemNode2.appendChild(nameNode2);
+		nameProp.innerHTML = name;
+		nameProp.classList.add('nodePropertyName');
+		valueRow.appendChild(nameProp);
+		nameProp2.classList.add('nodePropertyName');
+		passRow.appendChild(nameProp2);
+		nameProp3.classList.add('nodePropertyName');
+		nameProp3.innerHTML = "key";
+		sshkeyRow.appendChild(nameProp3);
 		
-		valueNode.className = "nodePropertyConst";
-		itemNode.appendChild(valueNode);
-		textNode.className = "nodePropertyText";
-		textNode.type = "password";
-		itemNode2.appendChild(textNode);
+		valueProp.className = "nodePropertyConst";
+		valueRow.appendChild(valueProp);
+		passProp.className = "nodePropertyText";
+		passProp.type = "password";
+		passRow.appendChild(passProp);
+		keyProp.className = "nodePropertyText";
+		sshkeyRow.appendChild(keyProp);
 		
 		targets = node.target_machine_list.hpcpf.targets;
 		selectElem.className = "nodePropertyTargetMachine";
@@ -115,45 +124,62 @@
 		node.value = targets[initialIndex];
 		console.log(node);
 		
-		selectElem.onchange = (function (nodeData, targets, textNode) {
+		selectElem.onchange = (function (nodeData, targets, passProp, keyProp, keyNode) {
 			return function (e) {
 				nodeData.value = targets[this.selectedIndex];
-				
+				passProp.value = "";
+				keyProp.value = "";
+				keyNode.style.display = "table-row";
 				if (nodeData.value.hasOwnProperty('password')) {
-					textNode.value = nodeData.value.password;
+					passProp.value = nodeData.value.password;
+					keyNode.style.display = "none";
 				}
 				if (nodeData.value.hasOwnProperty('passphrase')) {
-					textNode.value = nodeData.value.passphrase;
+					passProp.value = nodeData.value.passphrase;
+				}
+				if (nodeData.value.hasOwnProperty('sshkey')) {
+					keyProp.value = nodeData.value.sshkey;
 				}
 			};
-		}(node, targets, textNode));
-		valueNode.appendChild(selectElem);
+		}(node, targets, passProp, keyProp, sshkeyRow));
+		valueProp.appendChild(selectElem);
 		
 		// password/passphrase box
-		textNode.addEventListener('keyup', (function (nodeData, txt) {
+		passProp.addEventListener('keyup', (function (nodeData, prop) {
 			return function (e) {
-				if (textNode.mode === 'password') {
-					nodeData.value.password = txt.value;
+				if (passProp.mode === 'password') {
+					nodeData.value.password = prop.value;
 				} else {
-					nodeData.value.passphrase = txt.value;
+					nodeData.value.passphrase = prop.value;
 				}
 			};
-		}(node, textNode)));
+		}(node, passProp)));
+		// key box
+		keyProp.addEventListener('keyup', (function (nodeData, prop) {
+			return function (e) {
+				if (passProp.mode === 'passphrase') {
+					nodeData.value.sshkey = prop.value;
+				}
+			};
+		}(node, keyProp)));
 		
 		if (node.value.hasOwnProperty('password')) {
-			nameNode2.innerHTML = "pass";
-			textNode.value = node.value.password;
-			textNode.mode = 'password';
-			console.log("password", node);
-			return [itemNode, itemNode2];
+			nameProp2.innerHTML = "pass";
+			passProp.value = node.value.password;
+			passProp.mode = 'password';
+			sshkeyRow.style.display = "none";
+			return [valueRow, sshkeyRow, passRow];
 		} else {
-			nameNode2.innerHTML = "pass";
+			nameProp2.innerHTML = "pass";
 			if (node.value.hasOwnProperty('passphrase')) {
-				textNode.value = node.value.passphrase;
-				textNode.mode = 'passphrase';
+				passProp.value = node.value.passphrase;
+				passProp.mode = 'passphrase';
 			}
-			console.log("passphrase", node);
-			return [itemNode, itemNode2];
+			if (node.value.hasOwnProperty('sshkey')) {
+				keyProp.value = node.value.sshkey;
+			}
+			sshkeyRow.style.display = "table-row";
+			return [valueRow, sshkeyRow, passRow];
 		}
 	}
 
