@@ -771,6 +771,11 @@ if (typeof window === 'undefined') { // Node.js
 					isUsePassword = info.usepassword;
 					delete info.usepassword;
 				}
+				
+				console.log("DATA", data);
+				if (data.password) {
+					info.password = data.password;
+				}
 
 				if (ftparray[data.cid]) {
 					ftparray[data.cid].deleteConnection();
@@ -1056,9 +1061,9 @@ if (typeof window === 'undefined') { // Node.js
 		this.GetDir = function () {
 			return this.tarDir;
 		};
-		this.Connect = function () {
+		this.Connect = function (password) {
 			console.log('CONNECT');
-			this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, hostname : this.hostname}));
+			this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, hostname : this.hostname, password : password}));
 		};
 		this.Disconnect = function () {
 			console.log('DISCONNECT');

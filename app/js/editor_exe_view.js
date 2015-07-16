@@ -68,7 +68,7 @@
 			if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
 				exec(runWorkflow);
 			} else {
-				exec(window.node_edit_view.executeWorkflow);
+				window.node_edit_view.executeWorkflow();
 			}
 		}
 	};

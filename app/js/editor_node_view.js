@@ -597,10 +597,116 @@
 		return res;
 	}
 	
+	function makePasswordInput(node) {
+		var row = document.createElement('div'),
+			name = node.name_hr,
+			hostname = node.name_hr,
+			testbtn,
+			clickfunc,
+			passwordInput;
+
+		row.setAttribute('class', "hostitem");
+		row.setAttribute('draggable', "false");
+		name = document.createElement('span');
+		name.setAttribute('class', "hostlabel");
+		name.innerHTML = node.name_hr;
+		row.appendChild(name);
+
+		// input
+		passwordInput = document.createElement('input');
+		passwordInput.className = str_textclass;
+		passwordInput.type = "password";
+		passwordInput.addEventListener('keyup', (function (nodeData, passwordInput) {
+			return function (e) {
+				if (nodeData.hasOwnProperty('sshkey')) {
+					nodeData.passphrase = passwordInput.value;
+				} else {
+					nodeData.password = passwordInput.value;
+				}
+			};
+		}(node, passwordInput)));
+		row.appendChild(passwordInput);
+
+		testbtn = document.createElement('button');
+		testbtn.setAttribute('class', "connecttest");
+		row.appendChild(testbtn);
+		clickfunc = function (hostname) {
+			return function (e) {
+				e.stopPropagation();
+				this.classList.remove('connecttest_ok');
+				this.classList.remove('connecttest_fail');
+				//e.target.removeEventListener(e.type, this);// remove clickfunc
+
+				console.log('connect test : ' + hostname);
+				var testConnect = new RemoteFTP(editor.socket, 'TestConnect-' + hostname, hostname);
+				testConnect.on('error', (function (thisptr, hostname) {
+					return function (data) {
+						console.log('Connect Error', data);
+						//var error_output = document.getElementById('error_output');
+						//error_output.innerHTML = 'Connect Error' + data;
+						thisptr.classList.add('connecttest_fail');
+						testConnect.deleteConnection();
+						testConnect = null;
+						thisptr.addEventListener('click', clickfunc(hostname)); // add clickfunc
+					};
+				}(this, hostname)));
+				testConnect.on('processed', function (data) { console.log('Processed', data); });
+				testConnect.on('openDir', (function (thisptr, hostname) {
+					return function (data) {
+						thisptr.classList.add('connecttest_ok');
+						testConnect.deleteConnection();
+						testConnect = null;
+						thisptr.addEventListener('click', clickfunc(hostname)); // add clickfunc
+					};
+				}(this, hostname)));
+				testConnect.Connect(node.password);
+			};
+		};
+		testbtn.addEventListener('click', clickfunc(hostname));
+
+		row.addEventListener('click', (function (hostname) {
+			return function (e) {
+				editor.socket.emit('REMOTEHOST:REQHOSTINFO', {hostname : hostname});
+			};
+		}(hostname)));
+		return row;
+	}
+
+	function createPasswordInputView(machines) {
+		var machine,
+			i,
+			row,
+			nameElem,
+			background = document.getElementById('popup_background'),
+			regiterlist = document.getElementById('regiterlist'),
+			okButton = document.getElementById('newproject_name_button_ok'),
+			cancelButton = document.getElementById('newproject_name_button_cancel'),
+			testbutton;
+		
+		background.onclick = function (evt) {
+			background.style.display = "none";
+		};
+		
+		regiterlist.innerHTML = "";
+		regiterlist.onclick = function (evt) {
+			evt.stopPropagation();
+		};
+		regiterlist.zIndex = 110;
+		for (i in machines) {
+			if (machines.hasOwnProperty(i)) {
+				machine = machines[i];
+				regiterlist.appendChild(makePasswordInput(machine));
+			}
+		}
+		background.style.display = "block";
+	}
+	
 	function executeWorkflow() {
 		var script = nui.exportLua(function (parents, nodeData) {
 			var i = 0,
 				innode,
+				target_name_to_machine = {},
+				password_need_machines = [],
 				target_machine = {};
 			console.log(nodeData.varname, parents, nodeData);
 			if (nodeData.varname.indexOf('Case') >= 0) {
@@ -609,19 +715,33 @@
 					if (innode.type === 'target_machine') {
 						if (innode.hasOwnProperty('value') && innode.value) {
 							target_machine.targetconf = innode.value;
+							target_name_to_machine[innode.name_hr] = innode.value;
 						}
 					}
 				}
 				
+				for (i in target_name_to_machine) {
+					if (target_name_to_machine.hasOwnProperty(i)) {
+						if (!target_name_to_machine[i].hasOwnProperty('sshkey')) {
+							password_need_machines.push(target_name_to_machine[i]);
+						}
+					}
+				}
+				
+				createPasswordInputView(password_need_machines);
+				
 				console.log("to_lua_json", to_lua_json(target_machine));
 				
+				return "";
+				/*
 				return "local luajson = " + to_lua_json(target_machine) + ";\n" +
 					"executeCASE('" + nodeData.name + "', luajson)\n";
+					*/
 			}
 			return "";
 		});
 		console.log(script);
-		editor.socket.emit('runWorkflow', script);
+		//editor.socket.emit('runWorkflow', script);
 	}
 	
 	function showAddNodeMenu(show, sx, sy, popupmode) {
