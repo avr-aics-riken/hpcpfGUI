@@ -241,6 +241,12 @@
 	function showNodeView() {
 		changeView(window.editor.ViewTypes.node);
 	}
+	
+	function showRegisterHost() {
+		var s = window.open("remotehost.html", "remotehost");
+		s.focus(); // TODO: for firefox
+	}
+	
 
 	function setProjectName(name) {
 		document.title = name;
@@ -702,6 +708,7 @@
 		var infoButton = document.getElementById('show_info_button'),
 			logButton = document.getElementById('show_log_button'),
 			nodeButton = document.getElementById('show_node_button'),
+			registerhostButton = document.getElementById('show_register_button'),
 			modeChangeFunc = function (endCallback) {
 				return function (evt) {
 					if (window.editor.edited) {
@@ -728,6 +735,7 @@
 		infoButton.onclick = modeChangeFunc(showInfoView);
 		logButton.onclick = modeChangeFunc(showExeView);
 		nodeButton.onclick = modeChangeFunc(showNodeView);
+		registerhostButton.onclick = showRegisterHost;
 	}
 
 	socket.on('connect', function () {
