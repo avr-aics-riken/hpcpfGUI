@@ -722,9 +722,7 @@
 				
 				for (i in target_name_to_machine) {
 					if (target_name_to_machine.hasOwnProperty(i)) {
-						if (!target_name_to_machine[i].hasOwnProperty('sshkey')) {
-							password_need_machines.push(target_name_to_machine[i]);
-						}
+						password_need_machines.push(target_name_to_machine[i]);
 					}
 				}
 				
@@ -732,11 +730,8 @@
 				
 				console.log("to_lua_json", to_lua_json(target_machine));
 				
-				return "";
-				/*
 				return "local luajson = " + to_lua_json(target_machine) + ";\n" +
 					"executeCASE('" + nodeData.name + "', luajson)\n";
-					*/
 			}
 			return "";
 		});
