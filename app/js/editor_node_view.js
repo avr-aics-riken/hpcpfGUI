@@ -133,12 +133,9 @@
 				}
 			}
 		}
-		
 		valueSelect.options[initialIndex].selected = "true";
 		node.value = targets[initialIndex];
-		console.log(node);
-		
-		valueSelect.onchange = (function (nodeData, targets, passProp, keyProp, keyNode, keyOrPassSelect) {
+		valueSelect.onchange = (function (nodeData, targets, passProp, keyProp, nameProp2, keyNode, keyOrPassSelect) {
 			return function (e) {
 				var hasPassword;
 				nodeData.value = targets[this.selectedIndex];
@@ -148,16 +145,18 @@
 				keyOrPassSelect.options[0].selected = "true";
 				if (nodeData.value.hasOwnProperty('usepassword') && nodeData.value.usepassword) {
 					passProp.value = nodeData.value.password;
+					nameProp2.innerHTML = "password";
 					keyNode.style.display = "none";
 					keyOrPassSelect.options[1].selected = "true";
 				} else {
+					nameProp2.innerHTML = "passphrase";
 					passProp.value = nodeData.value.passphrase;
 				}
 				if (nodeData.value.hasOwnProperty('sshkey')) {
 					keyProp.value = nodeData.value.sshkey;
 				}
 			};
-		}(node, targets, passProp, keyProp, sshkeyRow, keyOrPassSelect));
+		}(node, targets, passProp, keyProp, nameProp2, sshkeyRow, keyOrPassSelect));
 		valueProp.appendChild(valueSelect);
 		
 		// key or pass
@@ -168,11 +167,6 @@
 		optionElem = document.createElement('option');
 		optionElem.innerHTML = "password";
 		keyOrPassSelect.appendChild(optionElem);
-		if (node.value.hasOwnProperty('password')) {
-			keyOrPassSelect.options[1].selected = "true";
-		} else {
-			keyOrPassSelect.options[0].selected = "true";
-		}
 		keyOrPassSelect.onchange = (function (nodeData, passProp, nameProp2, keyNode) {
 			return function (e) {
 				keyNode.style.display = "table-row";
@@ -205,12 +199,15 @@
 			};
 		}(node, keyProp)));
 		
+		// initail value
 		if (node.value.hasOwnProperty('usepassword') && node.value.usepassword) {
 			nameProp2.innerHTML = "password";
+			keyOrPassSelect.options[1].selected = "true";
 			passProp.value = node.value.password;
 			sshkeyRow.style.display = "none";
 		} else {
 			nameProp2.innerHTML = "passphrase";
+			keyOrPassSelect.options[0].selected = "true";
 			if (node.value.hasOwnProperty('passphrase')) {
 				passProp.value = node.value.passphrase;
 			}
