@@ -9,7 +9,11 @@
 		systemNodeListTable = {},
 		instance_no = 1,
 		edit_view = {},
-		popupNodeList = null;
+		popupNodeList = null,
+		str_rowclass = 'nodePropertyRow',
+		str_nameclass = 'nodePropertyName',
+		str_textclass = 'nodePropertyText',
+		str_constclass = 'nodePropertyConst';
 	
 	function $(id) {
 		return document.getElementById(id);
@@ -24,11 +28,11 @@
 			nameProp = document.createElement('div'),
 			textProp = document.createElement('div');
 
-		itemRow.classList.add('nodePropertyRow');
+		itemRow.classList.add(str_rowclass);
 		nameProp.innerHTML = name;
 		textProp.innerHTML = text;
-		nameProp.classList.add('nodePropertyName');
-		textProp.classList.add('nodePropertyConst');
+		nameProp.classList.add(str_nameclass);
+		textProp.classList.add(str_constclass);
 		if (top) {
 			nameProp.classList.add('nodePropertyTop');
 			textProp.classList.add('nodePropertyTop');
@@ -47,11 +51,11 @@
 		} else {
 			textProp.setAttribute('type', 'text');
 		}
-		itemRow.classList.add('nodePropertyRow');
+		itemRow.classList.add(str_rowclass);
 		nameProp.innerHTML = '[' + name + ']';
 		textProp.value = text;
-		nameProp.classList.add('nodePropertyName');
-		textProp.classList.add('nodePropertyText');
+		nameProp.classList.add(str_nameclass);
+		textProp.classList.add(str_textclass);
 		itemRow.appendChild(nameProp);
 		itemRow.appendChild(textProp);
 		
@@ -82,37 +86,43 @@
 			keyProp = document.createElement('input'),
 			keyOrPassProp = document.createElement('div'),
 			keyOrPassSelect = document.createElement('select'),
+			str_password = 'password',
+			str_passphrase = 'passphrase',
+			str_sshkey = 'sshkey',
 			optionElem,
 			target,
 			targets,
 			initialIndex = 0,
-			i;
+			i,
+			hasPassword = function (node) {
+				return (node.value.hasOwnProperty('usepassword') && node.value.usepassword);
+			};
 
-		valueRow.classList.add('nodePropertyRow');
-		passRow.classList.add('nodePropertyRow');
-		sshkeyRow.classList.add('nodePropertyRow');
-		keyOrPassRow.classList.add('nodePropertyRow');
+		valueRow.classList.add(str_rowclass);
+		passRow.classList.add(str_rowclass);
+		sshkeyRow.classList.add(str_rowclass);
+		keyOrPassRow.classList.add(str_rowclass);
 		
 		nameProp.innerHTML = name;
-		nameProp.classList.add('nodePropertyName');
+		nameProp.classList.add(str_nameclass);
 		valueRow.appendChild(nameProp);
-		nameProp2.classList.add('nodePropertyName');
+		nameProp2.classList.add(str_nameclass);
 		passRow.appendChild(nameProp2);
-		nameProp3.classList.add('nodePropertyName');
+		nameProp3.classList.add(str_nameclass);
 		nameProp3.innerHTML = "key";
 		sshkeyRow.appendChild(nameProp3);
-		nameProp4.classList.add('nodePropertyName');
+		nameProp4.classList.add(str_nameclass);
 		nameProp4.innerHTML = "key or pass";
 		keyOrPassRow.appendChild(nameProp4);
 		
-		valueProp.className = "nodePropertyConst";
+		valueProp.className = str_constclass;
 		valueRow.appendChild(valueProp);
-		keyOrPassProp.className = "nodePropertyConst";
+		keyOrPassProp.className = str_constclass;
 		keyOrPassRow.appendChild(keyOrPassProp);
-		passProp.className = "nodePropertyText";
-		passProp.type = "password";
+		passProp.className = str_textclass;
+		passProp.type = str_password;
 		passRow.appendChild(passProp);
-		keyProp.className = "nodePropertyText";
+		keyProp.className = str_textclass;
 		sshkeyRow.appendChild(keyProp);
 		
 		// select box
@@ -137,22 +147,21 @@
 		node.value = targets[initialIndex];
 		valueSelect.onchange = (function (nodeData, targets, passProp, keyProp, nameProp2, keyNode, keyOrPassSelect) {
 			return function (e) {
-				var hasPassword;
 				nodeData.value = targets[this.selectedIndex];
 				passProp.value = "";
 				keyProp.value = "";
 				keyNode.style.display = "table-row";
 				keyOrPassSelect.options[0].selected = "true";
-				if (nodeData.value.hasOwnProperty('usepassword') && nodeData.value.usepassword) {
+				if (hasPassword(nodeData)) {
 					passProp.value = nodeData.value.password;
-					nameProp2.innerHTML = "password";
+					nameProp2.innerHTML = str_password;
 					keyNode.style.display = "none";
 					keyOrPassSelect.options[1].selected = "true";
 				} else {
-					nameProp2.innerHTML = "passphrase";
+					nameProp2.innerHTML = str_passphrase;
 					passProp.value = nodeData.value.passphrase;
 				}
-				if (nodeData.value.hasOwnProperty('sshkey')) {
+				if (nodeData.value.hasOwnProperty(str_sshkey)) {
 					keyProp.value = nodeData.value.sshkey;
 				}
 			};
@@ -165,17 +174,17 @@
 		optionElem.innerHTML = "key";
 		keyOrPassSelect.appendChild(optionElem);
 		optionElem = document.createElement('option');
-		optionElem.innerHTML = "password";
+		optionElem.innerHTML = str_password;
 		keyOrPassSelect.appendChild(optionElem);
 		keyOrPassSelect.onchange = (function (nodeData, passProp, nameProp2, keyNode) {
 			return function (e) {
 				keyNode.style.display = "table-row";
 				if (this.selectedIndex === 1) {
 					keyNode.style.display = "none";
-					nameProp2.innerHTML = "password";
+					nameProp2.innerHTML = str_password;
 					nodeData.value.usepassword = true;
 				} else {
-					nameProp2.innerHTML = "passphrase";
+					nameProp2.innerHTML = str_passphrase;
 					nodeData.value.usepassword = false;
 				}
 			};
@@ -185,7 +194,7 @@
 		// password/passphrase box
 		passProp.addEventListener('keyup', (function (nodeData, prop) {
 			return function (e) {
-				if (nodeData.value.hasOwnProperty('usepassword') && nodeData.value.usepassword) {
+				if (hasPassword(nodeData)) {
 					nodeData.value.password = prop.value;
 				} else {
 					nodeData.value.passphrase = prop.value;
@@ -200,18 +209,18 @@
 		}(node, keyProp)));
 		
 		// initail value
-		if (node.value.hasOwnProperty('usepassword') && node.value.usepassword) {
-			nameProp2.innerHTML = "password";
+		if (hasPassword(node)) {
+			nameProp2.innerHTML = str_password;
 			keyOrPassSelect.options[1].selected = "true";
 			passProp.value = node.value.password;
 			sshkeyRow.style.display = "none";
 		} else {
-			nameProp2.innerHTML = "passphrase";
+			nameProp2.innerHTML = str_passphrase;
 			keyOrPassSelect.options[0].selected = "true";
-			if (node.value.hasOwnProperty('passphrase')) {
+			if (node.value.hasOwnProperty(str_passphrase)) {
 				passProp.value = node.value.passphrase;
 			}
-			if (node.value.hasOwnProperty('sshkey')) {
+			if (node.value.hasOwnProperty(str_sshkey)) {
 				keyProp.value = node.value.sshkey;
 			}
 			sshkeyRow.style.display = "table-row";
