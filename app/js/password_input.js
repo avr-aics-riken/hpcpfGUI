@@ -111,5 +111,6 @@
 	}
 	
 	window.password_input = {};
+	window.password_input.makePasswordInput = makePasswordInput;
 	window.password_input.createPasswordInputView = createPasswordInputView;
 }(window.editor));

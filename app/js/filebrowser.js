@@ -1,6 +1,7 @@
 /*jslint devel:true, node:true, nomen:true */
 /*global require, RemoteFTP, $, io, socket */
-var socket = io.connect();
+var socket = io.connect(),
+	password_input = window.password_input;
 
 function registerRemoteHost() {
 	"use strict";
