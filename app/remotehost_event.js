@@ -43,7 +43,7 @@ function registerEditorEvent(socket) {
 			if (host[data.hostname]) {
 				delete host[data.hostname];
 				
-				jslist = JSON.stringify(host);
+				jslist = JSON.stringify(host, function (key, val) { return val;	}, "    ");
 				fs.writeFile(regFile, jslist, function (err) {
 					if (err) {
 						console.log(err);
@@ -121,7 +121,7 @@ function registerEditorEvent(socket) {
 				};
 			}
 			
-			jslist = JSON.stringify(host);
+			jslist = JSON.stringify(host, function (key, val) { return val;	}, "    ");
 			fs.writeFile(regFile, jslist, function (err) {
 				if (err) {
 					console.log(err);
