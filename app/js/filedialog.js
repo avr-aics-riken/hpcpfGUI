@@ -1,4 +1,4 @@
-/*jslint devel:true, node:true, nomen:true */
+/*jslint devel:true, node:true, nomen:true, continue:true */
 /*global require, global, $, io, socket */
 
 if (typeof window === 'undefined') { // Node.js
