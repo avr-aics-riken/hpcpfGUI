@@ -34,6 +34,7 @@ function openFileBrowser() {
 }
 
 function makeNode(cap, hostname) {
+	"use strict";
 	// <div class="hostitem" draggable="false"><span class="hostlabel">user@host1</span><button type="button" class="dustbox"/></div>
 	var newbtn = document.createElement('div'),
 		name,
@@ -65,12 +66,12 @@ function makeNode(cap, hostname) {
 	testbtn = document.createElement('button');
 	testbtn.setAttribute('class', "connecttest");
 	newbtn.appendChild(testbtn);
-	clickfunc = function (hostname) {
+	clickfunc = (function (hostname) {
 		return function (e) {
 			e.stopPropagation();
 			this.classList.remove('connecttest_ok');
 			this.classList.remove('connecttest_fail');
-			e.target.removeEventListener(e.type, arguments.callee);// remove clickfunc
+			e.target.removeEventListener('click', clickfunc);// remove clickfunc
 
 			console.log('connect test : ' + hostname);
 			var testConnect = new RemoteFTP(socket, 'TestConnect-' + hostname, hostname);
@@ -82,7 +83,7 @@ function makeNode(cap, hostname) {
 					thisptr.classList.add('connecttest_fail');
 					testConnect.deleteConnection();
 					testConnect = null;
-					thisptr.addEventListener('click', clickfunc(hostname)); // add clickfunc
+					thisptr.addEventListener('click', clickfunc); // add clickfunc
 				};
 			}(this, hostname)));
 			testConnect.on('processed', function (data) { console.log('Processed', data); });
@@ -91,13 +92,13 @@ function makeNode(cap, hostname) {
 					thisptr.classList.add('connecttest_ok');
 					testConnect.deleteConnection();
 					testConnect = null;
-					thisptr.addEventListener('click', clickfunc(hostname)); // add clickfunc
+					thisptr.addEventListener('click', clickfunc); // add clickfunc
 				};
 			}(this, hostname)));
 			testConnect.Connect();
 		};
-	};
-	testbtn.addEventListener('click', clickfunc(hostname));
+	}(hostname));
+	testbtn.addEventListener('click', clickfunc);
 	
 	newbtn.addEventListener('click', (function (dust) {
 		return function (e) {
