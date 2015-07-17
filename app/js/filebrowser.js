@@ -61,13 +61,13 @@ function getOtherside(side) {
 
 function addItemDragEvents(tar, side, filepath, my_rftp, ano_rftp) {
 	"use strict";
-	console.log("!!!DRAGEVENT!!!:[" + my_rftp.host + "],[" + ano_rftp.host + "]");
+	console.log("!!!DRAGEVENT!!!:[" + my_rftp.server + "],[" + ano_rftp.server + "]");
 	var othersideActionMenu = 'actionmenu_' + getOtherside(side);
-	if (my_rftp.host === 'localhost' && ano_rftp.host !== 'localhost') {
+	if (my_rftp.server === 'localhost' && ano_rftp.server !== 'localhost') {
 		othersideActionMenu = 'actionmenu_' + getOtherside(side) + '_upload';
-	} else if (my_rftp.host !== 'localhost' && ano_rftp.host === 'localhost') {
+	} else if (my_rftp.server !== 'localhost' && ano_rftp.server === 'localhost') {
 		othersideActionMenu = 'actionmenu_' + getOtherside(side) + '_download';
-	} else if (my_rftp.host !== 'localhost' && ano_rftp.host !== 'localhost' && my_rftp.host !== ano_rftp.host) {
+	} else if (my_rftp.server !== 'localhost' && ano_rftp.server !== 'localhost' && my_rftp.server !== ano_rftp.server) {
 		othersideActionMenu = 'actionmenu_' + getOtherside(side) + '_none';
 	}
 
@@ -467,7 +467,7 @@ function startFileList(nameA, nameB) {
 		var flist = document.getElementById('rightFileList');
 		flist.innerHTML = ""; // clear
 	}
-	if (!rftpA || rftpA.hostname !== nameA) {
+	if (!rftpA || rftpA.name_hr !== nameA) {
 		tmppath = undefined;
 		if (rftpA) {
 			rftpA.deleteConnection();
@@ -478,7 +478,7 @@ function startFileList(nameA, nameB) {
 	} else {
 		changeA = false; // no reflesh list item.
 	}
-	if (!rftpB || rftpB.hostname !== nameB) {
+	if (!rftpB || rftpB.name_hr !== nameB) {
 		tmppath = undefined;
 		if (rftpB) {
 			rftpB.deleteConnection();
@@ -494,53 +494,54 @@ function startFileList(nameA, nameB) {
 		{name : 'copy_left', func : (function (L, R) {
 			return function (data) {
 				console.log('copy_left', data, L, R);
-				if (L.host === R.host) {
+				if (L.server === R.server) {
+					console.log(data);
 					withConfirm(L, data.path, L.GetDir() + getFilename(data.path), function (src, dest) {
 						L.CopyFile(src, dest);
 					});
 				} else {
-					showmsgA('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgA('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'move_left', func : (function (L, R) {
 			return function (data) {
 				console.log('move_left', data);
-				if (L.host === R.host) {
+				if (L.server === R.server) {
 					withConfirm(L, data.path, L.GetDir() + getFilename(data.path), function (src, dest) {
 						L.MoveFile(src, dest);
 					});
 				} else {
-					showmsgA('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgA('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'extract_left', func : (function (L, R) {
 			return function (data) {
 				console.log('extract_left', data);
-				if (L.host === R.host) {
+				if (L.server === R.server) {
 					L.ExtractFile(data.path, L.GetDir());
 				} else {
-					showmsgA('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgA('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'compress_left', func : (function (L, R) {
 			return function (data) {
 				console.log('compress_left', data);
-				if (L.host === R.host) {
+				if (L.server === R.server) {
 					withConfirm(L, data.path + ".tar.gz", L.GetDir(), function (src, dest) {
 						L.CompressFile(data.path, L.GetDir());
 					});
 				} else {
-					showmsgA('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgA('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'upload_left', func : (function (L, R) {
 			return function (data) {
 				console.log('upload_left', data);
-				if (L.host !== 'localhost' && R.host === 'localhost') {
+				if (L.server !== 'localhost' && R.server === 'localhost') {
 					var fname = data.path.split('/');
 					fname = fname[fname.length - 1];
 					if (fname !== '') {
@@ -549,14 +550,14 @@ function startFileList(nameA, nameB) {
 						});
 					}
 				} else {
-					showmsgB('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgB('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'download_left', func : (function (L, R) {
 			return function (data) {
 				console.log('download_left', data);
-				if (L.host === 'localhost' && R.host !== 'localhost') {
+				if (L.server === 'localhost' && R.server !== 'localhost') {
 					var fname = data.path.split('/');
 					fname = fname[fname.length - 1];
 					if (fname !== '') {
@@ -565,7 +566,7 @@ function startFileList(nameA, nameB) {
 						});
 					}
 				} else {
-					showmsgB('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgB('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
@@ -573,53 +574,53 @@ function startFileList(nameA, nameB) {
 		{name : 'copy_right', func : (function (L, R) {
 			return function (data) {
 				console.log('copy_right', data, L, R);
-				if (L.host === R.host) {
+				if (L.server === R.server) {
 					withConfirm(R, data.path, R.GetDir() + getFilename(data.path), function (src, dest) {
 						R.CopyFile(src, dest);
 					});
 				} else {
-					showmsgB('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgB('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'move_right', func : (function (L, R) {
 			return function (data) {
 				console.log('move_right', data);
-				if (L.host === R.host) {
+				if (L.server === R.server) {
 					withConfirm(R, data.path, R.GetDir() + getFilename(data.path), function (src, dest) {
 						R.MoveFile(src, dest);
 					});
 				} else {
-					showmsgB('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgB('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'extract_right', func : (function (L, R) {
 			return function (data) {
 				console.log('extract_right', data);
-				if (L.host === R.host) {
+				if (L.server === R.server) {
 					R.ExtractFile(data.path, R.GetDir());
 				} else {
-					showmsgB('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgB('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'compress_right', func : (function (L, R) {
 			return function (data) {
 				console.log('compress_right', data);
-				if (L.host === R.host) {
+				if (L.server === R.server) {
 					withConfirm(R, data.path + ".tar.gz", R.GetDir(), function (src, dest) {
 						R.CompressFile(data.path, R.GetDir());
 					});
 				} else {
-					showmsgB('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgB('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'upload_right', func : (function (L, R) {
 			return function (data) {
 				console.log('upload_right', data);
-				if (L.host === 'localhost' && R.host !== 'localhost') {
+				if (L.server === 'localhost' && R.server !== 'localhost') {
 					var fname = data.path.split('/');
 					fname = fname[fname.length - 1];
 					console.log('fname=' + R.GetDir() + fname);
@@ -629,14 +630,14 @@ function startFileList(nameA, nameB) {
 						});
 					}
 				} else {
-					showmsgB('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgB('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))},
 		{name : 'download_right', func : (function (L, R) {
 			return function (data) {
 				console.log('download_right', data);
-				if (L.host !== 'localhost' && R.host === 'localhost') {
+				if (L.server !== 'localhost' && R.server === 'localhost') {
 					var fname = data.path.split('/');
 					fname = fname[fname.length - 1];
 					console.log('fname=' + R.GetDir() + fname);
@@ -646,7 +647,7 @@ function startFileList(nameA, nameB) {
 						});
 					}
 				} else {
-					showmsgB('Not supported host type:' + L.host + ' and ' + R.host);
+					showmsgB('Not supported host type:' + L.server + ' and ' + R.server);
 				}
 			};
 		}(rftpA, rftpB))}
@@ -788,20 +789,20 @@ socket.on('updateRemoteHostList', function (sdata) {
 	s_right.innerHTML = "";
 	for (i = 0; i < data.length; i = i + 1) {
 		//txt = txt + data.item[i].itemName + "　" + myData.item[i].itemPrice+"円<br>";
-		console.log(data[i].name);
+		console.log(data[i].name_hr);
 
 		c1 = document.createElement('option');
 		c1.setAttribute('class', 'option_host');
-		c1.innerHTML = data[i].name;
+		c1.innerHTML = data[i].name_hr;
 		c2 = document.createElement('option');
 		c2.setAttribute('class', 'option_host');
-		c2.innerHTML = data[i].name;
+		c2.innerHTML = data[i].name_hr;
 		s_left.appendChild(c1);
 		s_right.appendChild(c2);
 	}
 
 	if (data.length > 0) {
-		name_left = name_right = data[0].name;
+		name_left = name_right = data[0].name_hr;
 	}
 
 	s_left.addEventListener('change', function () {

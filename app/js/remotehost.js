@@ -33,7 +33,7 @@ function openFileBrowser() {
 	s.focus(); // TODO: for firefox
 }
 
-function makeNode(cap, hostname) {
+function makeNode(cap, name_hr) {
 	"use strict";
 	// <div class="hostitem" draggable="false"><span class="hostlabel">user@host1</span><button type="button" class="dustbox"/></div>
 	var newbtn = document.createElement('div'),
@@ -51,31 +51,31 @@ function makeNode(cap, hostname) {
 	dust = document.createElement('button');
 	dust.setAttribute('class', "dustbox2");
 	newbtn.appendChild(dust);
-	dust.addEventListener('click', (function (hostname) {
+	dust.addEventListener('click', (function (name_hr) {
 		return function (e) {
 			e.stopPropagation();
 			if (this.getAttribute('class') === 'dustbox_ok2') {
-				console.log('DEL>:' + hostname);
-				socket.emit('REMOTEHOST:DELHOST', {hostname : hostname});
+				console.log('DEL>:' + name_hr);
+				socket.emit('REMOTEHOST:DELHOST', {name_hr : name_hr});
 			} else {
 				this.setAttribute('class', 'dustbox_ok2');
 			}
 		};
-	}(hostname)));
+	}(name_hr)));
 	
 	testbtn = document.createElement('button');
 	testbtn.setAttribute('class', "connecttest");
 	newbtn.appendChild(testbtn);
-	clickfunc = (function (hostname) {
+	clickfunc = (function (name_hr) {
 		return function (e) {
 			e.stopPropagation();
 			this.classList.remove('connecttest_ok');
 			this.classList.remove('connecttest_fail');
 			e.target.removeEventListener('click', clickfunc);// remove clickfunc
 
-			console.log('connect test : ' + hostname);
-			var testConnect = new RemoteFTP(socket, 'TestConnect-' + hostname, hostname);
-			testConnect.on('error', (function (thisptr, hostname) {
+			console.log('connect test : ' + name_hr);
+			var testConnect = new RemoteFTP(socket, 'TestConnect-' + name_hr, name_hr);
+			testConnect.on('error', (function (thisptr, name_hr) {
 				return function (data) {
 					console.log('Connect Error', data);
 					var error_output = document.getElementById('error_output');
@@ -85,19 +85,19 @@ function makeNode(cap, hostname) {
 					testConnect = null;
 					thisptr.addEventListener('click', clickfunc); // add clickfunc
 				};
-			}(this, hostname)));
+			}(this, name_hr)));
 			testConnect.on('processed', function (data) { console.log('Processed', data); });
-			testConnect.on('openDir', (function (thisptr, hostname) {
+			testConnect.on('openDir', (function (thisptr, name_hr) {
 				return function (data) {
 					thisptr.classList.add('connecttest_ok');
 					testConnect.deleteConnection();
 					testConnect = null;
 					thisptr.addEventListener('click', clickfunc); // add clickfunc
 				};
-			}(this, hostname)));
+			}(this, name_hr)));
 			testConnect.Connect();
 		};
-	}(hostname));
+	}(name_hr));
 	testbtn.addEventListener('click', clickfunc);
 	
 	newbtn.addEventListener('click', (function (dust) {
@@ -105,11 +105,11 @@ function makeNode(cap, hostname) {
 			dust.setAttribute('class', 'dustbox2');
 		};
 	}(dust)));
-	newbtn.addEventListener('click', (function (hostname) {
+	newbtn.addEventListener('click', (function (name_hr) {
 		return function (e) {
-			socket.emit('REMOTEHOST:REQHOSTINFO', {hostname : hostname});
+			socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : name_hr});
 		};
-	}(hostname)));
+	}(name_hr)));
 	return newbtn;
 }
 
@@ -125,15 +125,15 @@ function updateAuthTypeEditable() {
 socket.on('updateRemoteInfo', function (sdata) {
 	"use strict";
 	var data = JSON.parse(sdata),
-		usepassword = data.usepassword || false;
-	//console.log(data);
-	document.getElementById('input_label').value = data.label;
-	document.getElementById('input_host').value  = data.host || '';
-	document.getElementById('input_path').value  = data.path || '';
-	document.getElementById('input_id').value    = data.username || '';
+		usepassword = !data.hasOwnProperty('sshkey');
+	console.log(data);
+	document.getElementById('input_label').value = data.name_hr;
+	document.getElementById('input_host').value  = data.server || '';
+	document.getElementById('input_path').value  = data.workpath || '';
+	document.getElementById('input_id').value    = data.userid || '';
 	document.getElementById('input_passphrase').value = ''; // hidden
 	document.getElementById('input_password').value = ''; // hidden
-	document.getElementById('input_key').value   = data.privateKeyFile || '';
+	document.getElementById('input_key').value   = data.sshkey || '';
 	
 	document.getElementById('usepassword').checked = usepassword;
 	document.getElementById('usekeyfile').checked = !usepassword;
@@ -150,12 +150,14 @@ socket.on('updateRemoteHostList', function (sdata) {
 	//if (data.length > 0)
 	//	name_left = name_right = data[0].name;
 
+	console.log(sdata);
 	ls = document.getElementById('regiterlist');
 	ls.innerHTML = "";// clear
 
 	for (i = 0; i < data.length; i = i + 1) {
-		cap = data[i].name + " : " + data[i].username + "@" + data[i].hostname;
-		c = makeNode(cap, data[i].name);
+		cap = data[i].name_hr + " : " + data[i].userid + "@" + data[i].server;
+		console.log("datadata", data[i]);
+		c = makeNode(cap, data[i].name_hr);
 		ls.appendChild(c);
 	}
 });
@@ -204,9 +206,9 @@ function reqHostList() {
 function addBtn() {
 	"use strict";
 	var labelname  = document.getElementById('input_label').value,
-		hostname   = document.getElementById('input_host').value,
+		host   = document.getElementById('input_host').value,
 		path       = document.getElementById('input_path').value,
-		username   = document.getElementById('input_id').value,
+		userid   = document.getElementById('input_id').value,
 		passphrase = document.getElementById('input_passphrase').value,
 		sshkey     = document.getElementById('input_key').value,
 		error_output = document.getElementById('error_output'),
@@ -218,7 +220,7 @@ function addBtn() {
 		error_output.innerHTML = 'Label is empty';
 		valid = false;
 	}
-	if (!hostname) {
+	if (!host) {
 		error_output.innerHTML = 'HOST is empty';
 		valid = false;
 	}
@@ -227,8 +229,8 @@ function addBtn() {
 		valid = false;
 	}
 
-	if (hostname !== 'localhost') {
-		if (!username) {
+	if (host !== 'localhost') {
+		if (!userid) {
 			error_output.innerHTML = 'ID is empty';
 			valid = false;
 		}
@@ -252,16 +254,24 @@ function addBtn() {
 		return;
 	}
 	
-	socket.emit('REMOTEHOST:AddHost', JSON.stringify({
-		name : labelname,
-		hostname : hostname,
-		path : path,
-		username : username,
-		passphrase : passphrase,
-		sshkey : sshkey,
-		usepassword : usepassword,
-		password : password
-	}));
+	if (usepassword) {
+		socket.emit('REMOTEHOST:AddHost', JSON.stringify({
+			name : labelname,
+			server : host,
+			workpath : path,
+			userid : userid,
+			password : password
+		}));
+	} else {
+		socket.emit('REMOTEHOST:AddHost', JSON.stringify({
+			name : labelname,
+			server : host,
+			workpath : path,
+			userid : userid,
+			passphrase : passphrase,
+			sshkey : sshkey
+		}));
+	}
 	
 	error_output.innerHTML = "Added.";
 	document.getElementById('input_label').value    = '';

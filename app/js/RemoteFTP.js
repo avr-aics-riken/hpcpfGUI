@@ -739,30 +739,46 @@ if (typeof window === 'undefined') { // Node.js
 			return function (sdata) {
 				var data = JSON.parse(sdata),
 					rfile,
-					regTable,
+					regList,
 					regFilename,
 					info,
 					sfc = null,
-					isUsePassword = false;
+					isUsePassword = false,
+					target = null,
+					i;
 				if (data.cid === '') {
 					console.log('Error: cid parameter. must set unique id.');
 					return;
 				}
 
-				regFilename = '../conf/registered_host.json';
+				regFilename = '../conf/targetconf.json';
 				try {
 					rfile = fs.readFileSync(regFilename);
-					regTable = JSON.parse(rfile);
+					regList = JSON.parse(rfile);
+					if (regList.hasOwnProperty('hpcpf') && regList.hpcpf.hasOwnProperty('targets')) {
+						regList = regList.hpcpf.targets;
+					} else {
+						thisptr.errorMessage(data.cid, "Wrong format :" + regFilename);
+						return;
+					}
 				} catch (e) {
 					thisptr.errorMessage(data.cid, "Can't read :" + regFilename);
 					return;
 				}
-				if (!regTable[data.hostname]) {
+				console.log("reglist:", regList);
+				console.log("data:", data);
+				for (i = 0; i < regList.length; i = i + 1) {
+					if (regList[i].name_hr === data.name_hr) {
+						target = regList[i];
+						break;
+					}
+				}
+				if (!target) {
 					thisptr.errorMessage(data.cid, "Not found host.");
 					return;
 				}
 				// create copy.
-				info = JSON.parse(JSON.stringify(regTable[data.hostname]));
+				info = JSON.parse(JSON.stringify(target));
 
 				if (!info.hasOwnProperty('type')) {
 					thisptr.errorMessage(data.cid, 'Invalid host type');
@@ -787,7 +803,7 @@ if (typeof window === 'undefined') { // Node.js
 					console.log('RFTP:Local Connection:id=' + data.cid);
 					sfc = new LFTPClass();
 					ftparray[data.cid] = sfc;
-					thisptr.connectedMessage(data.cid, "Local mode : connection success", info.host, info.path);
+					thisptr.connectedMessage(data.cid, "Local mode : connection success", info.server, info.workpath);
 				} else {
 					console.log('RFTP:Remote Connection:id=' + data.cid);
 					sfc = new SFTPClass();
@@ -795,8 +811,8 @@ if (typeof window === 'undefined') { // Node.js
 					try {
 						if (isUsePassword) {
 							// password authoricaiton
-							if (info.hasOwnProperty('privateKeyFile')) {
-								delete info.privateKeyFile;
+							if (info.hasOwnProperty('sshkey')) {
+								delete info.sshkey;
 							}
 							if (info.hasOwnProperty('passphrase')) {
 								delete info.passphrase;
@@ -807,12 +823,12 @@ if (typeof window === 'undefined') { // Node.js
 							if (info.hasOwnProperty('password')) {
 								delete info.password;
 							}
-							if (info.hasOwnProperty('privateKeyFile')) {
-								info.privateKey = fs.readFileSync(info.privateKeyFile);
+							if (info.hasOwnProperty('sshkey')) {
+								info.privateKey = fs.readFileSync(info.sshkey);
 							}
 						}
 					} catch (ee) {
-						thisptr.errorMessage(data.cid, "Failed read SSH key file:" + info.privateKeyFile);
+						thisptr.errorMessage(data.cid, "Failed read SSH key file:" + info.sshkey);
 						return;
 					}
 					
@@ -822,7 +838,7 @@ if (typeof window === 'undefined') { // Node.js
 								thisptr.errorMessage(data.cid, "Connection Failed " + err);
 								return;
 							}
-							thisptr.connectedMessage(data.cid, "Remote mode : connection success", info.host, info.path);
+							thisptr.connectedMessage(data.cid, "Remote mode : connection success", info, info.workpath);
 							ftparray[data.cid] = sfc;
 						};
 					}(data, sfc)));
@@ -1052,20 +1068,21 @@ if (typeof window === 'undefined') { // Node.js
 
 	"use strict";
 
-	var RemoteFTP = function (socket, cid, hostname) {
+	var RemoteFTP = function (socket, cid, name_hr) {
 		this.socket = socket;
 		this.id = socket.id;
 		this.tarDir = '';
-		this.host = '';
+		this.name_hr = '';
 		this.cid = cid; // connection id (string)
-		this.hostname = hostname;
+		this.name_hr = name_hr;
+		
 
 		this.GetDir = function () {
 			return this.tarDir;
 		};
 		this.Connect = function (password) {
 			console.log('CONNECT');
-			this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, hostname : this.hostname, password : password}));
+			this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, password : password}));
 		};
 		this.Disconnect = function () {
 			console.log('DISCONNECT');
@@ -1130,7 +1147,7 @@ if (typeof window === 'undefined') { // Node.js
 
 				console.log('Connected:' + data.cid + ' / ' + data.initPath);
 				sfc.tarDir = data.initPath;
-				sfc.host   = data.host;
+				sfc.server   = data.server;
 				if (sfc.onConnectedCallback) {
 					sfc.onConnectedCallback(data.msg);
 				}
