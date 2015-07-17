@@ -31,6 +31,10 @@
 			wild2,
 			excludeList;
 		
+		if (pathstr === undefined) {
+			return false;
+		}
+		
 		if (type === module.exports.TypeBrowser) {
 			excludeList = excludeListOnBrowser;
 		} else {

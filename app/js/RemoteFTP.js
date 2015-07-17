@@ -316,6 +316,8 @@ if (typeof window === 'undefined') { // Node.js
 		this.OpenDir  = function (path, callback) {
 			fs.readdir(path, (function (path, thisptr) {
 				return function (err, list) {
+					var tmp;
+					
 					if (thisptr.watchingDir) {
 						thisptr.watchingDir.close();
 						thisptr.watchingDir = null;
@@ -350,7 +352,7 @@ if (typeof window === 'undefined') { // Node.js
 
 					try {
 						// fix for abort
-						path = fs.normalize(path);
+						tmp = fs.normalize(path);
 						
 						thisptr.watchingDir = fs.watch(path, (function (path, callback) {
 							return function (event, filename) {
