@@ -420,7 +420,7 @@ function withConfirm(target, src, dest, doFunction) {
 
 function startFileList(nameA, nameB) {
 	"use strict";
-	console.log("startFIleList", nameA, nameB);
+	console.log("startFileList", nameA, nameB);
 	if (nameA === "" || nameB === "") {
 		return;
 	}
@@ -434,6 +434,23 @@ function startFileList(nameA, nameB) {
 		menus,
 		i,
 		itm;
+	
+	
+	console.log("startFileList reqhostinfo");
+	socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameA});
+	socket.once('updateRemoteInfo', function (adata) {
+		"use strict";
+		var hostA = JSON.parse(adata);
+		socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameB});
+		socket.once('updateRemoteInfo', function (bdata) {
+			var hostB = JSON.parse(bdata);
+			password_input.createPasswordInputView(socket, {
+				nameA : hostA,
+				nameB : hostB
+			}, function () {});
+		});
+	});
+	
 
 	function showmsgA(msg) {
 		console.log('ConnectionA>' + msg);

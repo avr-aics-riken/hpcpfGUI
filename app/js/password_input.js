@@ -6,7 +6,7 @@
 	"use strict";
 	var str_textclass = 'nodePropertyText';
 
-	function makePasswordInput(node) {
+	function makePasswordInput(socket, node) {
 		var row = document.createElement('div'),
 			name = node.name_hr,
 			name_hr = node.name_hr,
@@ -47,7 +47,7 @@
 				e.target.removeEventListener('click', clickfunc);// remove clickfunc
 
 				console.log('connect test : ' + name_hr);
-				var testConnect = new RemoteFTP(editor.socket, 'TestConnect-' + name_hr, name_hr);
+				var testConnect = new RemoteFTP(socket, 'TestConnect-' + name_hr, name_hr);
 				testConnect.on('error', (function (thisptr, name_hr) {
 					return function (data) {
 						console.log('Connect Error', data);
@@ -80,13 +80,13 @@
 
 		row.addEventListener('click', (function (name_hr) {
 			return function (e) {
-				editor.socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : name_hr});
+				socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : name_hr});
 			};
 		}(name_hr)));
 		return row;
 	}
 	
-	function createPasswordInputView(machines, okcallback) {
+	function createPasswordInputView(socket, machines, okcallback) {
 		var machine,
 			i,
 			row,
@@ -112,7 +112,8 @@
 		for (i in machines) {
 			if (machines.hasOwnProperty(i)) {
 				machine = machines[i];
-				regiterlist.appendChild(makePasswordInput(machine));
+				console.log("createPasswordInputView", machine);
+				regiterlist.appendChild(makePasswordInput(socket, machine));
 			}
 		}
 		background.style.display = "block";
