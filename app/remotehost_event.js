@@ -64,7 +64,7 @@ function registerEditorEvent(socket) {
 				
 				for (k = 0; k < targets.length; k = k + 1) {
 					if (targets[k] && targets[k].name_hr === data.name_hr) {
-						delete targets[k];
+						targets.splice(k, 1);
 						
 						jslist = JSON.stringify(host, prettyprintFunc, "    ");
 						
