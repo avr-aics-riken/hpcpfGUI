@@ -601,7 +601,9 @@
 				processspawn.on('close', function (code, signal) {
 					console.log('close code: ' + code);
 					updateFileList(srcdir);
-					sesstionTable[socket.id].proc = null;
+					if (sesstionTable[socket.id].hasOwnProperty('proc')) {
+						sesstionTable[socket.id].proc = null;
+					}
 					socket.emit('exit');
 				});
 				processspawn.on('error', function (err) {

@@ -227,5 +227,28 @@ function sleep(n)
     end
 end
 
+function generateTargetConf(args_table)
+	for i, k in pairs(args_table) do
+		--print(i, k);
+		if next(k) then
+			for n, m in pairs(k) do
+				--print(n, m);
+				if n == "targetconf" then
+					return m;
+				end
+			end
+		end
+	end
+end
+
+function isDryRun(args_table)
+	for i, k in pairs(args_table) do
+		if (i == 2) then
+			return k;
+		end
+	end
+	return false;
+end
+
 -- xjob
 require('xjob')
