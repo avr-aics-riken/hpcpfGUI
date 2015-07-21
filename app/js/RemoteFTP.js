@@ -764,8 +764,6 @@ if (typeof window === 'undefined') { // Node.js
 					thisptr.errorMessage(data.cid, "Can't read :" + regFilename);
 					return;
 				}
-				console.log("reglist:", regList);
-				console.log("data:", data);
 				for (i = 0; i < regList.length; i = i + 1) {
 					if (regList[i].name_hr === data.name_hr) {
 						target = regList[i];
@@ -784,12 +782,10 @@ if (typeof window === 'undefined') { // Node.js
 					return;
 				}
 				
-				if (info.hasOwnProperty('usepassword')) {
-					isUsePassword = info.usepassword;
-					delete info.usepassword;
+				if (info.hasOwnProperty('sshkey')) {
+					isUsePassword = true;
 				}
 				
-				console.log("DATA", data);
 				if (data.password) {
 					info.password = data.password;
 				}
@@ -811,7 +807,7 @@ if (typeof window === 'undefined') { // Node.js
 					sfc = new SFTPClass();
 
 					try {
-						if (isUsePassword) {
+						if (!isUsePassword) {
 							// password authoricaiton
 							if (info.hasOwnProperty('sshkey')) {
 								delete info.sshkey;
@@ -834,6 +830,7 @@ if (typeof window === 'undefined') { // Node.js
 						return;
 					}
 					
+					// for ssh2 input parameter
 					info.username = info.userid;
 					info.host = info.server;
 					

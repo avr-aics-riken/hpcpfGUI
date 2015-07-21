@@ -718,7 +718,11 @@ function startFileList(dataA, dataB) {
 		});
 		clearListA();
 		showmsgA('Connecting.');
-		rftpA.Connect();
+		if (dataA.password) {
+			rftpA.Connect(null, dataA.password);
+		} else {
+			rftpA.Connect(dataA.passphrase, null);
+		}
 	}
 	
 	if (newConnectB) {
@@ -773,7 +777,11 @@ function startFileList(dataA, dataB) {
 		});
 		clearListB();
 		showmsgB('Connecting.');
-		rftpB.Connect();
+		if (dataB.password) {
+			rftpB.Connect(null, dataB.password);
+		} else {
+			rftpB.Connect(dataB.passphrase, null);
+		}
 	}
 } // startFileList
 
