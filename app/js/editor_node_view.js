@@ -499,16 +499,14 @@
 					}
 				}
 				
-				password_input.createPasswordInputView(password_need_machines);
-				
-				console.log("to_lua_json", to_lua_json(target_machine));
-				
-				return "local luajson = " + to_lua_json(target_machine) + ";\n" +
-					"executeCASE('" + nodeData.name + "', luajson)\n";
+				password_input.createPasswordInputView(password_need_machines, function () {
+					console.log("to_lua_json", to_lua_json(target_machine));
+					return "local luajson = " + to_lua_json(target_machine) + ";\n" +
+						"executeCASE('" + nodeData.name + "', luajson)\n";
+				});
 			}
 			return "";
 		});
-		console.log(script);
 		//editor.socket.emit('runWorkflow', script);
 	}
 	

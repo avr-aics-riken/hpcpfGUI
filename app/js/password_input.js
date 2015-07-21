@@ -81,20 +81,23 @@
 		return row;
 	}
 	
-	function createPasswordInputView(machines) {
+	function createPasswordInputView(machines, okcallback) {
 		var machine,
 			i,
 			row,
 			nameElem,
 			background = document.getElementById('popup_background'),
 			regiterlist = document.getElementById('regiterlist'),
-			okButton = document.getElementById('newproject_name_button_ok'),
-			cancelButton = document.getElementById('newproject_name_button_cancel'),
+			okButton = document.getElementById('password_input_button_ok'),
+			cancelButton = document.getElementById('password_input_button_cancel'),
 			testbutton;
 		
 		background.onclick = function (evt) {
 			background.style.display = "none";
 		};
+		if (okcallback) {
+			okButton.onclick = okcallback;
+		}
 		
 		regiterlist.innerHTML = "";
 		regiterlist.onclick = function (evt) {
