@@ -418,15 +418,13 @@ function withConfirm(target, src, dest, doFunction) {
 	});
 }
 
-function startFileList(nameA, nameB) {
+function startFileList(dataA, dataB) {
 	"use strict";
-	console.log("startFileList", nameA, nameB);
-	if (nameA === "" || nameB === "") {
-		return;
-	}
-		
 	console.log('startFileList');
-	var newConnectA = false,
+	
+	var nameA = dataA.name_hr,
+		nameB = dataB.name_hr,
+		newConnectA = false,
 		newConnectB = false,
 		changeA = true,
 		changeB = true,
@@ -435,23 +433,11 @@ function startFileList(nameA, nameB) {
 		i,
 		itm;
 	
+	console.log("startFileList", nameA, nameB);
+	if (nameA === "" || dataB === "") {
+		return;
+	}
 	
-	console.log("startFileList reqhostinfo");
-	socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameA});
-	socket.once('updateRemoteInfo', function (adata) {
-		"use strict";
-		var hostA = JSON.parse(adata);
-		socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameB});
-		socket.once('updateRemoteInfo', function (bdata) {
-			var hostB = JSON.parse(bdata);
-			password_input.createPasswordInputView(socket, {
-				nameA : hostA,
-				nameB : hostB
-			}, function () {});
-		});
-	});
-	
-
 	function showmsgA(msg) {
 		console.log('ConnectionA>' + msg);
 		var node = document.getElementById("leftLog");
@@ -789,7 +775,28 @@ function startFileList(nameA, nameB) {
 		showmsgB('Connecting.');
 		rftpB.Connect();
 	}
-} // bootstrap
+} // startFileList
+
+function startPasswordInput(nameA, nameB) {
+	"use strict";
+	var dataA,
+		dataB;
+
+	socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameA});
+	socket.once('updateRemoteInfo', function (adata) {
+		dataA = JSON.parse(adata);
+		socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameB});
+		socket.once('updateRemoteInfo', function (bdata) {
+			dataB = JSON.parse(bdata);
+			password_input.createPasswordInputView(socket, {
+				nameA : dataA,
+				nameB : dataB
+			}, function () {
+				startFileList(dataA, dataB);
+			});
+		});
+	});
+}
 
 socket.on('updateRemoteHostList', function (sdata) {
 	"use strict";
@@ -825,16 +832,16 @@ socket.on('updateRemoteHostList', function (sdata) {
 
 	s_left.addEventListener('change', function () {
 		name_left = this.value;
-		startFileList(name_left, name_right);
+		startPasswordInput(name_left, name_right);
 	});
 	s_right.addEventListener('change', function () {
 		name_right = this.value;
-		startFileList(name_left, name_right);
+		startPasswordInput(name_left, name_right);
 	});
 
 	// init
 	console.log(name_left, name_right);
-	startFileList(name_left, name_right);
+	startPasswordInput(name_left, name_right);
 });
 
 
