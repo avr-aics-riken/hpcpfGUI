@@ -9,7 +9,7 @@
 	function makePasswordInput(node) {
 		var row = document.createElement('div'),
 			name = node.name_hr,
-			hostname = node.name_hr,
+			name_hr = node.name_hr,
 			testbtn,
 			clickfunc,
 			passwordInput;
@@ -39,16 +39,16 @@
 		testbtn = document.createElement('button');
 		testbtn.setAttribute('class', "connecttest");
 		row.appendChild(testbtn);
-		clickfunc = (function (hostname) {
+		clickfunc = (function (name_hr) {
 			return function (e) {
 				e.stopPropagation();
 				this.classList.remove('connecttest_ok');
 				this.classList.remove('connecttest_fail');
 				e.target.removeEventListener('click', clickfunc);// remove clickfunc
 
-				console.log('connect test : ' + hostname);
-				var testConnect = new RemoteFTP(editor.socket, 'TestConnect-' + hostname, hostname);
-				testConnect.on('error', (function (thisptr, hostname) {
+				console.log('connect test : ' + name_hr);
+				var testConnect = new RemoteFTP(editor.socket, 'TestConnect-' + name_hr, name_hr);
+				testConnect.on('error', (function (thisptr, name_hr) {
 					return function (data) {
 						console.log('Connect Error', data);
 						//var error_output = document.getElementById('error_output');
@@ -58,26 +58,31 @@
 						testConnect = null;
 						thisptr.addEventListener('click', clickfunc); // add clickfunc
 					};
-				}(this, hostname)));
+				}(this, name_hr)));
 				testConnect.on('processed', function (data) { console.log('Processed', data); });
-				testConnect.on('openDir', (function (thisptr, hostname) {
+				testConnect.on('openDir', (function (thisptr, name_hr) {
 					return function (data) {
 						thisptr.classList.add('connecttest_ok');
 						testConnect.deleteConnection();
 						testConnect = null;
 						thisptr.addEventListener('click', clickfunc); // add clickfunc
 					};
-				}(this, hostname)));
-				testConnect.Connect(node.password);
+				}(this, name_hr)));
+				
+				if (node.password) {
+					testConnect.Connect(null, node.password);
+				} else {
+					testConnect.Connect(null, node.passphrase);
+				}
 			};
-		}(hostname));
+		}(name_hr));
 		testbtn.addEventListener('click', clickfunc);
 
-		row.addEventListener('click', (function (hostname) {
+		row.addEventListener('click', (function (name_hr) {
 			return function (e) {
-				editor.socket.emit('REMOTEHOST:REQHOSTINFO', {hostname : hostname});
+				editor.socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : name_hr});
 			};
-		}(hostname)));
+		}(name_hr)));
 		return row;
 	}
 	
