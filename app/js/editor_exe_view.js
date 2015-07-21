@@ -13,7 +13,9 @@
 		stopButtonTitle = "Stop (CTRL+Q)",
 		stopButtonURL = "url(../image/button_bg_action_stop.png)",
 		executeButton = $('button_execute_'),
-		executeProject;
+		dryrunButton = $('button_dryrun'),
+		executeProject,
+		dryrunProject;
 	
 	
 	function clearOutput() {
@@ -72,6 +74,17 @@
 			}
 		}
 	};
+	
+	dryrunProject = function () {
+		var exec = function (runFunc) {
+			editor.showExeView();
+			runFunc();
+			executeButton.onclick = stopProject;
+			executeButton.style.backgroundImage = stopButtonURL;
+			executeButton.title = stopButtonTitle;
+		};
+		exec(window.node_edit_view.dryrunWorkflow);
+	};
 
 	editor.socket.on('connect', function () {
 	});
@@ -101,6 +114,7 @@
 	
 	editor.socket.on('init', function () {
 		executeButton.onclick = executeProject;
+		dryrunButton.onclick = dryrunProject;
 		//$('button_stop_').onclick = stopProject;
 	});
 	

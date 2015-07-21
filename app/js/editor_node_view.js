@@ -474,8 +474,8 @@
 		return res;
 	}
 
-	function executeWorkflow() {
-		var script = nui.exportLua(function (parents, nodeData) {
+	function executeWorkflow(isDryRun) {
+		nui.exportLua(function (parents, nodeData) {
 			var i = 0,
 				innode,
 				target_name_to_machine = {},
@@ -501,13 +501,18 @@
 				
 				password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
 					console.log("to_lua_json", to_lua_json(target_machine));
-					return "local luajson = " + to_lua_json(target_machine) + ";\n" +
-						"executeCASE('" + nodeData.name + "', luajson)\n";
+					editor.socket.emit('runWorkflow',
+						"require ('hpcpf')\n" + 
+						"local luajson = " + to_lua_json(target_machine) + ";\n" +
+						"executeCASE('" + nodeData.name + "', luajson," + isDryRun.toString() + ")\n");
 				});
 			}
 			return "";
 		});
-		//editor.socket.emit('runWorkflow', script);
+	}
+	
+	function dryrunWorkflow() {
+		return executeWorkflow(true);
 	}
 	
 	function showAddNodeMenu(show, sx, sy, popupmode) {
@@ -626,6 +631,9 @@
 	});
 	
 	window.node_edit_view = edit_view;
-	window.node_edit_view.executeWorkflow = executeWorkflow;
+	window.node_edit_view.executeWorkflow = function () {
+		return executeWorkflow(false);
+	};
+	window.node_edit_view.dryrunWorkflow = dryrunWorkflow;
 	
 }(window.editor, window.password_input));

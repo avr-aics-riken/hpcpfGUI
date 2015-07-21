@@ -795,13 +795,23 @@ function startPasswordInput(nameA, nameB) {
 		dataA = JSON.parse(adata);
 		socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameB});
 		socket.once('updateRemoteInfo', function (bdata) {
+			var datas = {};
 			dataB = JSON.parse(bdata);
-			password_input.createPasswordInputView(socket, {
-				nameA : dataA,
-				nameB : dataB
-			}, function () {
+			
+			if (dataA.server !== 'localhost') {
+				datas[nameA] = dataA;
+			}
+			if (dataB.server !== 'localhost') {
+				datas[nameB] = dataB;
+			}
+			
+			if (Object.keys(datas).length > 0) {
+				password_input.createPasswordInputView(socket, datas, function () {
+					startFileList(dataA, dataB);
+				});
+			} else {
 				startFileList(dataA, dataB);
-			});
+			}
 		});
 	});
 }

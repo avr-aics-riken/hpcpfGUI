@@ -392,25 +392,23 @@
 
 /* button - stop */
 
-/*
-.button_stop {
+.button_dryrun {
 	width:60px;
 	height:40px;
 	position:relative;
-	top:-66px;
-	background-image:url("../image/button_bg_action_stop.png");
-	font-size:18px;
+	top:-80px;
+	background-image:url("../image/button_bg_action_edit.png");
+	font-size:12px;
 	font-weight:600;
 	background-repeat:no-repeat;
 	background-size: contain;
 }
 
-.button_stop:active{
-	background-image:url("../image/button_bg_action_stop_press.png");
+.button_dryrun:active{
+	background-image:url("../image/button_bg_action_edit_press.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 }
-*/
 
 /* button - edit */
 .button_edit {
