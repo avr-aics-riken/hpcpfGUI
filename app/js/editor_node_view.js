@@ -474,7 +474,7 @@
 		return res;
 	}
 
-	function executeWorkflow(isDryRun) {
+	function executeWorkflow(isDryRun, endcallback) {
 		nui.exportLua(function (parents, nodeData) {
 			var i = 0,
 				innode,
@@ -505,6 +505,10 @@
 						"require ('hpcpf')\n" +
 						"local luajson = " + to_lua_json(target_machine) + ";\n" +
 						"executeCASE('" + nodeData.name + "', luajson," + isDryRun.toString() + ")\n");
+					if (endcallback) {
+						endcallback();
+					}
+					return;
 				});
 			}
 			return "";
@@ -627,11 +631,11 @@
 	});
 	
 	window.node_edit_view = edit_view;
-	window.node_edit_view.executeWorkflow = function () {
-		return executeWorkflow(false);
+	window.node_edit_view.executeWorkflow = function (endcallback) {
+		return executeWorkflow(false, endcallback);
 	};
-	window.node_edit_view.dryrunWorkflow = function () {
-		return executeWorkflow(true);
+	window.node_edit_view.dryrunWorkflow = function (endcallback) {
+		return executeWorkflow(true, endcallback);
 	};
 	
 }(window.editor, window.password_input));

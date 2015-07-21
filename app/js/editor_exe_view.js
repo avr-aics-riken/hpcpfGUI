@@ -53,10 +53,11 @@
 	executeProject = function () {
 		var exec = function (runFunc) {
 			editor.showExeView();
-			runFunc();
-			executeButton.onclick = stopProject;
-			executeButton.style.backgroundImage = stopButtonURL;
-			executeButton.title = stopButtonTitle;
+			runFunc(function () {
+				executeButton.onclick = stopProject;
+				executeButton.style.backgroundImage = stopButtonURL;
+				executeButton.title = stopButtonTitle;
+			});
 		};
 		if (window.editor_edit_view.edited) {
 			editor.saveFile(function () {
@@ -70,7 +71,7 @@
 			if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
 				exec(runWorkflow);
 			} else {
-				window.node_edit_view.executeWorkflow();
+				exec(window.node_edit_view.executeWorkflow);
 			}
 		}
 	};
@@ -78,10 +79,11 @@
 	dryrunProject = function () {
 		var exec = function (runFunc) {
 			editor.showExeView();
-			runFunc();
-			executeButton.onclick = stopProject;
-			executeButton.style.backgroundImage = stopButtonURL;
-			executeButton.title = stopButtonTitle;
+			runFunc(function () {
+				executeButton.onclick = stopProject;
+				executeButton.style.backgroundImage = stopButtonURL;
+				executeButton.title = stopButtonTitle;
+			});
 		};
 		exec(window.node_edit_view.dryrunWorkflow);
 	};
