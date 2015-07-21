@@ -100,7 +100,8 @@ function registerEditorEvent(socket) {
 							server : hst.server,
 							workpath : hst.workpath,
 							userid : hst.userid,
-							sshkey : hst.sshkey
+							sshkey : hst.sshkey,
+							type : hst.type
 						}));
 					}
 				}
@@ -142,15 +143,15 @@ function registerEditorEvent(socket) {
 			}
 
 			//console.log(data);
-			type = (data.server === 'localhost' ? 'local' : 'remote');
+			//type = (data.server === 'localhost' ? 'local' : 'remote');
 			if (type === 'local') {
-				hst.type = type;
+				hst.type = data.type;
 				hst.name_hr = data.name_hr;
 				hst.server = data.server;
 				hst.userid = "";
 				hst.workpath = data.workpath;
 			} else {
-				hst.type = type;
+				hst.type = data.type;
 				hst.name_hr = data.name_hr;
 				hst.server = data.server;
 				hst.userid = data.userid;

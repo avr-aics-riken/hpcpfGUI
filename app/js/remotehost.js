@@ -1,4 +1,4 @@
-/*jslint devel:true, node:true, nomen:true */
+/*jslint devel:true, node:true, nomen:true, regexp : true */
 /*global require, global, $, io, socket, FileDialog, RemoteFTP */
 
 var socket = io.connect(),
@@ -63,6 +63,7 @@ function makeNode(cap, name_hr) {
 		};
 	}(name_hr)));
 	
+	/*
 	testbtn = document.createElement('button');
 	testbtn.setAttribute('class', "connecttest");
 	newbtn.appendChild(testbtn);
@@ -99,6 +100,7 @@ function makeNode(cap, name_hr) {
 		};
 	}(name_hr));
 	testbtn.addEventListener('click', clickfunc);
+	*/
 	
 	newbtn.addEventListener('click', (function (dust) {
 		return function (e) {
@@ -127,6 +129,7 @@ socket.on('updateRemoteInfo', function (sdata) {
 	var data = JSON.parse(sdata),
 		usepassword = !data.hasOwnProperty('sshkey');
 	console.log(data);
+	document.getElementById('input_type').value = data.type;
 	document.getElementById('input_label').value = data.name_hr;
 	document.getElementById('input_host').value  = data.server || '';
 	document.getElementById('input_path').value  = data.workpath || '';
@@ -209,10 +212,11 @@ function addBtn() {
 		host   = document.getElementById('input_host').value,
 		path       = document.getElementById('input_path').value,
 		userid   = document.getElementById('input_id').value,
-		passphrase = document.getElementById('input_passphrase').value,
+		//passphrase = document.getElementById('input_passphrase').value,
 		sshkey     = document.getElementById('input_key').value,
 		error_output = document.getElementById('error_output'),
 		usepassword = document.getElementById('usepassword').checked,
+		type = document.getElementById('input_type').value,
 		//password = document.getElementById('input_password').value,
 		valid = true;
 	
@@ -235,22 +239,11 @@ function addBtn() {
 			valid = false;
 		}
 		if (!usepassword) {
-			if (!passphrase) {
-				error_output.innerHTML = 'Passphrase is empty';
-				valid = false;
-			}
 			if (!sshkey) {
 				error_output.innerHTML = 'KEY is empty';
 				valid = false;
 			}
 		}
-		/*else {
-			if (!password) {
-				error_output.innerHTML = 'Password is empty';
-				valid = false;
-			}
-		}
-		*/
 	}
 	if (!valid) {
 		return;
@@ -258,6 +251,7 @@ function addBtn() {
 	
 	if (usepassword) {
 		socket.emit('REMOTEHOST:AddHost', JSON.stringify({
+			type : type,
 			name_hr : labelname,
 			server : host,
 			workpath : path,
@@ -265,6 +259,7 @@ function addBtn() {
 		}));
 	} else {
 		socket.emit('REMOTEHOST:AddHost', JSON.stringify({
+			type : type,
 			name_hr : labelname,
 			server : host,
 			workpath : path,
@@ -278,6 +273,7 @@ function addBtn() {
 	document.getElementById('input_host').value     = '';
 	document.getElementById('input_path').value     = '';
 	document.getElementById('input_id').value       = '';
+	document.getElementById('input_type').value       = '';
 	//document.getElementById('input_passphrase').value = '';
 	//document.getElementById('input_password').value = '';
 	document.getElementById('input_key').value      = '';
@@ -293,6 +289,18 @@ function initGUI() {
 	};
 	document.getElementById('usekeyfile').onchange = function (evt) {
 		updateAuthTypeEditable();
+	};
+	document.getElementById('input_type').onchange = function (evt) {
+		var val = evt.target.value,
+			res = "",
+			i;
+		for (i = 0; i < val.length; i = i + 1) {
+			if (val[i].match(/^[a-zA-Z0-9!-/:-@¥[-`{-~]+$/)) {
+				console.log(val[i]);
+				res = res + val[i];
+			}
+		}
+		evt.target.value = res;
 	};
 }
 
