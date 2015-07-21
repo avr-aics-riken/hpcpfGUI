@@ -22,9 +22,15 @@
 	<div class="remotehost_tab">
 		<div class="pane_top">
 			<div class="grp_floatleft">
-				<div class="text_label">Label</div>
+				<div class="grp_floatleft">
+					<div class="text_label">Type</div>
+					<input id="input_type" class="input_info"  placeholder="machineid"></input>
+				</div>
+				<div class="grp_floatleft">
+					<div class="text_label">Label</div>
 					<input id="input_label" class="input_info" placeholder="NAME" required ></input>
 				</div>
+				<br>
 				<div class="grp_floatleft">
 					<div class="text_label">HOST</div>
 					<input id="input_host" class="input_info" placeholder="localhost or name.host.jp.." required ></input>
@@ -41,31 +47,27 @@
 					</div>
 
 					<div class="grp_floatleft auth_area">
-						<div class="text_label">Authorication Type</div>
-						<div class="grp_floatleft auth_area_password">
-							<input id="usepassword" class="input_info password_radio" name="authtype" type="radio"></input>
-							<span class="text_label password_type">Password</span>
-							<span class="auth_area_content">
-								<div class="text_label password_label">Password</div>
-								<input id="input_password" class="input_info" type="password" disabled></input>
-							</span>
-						</div>
+						<div class="text_label">Auth Type</div>
+						<input id="usepassword" class="input_info password_radio" name="authtype" type="radio"></input>
+						<span class="text_label password_type">Password</span>
+						<!--span class="auth_area_content">
+							<div class="text_label password_label">Password</div>
+							<input id="input_password" class="input_info" type="password" disabled></input>
+						</span-->
 						<br>
-						<div class="grp_floatleft auth_area_keyfile">
-							<input id="usekeyfile" class="input_info keyfile_radio" name="authtype" type="radio" checked></input>
-							<span class="text_label keyfile_type">KeyFile</span>
-							<span class="auth_area_content">
-								<span class="passphrase_input">
-									<div class="text_label">Passphrase</div>
-									<input id="input_passphrase" class="input_info" type="password"></input>
-								</span>
-								<button id="browse_button" type="button" class="button_browsekey" onclick="openfileDialog('/')">Browse</button>
-								<span class="keyfile_input">
-									<div class="text_label">KEY</div>
-									<input id="input_key" class="input_info"  placeholder="/home/username/.ssh/id_rsa"></input>
-								</span>
+						<input id="usekeyfile" class="input_info keyfile_radio" name="authtype" type="radio" checked></input>
+						<span class="text_label keyfile_type">KeyFile</span>
+						<span class="auth_area_content">
+							<!--span class="passphrase_input">
+								<div class="text_label">Passphrase</div>
+								<input id="input_passphrase" class="input_info" type="password"></input>
+							</span-->
+							<button id="browse_button" type="button" class="button_browsekey" onclick="openfileDialog('/')">Browse</button>
+							<span class="keyfile_input">
+								<div class="text_label">KEY</div>
+								<input id="input_key" class="input_info"  placeholder="/home/username/.ssh/id_rsa"></input>
 							</span>
-						</div>
+						</span>
 					</div>
 				</div>
 			</div>

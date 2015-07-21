@@ -502,17 +502,13 @@
 				password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
 					console.log("to_lua_json", to_lua_json(target_machine));
 					editor.socket.emit('runWorkflow',
-						"require ('hpcpf')\n" + 
+						"require ('hpcpf')\n" +
 						"local luajson = " + to_lua_json(target_machine) + ";\n" +
 						"executeCASE('" + nodeData.name + "', luajson," + isDryRun.toString() + ")\n");
 				});
 			}
 			return "";
 		});
-	}
-	
-	function dryrunWorkflow() {
-		return executeWorkflow(true);
 	}
 	
 	function showAddNodeMenu(show, sx, sy, popupmode) {
@@ -634,6 +630,8 @@
 	window.node_edit_view.executeWorkflow = function () {
 		return executeWorkflow(false);
 	};
-	window.node_edit_view.dryrunWorkflow = dryrunWorkflow;
+	window.node_edit_view.dryrunWorkflow = function () {
+		return executeWorkflow(true);
+	};
 	
 }(window.editor, window.password_input));

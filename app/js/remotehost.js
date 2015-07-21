@@ -116,8 +116,8 @@ function makeNode(cap, name_hr) {
 function updateAuthTypeEditable() {
 	"use strict";
 	var usepassword = document.getElementById('usepassword').checked;
-	document.getElementById('input_password').disabled = !usepassword;
-	document.getElementById('input_passphrase').disabled = usepassword;
+	//document.getElementById('input_password').disabled = !usepassword;
+	//document.getElementById('input_passphrase').disabled = usepassword;
 	document.getElementById('input_key').disabled = usepassword;
 	document.getElementById('browse_button').disabled = usepassword;
 }
@@ -131,8 +131,8 @@ socket.on('updateRemoteInfo', function (sdata) {
 	document.getElementById('input_host').value  = data.server || '';
 	document.getElementById('input_path').value  = data.workpath || '';
 	document.getElementById('input_id').value    = data.userid || '';
-	document.getElementById('input_passphrase').value = ''; // hidden
-	document.getElementById('input_password').value = ''; // hidden
+	//document.getElementById('input_passphrase').value = ''; // hidden
+	//document.getElementById('input_password').value = ''; // hidden
 	document.getElementById('input_key').value   = data.sshkey || '';
 	
 	document.getElementById('usepassword').checked = usepassword;
@@ -213,7 +213,7 @@ function addBtn() {
 		sshkey     = document.getElementById('input_key').value,
 		error_output = document.getElementById('error_output'),
 		usepassword = document.getElementById('usepassword').checked,
-		password = document.getElementById('input_password').value,
+		//password = document.getElementById('input_password').value,
 		valid = true;
 	
 	if (!labelname) {
@@ -243,12 +243,14 @@ function addBtn() {
 				error_output.innerHTML = 'KEY is empty';
 				valid = false;
 			}
-		} else {
+		}
+		/*else {
 			if (!password) {
 				error_output.innerHTML = 'Password is empty';
 				valid = false;
 			}
 		}
+		*/
 	}
 	if (!valid) {
 		return;
@@ -276,8 +278,8 @@ function addBtn() {
 	document.getElementById('input_host').value     = '';
 	document.getElementById('input_path').value     = '';
 	document.getElementById('input_id').value       = '';
-	document.getElementById('input_passphrase').value = '';
-	document.getElementById('input_password').value = '';
+	//document.getElementById('input_passphrase').value = '';
+	//document.getElementById('input_password').value = '';
 	document.getElementById('input_key').value      = '';
 	document.getElementById('usepassword').checked = false;
 	document.getElementById('usekeyfile').checked = true;
