@@ -61,7 +61,8 @@ function getOtherside(side) {
 
 function addItemDragEvents(tar, side, filepath, my_rftp, ano_rftp) {
 	"use strict";
-	console.log("!!!DRAGEVENT!!!:[" + my_rftp.server + "],[" + ano_rftp.server + "]");
+	//console.log(my_rftp, ano_rftp);
+	//console.log("!!!DRAGEVENT!!!:[" + my_rftp.server + "],[" + ano_rftp.server + "]");
 	var othersideActionMenu = 'actionmenu_' + getOtherside(side);
 	if (my_rftp.server === 'localhost' && ano_rftp.server !== 'localhost') {
 		othersideActionMenu = 'actionmenu_' + getOtherside(side) + '_upload';

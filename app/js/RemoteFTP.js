@@ -721,9 +721,9 @@ if (typeof window === 'undefined') { // Node.js
 		socket.emit('RFTP:SocketConnected', JSON.stringify(cmd));
 
 		this.socket = socket;
-		this.connectedMessage = function (cid, msg, host, initPath) {
+		this.connectedMessage = function (cid, msg, server, initPath) {
 			console.log('RFTP:Connected', msg);
-			this.socket.emit('RFTP:Connected', JSON.stringify({cid : cid, msg : msg, host : host, initPath : initPath}));
+			this.socket.emit('RFTP:Connected', JSON.stringify({cid : cid, msg : msg, server : server, initPath : initPath}));
 		};
 
 		this.processedMessage = function (cid, msg) {
@@ -853,7 +853,7 @@ if (typeof window === 'undefined') { // Node.js
 			}
 			var fc = ftparray[cid];
 			if (!fc) {
-				console.log('Error: not found cid FTPInstance');
+				console.log('Error: not found cid FTPInstance', ftparray, cid);
 				return null;
 			}
 			return fc;
@@ -1072,7 +1072,7 @@ if (typeof window === 'undefined') { // Node.js
 		this.socket = socket;
 		this.id = socket.id;
 		this.tarDir = '';
-		this.name_hr = '';
+		this.server = '';
 		this.cid = cid; // connection id (string)
 		this.name_hr = name_hr;
 		
@@ -1145,7 +1145,7 @@ if (typeof window === 'undefined') { // Node.js
 					return;
 				}
 
-				console.log('Connected:' + data.cid + ' / ' + data.initPath);
+				console.log('Connected:', data);
 				sfc.tarDir = data.initPath;
 				sfc.server   = data.server;
 				if (sfc.onConnectedCallback) {
