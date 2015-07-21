@@ -177,8 +177,8 @@ if (typeof window === 'undefined') { // Node.js
 		requires file commands.[cp,mv,tar,...]
 	*/
 
-	var remoteCmd = function (conn, cmd, callback, dataCallback) {
-		conn.exec(cmd, (function (cb) {
+	var remoteCmd = function (ssh2, cmd, callback, dataCallback) {
+		ssh2.exec(cmd, (function (cb) {
 			return function (err, stream) {
 				console.log('REMOTE CMD>' + cmd);
 				if (err) {
@@ -198,25 +198,25 @@ if (typeof window === 'undefined') { // Node.js
 		}(callback)));
 	};
 
-	var remoteCopyFile     = function (conn, src, dst, callback) {
+	var remoteCopyFile     = function (ssh2, src, dst, callback) {
 		if (excludePath.isExcludePath(src) || excludePath.isExcludePath(dst)) {
 			console.log('cannot excute for excluding path>' + src);
 			return;
 		}
-		remoteCmd(conn, 'cp -Rf "' + src + '" "' + dst + '"', callback);
+		remoteCmd(ssh2, 'cp -Rf "' + src + '" "' + dst + '"', callback);
 	};
-	var remoteMoveFile     = function (conn, src, dst, callback) {
+	var remoteMoveFile     = function (ssh2, src, dst, callback) {
 		if (excludePath.isExcludePath(src) || excludePath.isExcludePath(dst)) {
 			console.log('cannot excute for excluding path>' + src);
 			return;
 		}
-		remoteCmd(conn, 'mv "' + src + '" "' + dst + '"', callback);
+		remoteCmd(ssh2, 'mv "' + src + '" "' + dst + '"', callback);
 	};
 	var remoteExistsFile     = function (src, dstFileList, callback) {
 		console.log("remoteExistsFile");
 		return localExistsFile(src, dstFileList, callback);
 	};
-	var remoteExtractFile  = function (conn, srcpath, expath, callback) {
+	var remoteExtractFile  = function (ssh2, srcpath, expath, callback) {
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath);
 		if (excludePath.isExcludePath(srcpath) || excludePath.isExcludePath(expath)) {
@@ -225,9 +225,9 @@ if (typeof window === 'undefined') { // Node.js
 		}
 		expath = expath + (expath.charAt(expath.length - 1) === '/' ? '' : '/');
 		console.log('remoteCMD>' + 'cd "' + parentpath + '";tar xvf "' + srcfile + '" -C "' + expath + '"');
-		remoteCmd(conn, 'cd "' + parentpath + '";tar xvf "' + srcfile + '" -C "' + expath + '"', callback);
+		remoteCmd(ssh2, 'cd "' + parentpath + '";tar xvf "' + srcfile + '" -C "' + expath + '"', callback);
 	};
-	var remoteCompressFile = function (conn, srcpath, cpath, callback) {
+	var remoteCompressFile = function (ssh2, srcpath, cpath, callback) {
 		var parentpath = path.dirname(srcpath),
 			srcfile    = path.basename(srcpath);
 		if (excludePath.isExcludePath(srcpath) || excludePath.isExcludePath(cpath)) {
@@ -236,29 +236,29 @@ if (typeof window === 'undefined') { // Node.js
 		}
 		cpath = cpath + (cpath.charAt(cpath.length - 1) === '/' ? '' : '/');
 		console.log('remoteCMD>' + 'cd "' + parentpath + '";pwd;tar czvf "' + cpath + srcfile + '.tar.gz" "' + srcfile + '"');
-		remoteCmd(conn, 'cd "' + parentpath + '";tar czvf "' + cpath + srcfile + '.tar.gz" "' + srcfile + '"', callback);
+		remoteCmd(ssh2, 'cd "' + parentpath + '";tar czvf "' + cpath + srcfile + '.tar.gz" "' + srcfile + '"', callback);
 	};
-	var remoteDeleteFile   = function (conn, path, callback) {
+	var remoteDeleteFile   = function (ssh2, path, callback) {
 		if (excludePath.isExcludePath(path)) {
 			console.log('cannot excute for excluding path>' + path);
 			return;
 		}
-		remoteCmd(conn, 'rm "' + path + '"', callback);
+		remoteCmd(ssh2, 'rm "' + path + '"', callback);
 	};
-	var remoteDeleteDir = function (conn, path, callback) {
+	var remoteDeleteDir = function (ssh2, path, callback) {
 		if (excludePath.isExcludePath(path)) {
 			console.log('cannot excute for excluding path>' + path);
 			return;
 		}
-		remoteCmd(conn, 'rm -rf "' + path + '"', callback);
+		remoteCmd(ssh2, 'rm -rf "' + path + '"', callback);
 	};
 
-	var remoteMakeDir      = function (conn, path, callback) {
+	var remoteMakeDir      = function (ssh2, path, callback) {
 		if (excludePath.isExcludePath(path)) {
 			console.log('cannot excute for excluding path>' + path);
 			return;
 		}
-		remoteCmd(conn, 'mkdir "' + path + '"', callback);
+		remoteCmd(ssh2, 'mkdir "' + path + '"', callback);
 	};
 
 	//-----------------------------------------------------------------
@@ -388,9 +388,7 @@ if (typeof window === 'undefined') { // Node.js
 	}; // LFTPClass
 
 	var SFTPClass = function () {
-
-		var conn = new ssh2();
-		this.conn = conn;
+		this.ssh2 = new ssh2();
 		this.sftp = null;
 		this.isConnected = false;
 
@@ -401,7 +399,7 @@ if (typeof window === 'undefined') { // Node.js
 
 		this.Disconnect = function () {
 			this.sftp = null;
-			this.conn.end();
+			this.ssh2.end();
 			this.isConnected = false;
 		};
 
@@ -566,11 +564,11 @@ if (typeof window === 'undefined') { // Node.js
 			}
 
 			console.log('Remote:CopyFile>', srcpath, destpath);
-			remoteCopyFile(this.conn, srcpath, destpath, callback);
+			remoteCopyFile(this.ssh2, srcpath, destpath, callback);
 		};
 		this.MoveFile = function (srcpath, destdir, callback) {
 			console.log('Remote:MoveyFile>', srcpath, destdir);
-			remoteMoveFile(this.conn, srcpath, destdir, callback);
+			remoteMoveFile(this.ssh2, srcpath, destdir, callback);
 		};
 		this.ExistsFile = function (srcpath, dstFileList, callback) {
 			console.log('Remote:ExistsFile>', srcpath);
@@ -578,11 +576,11 @@ if (typeof window === 'undefined') { // Node.js
 		};
 		this.ExtractFile = function (path, dir, callback) {
 			console.log('Remote:ExtractFile>', path, dir);
-			remoteExtractFile(this.conn, path, dir, callback);
+			remoteExtractFile(this.ssh2, path, dir, callback);
 		};
 		this.CompressFile = function (path, cfile, callback) {
 			console.log('Remote:CompressFile>', path, cfile);
-			remoteCompressFile(this.conn, path, cfile, callback);
+			remoteCompressFile(this.ssh2, path, cfile, callback);
 		};
 
 		this.DeleteFile = function (path, callback) {
@@ -596,9 +594,9 @@ if (typeof window === 'undefined') { // Node.js
 			sftp.stat(path, (function (self) {
 				return function (err, stats) {
 					if (stats.isDirectory()) {
-						remoteDeleteDir(self.conn, path, callback);
+						remoteDeleteDir(self.ssh2, path, callback);
 					} else {
-						remoteDeleteFile(self.conn, path, callback);
+						remoteDeleteFile(self.ssh2, path, callback);
 					}
 				};
 			}(this)));
@@ -612,7 +610,7 @@ if (typeof window === 'undefined') { // Node.js
 			}
 
 			console.log('Remote:MakeDir>', path);
-			remoteMakeDir(this.conn, path, callback);
+			remoteMakeDir(this.ssh2, path, callback);
 		};
 
 		this.OpenDir = function (path, callback) {
@@ -652,13 +650,14 @@ if (typeof window === 'undefined') { // Node.js
 		};
 
 		this.Connect = function (args, callback) {
-			conn.on('connect', function () {
+			console.log("ARGS", args);
+			this.ssh2.on('connect', function () {
 				console.log("- connected");
 			});
-			conn.on('ready', (function (self, cback) {
+			this.ssh2.on('ready', (function (self, cback) {
 				return function () {
 					console.log("- ready");
-					conn.sftp(function (err, sftp) {
+					self.ssh2.sftp(function (err, sftp) {
 						if (err) {
 							console.log("Error, problem starting SFTP Error: %s", err);
 							process.exit(2);
@@ -674,7 +673,7 @@ if (typeof window === 'undefined') { // Node.js
 				};
 			}(this, callback)));
 
-			conn.on('keyboard-interactive', function redo(name, instructions, instructionsLang, prompts, finish, answers) {
+			this.ssh2.on('keyboard-interactive', function redo(name, instructions, instructionsLang, prompts, finish, answers) {
 				if (args.hasOwnProperty('password')) {
 					finish([args.password]);
 				} else {
@@ -682,22 +681,22 @@ if (typeof window === 'undefined') { // Node.js
 				}
 			});
 
-			conn.on('error', function (err) {
+			this.ssh2.on('error', function (err) {
 				console.log("- connection error: %s", err);
 				if (callback) {
 					callback("- connection error: " + err.toString());
 				}
 				//process.exit( 1 );
 			});
-			conn.on('close', function (had_error) {
+			this.ssh2.on('close', function (had_error) {
 				console.log('Connection close');
 			});
-			conn.on('end', function () {
+			this.ssh2.on('end', function () {
 				console.log('End remote session.');
 			});
 
 			try {
-				conn.connect(args);
+				this.ssh2.connect(args);
 			} catch (e) {
 				console.log("Failed to connect server.[SSH2]");
 				if (callback) {
@@ -794,11 +793,14 @@ if (typeof window === 'undefined') { // Node.js
 				if (data.password) {
 					info.password = data.password;
 				}
+				if (data.passphrase) {
+					info.passphrase = data.passphrase;
+				}
 
 				if (ftparray[data.cid]) {
 					ftparray[data.cid].deleteConnection();
 				}
-
+					
 				if (info.type === 'local') {
 					console.log('RFTP:Local Connection:id=' + data.cid);
 					sfc = new LFTPClass();
@@ -831,6 +833,9 @@ if (typeof window === 'undefined') { // Node.js
 						thisptr.errorMessage(data.cid, "Failed read SSH key file:" + info.sshkey);
 						return;
 					}
+					
+					info.username = info.userid;
+					info.host = info.server;
 					
 					sfc.Connect(info, (function (data, sfc) {
 						return function (err) {
@@ -1080,9 +1085,13 @@ if (typeof window === 'undefined') { // Node.js
 		this.GetDir = function () {
 			return this.tarDir;
 		};
-		this.Connect = function (password) {
+		this.Connect = function (sshkey, passphrase, password) {
 			console.log('CONNECT');
-			this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, password : password}));
+			if (password) {
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, password : password}));
+			} else {
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, sshkey : sshkey, passphrase : passphrase }));
+			}
 		};
 		this.Disconnect = function () {
 			console.log('DISCONNECT');
