@@ -157,9 +157,6 @@ function registerEditorEvent(socket) {
 				hst.workpath = data.workpath;
 				if (data.hasOwnProperty('sshkey')) {
 					hst.sshkey = data.sshkey;
-					hst.passphrase = data.passphrase;
-				} else {
-					hst.password = data.password;
 				}
 			}
 			

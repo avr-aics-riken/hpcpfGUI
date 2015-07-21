@@ -259,8 +259,7 @@ function addBtn() {
 			name_hr : labelname,
 			server : host,
 			workpath : path,
-			userid : userid,
-			password : password
+			userid : userid
 		}));
 	} else {
 		socket.emit('REMOTEHOST:AddHost', JSON.stringify({
@@ -268,7 +267,6 @@ function addBtn() {
 			server : host,
 			workpath : path,
 			userid : userid,
-			passphrase : passphrase,
 			sshkey : sshkey
 		}));
 	}
