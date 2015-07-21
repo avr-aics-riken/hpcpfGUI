@@ -72,7 +72,7 @@
 				if (node.password) {
 					testConnect.Connect(null, node.password);
 				} else {
-					testConnect.Connect(null, node.passphrase);
+					testConnect.Connect(node.passphrase, null);
 				}
 			};
 		}(name_hr));

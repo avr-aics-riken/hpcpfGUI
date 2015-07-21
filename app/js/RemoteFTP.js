@@ -1085,12 +1085,12 @@ if (typeof window === 'undefined') { // Node.js
 		this.GetDir = function () {
 			return this.tarDir;
 		};
-		this.Connect = function (sshkey, passphrase, password) {
+		this.Connect = function (passphrase, password) {
 			console.log('CONNECT');
 			if (password) {
 				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, password : password}));
 			} else {
-				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, sshkey : sshkey, passphrase : passphrase }));
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, passphrase : passphrase }));
 			}
 		};
 		this.Disconnect = function () {
