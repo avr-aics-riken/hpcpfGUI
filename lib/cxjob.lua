@@ -147,11 +147,15 @@ local function scpCmd(user, server, port, key, password, fromfile, tofile)
         scpcmd = scpcmd .. '-P '.. port .. ' ';
     end
     scpcmd = scpcmd .. fromfile .. ' ' .. tofile;
-    print(scpcmd)
+    print('CMD>' .. scpcmd)
     local handle;
     local result;
 	if password ~= nil then
-		scpcmd = 'sshpass -p "' .. password .. '" ' .. scpcmd
+		if (getPlatform() == 'Darwin') then
+			scpcmd = HPCPF_BIN_DIR .. '/sshpass_mac -p ' .. password .. ' ' .. scpcmd
+		elseif (getPlatform() ~= 'Windows') then
+			scpcmd = HPCPF_BIN_DIR .. '/sshpass_linux -p ' .. password .. ' ' .. scpcmd
+		end
 	end
 	handle = io.popen(scpcmd)
 	result = handle:read("*a")
@@ -180,21 +184,15 @@ local function sshCmd(user, server, port, key, password, cmd, disableErr)
 	local handle;
 	local result;
 	
-	if password ~= nil then
-		sshcmd = 'sshpass -p "' .. password .. '" ' .. sshcmd
-	end
-	--[[
-	if password ~= nil then
-		sshcmd = 'node /Users/khatta/Documents/digirea/hpcpf_digirea/app/ssh.js "' .. cmd .. '"' .. (disableErr and (' 2>'..nullDev) or '')
-		print('CMD>' .. sshcmd)
-    	handle = io.popen(sshcmd)
-		result = handle:read("*a")
-		print('OUT>' .. result)
-		
-	else
-	--]]
 	sshcmd = sshcmd .. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
 	print('CMD>' .. sshcmd)
+	if password ~= nil then
+		if (getPlatform() == 'Darwin') then
+			sshcmd = HPCPF_BIN_DIR .. '/sshpass_mac -p ' .. password .. ' ' .. sshcmd
+		elseif (getPlatform() ~= 'Windows') then
+			sshcmd = HPCPF_BIN_DIR .. '/sshpass_linux -p ' .. password .. ' ' .. sshcmd
+		end
+	end
 	handle = io.popen(sshcmd)
 	result = handle:read("*a")
 	print('OUT>' .. result)
