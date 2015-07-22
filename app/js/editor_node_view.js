@@ -476,8 +476,8 @@
 						res = res + '",\n';
 					}
 				}
+				index = index + 1;
 			}
-			index = index + 1;
 		}
 		res = res + " }";
 		return res;
