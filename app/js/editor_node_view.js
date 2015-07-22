@@ -172,6 +172,8 @@
 			return "#1b6ad6";
 		} else if (type === "vec3") {
 			return "#566f9f";
+		} else if (type === "DFI" || type === "dfi") {
+			return "#20cae0";
 		} else if (type === "vec2") {
 			return "#8222a7";
 		} else if (type === "initial_data") {
@@ -183,7 +185,7 @@
 		} else if (type === "volume") {
 			return "#e023e0";
 		} else if (type === "target_machine") {
-			return "#20cae0";
+			return "#ad3b78";
 		} else if (type === "geometory") {
 			return "#17d042";
 		} else if (type === "Any") {
@@ -474,44 +476,68 @@
 		return res;
 	}
 
-	function executeWorkflow(isDryRun, endcallback) {
-		nui.exportLua(function (parents, nodeData) {
-			var i = 0,
-				innode,
-				target_name_to_machine = {},
-				password_need_machines = [],
-				target_machine = {};
-			console.log(nodeData.varname, parents, nodeData);
-			if (nodeData.varname.indexOf('Case') >= 0) {
-				for (i = 0; i < nodeData.input.length; i = i + 1) {
-					innode = nodeData.input[i];
-					if (innode.type === 'target_machine') {
-						if (innode.hasOwnProperty('value') && innode.value) {
-							target_machine.targetconf = innode.value;
-							target_name_to_machine[innode.name_hr] = innode.value;
+	function executeWorkflow(isDryRun, endCallback) {
+		var exportOneNode = function (id, parents, nodeData) {
+				var i,
+					innode;
+				console.log(nodeData.varname, parents, nodeData);
+				return "executeCASE('" + nodeData.name + "', luajson_" + id.toString() + ", " + isDryRun.toString() + ")\n";
+			},
+			targetMachineFunc = function (id, parents, nodeData, password_need_machines) {
+				var i,
+					innode,
+					target_machine = {},
+					target_name_to_machine = {};
+				if (nodeData.varname.indexOf('Case') >= 0) {
+					for (i = 0; i < nodeData.input.length; i = i + 1) {
+						innode = nodeData.input[i];
+						if (innode.type === 'target_machine') {
+							if (innode.hasOwnProperty('value') && innode.value) {
+								target_machine.targetconf = innode.value;
+								target_name_to_machine[innode.name_hr] = innode.value;
+							}
+						}
+					}
+					for (i in target_name_to_machine) {
+						if (target_name_to_machine.hasOwnProperty(i)) {
+							password_need_machines.push(target_name_to_machine[i]);
 						}
 					}
 				}
-				
-				for (i in target_name_to_machine) {
-					if (target_name_to_machine.hasOwnProperty(i)) {
-						password_need_machines.push(target_name_to_machine[i]);
-					}
+				return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
+			};
+			
+		nui.exportLua(function (parents, sorted, exportEndCallback) {
+			var i = 0,
+				nodeData,
+				innode,
+				password_need_machines = [],
+				script = "require('hpcpf')\n",
+				node;
+
+			for (i = 0; i < sorted.length; i = i + 1) {
+				node = sorted[i];
+				nodeData = node.nodeData;
+				if (parents.hasOwnProperty(nodeData.varname)) {
+					// has parents
+					script = script + targetMachineFunc(i, parents[nodeData.varname], nodeData, password_need_machines);
+					script = script + exportOneNode(i, parents[nodeData.varname], nodeData);
+				} else {
+					// root node
+					script = script + targetMachineFunc(i, null, nodeData, password_need_machines);
+					script = script + exportOneNode(i, null, nodeData);
 				}
-				
-				password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
-					console.log("to_lua_json", to_lua_json(target_machine));
-					editor.socket.emit('runWorkflow',
-						"require ('hpcpf')\n" +
-						"local luajson = " + to_lua_json(target_machine) + ";\n" +
-						"executeCASE('" + nodeData.name + "', luajson," + isDryRun.toString() + ")\n");
-					if (endcallback) {
-						endcallback();
-					}
-					return;
-				});
 			}
-			return "";
+			password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
+				if (exportEndCallback) {
+					exportEndCallback(script);
+				}
+			});
+		}, function (script) {
+			console.log("finish creating script:", script);
+			if (endCallback) {
+				endCallback(script);
+			}
 		});
 	}
 	

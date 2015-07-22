@@ -53,7 +53,8 @@
 	executeProject = function () {
 		var exec = function (runFunc) {
 			editor.showExeView();
-			runFunc(function () {
+			runFunc(function (script) {
+				editor.socket.emit('runWorkflow', script);
 				executeButton.onclick = stopProject;
 				executeButton.style.backgroundImage = stopButtonURL;
 				executeButton.title = stopButtonTitle;
@@ -79,7 +80,8 @@
 	dryrunProject = function () {
 		var exec = function (runFunc) {
 			editor.showExeView();
-			runFunc(function () {
+			runFunc(function (script) {
+				editor.socket.emit('runWorkflow', script);
 				executeButton.onclick = stopProject;
 				executeButton.style.backgroundImage = stopButtonURL;
 				executeButton.title = stopButtonTitle;

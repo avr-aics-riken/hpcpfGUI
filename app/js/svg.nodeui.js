@@ -583,32 +583,18 @@ function svgNodeUI(draw) {
 		return { sorted : sorted, parents : parents };
 	};
 
-	function exportLua(scriptConverFunc) {
+	function exportLua(scriptConverFunc, endCallback) {
 		var i,
 			data = topologycalSort(),
 			sorted = data.sorted,
 			parents = data.parents,
 			node,
 			nodeData,
-			preNode = null,
-			script = "require('hpcpf')\n";
+			preNode = null;
 		if (!sorted) {
 			console.log("Error: found closed loop");
 		}
-		for (i = 0; i < sorted.length; i = i + 1) {
-			node = sorted[i];
-			nodeData = node.nodeData;
-			if (scriptConverFunc) {
-				if (parents.hasOwnProperty(nodeData.varname)) {
-					// has parents
-					script = script + scriptConverFunc(parents[nodeData.varname], nodeData);
-				} else {
-					// root node
-					script = script + scriptConverFunc(null, nodeData);
-				}
-			}
-		}
-		return script;
+		scriptConverFunc(parents, sorted, endCallback);
 	}
 	
 	/*
