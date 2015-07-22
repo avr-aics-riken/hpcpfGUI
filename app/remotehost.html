@@ -17,11 +17,16 @@
 	<body onload="boot()">
 	<div class="header">
 		<div class="title"><span class="text_title">Register host</span></div>
+		<div class="change_mode_area_container">
+			<div class="change_mode_area">
+				<button class="button_file_browser" onclick="openFileBrowser()">File Browser</button>
+			</div>
+		</div>
 	</div>
 
 	<div class="remotehost_tab">
 		<div class="pane_top">
-			<div class="grp_floatleft">
+			<div class="pane_top_innfer">
 				<div class="grp_floatleft">
 					<div class="text_label">Type</div>
 					<input id="input_type" class="input_info"  placeholder="machineid" required ></input>
@@ -49,7 +54,7 @@
 					<div class="grp_floatleft auth_area">
 						<div class="text_label">Auth Type</div>
 						<input id="usepassword" class="input_info password_radio" name="authtype" type="radio"></input>
-						<span class="text_label password_type">Password</span>
+						<div class="text_label password_type">Password</div>
 						<!--span class="auth_area_content">
 							<div class="text_label password_label">Password</div>
 							<input id="input_password" class="input_info" type="password" disabled></input>
@@ -85,11 +90,6 @@
 					<div class="hostitem" draggable="false"><span class="hostlabel">user@host5</span><button type="button" class="dustbox"/></div>
 				</div>-->
 				</div>
-			</div>
-			<div class="buttons_remotehost">
-				<button type="button" class="button_open" onclick="openFileBrowser()">
-					<span class="text_button_action file_browser_label">File Browser</span>
-				</button>
 			</div>
 			<div class="popup_center">
 				<div class="popup_content">

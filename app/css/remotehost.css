@@ -61,7 +61,7 @@
 	border-width:12px;
 	border-color:#72ca2a;
 	background-color:#4d4d4d;
-	width:550px;
+	width:700px;
 	min-width:550px;
 	height:300px;
 	overflow:auto;
@@ -85,7 +85,7 @@
 	vertical-align:baseline;
 	padding-left:10px;
 	float:left;
-	width:450px;
+	width:400px;
 	margin-left:10px;
 	margin-bottom:auto;
 	height:65px;
@@ -162,7 +162,7 @@
 }
 
 .auth_area {
-	width : 600px;
+	width : 500px;
 	height : 150px;
 }
 
@@ -212,4 +212,62 @@
 
 .button_browsekey {
 	float : right;
+}
+
+.pane_top_innfer {
+	float: left;
+	margin-left : 80px;
+}
+
+.auth_area_content {
+	margin-right :40px;
+}
+
+.change_mode_area_container {
+	position: absolute;
+	left:0px;
+	min-width:800px;
+	width:100%;
+	text-align: right;
+}
+
+.change_mode_area {
+	position: relative;
+	right: 10px;
+	top:90px;
+	min-width:800px;
+	width:100%;
+	height:-10px;
+	margin:0px;
+}
+
+.button_file_browser {
+	width:71px;
+	height:47px;
+	right : 140px;
+	position:relative;
+	top:-145px;
+	background-image:url("../image/button_bg_action_upper.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
+	font-weight:300;
+}
+
+.button_change_mode:active{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_change_mode:disabled{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.nodePropertyText {
+	margin-left : 10px;
+	margin-top : 15px;
+	width : 80px;
 }

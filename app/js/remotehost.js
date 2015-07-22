@@ -33,24 +33,26 @@ function openFileBrowser() {
 	s.focus(); // TODO: for firefox
 }
 
-function makeNode(cap, name_hr) {
+function makeNode(cap, node) {
 	"use strict";
 	// <div class="hostitem" draggable="false"><span class="hostlabel">user@host1</span><button type="button" class="dustbox"/></div>
-	var newbtn = document.createElement('div'),
+	var row = document.createElement('div'),
 		name,
+		name_hr = node.name_hr,
 		dust,
 		testbtn,
-		clickfunc;
+		clickfunc,
+		passwordInput;
 	
-	newbtn.setAttribute('class', "hostitem");
-	newbtn.setAttribute('draggable', "false");
+	row.setAttribute('class', "hostitem");
+	row.setAttribute('draggable', "false");
 	name = document.createElement('span');
 	name.setAttribute('class', "hostlabel");
 	name.innerHTML = cap;
-	newbtn.appendChild(name);
+	row.appendChild(name);
 	dust = document.createElement('button');
 	dust.setAttribute('class', "dustbox2");
-	newbtn.appendChild(dust);
+	row.appendChild(dust);
 	dust.addEventListener('click', (function (name_hr) {
 		return function (e) {
 			e.stopPropagation();
@@ -62,11 +64,27 @@ function makeNode(cap, name_hr) {
 			}
 		};
 	}(name_hr)));
+
+	// input
+	if (node.hasOwnProperty('server') && node.server !== 'localhost') {
+		passwordInput = document.createElement('input');
+		passwordInput.className = 'nodePropertyText';
+		passwordInput.type = "password";
+		passwordInput.addEventListener('keyup', (function (nodeData, passwordInput) {
+			return function (e) {
+				if (nodeData.hasOwnProperty('sshkey')) {
+					nodeData.passphrase = passwordInput.value;
+				} else {
+					nodeData.password = passwordInput.value;
+				}
+			};
+		}(node, passwordInput)));
+		row.appendChild(passwordInput);
+	}
 	
-	/*
 	testbtn = document.createElement('button');
 	testbtn.setAttribute('class', "connecttest");
-	newbtn.appendChild(testbtn);
+	row.appendChild(testbtn);
 	clickfunc = (function (name_hr) {
 		return function (e) {
 			e.stopPropagation();
@@ -96,23 +114,27 @@ function makeNode(cap, name_hr) {
 					thisptr.addEventListener('click', clickfunc); // add clickfunc
 				};
 			}(this, name_hr)));
-			testConnect.Connect();
+			
+			if (node.password) {
+				testConnect.Connect(null, node.password);
+			} else {
+				testConnect.Connect(node.passphrase, null);
+			}
 		};
 	}(name_hr));
 	testbtn.addEventListener('click', clickfunc);
-	*/
 	
-	newbtn.addEventListener('click', (function (dust) {
+	row.addEventListener('click', (function (dust) {
 		return function (e) {
 			dust.setAttribute('class', 'dustbox2');
 		};
 	}(dust)));
-	newbtn.addEventListener('click', (function (name_hr) {
+	row.addEventListener('click', (function (name_hr) {
 		return function (e) {
 			socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : name_hr});
 		};
 	}(name_hr)));
-	return newbtn;
+	return row;
 }
 
 function updateAuthTypeEditable() {
@@ -160,7 +182,7 @@ socket.on('updateRemoteHostList', function (sdata) {
 	for (i = 0; i < data.length; i = i + 1) {
 		cap = data[i].name_hr + " : " + data[i].userid + "@" + data[i].server;
 		console.log("datadata", data[i]);
-		c = makeNode(cap, data[i].name_hr);
+		c = makeNode(cap, data[i]);
 		ls.appendChild(c);
 	}
 });

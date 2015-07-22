@@ -609,8 +609,9 @@
 .button_add{
 	width:165px;
 	height:95px;
-	margin-top:12px;
-	margin-right:270px;
+	margin: 0 auto;
+	/*margin-top:12px;
+	margin-right:270px;*/
 	background-image:url("../image/button_bg_add.png");
 	background-repeat:no-repeat;
 }
