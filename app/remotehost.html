@@ -52,27 +52,30 @@
 					</div>
 
 					<div class="grp_floatleft auth_area">
-						<div class="text_label">Auth Type</div>
-						<input id="usepassword" class="input_info password_radio" name="authtype" type="radio"></input>
-						<div class="text_label password_type">Password</div>
-						<!--span class="auth_area_content">
-							<div class="text_label password_label">Password</div>
-							<input id="input_password" class="input_info" type="password" disabled></input>
-						</span-->
-						<br>
-						<input id="usekeyfile" class="input_info keyfile_radio" name="authtype" type="radio" checked></input>
-						<span class="text_label keyfile_type">KeyFile</span>
-						<span class="auth_area_content">
-							<!--span class="passphrase_input">
-								<div class="text_label">Passphrase</div>
-								<input id="input_passphrase" class="input_info" type="password"></input>
+						<span class="text_label">Auth Type</span>
+						<div class="password_radio_container">
+							<input id="usepassword" class="input_info password_radio" name="authtype" type="radio"></input>
+							<span class="text_label password_type">Password</span>
+							<!--span class="auth_area_content">
+								<div class="text_label password_label">Password</div>
+								<input id="input_password" class="input_info" type="password" disabled></input>
 							</span-->
-							<button id="browse_button" type="button" class="button_browsekey" onclick="openfileDialog('/')">Browse</button>
-							<span class="keyfile_input">
-								<div class="text_label">KEY</div>
-								<input id="input_key" class="input_info"  placeholder="/home/username/.ssh/id_rsa"></input>
+						</div>
+						<div class="password_radio_container">
+							<input id="usekeyfile" class="input_info keyfile_radio" name="authtype" type="radio" checked></input>
+							<span class="text_label keyfile_type">KeyFile</span>
+							<span class="auth_area_content">
+								<!--span class="passphrase_input">
+									<div class="text_label">Passphrase</div>
+									<input id="input_passphrase" class="input_info" type="password"></input>
+								</span-->
+								<button id="browse_button" type="button" class="button_browsekey" onclick="openfileDialog('/')">Browse</button>
+								<span class="keyfile_input">
+									<div class="text_label">KEY</div>
+									<input id="input_key" class="input_info"  placeholder="/home/username/.ssh/id_rsa"></input>
+								</span>
 							</span>
-						</span>
+						</div>
 					</div>
 				</div>
 			</div>
