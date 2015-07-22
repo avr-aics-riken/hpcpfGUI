@@ -243,6 +243,19 @@ function generateTargetConf(args_table)
 	end
 end
 
+function getCores(args_table)
+	for i, k in pairs(args_table) do
+		if next(k) then
+			for n, m in pairs(k) do
+				if n == "cores" then
+					return m;
+				end
+			end
+		end
+	end
+	return 1;
+end
+
 function isDryRun(args_table)
 	for i, k in pairs(args_table) do
 		if (i == 2) then

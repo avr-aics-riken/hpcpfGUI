@@ -368,6 +368,10 @@
 			} else {
 				return [makeItemNode(key, val)];
 			}
+		} else if (key === 'cores') {
+			if (type === 'target_machine') {
+				return [makeItemTextNode(key, val, inputNode)];
+			}
 		} else if (key === 'file') {
 			return [makeItemTextNode(key, val, inputNode)];
 		} else {
@@ -422,6 +426,9 @@
 							}
 							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('value')) {
 								ioval.value = "";
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
+								ioval.cores = 1;
 							}
 							for (iokey2 in ioval) {
 								if (ioval.hasOwnProperty(iokey2)) {
@@ -495,6 +502,9 @@
 							if (innode.hasOwnProperty('value') && innode.value) {
 								target_machine.targetconf = innode.value;
 								target_name_to_machine[innode.name_hr] = innode.value;
+							}
+							if (innode.hasOwnProperty('cores') && innode.cores) {
+								target_machine.cores = innode.cores;
 							}
 						}
 					}
