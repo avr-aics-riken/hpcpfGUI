@@ -26,19 +26,21 @@
 		row.appendChild(name);
 
 		// input
-		passwordInput = document.createElement('input');
-		passwordInput.className = str_textclass;
-		passwordInput.type = "password";
-		passwordInput.addEventListener('keyup', (function (nodeData, passwordInput) {
-			return function (e) {
-				if (nodeData.hasOwnProperty('sshkey')) {
-					nodeData.passphrase = passwordInput.value;
-				} else {
-					nodeData.password = passwordInput.value;
-				}
-			};
-		}(node, passwordInput)));
-		row.appendChild(passwordInput);
+		if (node.server !== 'localhost') {
+			passwordInput = document.createElement('input');
+			passwordInput.className = str_textclass;
+			passwordInput.type = "password";
+			passwordInput.addEventListener('keyup', (function (nodeData, passwordInput) {
+				return function (e) {
+					if (nodeData.hasOwnProperty('sshkey')) {
+						nodeData.passphrase = passwordInput.value;
+					} else {
+						nodeData.password = passwordInput.value;
+					}
+				};
+			}(node, passwordInput)));
+			row.appendChild(passwordInput);
+		}
 
 		testbtn = document.createElement('button');
 		testbtn.setAttribute('class', "connecttest");

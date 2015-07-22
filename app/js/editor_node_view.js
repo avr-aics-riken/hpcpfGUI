@@ -91,11 +91,16 @@
 		for (i = 0; i < targets.length; i = i + 1) {
 			target = targets[i];
 			optionElem = document.createElement('option');
-			optionElem.innerHTML = target.name_hr;
+			
+			if (target.server === 'localhost') {
+				optionElem.innerHTML = 'localhost';
+			} else {
+				optionElem.innerHTML = target.name_hr;
+			}
 			valueSelect.appendChild(optionElem);
 			
-			if (node.value && node.value.hasOwnProperty('name_hr')) {
-				if (node.value.name_hr === target.name_hr) {
+			if (node.value && node.value.hasOwnProperty('type')) {
+				if (node.value.type === target.type) {
 					initialIndex = i;
 				}
 			}
