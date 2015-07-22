@@ -230,7 +230,7 @@ function svgNodeUI(draw) {
 				positionX,
 				positionY;
 			event.stopPropagation();
-			rect = draw.parent().getBoundingClientRect();
+			rect = draw.node.getBoundingClientRect();
 			positionX = rect.left;
 			positionY = rect.top;
 			this.line[this.line.length - 1].endPos(event.clientX - positionX, event.clientY - positionY);
