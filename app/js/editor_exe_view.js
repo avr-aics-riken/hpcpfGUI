@@ -24,12 +24,6 @@
 	
 	function runWorkflow() {
 		var targetFile = "pwf.lua";
-
-		window.editor_edit_view.openedfile = "";
-		window.editor_edit_view.clickedfile = "";
-		console.log("procRun");
-
-		clearOutput();
 		editor.socket.emit('run', {file: targetFile});
 	}
 
@@ -52,8 +46,13 @@
 	
 	executeProject = function () {
 		var exec = function (runFunc) {
-			editor.showExeView();
 			runFunc(function (script) {
+				editor.showExeView();
+				window.editor_edit_view.openedfile = "";
+				window.editor_edit_view.clickedfile = "";
+				console.log("procRun");
+				clearOutput();
+				
 				editor.socket.emit('runWorkflow', script);
 				executeButton.onclick = stopProject;
 				executeButton.style.backgroundImage = stopButtonURL;
@@ -79,8 +78,13 @@
 	
 	dryrunProject = function () {
 		var exec = function (runFunc) {
-			editor.showExeView();
 			runFunc(function (script) {
+				editor.showExeView();
+				window.editor_edit_view.openedfile = "";
+				window.editor_edit_view.clickedfile = "";
+				console.log("procRun");
+				clearOutput();
+				
 				editor.socket.emit('runWorkflow', script);
 				executeButton.onclick = stopProject;
 				executeButton.style.backgroundImage = stopButtonURL;

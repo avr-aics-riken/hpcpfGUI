@@ -185,6 +185,7 @@ function executeCASE(casename,...)
     local args_table = {...}
     --print("num="..#args_table)
     local cf = loadfile('./'..casename..'/cwf.lua');
+	local result = nil;
     if (cf == nil) then
         print("Can't find Case work flow:"..casename)
         print("or can't find " .. casename..'/cwf.lua')
@@ -193,11 +194,12 @@ function executeCASE(casename,...)
         setBasePath('/' .. casename)
         local oldPackagePath = package.path
         package.path = "./" .. casename .. "/?.lua;" .. oldPackagePath
-        cf(args_table)
+        result = cf(args_table)
         package.path = oldPackagePath
         setBasePath('')
         print("--- End   CASE: "..casename.." ---")
     end
+	return result;
 end
 
 --- JSON loader
