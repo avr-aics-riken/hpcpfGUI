@@ -765,7 +765,7 @@ if (typeof window === 'undefined') { // Node.js
 					return;
 				}
 				for (i = 0; i < regList.length; i = i + 1) {
-					if (regList[i].name_hr === data.name_hr) {
+					if (regList[i].type === data.type) {
 						target = regList[i];
 						break;
 					}
@@ -840,7 +840,7 @@ if (typeof window === 'undefined') { // Node.js
 								thisptr.errorMessage(data.cid, "Connection Failed " + err);
 								return;
 							}
-							thisptr.connectedMessage(data.cid, "Remote mode : connection success", info, info.workpath);
+							thisptr.connectedMessage(data.cid, "Remote mode : connection success", info.server, info.workpath);
 							ftparray[data.cid] = sfc;
 						};
 					}(data, sfc)));
@@ -1070,13 +1070,13 @@ if (typeof window === 'undefined') { // Node.js
 
 	"use strict";
 
-	var RemoteFTP = function (socket, cid, name_hr) {
+	var RemoteFTP = function (socket, cid, type) {
 		this.socket = socket;
 		this.id = socket.id;
 		this.tarDir = '';
 		this.server = '';
 		this.cid = cid; // connection id (string)
-		this.name_hr = name_hr;
+		this.type = type;
 		
 
 		this.GetDir = function () {
@@ -1085,9 +1085,9 @@ if (typeof window === 'undefined') { // Node.js
 		this.Connect = function (passphrase, password) {
 			console.log('CONNECT');
 			if (password) {
-				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, password : password}));
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, type : this.type, password : password}));
 			} else {
-				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, name_hr : this.name_hr, passphrase : passphrase }));
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, type : this.type, passphrase : passphrase }));
 			}
 		};
 		this.Disconnect = function () {
@@ -1154,6 +1154,7 @@ if (typeof window === 'undefined') { // Node.js
 				console.log('Connected:', data);
 				sfc.tarDir = data.initPath;
 				sfc.server   = data.server;
+				console.log('server is ', data.server);
 				if (sfc.onConnectedCallback) {
 					sfc.onConnectedCallback(data.msg);
 				}

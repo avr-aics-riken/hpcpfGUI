@@ -38,7 +38,7 @@ function makeNode(cap, node) {
 	// <div class="hostitem" draggable="false"><span class="hostlabel">user@host1</span><button type="button" class="dustbox"/></div>
 	var row = document.createElement('div'),
 		name,
-		name_hr = node.name_hr,
+		type = node.type,
 		dust,
 		testbtn,
 		clickfunc,
@@ -53,17 +53,17 @@ function makeNode(cap, node) {
 	dust = document.createElement('button');
 	dust.setAttribute('class', "dustbox2");
 	row.appendChild(dust);
-	dust.addEventListener('click', (function (name_hr) {
+	dust.addEventListener('click', (function (type) {
 		return function (e) {
 			e.stopPropagation();
 			if (this.getAttribute('class') === 'dustbox_ok2') {
-				console.log('DEL>:' + name_hr);
-				socket.emit('REMOTEHOST:DELHOST', {name_hr : name_hr});
+				console.log('DEL>:' + type);
+				socket.emit('REMOTEHOST:DELHOST', {type : type});
 			} else {
 				this.setAttribute('class', 'dustbox_ok2');
 			}
 		};
-	}(name_hr)));
+	}(type)));
 
 	// input
 	if (node.hasOwnProperty('server') && node.server !== 'localhost') {
@@ -85,16 +85,16 @@ function makeNode(cap, node) {
 	testbtn = document.createElement('button');
 	testbtn.setAttribute('class', "connecttest");
 	row.appendChild(testbtn);
-	clickfunc = (function (name_hr) {
+	clickfunc = (function (type) {
 		return function (e) {
 			e.stopPropagation();
 			this.classList.remove('connecttest_ok');
 			this.classList.remove('connecttest_fail');
 			e.target.removeEventListener('click', clickfunc);// remove clickfunc
 
-			console.log('connect test : ' + name_hr);
-			var testConnect = new RemoteFTP(socket, 'TestConnect-' + name_hr, name_hr);
-			testConnect.on('error', (function (thisptr, name_hr) {
+			console.log('connect test : ' + type);
+			var testConnect = new RemoteFTP(socket, 'TestConnect-' + type, type);
+			testConnect.on('error', (function (thisptr, type) {
 				return function (data) {
 					console.log('Connect Error', data);
 					var error_output = document.getElementById('error_output');
@@ -104,16 +104,16 @@ function makeNode(cap, node) {
 					testConnect = null;
 					thisptr.addEventListener('click', clickfunc); // add clickfunc
 				};
-			}(this, name_hr)));
+			}(this, type)));
 			testConnect.on('processed', function (data) { console.log('Processed', data); });
-			testConnect.on('openDir', (function (thisptr, name_hr) {
+			testConnect.on('openDir', (function (thisptr, type) {
 				return function (data) {
 					thisptr.classList.add('connecttest_ok');
 					testConnect.deleteConnection();
 					testConnect = null;
 					thisptr.addEventListener('click', clickfunc); // add clickfunc
 				};
-			}(this, name_hr)));
+			}(this, type)));
 			
 			if (node.password) {
 				testConnect.Connect(null, node.password);
@@ -121,7 +121,7 @@ function makeNode(cap, node) {
 				testConnect.Connect(node.passphrase, null);
 			}
 		};
-	}(name_hr));
+	}(type));
 	testbtn.addEventListener('click', clickfunc);
 	
 	row.addEventListener('click', (function (dust) {
@@ -129,11 +129,11 @@ function makeNode(cap, node) {
 			dust.setAttribute('class', 'dustbox2');
 		};
 	}(dust)));
-	row.addEventListener('click', (function (name_hr) {
+	row.addEventListener('click', (function (type) {
 		return function (e) {
-			socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : name_hr});
+			socket.emit('REMOTEHOST:REQHOSTINFO', {type : type});
 		};
-	}(name_hr)));
+	}(type)));
 	return row;
 }
 
@@ -152,7 +152,7 @@ socket.on('updateRemoteInfo', function (sdata) {
 		usepassword = !data.hasOwnProperty('sshkey');
 	console.log(data);
 	document.getElementById('input_type').value = data.type;
-	document.getElementById('input_label').value = data.name_hr;
+	document.getElementById('input_label').value = data.name_hr || '';
 	document.getElementById('input_host').value  = data.server || '';
 	document.getElementById('input_path').value  = data.workpath || '';
 	document.getElementById('input_id').value    = data.userid || '';
@@ -180,7 +180,7 @@ socket.on('updateRemoteHostList', function (sdata) {
 	ls.innerHTML = "";// clear
 
 	for (i = 0; i < data.length; i = i + 1) {
-		cap = data[i].name_hr + " : " + data[i].userid + "@" + data[i].server;
+		cap = data[i].type + " : " + data[i].name_hr + " : " + data[i].userid + "@" + data[i].server;
 		console.log("datadata", data[i]);
 		c = makeNode(cap, data[i]);
 		ls.appendChild(c);
@@ -242,7 +242,7 @@ function addBtn() {
 		//password = document.getElementById('input_password').value,
 		valid = true;
 	
-	if (!labelname) {
+	if (!labelname && host !== 'localhost') {
 		error_output.innerHTML = 'Label is empty';
 		valid = false;
 	}

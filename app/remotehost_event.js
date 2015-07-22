@@ -24,9 +24,9 @@ function updateHostList(socket) {
 				for (k = 0; k < host.length; k = k + 1) {
 					if (host[k]) {
 						if (host[k].userid === undefined) {
-							list.push({name_hr : host[k].name_hr, server : host[k].server, userid : ""});
+							list.push({type : host[k].type, name_hr : host[k].name_hr, server : host[k].server, userid : ""});
 						} else {
-							list.push({name_hr : host[k].name_hr, server : host[k].server, userid : host[k].userid});
+							list.push({type : host[k].type, name_hr : host[k].name_hr, server : host[k].server, userid : host[k].userid});
 						}
 					}
 				}
@@ -39,7 +39,7 @@ function updateHostList(socket) {
 function registerEditorEvent(socket) {
 	"use strict";
 	socket.on('REMOTEHOST:DELHOST', function (data) {
-		console.log("DEL>" + data.name_hr);
+		console.log("DEL>" + data.type + " : " + data.name_hr);
 		fs.readFile(regFile, function (err, filebuf) {
 			var host,
 				targets,
@@ -63,11 +63,9 @@ function registerEditorEvent(socket) {
 				targets = host.hpcpf.targets;
 				
 				for (k = 0; k < targets.length; k = k + 1) {
-					if (targets[k] && targets[k].name_hr === data.name_hr) {
+					if (targets[k] && targets[k].type === data.type) {
 						targets.splice(k, 1);
-						
 						jslist = JSON.stringify(host, prettyprintFunc, "    ");
-						
 						fs.writeFile(regFile, jslist, writeEndFunc);
 						break;
 					}
@@ -77,7 +75,7 @@ function registerEditorEvent(socket) {
 	});
 	socket.on('REMOTEHOST:REQHOSTINFO', function (data) {
 		console.log(data);
-		console.log("REQHOST>" + data.name_hr);
+		console.log("REQHOST>" + data.type + " : " + data.name_hr);
 		fs.readFile(regFile, function (err, filebuf) {
 			var host,
 				k,
@@ -92,11 +90,11 @@ function registerEditorEvent(socket) {
 			if (host.hasOwnProperty('hpcpf') && host.hpcpf.hasOwnProperty('targets')) {
 				host = host.hpcpf.targets;
 				for (k = 0; k < host.length; k = k + 1) {
-					if (host[k] && host[k].name_hr === data.name_hr) {
+					if (host[k] && host[k].type === data.type) {
 						hst = host[k];
 						console.log("hst", hst);
 						socket.emit('updateRemoteInfo', JSON.stringify({
-							name_hr : data.name_hr,
+							name_hr : hst.name_hr,
 							server : hst.server,
 							workpath : hst.workpath,
 							userid : hst.userid,
@@ -130,7 +128,7 @@ function registerEditorEvent(socket) {
 			if (host.hasOwnProperty('hpcpf') && host.hpcpf.hasOwnProperty('targets')) {
 				targets = host.hpcpf.targets;
 				for (k = 0; k < targets.length; k = k + 1) {
-					if (targets[k] && targets[k].name_hr === data.name_hr) {
+					if (targets[k] && targets[k].type === data.type) {
 						console.log('already server');
 						hst = targets[k];
 					}

@@ -61,8 +61,8 @@ function getOtherside(side) {
 
 function addItemDragEvents(tar, side, filepath, my_rftp, ano_rftp) {
 	"use strict";
-	//console.log(my_rftp, ano_rftp);
-	//console.log("!!!DRAGEVENT!!!:[" + my_rftp.server + "],[" + ano_rftp.server + "]");
+	console.log(my_rftp, ano_rftp);
+	console.log("!!!DRAGEVENT!!!:[" + my_rftp.server + "],[" + ano_rftp.server + "]");
 	var othersideActionMenu = 'actionmenu_' + getOtherside(side);
 	if (my_rftp.server === 'localhost' && ano_rftp.server !== 'localhost') {
 		othersideActionMenu = 'actionmenu_' + getOtherside(side) + '_upload';
@@ -422,8 +422,8 @@ function startFileList(dataA, dataB) {
 	"use strict";
 	console.log('startFileList');
 	
-	var nameA = dataA.name_hr,
-		nameB = dataB.name_hr,
+	var typeA = dataA.type,
+		typeB = dataB.type,
 		newConnectA = false,
 		newConnectB = false,
 		changeA = true,
@@ -433,8 +433,8 @@ function startFileList(dataA, dataB) {
 		i,
 		itm;
 	
-	console.log("startFileList", nameA, nameB);
-	if (nameA === "" || dataB === "") {
+	console.log("startFileList", typeA, typeB);
+	if (typeA === "" || dataB === "") {
 		return;
 	}
 	
@@ -471,24 +471,24 @@ function startFileList(dataA, dataB) {
 		var flist = document.getElementById('rightFileList');
 		flist.innerHTML = ""; // clear
 	}
-	if (!rftpA || rftpA.name_hr !== nameA) {
+	if (!rftpA || rftpA.type !== typeA) {
 		tmppath = undefined;
 		if (rftpA) {
 			rftpA.deleteConnection();
 		}
 		console.log('createA');
-		rftpA = new RemoteFTP(socket, 'ConnectionA', nameA); // left
+		rftpA = new RemoteFTP(socket, 'ConnectionA', typeA); // left
 		newConnectA = true;
 	} else {
 		changeA = false; // no reflesh list item.
 	}
-	if (!rftpB || rftpB.name_hr !== nameB) {
+	if (!rftpB || rftpB.type !== typeB) {
 		tmppath = undefined;
 		if (rftpB) {
 			rftpB.deleteConnection();
 		}
 		console.log('createB');
-		rftpB = new RemoteFTP(socket, 'ConnectionB', nameB); // right
+		rftpB = new RemoteFTP(socket, 'ConnectionB', typeB); // right
 		newConnectB = true;
 	} else {
 		changeB = false; // no reflesh list item.
@@ -785,24 +785,24 @@ function startFileList(dataA, dataB) {
 	}
 } // startFileList
 
-function startPasswordInput(nameA, nameB) {
+function startPasswordInput(typeA, typeB) {
 	"use strict";
 	var dataA,
 		dataB;
 
-	socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameA});
+	socket.emit('REMOTEHOST:REQHOSTINFO', {type : typeA});
 	socket.once('updateRemoteInfo', function (adata) {
 		dataA = JSON.parse(adata);
-		socket.emit('REMOTEHOST:REQHOSTINFO', {name_hr : nameB});
+		socket.emit('REMOTEHOST:REQHOSTINFO', {type : typeB});
 		socket.once('updateRemoteInfo', function (bdata) {
 			var datas = {};
 			dataB = JSON.parse(bdata);
 			
 			if (dataA.server !== 'localhost') {
-				datas[nameA] = dataA;
+				datas[typeA] = dataA;
 			}
 			if (dataB.server !== 'localhost') {
-				datas[nameB] = dataB;
+				datas[typeB] = dataB;
 			}
 			
 			if (Object.keys(datas).length > 0) {
@@ -822,8 +822,10 @@ socket.on('updateRemoteHostList', function (sdata) {
 		txt = "",
 		s_left  = document.getElementById('select_host_left'),
 		s_right = document.getElementById('select_host_right'),
-		name_left = '',
-		name_right = '',
+		//name_left = '',
+		//name_right = '',
+		type_left,
+		type_right,
 		i,
 		c1,
 		c2;
@@ -832,34 +834,45 @@ socket.on('updateRemoteHostList', function (sdata) {
 	s_right.innerHTML = "";
 	for (i = 0; i < data.length; i = i + 1) {
 		//txt = txt + data.item[i].itemName + "　" + myData.item[i].itemPrice+"円<br>";
-		console.log(data[i].name_hr);
+		console.log(data[i].name_hr, data[i].type);
 
 		c1 = document.createElement('option');
 		c1.setAttribute('class', 'option_host');
-		c1.innerHTML = data[i].name_hr;
 		c2 = document.createElement('option');
 		c2.setAttribute('class', 'option_host');
-		c2.innerHTML = data[i].name_hr;
+		
+		if (data[i].server === 'localhost') {
+			c1.innerHTML = 'localhost';
+			c2.innerHTML = 'localhost';
+		} else {
+			c1.innerHTML = data[i].name_hr;
+			c2.innerHTML = data[i].name_hr;
+		}
+		c1.machinetype = data[i].type;
+		c2.machinetype = data[i].type;
 		s_left.appendChild(c1);
 		s_right.appendChild(c2);
 	}
 
 	if (data.length > 0) {
-		name_left = name_right = data[0].name_hr;
+		//name_left = name_right = data[0].name_hr;
+		type_left = type_right = data[0].type;
 	}
 
-	s_left.addEventListener('change', function () {
-		name_left = this.value;
-		startPasswordInput(name_left, name_right);
+	s_left.addEventListener('change', function (evt) {
+		//name_left = this.value;
+		type_left = this.options[this.options.selectedIndex].machinetype;
+		startPasswordInput(type_left, type_right);
 	});
-	s_right.addEventListener('change', function () {
-		name_right = this.value;
-		startPasswordInput(name_left, name_right);
+	s_right.addEventListener('change', function (evt) {
+		//name_right = this.value;
+		type_right = this.options[this.options.selectedIndex].machinetype;
+		startPasswordInput(type_left, type_right);
 	});
 
 	// init
-	console.log(name_left, name_right);
-	startPasswordInput(name_left, name_right);
+	console.log(type_left, type_right);
+	startPasswordInput(type_left, type_right);
 });
 
 
