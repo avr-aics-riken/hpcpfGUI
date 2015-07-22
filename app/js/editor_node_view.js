@@ -489,27 +489,53 @@
 	}
 
 	function executeWorkflow(isDryRun, endCallback) {
-		var exportOneNode = function (id, parents, nodeData) {
-				var i,
-					innode;
-				console.log(nodeData.varname, parents, nodeData);
-				return "executeCASE('" + nodeData.name + "', luajson_" + id.toString() + ", " + isDryRun.toString() + ")\n";
-			},
-			targetMachineFunc = function (id, parents, nodeData, password_need_machines) {
+		// local result_0 = executeCASE(name, luajson_0, isDryRun);
+		// result_0 is a table of { node_varname : value, node_varname : value ... }
+		var exportOneNodeFunc = function (id, parents, nodeData) {
 				var i,
 					innode,
-					target_machine = {},
-					target_name_to_machine = {};
+					strid = id.toString(),
+					preResult = null;
+			
+				console.log(nodeData.varname, parents, nodeData);
+				if (id > 1) {
+					preResult = "result_" + (id - 1).toString();
+					return "local result_" + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + isDryRun.toString() + ")\n print(result_" + strid + ")\n";
+				} else {
+					return "local result_" + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + isDryRun.toString() + ")\n print(result_" + strid + ")\n";
+				}
+			},
+			// local luajson_0 = { target_machine };
+			targetMachineFunc = function (id, parents, nodeData) {
+				var i,
+					innode,
+					target_machine = {};
 				if (nodeData.varname.indexOf('Case') >= 0) {
 					for (i = 0; i < nodeData.input.length; i = i + 1) {
 						innode = nodeData.input[i];
 						if (innode.type === 'target_machine') {
 							if (innode.hasOwnProperty('value') && innode.value) {
 								target_machine.targetconf = innode.value;
-								target_name_to_machine[innode.name_hr] = innode.value;
 							}
 							if (innode.hasOwnProperty('cores') && innode.cores) {
 								target_machine.cores = innode.cores;
+							}
+						}
+					}
+				}
+				return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
+			},
+			// fetch password or keyphrase machines
+			fetchPasswordNeedMachineFunc = function (id, parents, nodeData, password_need_machines) {
+				var i,
+					innode,
+					target_name_to_machine = {};
+				if (nodeData.varname.indexOf('Case') >= 0) {
+					for (i = 0; i < nodeData.input.length; i = i + 1) {
+						innode = nodeData.input[i];
+						if (innode.type === 'target_machine') {
+							if (innode.hasOwnProperty('value') && innode.value) {
+								target_name_to_machine[innode.name_hr] = innode.value;
 							}
 						}
 					}
@@ -519,7 +545,6 @@
 						}
 					}
 				}
-				return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
 			};
 			
 		nui.exportLua(function (parents, sorted, exportEndCallback) {
@@ -527,23 +552,34 @@
 				nodeData,
 				innode,
 				password_need_machines = [],
-				script = "require('hpcpf')\n",
 				node;
-
+			
 			for (i = 0; i < sorted.length; i = i + 1) {
 				node = sorted[i];
 				nodeData = node.nodeData;
 				if (parents.hasOwnProperty(nodeData.varname)) {
-					// has parents
-					script = script + targetMachineFunc(i, parents[nodeData.varname], nodeData, password_need_machines);
-					script = script + exportOneNode(i, parents[nodeData.varname], nodeData);
+					fetchPasswordNeedMachineFunc(i, parents[nodeData.varname], nodeData, password_need_machines);
 				} else {
-					// root node
-					script = script + targetMachineFunc(i, null, nodeData, password_need_machines);
-					script = script + exportOneNode(i, null, nodeData);
+					fetchPasswordNeedMachineFunc(i, null, nodeData, password_need_machines);
 				}
 			}
 			password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
+				var node,
+					nodeData,
+					script = "require('hpcpf')\n";
+				for (i = 0; i < sorted.length; i = i + 1) {
+					node = sorted[i];
+					nodeData = node.nodeData;
+					if (parents.hasOwnProperty(nodeData.varname)) {
+						// has parents
+						script = script + targetMachineFunc(i, parents[nodeData.varname], nodeData, password_need_machines);
+						script = script + exportOneNodeFunc(i, parents[nodeData.varname], nodeData);
+					} else {
+						// root node
+						script = script + targetMachineFunc(i, null, nodeData, password_need_machines);
+						script = script + exportOneNodeFunc(i, null, nodeData);
+					}
+				}
 				if (exportEndCallback) {
 					exportEndCallback(script);
 				}
