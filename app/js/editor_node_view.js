@@ -139,6 +139,30 @@
 		nui.makeNodes(nodeData);
 	}
 	
+	function updateNode(nodename) {
+		var node = nodeListTable[nodename],
+			nodeData = nui.getNodeData(),
+			i,
+			instNode,
+			posx,
+			posy;
+		
+		for (i in nodeData.nodeData) {
+			if (nodeData.nodeData.hasOwnProperty(i)) {
+				if (nodeData.nodeData[i].varname === node.varname) {
+					instNode = clone(node);
+					posx = nodeData.nodeData[i].pos[0];
+					posy = nodeData.nodeData[i].pos[1];
+					nodeData.nodeData[i] = instNode;
+					nodeData.nodeData[i].pos[0] = posx;
+					nodeData.nodeData[i].pos[1] = posy;
+				}
+			}
+		}
+		nui.clearNodes();
+		nui.makeNodes(nodeData);
+	}
+	
 	function deleteNode(node) {
 		var nodeData = nui.getNodeData(),
 			data = nodeData.nodeData,
@@ -161,13 +185,6 @@
 		nui.clearNodes();
 		nodeData = nui.getNodeData();
 		document.getElementById("property").innerHTML = '';
-	}
-	
-	function updateNode() {
-		var nodeData = nui.getNodeData();
-		console.log('updateNode');
-		nui.clearNodes();
-		nui.makeNodes(nodeData);
 	}
 	
 	function colorFunction(type) {
@@ -696,11 +713,10 @@
 				if (!nodeListTable.hasOwnProperty(caseNodes[i].name)) {
 					nodeListTable[caseNodes[i].name] = caseNodes[i];
 					addNode(caseNodes[i].name, caseNodes[i].name_hr, 300, 100, false);
+				} else {
+					nodeListTable[caseNodes[i].name] = caseNodes[i];
+					updateNode(caseNodes[i].name);
 				}
-				/*else {
-					updateNode()
-				}
-				*/
 				tempNodeListTable[caseNodes[i].name] = caseNodes[i];
 			}
 			// delete
