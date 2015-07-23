@@ -7,7 +7,7 @@
 	var nui, // node ui
 		nodeListTable = {},
 		systemNodeListTable = {},
-		instance_no = 1,
+		//instance_no = 1,
 		edit_view = {},
 		popupNodeList = null,
 		str_rowclass = 'nodePropertyRow',
@@ -129,8 +129,8 @@
 		//console.log(instNode);
 		instNode.canErase = canErase;
 		nodeData.nodeData.push(instNode);
-		instNode.varname = instNode.varname + instance_no;
-		instance_no += 1;
+		//instNode.varname = instNode.varname + instance_no;
+		//instance_no += 1;
 		if (nx !== undefined && ny !== undefined) {
 			instNode.pos[0] = nx;
 			instNode.pos[1] = ny;
@@ -140,14 +140,16 @@
 	}
 	
 	function deleteNode(node) {
-		console.log('DELETE:', node);
-		
 		var nodeData = nui.getNodeData(),
 			data = nodeData.nodeData,
 			i;
+		
+		console.log('DELETE:', node, data);
+		
 		for (i = 0; i < data.length; i = i + 1) {
 			if (data[i].varname === node.varname) {
 				data.splice(i, 1);
+				console.log('DELETED:', node);
 			}
 		}
 		nui.clearNodes();
@@ -197,31 +199,6 @@
 			return "#ef8815";
 		} else { // Object
 			return "#c12417";
-		}
-	}
-	
-	function storeNodeToNodeListTable(nodes, callback, isSystemNode) {
-		var i;
-		nodes.sort(
-			function (a, b) {
-				return a.name > b.name;
-			}
-		);
-
-		// create nodelist table
-		for (i = 0; i < nodes.length; i = i + 1) {
-			nodeListTable[nodes[i].name] = nodes[i];
-		}
-		if (isSystemNode) {
-			for (i = 0; i < nodes.length; i = i + 1) {
-				systemNodeListTable[nodes[i].name] = nodes[i];
-			}
-		}
-
-		console.log(nodeListTable);
-		
-		if (callback) {
-			callback(nodes);
 		}
 	}
 	
@@ -634,7 +611,7 @@
 	}
 	*/
 	
-	editor.socket.on('init', function () {
+	function init() {
 		var draw = SVG('nodecanvas'),
 			propertyTab,
 			pos = { x : 0, y : 0 },
@@ -652,32 +629,21 @@
 		});
 		nui.nodeDeleteEvent(deleteNode);
 		
-		/*
-		nodecanvas.onclick = clickCanvas;
-		nodecanvas.ondblclick = doubleClickCanvas;
-		*/
-		
-		//selectNodeList = createSelectNodeList();
-		//document.getElementById('nodeList').appendChild(selectNodeList);
-		
 		editor.socket.emit('reqReloadNodeList');
-		//editor.socket.on('reloadNodeList', function (caseNodeList, systemNodeList) {
-		editor.socket.on('reloadNodeList', function (caseNodeList) {
+		editor.socket.once('reloadNodeList', function (caseNodeList) {
 			var i,
 				caseNodes = JSON.parse(caseNodeList);
 			
-			/*
-			storeNodeToNodeListTable(JSON.parse(systemNodeList), function (nodes) {
-				var listElement = selectNodeList.getElementsByClassName('selectNodeList')[0];
-				updateSelectNodeList(listElement, '');
-			}, true);
-			*/
-			storeNodeToNodeListTable(caseNodes, function (nodes) {
-				for (i = 0; i < nodes.length; i = i + 1) {
-					console.log(nodes[i].name);
-					addNode(nodes[i].name, nodes[i].name_hr, 300, 100, false);
+			caseNodes.sort(
+				function (a, b) {
+					return a.name > b.name;
 				}
-			}, false);
+			);
+			
+			for (i = 0; i < caseNodes.length; i = i + 1) {
+				nodeListTable[caseNodes[i].name] = caseNodes[i];
+				addNode(caseNodes[i].name, caseNodes[i].name_hr, 300, 100, false);
+			}
 		});
 		
 		propertyTab = window.animtab.create('right', {
@@ -710,7 +676,47 @@
 		document.getElementById('node_area').onmouseup = function (evt) {
 			onMiddleButtonDown = false;
 		};
-		
+	}
+	
+	function reload() {
+		editor.socket.emit('reqReloadNodeList');
+		editor.socket.once('reloadNodeList', function (caseNodeList) {
+			var i,
+				caseNodes = JSON.parse(caseNodeList),
+				tempNodeListTable = {};
+			
+			caseNodes.sort(
+				function (a, b) {
+					return a.name > b.name;
+				}
+			);
+			
+			// add or update
+			for (i = 0; i < caseNodes.length; i = i + 1) {
+				if (!nodeListTable.hasOwnProperty(caseNodes[i].name)) {
+					nodeListTable[caseNodes[i].name] = caseNodes[i];
+					addNode(caseNodes[i].name, caseNodes[i].name_hr, 300, 100, false);
+				}
+				/*else {
+					updateNode()
+				}
+				*/
+				tempNodeListTable[caseNodes[i].name] = caseNodes[i];
+			}
+			// delete
+			for (i in nodeListTable) {
+				if (nodeListTable.hasOwnProperty(i)) {
+					if (!tempNodeListTable.hasOwnProperty(i)) {
+						deleteNode(nodeListTable[i]);
+						delete nodeListTable[i];
+					}
+				}
+			}
+		});
+	}
+	
+	editor.socket.on('init', function () {
+		init();
 	});
 	
 	window.node_edit_view = edit_view;
@@ -720,5 +726,7 @@
 	window.node_edit_view.dryrunWorkflow = function (endcallback) {
 		return executeWorkflow(true, endcallback);
 	};
+	window.node_edit_view.init = init;
+	window.node_edit_view.reload = reload;
 	
 }(window.editor, window.password_input));

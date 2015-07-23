@@ -210,6 +210,7 @@
 			$("rightTab").style.display = "block";
 			$("nodePropertyTab").style.display = "block";
 			$("info_back_button_area").style.display = "none";
+			window.node_edit_view.reload();
 		}
 	}
 	

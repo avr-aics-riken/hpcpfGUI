@@ -182,7 +182,7 @@
 				node.pos = [100, 100];
 				node.funcname = "Case";
 				node.name = dirname;
-				node.varname = "Case";
+				node.varname = dirname;
 				node.status = "Pending";
 			}
 			return node;
