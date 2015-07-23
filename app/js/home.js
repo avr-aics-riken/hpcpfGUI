@@ -191,6 +191,12 @@ function openFileBrowser() {
 	s.focus(); // TODO: for firefox
 }
 
+function openResumeProject() {
+	"use strict";
+	var s = window.open("resumeproject.html", "resumeproject");
+	s.focus(); // TODO: for firefox
+}
+
 function openKDB() {
 	"use strict";
 	window.open("http://www.cenav.org/kdb/", "_blank");
