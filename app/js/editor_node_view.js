@@ -505,16 +505,14 @@
 		var i,
 			innode,
 			target_machine = {};
-		if (nodeData.varname.indexOf('Case') >= 0) {
-			for (i = 0; i < nodeData.input.length; i = i + 1) {
-				innode = nodeData.input[i];
-				if (innode.type === 'target_machine') {
-					if (innode.hasOwnProperty('value') && innode.value) {
-						target_machine.targetconf = innode.value;
-					}
-					if (innode.hasOwnProperty('cores') && innode.cores) {
-						target_machine.cores = innode.cores;
-					}
+		for (i = 0; i < nodeData.input.length; i = i + 1) {
+			innode = nodeData.input[i];
+			if (innode.type === 'target_machine') {
+				if (innode.hasOwnProperty('value') && innode.value) {
+					target_machine.targetconf = innode.value;
+				}
+				if (innode.hasOwnProperty('cores') && innode.cores) {
+					target_machine.cores = innode.cores;
 				}
 			}
 		}
@@ -526,19 +524,17 @@
 		var i,
 			innode,
 			target_name_to_machine = {};
-		if (nodeData.varname.indexOf('Case') >= 0) {
-			for (i = 0; i < nodeData.input.length; i = i + 1) {
-				innode = nodeData.input[i];
-				if (innode.type === 'target_machine') {
-					if (innode.hasOwnProperty('value') && innode.value) {
-						target_name_to_machine[innode.name_hr] = innode.value;
-					}
+		for (i = 0; i < nodeData.input.length; i = i + 1) {
+			innode = nodeData.input[i];
+			if (innode.type === 'target_machine') {
+				if (innode.hasOwnProperty('value') && innode.value) {
+					target_name_to_machine[innode.name_hr] = innode.value;
 				}
 			}
-			for (i in target_name_to_machine) {
-				if (target_name_to_machine.hasOwnProperty(i)) {
-					password_need_machines.push(target_name_to_machine[i]);
-				}
+		}
+		for (i in target_name_to_machine) {
+			if (target_name_to_machine.hasOwnProperty(i)) {
+				password_need_machines.push(target_name_to_machine[i]);
 			}
 		}
 	}
