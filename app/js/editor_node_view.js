@@ -542,55 +542,6 @@
 		}
 	}
 
-	function executeWorkflow(isDryRun, endCallback) {
-		nui.exportLua(function (parents, sorted, exportEndCallback) {
-			var i = 0,
-				nodeData,
-				innode,
-				password_need_machines = [],
-				node;
-			
-			// gather password,passphrase machine
-			for (i = 0; i < sorted.length; i = i + 1) {
-				node = sorted[i];
-				nodeData = node.nodeData;
-				if (parents.hasOwnProperty(nodeData.varname)) {
-					gatherPasswordNeedMachine(i, parents[nodeData.varname], nodeData, password_need_machines);
-				} else {
-					gatherPasswordNeedMachine(i, null, nodeData, password_need_machines);
-				}
-			}
-			
-			// show password,passphrase input dialog
-			password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
-				var node,
-					nodeData,
-					script = "require('hpcpf')\n";
-				for (i = 0; i < sorted.length; i = i + 1) {
-					node = sorted[i];
-					nodeData = node.nodeData;
-					if (parents.hasOwnProperty(nodeData.varname)) {
-						// has parents
-						script = script + exportTargetMachine(i, parents[nodeData.varname], nodeData, password_need_machines);
-						script = script + exportOneNode(i, parents[nodeData.varname], nodeData, isDryRun);
-					} else {
-						// root node
-						script = script + exportTargetMachine(i, null, nodeData, password_need_machines);
-						script = script + exportOneNode(i, null, nodeData, isDryRun);
-					}
-				}
-				if (exportEndCallback) {
-					exportEndCallback(script);
-				}
-			});
-		}, function (script) {
-			console.log("finish creating script:", script);
-			if (endCallback) {
-				endCallback(script);
-			}
-		});
-	}
-	
 	function showAddNodeMenu(show, sx, sy, popupmode) {
 		var callback = null;
 		if (show === true) {
@@ -645,6 +596,7 @@
 		});
 		nui.nodeDeleteEvent(deleteNode);
 		
+		/*
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.once('reloadNodeList', function (caseNodeList) {
 			var i,
@@ -661,6 +613,7 @@
 				addNode(caseNodes[i].name, caseNodes[i].name_hr, 300, 100, false);
 			}
 		});
+		*/
 		
 		propertyTab = window.animtab.create('right', {
 			'rightTab' : { min : '0px', max : 'auto' }
@@ -730,7 +683,7 @@
 		});
 	}
 	
-	function save() {
+	function save(endCallback) {
 		var data = nui.getNodeData(),
 			strData,
 			prettyprintFunc = function (key, val) { return val;	};
@@ -738,23 +691,93 @@
 		try {
 			strData = JSON.stringify(data, prettyprintFunc, '    ');
 			editor.socket.emit('reqSaveNode', strData);
+			editor.socket.once('doneSaveNode', function (result) {
+				console.log("doneSaveNode", result);
+				if (endCallback) {
+					endCallback();
+				}
+			});
 		} catch (e) {
+			console.log(e);
 		}
 	}
 	
 	function load() {
 		editor.socket.emit('reqLoadNode');
-		editor.socket.once('doneNodeLoad', function (nodeData) {
-			console.log(nodeData);
-			var nodes = JSON.parse(nodeData);
-			nui.clearNodes();
-			nui.makeNodes(nodes);
-			console.log("doneNodeLoad");
+		editor.socket.once('doneLoadNode', function (nodeData) {
+			try {
+				if (Object.keys(nodeData).length > 0) {
+					var nodes = JSON.parse(nodeData),
+						i;
+					for (i = 0; i < nodes.nodeData.length; i = i + 1) {
+						if (!nodeListTable.hasOwnProperty(nodes.nodeData[i].name)) {
+							nodeListTable[nodes.nodeData[i].name] = nodes.nodeData[i];
+						}
+					}
+					nui.clearNodes();
+					nui.makeNodes(nodes);
+				}
+			} catch (e) {
+				console.log(e);
+			}
+		});
+	}
+	
+	function executeWorkflow(isDryRun, endCallback) {
+		save(function () {
+			nui.exportLua(function (parents, sorted, exportEndCallback) {
+				var i = 0,
+					nodeData,
+					innode,
+					password_need_machines = [],
+					node;
+
+				// gather password,passphrase machine
+				for (i = 0; i < sorted.length; i = i + 1) {
+					node = sorted[i];
+					nodeData = node.nodeData;
+					if (parents.hasOwnProperty(nodeData.varname)) {
+						gatherPasswordNeedMachine(i, parents[nodeData.varname], nodeData, password_need_machines);
+					} else {
+						gatherPasswordNeedMachine(i, null, nodeData, password_need_machines);
+					}
+				}
+
+				// show password,passphrase input dialog
+				password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
+					var node,
+						nodeData,
+						script = "require('hpcpf')\n";
+					for (i = 0; i < sorted.length; i = i + 1) {
+						node = sorted[i];
+						nodeData = node.nodeData;
+						if (parents.hasOwnProperty(nodeData.varname)) {
+							// has parents
+							script = script + exportTargetMachine(i, parents[nodeData.varname], nodeData, password_need_machines);
+							script = script + exportOneNode(i, parents[nodeData.varname], nodeData, isDryRun);
+						} else {
+							// root node
+							script = script + exportTargetMachine(i, null, nodeData, password_need_machines);
+							script = script + exportOneNode(i, null, nodeData, isDryRun);
+						}
+					}
+					if (exportEndCallback) {
+						exportEndCallback(script);
+					}
+				});
+			}, function (script) {
+				console.log("finish creating script:", script);
+				if (endCallback) {
+					endCallback(script);
+				}
+			});
 		});
 	}
 	
 	editor.socket.on('init', function () {
 		init();
+		load();
+		reload();
 	});
 	
 	window.node_edit_view = edit_view;

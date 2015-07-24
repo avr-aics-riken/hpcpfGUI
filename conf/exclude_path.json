@@ -7,6 +7,7 @@
 	],
 	"workspace" : [
 		"history.json",
-		"*/history.json"
+		"*/history.json",
+		"nodedata.json"
 	]
 }

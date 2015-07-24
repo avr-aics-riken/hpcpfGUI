@@ -568,7 +568,7 @@
 			try {
 				fs.writeFileSync(targetPath, data);
 				console.log('It\'s saved!:' + targetPath);
-				socket.emit("doneNodeSave", true);
+				socket.emit("doneSaveNode", true);
 			} catch (e) {
 				console.log(e);
 			}
@@ -580,7 +580,7 @@
 				data;
 			try {
 				data = fs.readFileSync(targetPath).toString();
-				socket.emit('doneNodeLoad', data);
+				socket.emit('doneLoadNode', data);
 			} catch (e) {
 				console.log(e);
 			}
