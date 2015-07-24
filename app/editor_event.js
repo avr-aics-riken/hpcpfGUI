@@ -595,7 +595,7 @@
 				});
 				*/
 			} catch (e) {
-				console.log("JSON parse error");
+				console.log("JSON parse error", e);
 			}
 		});
 		
@@ -616,8 +616,12 @@
 				targetPath = path.join(srcdir, 'nodedata.json'),
 				data;
 			try {
-				data = fs.readFileSync(targetPath).toString();
-				socket.emit('doneLoadNode', data);
+				if (fs.existsSync(targetPath)) {
+					data = fs.readFileSync(targetPath).toString();
+					socket.emit('doneLoadNode', data);
+				} else {
+					socket.emit('doneLoadNode', false);
+				}
 			} catch (e) {
 				console.log(e);
 			}

@@ -555,7 +555,7 @@ function svgNodeUI(draw) {
 										if (!visitFunc(nextConnector.parentNode.nodeData.varname, nodeChecks)) {
 											return false;
 										} else {
-											if (!parents.hasOwnProperty('varname')) {
+											if (!parents.hasOwnProperty(varname)) {
 												parents[varname] = [];
 											}
 											parents[varname].push(nextConnector.parentNode.nodeData);

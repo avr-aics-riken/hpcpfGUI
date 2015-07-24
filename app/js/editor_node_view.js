@@ -500,16 +500,17 @@
 
 	// local result_0 = executeCASE(name, luajson_0, isDryRun);
 	// result_0 is a table of { node_varname : value, node_varname : value ... }
-	function exportOneNode(id, parents, nodeData, isDryRun) {
+	function exportOneNode(id, parentIDs, nodeData, isDryRun) {
 		var i,
 			innode,
 			strid = id.toString(),
 			strdryrun = isDryRun.toString(),
-			preResult = null;
+			preResult = null,
+			parentVars = "";
 
-		console.log(nodeData.varname, parents, nodeData);
+		console.log(nodeData.varname, parentIDs, nodeData);
 		if (id > 1) {
-			preResult = "result_" + (id - 1).toString();
+			//preResult = "result_" + (id - 1).toString();
 			return "local result_" + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ")\n";
 		} else {
 			return "local result_" + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ")\n";
@@ -517,7 +518,7 @@
 	}
 	
 	// local luajson_0 = { target_machine };
-	function exportTargetMachine(id, parents, nodeData) {
+	function exportTargetMachine(id, parentIDs, nodeData) {
 		var i,
 			innode,
 			target_machine = {};
@@ -701,7 +702,8 @@
 		editor.socket.emit('reqLoadNode');
 		editor.socket.once('doneLoadNode', function (nodeData) {
 			try {
-				if (Object.keys(nodeData).length > 0) {
+				//console.log('doneLoadNode', nodeData);
+				if (nodeData && Object.keys(nodeData).length > 0) {
 					var nodes = JSON.parse(nodeData),
 						i;
 					for (i = 0; i < nodes.nodeData.length; i = i + 1) {
@@ -711,6 +713,26 @@
 					}
 					nui.clearNodes();
 					nui.makeNodes(nodes);
+				} else {
+					console.log("Init from Case");
+					// init from Case
+					editor.socket.emit('reqReloadNodeList');
+					editor.socket.once('reloadNodeList', function (caseNodeList) {
+						var i,
+							caseNodes = JSON.parse(caseNodeList);
+
+						//console.log("caseNodes", caseNodeList);
+						caseNodes.sort(
+							function (a, b) {
+								return a.name > b.name;
+							}
+						);
+
+						for (i = 0; i < caseNodes.length; i = i + 1) {
+							nodeListTable[caseNodes[i].name] = caseNodes[i];
+							addNode(caseNodes[i].name, caseNodes[i].name_hr, 300, 100, false);
+						}
+					});
 				}
 			} catch (e) {
 				console.log(e);
@@ -725,7 +747,15 @@
 					nodeData,
 					innode,
 					password_need_machines = [],
-					node;
+					node,
+					parentIDs = [],
+					parentIDFunc = function (parents) {
+						var ids = [],
+							i;
+						for (i = 0; i < parents.length; i = i + 1) {
+							ids.push(sorted.indexOf(parents[i]));
+						}
+					};
 
 				// gather password,passphrase machine
 				for (i = 0; i < sorted.length; i = i + 1) {
@@ -748,8 +778,10 @@
 						nodeData = node.nodeData;
 						if (parents.hasOwnProperty(nodeData.varname)) {
 							// has parents
-							script = script + exportTargetMachine(i, parents[nodeData.varname], nodeData, password_need_machines);
-							script = script + exportOneNode(i, parents[nodeData.varname], nodeData, isDryRun);
+							console.log(parents);
+							parentIDs = parentIDFunc(parents[nodeData.varname]);
+							script = script + exportTargetMachine(i, parentIDs, nodeData, password_need_machines);
+							script = script + exportOneNode(i, parentIDs, nodeData, isDryRun);
 						} else {
 							// root node
 							script = script + exportTargetMachine(i, null, nodeData, password_need_machines);
@@ -772,7 +804,6 @@
 	editor.socket.on('init', function () {
 		init();
 		load();
-		reload();
 	});
 	
 	window.node_edit_view = edit_view;
