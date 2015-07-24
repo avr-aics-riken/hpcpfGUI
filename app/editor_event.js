@@ -561,6 +561,30 @@
 				console.log("JSON parse error");
 			}
 		});
+		
+		socket.on('reqSaveNode', function (data) {
+			var srcdir = sesstionTable[socket.id].dir,
+				targetPath = path.join(srcdir, 'nodedata.json');
+			try {
+				fs.writeFileSync(targetPath, data);
+				console.log('It\'s saved!:' + targetPath);
+				socket.emit("doneNodeSave", true);
+			} catch (e) {
+				console.log(e);
+			}
+		});
+		
+		socket.on('reqLoadNode', function () {
+			var srcdir = sesstionTable[socket.id].dir,
+				targetPath = path.join(srcdir, 'nodedata.json'),
+				data;
+			try {
+				data = fs.readFileSync(targetPath).toString();
+				socket.emit('doneNodeLoad', data);
+			} catch (e) {
+				console.log(e);
+			}
+		});
 
 		socket.on('stop', function (data) {
 			var processspawn = sesstionTable[socket.id].proc;

@@ -145,7 +145,8 @@
 			i,
 			instNode,
 			posx,
-			posy;
+			posy,
+			canErase;
 		
 		for (i in nodeData.nodeData) {
 			if (nodeData.nodeData.hasOwnProperty(i)) {
@@ -153,9 +154,11 @@
 					instNode = clone(node);
 					posx = nodeData.nodeData[i].pos[0];
 					posy = nodeData.nodeData[i].pos[1];
+					canErase = nodeData.nodeData[i].canErase;
 					nodeData.nodeData[i] = instNode;
 					nodeData.nodeData[i].pos[0] = posx;
 					nodeData.nodeData[i].pos[1] = posy;
+					nodeData.nodeData[i].canErase = canErase;
 				}
 			}
 		}
@@ -727,6 +730,29 @@
 		});
 	}
 	
+	function save() {
+		var data = nui.getNodeData(),
+			strData,
+			prettyprintFunc = function (key, val) { return val;	};
+		
+		try {
+			strData = JSON.stringify(data, prettyprintFunc, '    ');
+			editor.socket.emit('reqSaveNode', strData);
+		} catch (e) {
+		}
+	}
+	
+	function load() {
+		editor.socket.emit('reqLoadNode');
+		editor.socket.once('doneNodeLoad', function (nodeData) {
+			console.log(nodeData);
+			var nodes = JSON.parse(nodeData);
+			nui.clearNodes();
+			nui.makeNodes(nodes);
+			console.log("doneNodeLoad");
+		});
+	}
+	
 	editor.socket.on('init', function () {
 		init();
 	});
@@ -740,5 +766,7 @@
 	};
 	window.node_edit_view.init = init;
 	window.node_edit_view.reload = reload;
+	window.node_edit_view.save = save;
+	window.node_edit_view.load = load;
 	
 }(window.editor, window.password_input));
