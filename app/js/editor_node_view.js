@@ -140,9 +140,11 @@
 	}
 	
 	function updateNode(nodename) {
-		var node = nodeListTable[nodename],
+		var node = nodeListTable[nodename], // node genearated from case
 			nodeData = nui.getNodeData(),
+			data,
 			i,
+			k,
 			instNode,
 			posx,
 			posy,
@@ -152,6 +154,17 @@
 			if (nodeData.nodeData.hasOwnProperty(i)) {
 				if (nodeData.nodeData[i].varname === node.varname) {
 					instNode = clone(node);
+					data = nodeData.nodeData[i];
+					/*
+					for (k in instNode) {
+						if (instNode.hasOwnProperty(k)) {
+							if (data.hasOwnProperty(k)) {
+								//instNode[k] = data[k];
+								//console.log("aaaa", instNode[k], data[k]);
+							}
+						}
+					}
+					*/
 					posx = nodeData.nodeData[i].pos[0];
 					posy = nodeData.nodeData[i].pos[1];
 					canErase = nodeData.nodeData[i].canErase;
@@ -596,25 +609,6 @@
 		});
 		nui.nodeDeleteEvent(deleteNode);
 		
-		/*
-		editor.socket.emit('reqReloadNodeList');
-		editor.socket.once('reloadNodeList', function (caseNodeList) {
-			var i,
-				caseNodes = JSON.parse(caseNodeList);
-			
-			caseNodes.sort(
-				function (a, b) {
-					return a.name > b.name;
-				}
-			);
-			
-			for (i = 0; i < caseNodes.length; i = i + 1) {
-				nodeListTable[caseNodes[i].name] = caseNodes[i];
-				addNode(caseNodes[i].name, caseNodes[i].name_hr, 300, 100, false);
-			}
-		});
-		*/
-		
 		propertyTab = window.animtab.create('right', {
 			'rightTab' : { min : '0px', max : 'auto' }
 		}, {
@@ -689,6 +683,7 @@
 			prettyprintFunc = function (key, val) { return val;	};
 		
 		try {
+			// detect modified data
 			strData = JSON.stringify(data, prettyprintFunc, '    ');
 			editor.socket.emit('reqSaveNode', strData);
 			editor.socket.once('doneSaveNode', function (result) {

@@ -17,6 +17,7 @@
 		SH_CMD = 'sh',
 		PMD_FILENAME = 'pmd.json',
 		CMD_FILENAME = 'cmd.json',
+		CEI_FILENAME = 'cei.json',
 		targetConfFile = path.resolve(__dirname, '../conf/targetconf.json'),
 		sesstionTable = {};
 
@@ -137,11 +138,12 @@
 	/**
 	 * convert cmd.json(user values) to node(system values)
 	 */
-	function makeNodeFromCMD(cmd, dirname, targetConfData) {
+	function makeNodeFromCMD(cmd, dirname, targetConfData, cei) {
 		var elem,
 			node = {},
 			inputElem,
 			outputElem,
+			targetElem,
 			nodeInput,
 			nodeOutput,
 			i;
@@ -162,6 +164,7 @@
 						}
 						if (inputElem.hasOwnProperty('type') && inputElem.type === 'target_machine') {
 							nodeInput.target_machine_list = targetConfData;
+							targetElem = nodeInput;
 						}
 						node.input.push(nodeInput);
 					}
@@ -185,6 +188,27 @@
 				node.varname = dirname;
 				node.status = "Pending";
 			}
+			
+			if (cei && cei.hasOwnProperty('hpcpf')) {
+				if (cei.hpcpf.hasOwnProperty('case_exec_info')) {
+					elem = cei.hpcpf.case_exec_info;
+					if (elem.hasOwnProperty('status')) {
+						node.status = elem.status;
+					}
+					if (elem.hasOwnProperty('target')) {
+						if (targetElem) {
+							for (i = 0; i < targetConfData.hpcpf.targets.length; i = i + 1) {
+								if (targetConfData.hpcpf.targets[i].type === elem.target) {
+									targetElem.value = targetConfData.hpcpf.targets[i];
+									console.log(node);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			
 			return node;
 		}
 		return null;
@@ -194,6 +218,7 @@
 		var files = [],
 			caseFiles = [],
 			cmdData,
+			ceiData,
 			node,
 			nodeList = [],
 			i,
@@ -203,11 +228,23 @@
 			if (files[i].type === "dir") {
 				caseFiles = [];
 				util.getFiles(files[i].path, caseFiles);
+				
+				ceiData = null;
 				for (k = 0; k < caseFiles.length; k = k + 1) {
-					if (caseFiles[k].type === "file" && caseFiles[k].name === "cmd.json") {
+					if (caseFiles[k].type === "file" && caseFiles[k].name === CEI_FILENAME) {
+						ceiData = fs.readFileSync(caseFiles[k].path, 'utf8');
+					}
+				}
+				
+				for (k = 0; k < caseFiles.length; k = k + 1) {
+					if (caseFiles[k].type === "file" && caseFiles[k].name === CMD_FILENAME) {
 						// found case dir
 						cmdData = fs.readFileSync(caseFiles[k].path, 'utf8');
-						node = makeNodeFromCMD(JSON.parse(cmdData), files[i].name, targetConfData);
+						if (ceiData) {
+							node = makeNodeFromCMD(JSON.parse(cmdData), files[i].name, targetConfData, JSON.parse(ceiData));
+						} else {
+							node = makeNodeFromCMD(JSON.parse(cmdData), files[i].name, targetConfData, null);
+						}
 						if (node) {
 							nodeList.push(node);
 						}
