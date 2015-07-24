@@ -103,11 +103,14 @@
 			cancelButton = document.getElementById('password_input_button_cancel'),
 			testbutton;
 		
-		background.onclick = function (evt) {
+		cancelButton.onclick = function (evt) {
 			background.style.display = "none";
 		};
 		if (okcallback) {
-			okButton.onclick = okcallback;
+			okButton.onclick = function (ev) {
+				background.style.display = "none";
+				okcallback(ev);
+			};
 		}
 		
 		regiterlist.innerHTML = "";
