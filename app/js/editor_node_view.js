@@ -13,7 +13,8 @@
 		str_rowclass = 'nodePropertyRow',
 		str_nameclass = 'nodePropertyName',
 		str_textclass = 'nodePropertyText',
-		str_constclass = 'nodePropertyConst';
+		str_constclass = 'nodePropertyConst',
+		prePropertyNodeName = null;
 	
 	function $(id) {
 		return document.getElementById(id);
@@ -408,6 +409,11 @@
 			i;
 
 		property.innerHTML = "";
+		if (!nodeData) {
+			prePropertyNodeName = null;
+			return;
+		}
+		prePropertyNodeName = nodeData.name;
 		property.appendChild(makeItemNode('Property', 'Value', true));
 		
 		if (nodeData.hasOwnProperty('name')) {
@@ -755,17 +761,26 @@
 						for (i = 0; i < parents.length; i = i + 1) {
 							ids.push(sorted.indexOf(parents[i]));
 						}
-					};
+					},
+					tempProperty = prePropertyNodeName;
 
 				// gather password,passphrase machine
 				for (i = 0; i < sorted.length; i = i + 1) {
 					node = sorted[i];
 					nodeData = node.nodeData;
+					updateProperty(nodeData);
+					
 					if (parents.hasOwnProperty(nodeData.varname)) {
 						gatherPasswordNeedMachine(i, parents[nodeData.varname], nodeData, password_need_machines);
 					} else {
 						gatherPasswordNeedMachine(i, null, nodeData, password_need_machines);
 					}
+				}
+				
+				if (nodeListTable.hasOwnProperty(tempProperty)) {
+					updateProperty(nodeListTable[tempProperty]);
+				} else {
+					updateProperty(null);
 				}
 
 				// show password,passphrase input dialog
