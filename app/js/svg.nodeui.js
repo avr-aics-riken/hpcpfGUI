@@ -338,6 +338,8 @@ function svgNodeUI(draw) {
 			inode,
 			connectCnt = 0,
 			nodeText,
+			statusLabelText,
+			statusText,
 			inoutNum = 0,
 			nodeVarName,
 			plugConnectors = {};
@@ -384,17 +386,23 @@ function svgNodeUI(draw) {
 		this.group = group;
 		this.plugConnectors = plugConnectors;
 		
+		// status
+		statusLabelText = draw.text("Status : ").fill('#eee').move(20, 33);
+		group.add(statusLabelText);
+		statusText = draw.text("pending").fill('#eee').move(100, 33);
+		group.add(statusText);
+		
 		function newNodeConnector(group, inNode, thisptr, i) {
-			var nodeText = draw.text(inNode.name).fill('#eee').move(20, 30 + i * 20),
+			var nodeText = draw.text(inNode.name).fill('#eee').move(20, 55 + i * 20),
 				nodeVarName = getPlugVarName(varName, inNode.name);
 			group.add(nodeText);
-			return new NodeConnector(nodeVarName, inNode.type, group, thisptr, 0, 45 + i * 20);
+			return new NodeConnector(nodeVarName, inNode.type, group, thisptr, 0, 65 + i * 20);
 		}
 		function newNodeOutConnector(group, outNode, thisptr, i) {
-			var nodeText = draw.text(outNode.name).fill('#eee').move(130, 30 + i * 20),
+			var nodeText = draw.text(outNode.name).fill('#eee').move(130, 55 + i * 20),
 				nodeVarName = getPlugVarName(varName, outNode.name);
 			group.add(nodeText);
-			return new NodePlug(nodeVarName, outNode.type, group, thisptr, 220, 45 + i * 20);
+			return new NodePlug(nodeVarName, outNode.type, group, thisptr, 220, 65 + i * 20);
 		}
 		
 		// Node Params
@@ -422,9 +430,9 @@ function svgNodeUI(draw) {
 				}
 			}
 		}
-		nodeback1.size(nodeback1.width(), 40 + 20 * inoutNum);
-		nodeback2.size(nodeback2.width(), 40 + 20 * inoutNum - 14);
-		nodebase.size(nodebase.width(), 7 + 20 * inoutNum);
+		nodeback1.size(nodeback1.width(), 60 + 20 * inoutNum);
+		nodeback2.size(nodeback2.width(), 60 + 20 * inoutNum - 14);
+		nodebase.size(nodebase.width(), 27 + 20 * inoutNum);
 		
 		for (i in plugConnectors) {
 			if (plugConnectors.hasOwnProperty(i)) {
@@ -723,7 +731,6 @@ function svgNodeUI(draw) {
 		//console.log(src);
 		return src;
 	}
-	*/
 	
 	function pushDependencyNode(node, dependency, plugArray) {
 		if (!node) {
@@ -747,6 +754,7 @@ function svgNodeUI(draw) {
 			}
 		}
 	}
+	*/
 
 	function makeNodes(data) {
 		var nodeData = data.nodeData,

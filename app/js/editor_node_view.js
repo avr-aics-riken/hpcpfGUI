@@ -573,7 +573,8 @@
 	function exportTargetMachine(id, parentIDs, nodeData) {
 		var i,
 			innode,
-			target_machine = {};
+			target_machine = {},
+			hasTargetMachine = false;
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			innode = nodeData.input[i];
 			if (innode.type === 'target_machine') {
@@ -586,7 +587,19 @@
 				if (innode.hasOwnProperty('nodes') && innode.nodes) {
 					target_machine.nodes = innode.nodes;
 				}
+				hasTargetMachine = true;
 			}
+		}
+		if (!hasTargetMachine) {
+			target_machine.targetconf = {
+				type : "local",
+				server : 'localhost',
+				workpath : "~/",
+				userid : "",
+				name_hr : ""
+			};
+			target_machine.cores = 1;
+			target_machine.nodes = 1;
 		}
 		return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
 	}
