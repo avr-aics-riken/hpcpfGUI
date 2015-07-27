@@ -181,6 +181,51 @@ function getCurrentDir()
     return execmd(pwdcmd):gsub('\n','')
 end
 
+--- JSON loader
+
+local json = require('dkjson')
+
+function readJSON(filename)
+    local filestr = ''
+    local fp = io.open('.' .. getBasePath() .. '/' ..filename,'r');
+	print("JSONPath", '.' .. getBasePath() .. '/' ..filename)
+    local jst = nil
+    if (fp) then
+        filestr = fp:read("*all")
+        jst = json.decode (filestr, 1, nil)
+    end
+    return jst;
+end
+
+function writeJSON(filename, tbl)
+	local filestr = ''
+	local fp = io.open('.' .. getBasePath() .. '/' ..filename,'w');
+	if (fp) then
+		fp:write(json.encode(tbl, { indent = true }))
+		fp:close();
+	end
+end
+
+function writeCEI(path, tbl, status)
+	if (tbl.hpcpf == nil) then
+		return;
+	end
+	tbl.hpcpf.case_exec_info.status = status;
+	writeJSON(path, tbl);
+end
+
+
+function getInitialCeiDescription(workdir, server, hosttype)
+	return {
+		hpcpf = {
+			case_exec_info = {
+				work_dir = server .. ":" .. workdir,
+				target = hosttype
+			}
+		}
+	}
+end
+
 function executeCASE(casename,...)
     local args_table = {...}
     --print("num="..#args_table)
@@ -194,27 +239,42 @@ function executeCASE(casename,...)
         setBasePath('/' .. casename)
         local oldPackagePath = package.path
         package.path = "./" .. casename .. "/?.lua;" .. oldPackagePath
-        result = cf(args_table)
+		
+		-- write cei.json
+		local ceiFile = "cei.json";
+		local cei = readJSON(ceiFile);
+		if (cei == nil) then
+			local targetconf = generateTargetConf(args_table);
+			local workdir = targetconf.workpath;
+			if string.sub(workdir, workdir:len()) ~= '/' then
+				workdir = workdir .. '/'
+			end
+			workdir = workdir .. casename .. '/'
+			cei = getInitialCeiDescription(workdir,  targetconf.server, targetconf.type);
+			writeCEI(ceiFile, cei, 'running')
+		else
+			if (cei.hpcpf.case_exec_info.status == 'finished') then
+				print("--- End   CASE: "..casename.." ---")
+				return cei.hpcpf.case_exec_info.result;
+			end
+		end
+		
+		-- execute
+		result = cf(args_table)
+		
+		-- write result to cei.json
+		if (result ~= nil) then
+			cei.hpcpf.case_exec_info.result = result;
+			writeCEI(ceiFile, cei, 'finished');
+		else
+			writeCEI(ceiFile, cei, 'failed');
+		end
+		
         package.path = oldPackagePath
         setBasePath('')
         print("--- End   CASE: "..casename.." ---")
     end
 	return result;
-end
-
---- JSON loader
-
-local json = require('dkjson')
-
-function readJSON(filename)
-    local filestr = ''
-    local fp = io.open(s_base_path..filename,'r');
-    local jst = nil
-    if (fp) then
-        filestr = fp:read("*all")
-        jst = json.decode (filestr, 1, nil)
-    end
-    return jst;
 end
 
 
