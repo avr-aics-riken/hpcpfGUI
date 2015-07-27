@@ -510,6 +510,36 @@
 		res = res + " }";
 		return res;
 	}
+	
+	function to_lua_list(json) {
+		var res = "{ \n",
+			i,
+			index = 0,
+			jsonLength = Object.keys(json).length;
+		
+		for (i in json) {
+			if (json.hasOwnProperty(i)) {
+				if (typeof json[i] === "object") {
+					res = res + "\t" + to_lua_json(json[i]);
+					if (index === (jsonLength - 1)) {
+						res = res + '\n';
+					} else {
+						res = res + ',\n';
+					}
+				} else {
+					res = res + "\t" + json[i];
+					if (index === (jsonLength - 1)) {
+						res = res + '"\n';
+					} else {
+						res = res + '",\n';
+					}
+				}
+				index = index + 1;
+			}
+		}
+		res = res + " }";
+		return res;
+	}
 
 	// local result_0 = executeCASE(name, luajson_0, isDryRun);
 	// result_0 is a table of { node_varname : value, node_varname : value ... }
@@ -518,16 +548,25 @@
 			innode,
 			strid = id.toString(),
 			strdryrun = isDryRun.toString(),
-			preResult = null,
-			parentVars = "";
+			parentVar = null,
+			parentVars = {},
+			input,
+			exec,
+			inputPrefix = "luainput_",
+			resultPrefix = "luaresult_";
 
 		console.log(nodeData.varname, parentIDs, nodeData);
-		if (id > 1) {
-			//preResult = "result_" + (id - 1).toString();
-			return "local result_" + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ")\n";
-		} else {
-			return "local result_" + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ")\n";
+		if (parentIDs) {
+			for (i = 0; i < parentIDs.length; i = i + 1) {
+				parentVar = resultPrefix + (parentIDs[i]).toString();
+				parentVars[inputPrefix + (parseInt(i, 10) + 1)] = parentVar;
+			}
 		}
+		console.log("parentIDs", parentIDs);
+		console.log("parentVars", parentVars);
+		input = "local " + inputPrefix + strid + " = " + to_lua_list(parentVars).split('"').join('') + ";\n";
+		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ")\n";
+		return input + exec;
 	}
 	
 	// local luajson_0 = { target_machine };
@@ -765,12 +804,16 @@
 					password_need_machines = [],
 					node,
 					parentIDs = [],
-					parentIDFunc = function (parents) {
+					sortedDatas = [],
+					parentIDFunc = function (sortedDatas, parents) {
 						var ids = [],
 							i;
+						
+						//console.log("sorted", sortedDatas);
 						for (i = 0; i < parents.length; i = i + 1) {
-							ids.push(sorted.indexOf(parents[i]));
+							ids.push(sortedDatas.indexOf(parents[i]));
 						}
+						return ids;
 					},
 					tempProperty = prePropertyNodeName;
 
@@ -785,6 +828,11 @@
 					} else {
 						gatherPasswordNeedMachine(i, null, nodeData, password_need_machines);
 					}
+				}
+				
+				// create sorted node datas
+				for (i = 0; i < sorted.length; i = i + 1) {
+					sortedDatas.push(sorted[i].nodeData);
 				}
 				
 				if (nodeListTable.hasOwnProperty(tempProperty)) {
@@ -803,8 +851,8 @@
 						nodeData = node.nodeData;
 						if (parents.hasOwnProperty(nodeData.varname)) {
 							// has parents
-							console.log(parents);
-							parentIDs = parentIDFunc(parents[nodeData.varname]);
+							console.log(parents, parents[nodeData.varname]);
+							parentIDs = parentIDFunc(sortedDatas, parents[nodeData.varname]);
 							script = script + exportTargetMachine(i, parentIDs, nodeData, password_need_machines);
 							script = script + exportOneNode(i, parentIDs, nodeData, isDryRun);
 						} else {
@@ -818,7 +866,7 @@
 					}
 				});
 			}, function (script) {
-				console.log("finish creating script:", script);
+				console.log("finish creating script:\n", script);
 				if (endCallback) {
 					endCallback(script);
 				}

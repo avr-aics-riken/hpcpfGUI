@@ -232,7 +232,7 @@ end
 function generateTargetConf(args_table)
 	for i, k in pairs(args_table) do
 		--print(i, k);
-		if next(k) then
+		if (i == 1) and next(k) then
 			for n, m in pairs(k) do
 				--print(n, m);
 				if n == "targetconf" then
@@ -245,7 +245,7 @@ end
 
 function getCores(args_table)
 	for i, k in pairs(args_table) do
-		if next(k) then
+		if (i == 1) and next(k) then
 			for n, m in pairs(k) do
 				if n == "cores" then
 					return m;
@@ -256,9 +256,21 @@ function getCores(args_table)
 	return 1;
 end
 
+function getInputNodes(args_table)
+	local list = {}
+	for i, k in pairs(args_table) do
+		if (i == 3) then
+			for n, m in pairs(k) do
+				table.insert(list, m);
+			end
+		end
+	end
+	return list;
+end
+
 function getNodes(args_table)
 	for i, k in pairs(args_table) do
-		if next(k) then
+		if (i == 1) and next(k) then
 			for n, m in pairs(k) do
 				if n == "nodes" then
 					return m;

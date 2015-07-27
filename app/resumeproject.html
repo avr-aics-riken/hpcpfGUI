@@ -8,21 +8,23 @@
 		<link rel="stylesheet" href="css/base.css">
 		<link rel="stylesheet" href="css/password_input.css">
 		<link rel="stylesheet" href="css/button.css">
-		<link rel="stylesheet" href="css/filebrowser.css">
+		<!--link rel="stylesheet" href="css/filebrowser.css"-->
+		<link rel="stylesheet" href="css/resumeproject.css">
 		<script src="socket.io/socket.io.js"></script>
 		<script type="text/javascript" src="js/RemoteFTP.js"></script>
 		<script type="text/javascript" src="js/password_input.js"></script>
 		<script type="text/javascript" src="js/resumeproject.js"></script>
 	</head>
-	<body onload="bootstrap()">
+	<body onload="window.resumeproject.init()">
 	<div class="header">
 		<div class="title"><span class="text_title">Resume Project</span></div>
 	</div>
-	
+
+	<div class="hostbrowser" id="regiterlist">
+	</div>
+		
 	<div class="popup_background" id="popup_background">
 		<div class="hostwrap">
-			<div class="hostbrowser" id="regiterlist">
-			</div>
 			<div id="confirm_button">
 				<button class="button_open" id="password_input_button_ok" type="button">
 					<span class="text_button_action">OK</span>
