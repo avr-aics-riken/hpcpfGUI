@@ -111,6 +111,8 @@
 		valueSelect.onchange = (function (nodeData, targets) {
 			return function (e) {
 				nodeData.value = targets[this.selectedIndex];
+				nodeListTable[nodeData.name] = nodeData;
+				save();
 			};
 		}(node, targets));
 		valueProp.appendChild(valueSelect);
@@ -673,6 +675,7 @@
 		nui.setTypeColorFunction(colorFunction);
 		nui.nodeClickEvent(function (nodeData) {
 			console.log("node cliecked");
+			save();
 			//updatePropertyDebug(nodeData);
 			updateProperty(nodeData);
 		});
@@ -779,6 +782,12 @@
 							nodeListTable[nodes.nodeData[i].name] = nodes.nodeData[i];
 						}
 					}
+					if (nodeListTable.hasOwnProperty(prePropertyNodeName)) {
+						updateProperty(nodeListTable[prePropertyNodeName]);
+					} else {
+						updateProperty(null);
+					}
+					console.log("NODES", nodes);
 					nui.clearNodes();
 					nui.makeNodes(nodes);
 				} else {

@@ -61,11 +61,13 @@
 		};
 		//if (window.editor_edit_view.edited) {
 		editor.saveFile(function () {
+			/*
 			if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
 				exec(runWorkflow);
 			} else {
-				exec(window.node_edit_view.executeWorkflow);
-			}
+			*/
+			exec(window.node_edit_view.executeWorkflow);
+			//}
 		});
 		/*
 		} else {
