@@ -163,7 +163,9 @@
 							nodeInput.name = inputElem.name_hr;
 						}
 						if (inputElem.hasOwnProperty('type') && inputElem.type === 'target_machine') {
-							nodeInput.target_machine_list = targetConfData;
+							if (targetConfData) {
+								nodeInput.target_machine_list = targetConfData;
+							}
 							targetElem = nodeInput;
 						}
 						node.input.push(nodeInput);
@@ -196,7 +198,7 @@
 						node.status = elem.status;
 					}
 					if (elem.hasOwnProperty('target')) {
-						if (targetElem) {
+						if (targetElem && targetConfData) {
 							for (i = 0; i < targetConfData.hpcpf.targets.length; i = i + 1) {
 								if (targetConfData.hpcpf.targets[i].type === elem.target) {
 									targetElem.value = targetConfData.hpcpf.targets[i];
@@ -537,22 +539,60 @@
 				console.error("reqDelete failed:" + e);
 			}
 		});
+		
+		function getCMDInfo(srcdir, callback) {
+			var files = [],
+				caseFiles = [],
+				cmdData,
+				node,
+				nodeList = [],
+				i,
+				k;
+			util.getFiles(srcdir, files);
+			for (i = 0; i < files.length; i = i + 1) {
+				if (files[i].type === "dir") {
+					caseFiles = [];
+					util.getFiles(files[i].path, caseFiles);
+
+					for (k = 0; k < caseFiles.length; k = k + 1) {
+						console.log(caseFiles[k]);
+						if (caseFiles[k].type === "file" && caseFiles[k].name === CMD_FILENAME) {
+							// found case dir
+							console.log("found case dir");
+							cmdData = fs.readFileSync(caseFiles[k].path, 'utf8');
+							node = makeNodeFromCMD(JSON.parse(cmdData), files[i].name, null, null);
+							if (node) {
+								nodeList.push(node);
+							}
+						}
+					}
+				}
+			}
+			if (callback) {
+				console.log("nodelist:", nodeList);
+				callback(null, nodeList);
+			}
+		}
 
 		socket.on('reqUpdateInformation', function () {
 			var pmdFile = path.join(sesstionTable[socket.id].dir, PMD_FILENAME),
+				srcdir = sesstionTable[socket.id].dir,
 				pmdData,
 				pmdStr;
 			console.log("reqUpdateInformation:" + pmdFile);
-			if (pmdFile && fs.existsSync(pmdFile)) {
-				console.log("reqUpdateInformation exists");
-				pmdData = fs.readFileSync(pmdFile);
-				try {
+			try {
+				if (pmdFile && fs.existsSync(pmdFile)) {
+					console.log("reqUpdateInformation exists");
+					pmdData = fs.readFileSync(pmdFile);
 					pmdStr = JSON.parse(pmdData);
-					//console.log(pmdStr);
-					socket.emit('updateInformation', JSON.stringify(pmdStr));
-				} catch (e) {
-					console.log("JSON parse error:" + pmdData);
+					// console.log("pmdstr", pmdStr);
 				}
+				//console.log(pmdStr);
+				getCMDInfo(srcdir, function (err, cmdStr) {
+					socket.emit('updateInformation', JSON.stringify(pmdStr), JSON.stringify(cmdStr));
+				});
+			} catch (e) {
+				console.log("JSON parse error:" + pmdData);
 			}
 		});
 		

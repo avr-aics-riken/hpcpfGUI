@@ -13,9 +13,9 @@
 			return "<div><a class='info_link' href='" + str + "' target='_blank'>" + str + "</a></div>";
 		} else if (isCase) {
 			if (str.length > 0 && str[str.length - 1] !== '/') {
-				return "<div><a class='info_link' href='#' onclick=\"window.editor_info_view.showFile('" + str + "/cif.json');\">" + str + "</a></div>";
+				return "<div><a class='info_link' href='#' onclick=\"window.editor_info_view.showFile('" + str + "/cmd.json');\">" + str + "</a></div>";
 			} else {
-				return "<div><a class='info_link' href='#' onclick=\"window.editor_info_view.showFile('" + str + "cif.json');\">" + str + "</a></div>";
+				return "<div><a class='info_link' href='#' onclick=\"window.editor_info_view.showFile('" + str + "cmd.json');\">" + str + "</a></div>";
 			}
 		} else {
 			return "<div><a class='info_link' href='#' onclick=\"window.editor_info_view.showFile('" + str + "');\">" + str + "</a></div>";
@@ -34,55 +34,65 @@
 	}
 	
 
-	editor.socket.on('updateInformation', function (data) {
-		var info = JSON.parse(data),
+	editor.socket.on('updateInformation', function (pmdStr, cmdStr) {
+		var pmdData = JSON.parse(pmdStr),
+			cmdData = JSON.parse(cmdStr),
 			elem,
 			elemKdb,
 			i;
-		//console.log(info);
+		//console.log("PMDDATA", pmdData);
+		//console.log("CMDDATA", cmdData);
 		$('info_text_area').style.display = "block";
 		$('info_opened_text_area').style.display = "none";
-		if (info.hasOwnProperty("hpcpf")) {
-			elem = info.hpcpf;
-			if (elem.hasOwnProperty('project_meta_data')) {
-				elem = elem.project_meta_data;
-				if (elem.hasOwnProperty("name_hr")) {
-					editor.setProjectName(elem.name_hr); // editor.js
-				}
-				if (elem.hasOwnProperty("description_hr")) {
-					$('info_description').innerHTML = elem.description_hr;
-				}
-				/*
-				if (elem.hasOwnProperty("workflow")) {
-					$('info_workflow').innerHTML = "";
-					for (i = 0; i < elem.workflow.length; i = i + 1) {
-						$('info_workflow').innerHTML += createInfoLink(elem.workflow[i], false);
+		if (pmdData) {
+			if (pmdData.hasOwnProperty("hpcpf")) {
+				elem = pmdData.hpcpf;
+				if (elem.hasOwnProperty('project_meta_data')) {
+					elem = elem.project_meta_data;
+					if (elem.hasOwnProperty("name_hr")) {
+						editor.setProjectName(elem.name_hr); // editor.js
 					}
+					if (elem.hasOwnProperty("description_hr")) {
+						$('info_description').innerHTML = elem.description_hr;
+					}
+					/*
+					if (elem.hasOwnProperty("workflow")) {
+						$('info_workflow').innerHTML = "";
+						for (i = 0; i < elem.workflow.length; i = i + 1) {
+							$('info_workflow').innerHTML += createInfoLink(elem.workflow[i], false);
+						}
+					}
+					if (elem.hasOwnProperty("case")) {
+						$('info_case').innerHTML = "";
+						for (i = 0; i < elem["case"].length; i = i + 1) {
+							$('info_case').innerHTML += createInfoLink(elem["case"][i], false, true);
+						}
+					}
+					if (elem.hasOwnProperty("kdb")) {
+						elemKdb = elem.kdb;
+						if (elemKdb.hasOwnProperty("base")) {
+							$('info_kdb_url').innerHTML = createInfoLink(elemKdb.base, true);
+						}
+						if (elemKdb.hasOwnProperty("changed")) {
+							$('info_kdb_change').innerHTML = elemKdb.changed.toString();
+						}
+						if (elemKdb.hasOwnProperty("details_of_changes")) {
+							$('info_kdb_detail_of_change').innerHTML = elemKdb.details_of_changes;
+						}
+					}
+					if (elem.hasOwnProperty("log")) {
+						if (elem.log.hasOwnProperty("conf")) {
+							$('info_log').innerHTML = createInfoLink(elem.log.conf, false);
+						}
+					}
+					*/
 				}
-				if (elem.hasOwnProperty("case")) {
-					$('info_case').innerHTML = "";
-					for (i = 0; i < elem["case"].length; i = i + 1) {
-						$('info_case').innerHTML += createInfoLink(elem["case"][i], false, true);
-					}
-				}
-				if (elem.hasOwnProperty("kdb")) {
-					elemKdb = elem.kdb;
-					if (elemKdb.hasOwnProperty("base")) {
-						$('info_kdb_url').innerHTML = createInfoLink(elemKdb.base, true);
-					}
-					if (elemKdb.hasOwnProperty("changed")) {
-						$('info_kdb_change').innerHTML = elemKdb.changed.toString();
-					}
-					if (elemKdb.hasOwnProperty("details_of_changes")) {
-						$('info_kdb_detail_of_change').innerHTML = elemKdb.details_of_changes;
-					}
-				}
-				if (elem.hasOwnProperty("log")) {
-					if (elem.log.hasOwnProperty("conf")) {
-						$('info_log').innerHTML = createInfoLink(elem.log.conf, false);
-					}
-				}
-				*/
+			}
+		}
+		$('info_case').innerHTML = "";
+		for (i = 0; i < cmdData.length; i = i + 1) {
+			if (cmdData[i].hasOwnProperty('name_hr')) {
+				$('info_case').innerHTML += createInfoLink(cmdData[i].name_hr, false, true);
 			}
 		}
 	});
