@@ -1,0 +1,279 @@
+.input_info{
+	text-align:left;
+	font-size:16px;
+	padding-left:10px;
+	margin-right:30px;
+}
+
+.text_label{
+	margin-bottom:5px;
+	color:#4d4d4d;
+	font-size:16px;
+	font-weight:bolder;
+	height:24px;
+	line-height:24px;
+}
+
+#error_output{
+	margin-top:10px;
+}
+
+#input_hostname{
+	width:200px;
+}
+
+#input_id{
+	width:100px;
+}
+
+#input_password{
+	width:100px;
+}
+#input_password:disabled {
+	background-color: gray;
+}
+
+#input_passphrase{
+	width:100px;
+}
+#input_passphrase:disabled {
+	background-color: gray;
+}
+
+#input_key{
+	width:100px;
+}
+#input_key:disabled {
+	background-color: gray;
+}
+
+#browse_button:disabled {
+	background-color: rgba(175, 225, 134, 1.0);
+}
+
+/* host browser */
+.hostbrowser{
+	margin:auto;
+	margin-left:15px;
+	margin-top:10px;
+	border:solid;
+	border-radius:20px;
+	border-width:12px;
+	border-color:#72ca2a;
+	background-color:#4d4d4d;
+	width:700px;
+	min-width:550px;
+	height:300px;
+	overflow:auto;
+}
+
+.hostitem{
+	border:solid;
+	border-width:2px;
+	border-radius:5px;
+	border-color:transparent;
+	height:70px;
+	padding-top:auto;
+	padding-bottom:auto;
+}
+
+.hostlabel{
+	line-height:70px;
+	text-align:left;
+	font-size:18px;
+	color:#fff;
+	vertical-align:baseline;
+	padding-left:10px;
+	float:left;
+	width:400px;
+	margin-left:10px;
+	margin-bottom:auto;
+	height:65px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+
+.buttons_remotehost{
+	text-align:center;
+	width:410px;
+	margin-left:400px;
+	margin-top:200px;
+}
+
+.connecttest{
+	border-radius:3px;
+	margin-top:auto;
+	margin-bottom:auto;
+	margin-right:0px;
+	width:95px;
+	height:65px;
+	z-index:100;
+	float:right;
+	background-image:url("../image/button_connect_test.png");
+}
+
+.connecttest:active{
+	background-image:url("../image/button_connect_test_press.png");
+}
+.connecttest_ok{
+	background-image:url("../image/button_connect_ok.png");
+}
+.connecttest_ok:active{
+	background-image:url("../image/button_connect_ok_press.png");
+}
+
+.connecttest_fail{
+	background-image:url("../image/button_connect_fail.png");
+}
+.connecttest_fail:active{
+	background-image:url("../image/button_connect_fail_press.png");
+}
+
+#idkey {
+	padding-top:15px;
+}
+
+.activefileitem {
+	background: #555;
+}
+
+.dustbox2{
+	margin-right:0px;
+	margin-top:15px;
+	width:32px;
+	height:32px;
+	background-image:url("../image/icon_dustbox.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	z-index:100;
+	float:right;
+}
+.dustbox_ok2{
+	margin-right:0px;
+	margin-top:15px;
+	width:32px;
+	height:32px;
+	background-image:url("../image/icon_dustbox_ok.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	z-index:100;
+	float:right;
+}
+
+.auth_area {
+	width : 500px;
+	height : 150px;
+}
+
+.auth_area_password {
+	width : 315px;
+	height : 60px;
+	padding-left : 20px;
+}
+
+.auth_area_keyfile {
+	width : 620px;
+	height : 60px;
+	padding-left : 20px;
+}
+
+.auth_area_content {
+	float : right;
+}
+
+.password_radio {
+	float : left;
+	position : relative;
+	top : 35px;
+}
+.password_type {
+	position : relative;
+	top : 30px;
+}
+
+.keyfile_radio {
+	float : left;
+	position : relative;
+	top : 35px;
+}
+.keyfile_type {
+	position : relative;
+	top : 30px;
+}
+
+.passphrase_input {
+	float : left;
+}
+
+.keyfile_input {
+	float : right;
+}
+
+.button_browsekey {
+	float : right;
+}
+
+.pane_top_innfer {
+	float: left;
+	margin-left : 60px;
+	height : 350px;
+}
+
+.auth_area_content {
+	margin-right :40px;
+}
+
+.change_mode_area_container {
+	position: absolute;
+	left:0px;
+	min-width:800px;
+	width:100%;
+	text-align: right;
+}
+
+.change_mode_area {
+	position: relative;
+	right: 10px;
+	top:90px;
+	min-width:800px;
+	width:100%;
+	height:-10px;
+	margin:0px;
+}
+
+.button_file_browser {
+	width:71px;
+	height:47px;
+	right : 140px;
+	position:relative;
+	top:-145px;
+	background-image:url("../image/button_bg_action_upper.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	font-size:11px;
+	font-weight:300;
+}
+
+.button_change_mode:active{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_change_mode:disabled{
+	background-image:url("../image/button_bg_action_upper_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.nodePropertyText {
+	margin-left : 10px;
+	margin-top : 15px;
+	width : 80px;
+}
+
+.password_radio_container {
+	padding-top : 10px;
+	height : 50px;
+}
