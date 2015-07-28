@@ -14,8 +14,10 @@
 		stopButtonURL = "url(../image/button_bg_action_stop.png)",
 		executeButton = $('button_execute_'),
 		dryrunButton = $('button_dryrun'),
+		cleanButton = $('button_clean'),
 		executeProject,
-		dryrunProject;
+		dryrunProject,
+		cleanProject;
 	
 	
 	function clearOutput() {
@@ -97,6 +99,10 @@
 		};
 		exec(window.node_edit_view.dryrunWorkflow);
 	};
+	
+	cleanProject = function () {
+		console.log("clean project");
+	};
 
 	editor.socket.on('connect', function () {
 	});
@@ -127,6 +133,7 @@
 	editor.socket.on('init', function () {
 		executeButton.onclick = executeProject;
 		dryrunButton.onclick = dryrunProject;
+		cleanButton.onclick = cleanProject;
 		//$('button_stop_').onclick = stopProject;
 	});
 	
