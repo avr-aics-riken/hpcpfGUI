@@ -65,6 +65,11 @@
 				nodeData[name] = txt.value;
 			};
 		}(node, textProp)));
+		
+		textProp.onchange = function (evt) {
+			save();
+		};
+		
 		return itemRow;
 	}
 	
@@ -495,15 +500,26 @@
 		
 		for (i in json) {
 			if (json.hasOwnProperty(i)) {
+				if (i === 'userid') {
+					console.log("userid", json[i]);
+				}
 				if (typeof json[i] === "object") {
-					res = res + "\t" + i + " = " + to_lua_json(json[i]);
+					if (json[i]) {
+						res = res + "\t" + i + ' = ' + to_lua_json(json[i]);
+					} else {
+						res = res + "\t" + i + ' = ""';
+					}
 					if (index === (jsonLength - 1)) {
 						res = res + '\n';
 					} else {
 						res = res + ',\n';
 					}
 				} else {
-					res = res + "\t" + i + ' = "' + json[i];
+					if (json[i]) {
+						res = res + "\t" + i + ' = "' + json[i];
+					} else {
+						res = res + "\t" + i + ' = "';
+					}
 					if (index === (jsonLength - 1)) {
 						res = res + '"\n';
 					} else {
@@ -535,9 +551,9 @@
 				} else {
 					res = res + "\t" + json[i];
 					if (index === (jsonLength - 1)) {
-						res = res + '"\n';
+						res = res + '\n';
 					} else {
-						res = res + '",\n';
+						res = res + ',\n';
 					}
 				}
 				index = index + 1;
@@ -555,6 +571,18 @@
 			hasTargetMachine = false;
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			innode = nodeData.input[i];
+			if (innode.type === 'target_machine') {
+				if (innode.hasOwnProperty('value') && innode.value) {
+					target_machine.targetconf = innode.value;
+				}
+				if (innode.hasOwnProperty('cores') && innode.cores) {
+					target_machine.cores = innode.cores;
+				}
+				if (innode.hasOwnProperty('nodes') && innode.nodes) {
+					target_machine.nodes = innode.nodes;
+				}
+				hasTargetMachine = true;
+			}
 		}
 		if (!hasTargetMachine) {
 			target_machine.targetconf = {
@@ -571,14 +599,24 @@
 	}
 	
 	function getValueFromNode(nodeParam) {
-		var res;
+		var res = {},
+			i;
 		if (nodeParam.hasOwnProperty('type')) {
 			if (nodeParam.type === 'target_machine') {
-				return null;
+				if (nodeParam.hasOwnProperty('value') && nodeParam.value) {
+					res.value = nodeParam.value;
+				}
+				if (nodeParam.hasOwnProperty('cores') && nodeParam.cores) {
+					res.cores = nodeParam.cores;
+				}
+				if (nodeParam.hasOwnProperty('nodes') && nodeParam.nodes) {
+					res.nodes = nodeParam.nodes;
+				}
+				return to_lua_json(res);
 			} else if (nodeParam.type === 'DFI') {
-				return nodeParam.file;
+				return "'" + nodeParam.file + "'";
 			} else {
-				return nodeParam.value;
+				return "'" + nodeParam.value + "'";
 			}
 		}
 		return null;
@@ -591,8 +629,8 @@
 			innode,
 			strid = id.toString(),
 			strdryrun = isDryRun.toString(),
-			parentVar = null,
-			parentVars = {},
+			inputVar = null,
+			inputVars = {},
 			nodeVal,
 			input,
 			exec,
@@ -600,22 +638,23 @@
 			resultPrefix = "luaresult_";
 
 		console.log(nodeData.varname, inputIDs, nodeData);
+		// create input scripts
 		if (inputIDs) {
 			for (i = 0; i < inputIDs.length; i = i + 1) {
 				if (inputIDs[i] !== null) {
-					parentVar = resultPrefix + (inputIDs[i]).toString();
-					parentVars[inputPrefix + (parseInt(i, 10) + 1)] = parentVar + "[" + (i + 1).toString() + "]";
+					inputVar = resultPrefix + (inputIDs[i]).toString();
+					inputVars[inputPrefix + (parseInt(i, 10) + 1)] = inputVar + "[" + (i + 1).toString() + "]";
 				} else {
 					nodeVal = getValueFromNode(nodeData.input[i]);
 					if (nodeVal) {
-						parentVars[inputPrefix + (parseInt(i, 10) + 1)] = "'" + nodeVal + "'";
+						inputVars[inputPrefix + (parseInt(i, 10) + 1)] = nodeVal;
 					}
 				}
 			}
 		}
 		console.log("inputIDs", inputIDs);
-		console.log("parentVars", parentVars);
-		input = "local " + inputPrefix + strid + " = " + to_lua_list(parentVars).split('"').join('') + ";\n";
+		console.log("inputVars", inputVars);
+		input = "local " + inputPrefix + strid + " = " + to_lua_list(inputVars) + ";\n";
 		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ")\n";
 		return input + exec;
 	}
