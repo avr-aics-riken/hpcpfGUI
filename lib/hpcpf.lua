@@ -328,6 +328,15 @@ function getInputNodes(args_table)
 	return list;
 end
 
+function createDFIOutputs(fileList)
+	local list = {}
+	for i, k in pairs(fileList) do
+		local fileEntry = { file = k };
+		table.insert(list, fileEntry);
+	end
+	return list;
+end
+
 function getNodes(args_table)
 	for i, k in pairs(args_table) do
 		if (i == 1) and next(k) then
