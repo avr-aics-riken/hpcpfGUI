@@ -295,7 +295,7 @@ function generateTargetConf(args_table)
 		if (i == 1) and next(k) then
 			for n, m in pairs(k) do
 				--print(n, m);
-				if n == "targetconf" then
+				if n == "machine" then
 					return m;
 				end
 			end

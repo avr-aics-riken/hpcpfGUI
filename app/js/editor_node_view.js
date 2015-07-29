@@ -105,17 +105,17 @@
 			}
 			valueSelect.appendChild(optionElem);
 			
-			if (node.value && node.value.hasOwnProperty('type')) {
-				if (node.value.type === target.type) {
+			if (node.machine && node.machine.hasOwnProperty('type')) {
+				if (node.machine.type === target.type) {
 					initialIndex = i;
 				}
 			}
 		}
 		valueSelect.options[initialIndex].selected = "true";
-		node.value = targets[initialIndex];
+		node.machine = targets[initialIndex];
 		valueSelect.onchange = (function (nodeData, targets) {
 			return function (e) {
-				nodeData.value = targets[this.selectedIndex];
+				nodeData.machine = targets[this.selectedIndex];
 				nodeListTable[nodeData.name] = nodeData;
 				save();
 			};
@@ -293,6 +293,7 @@
 		};
 	}
 
+	/*
 	function createSelectNodeList(callback, mx, my) {
 		var tray = document.createElement('div'),
 			addbtn = document.createElement('button'),
@@ -345,6 +346,7 @@
 		updateSelectNodeList(listElement, '');
 		return tray;
 	}
+	*/
 	
 	function updatePropertyDebug(nodeData) {
 		var property = document.getElementById('nodeProperty'),
@@ -385,12 +387,12 @@
 	
 	function makePropertyRow(type, key, val, inputNode) {
 		//console.log("type key val", type, key, val);
-		if (key === 'value') {
+		if (key === 'machine') {
 			if (type === 'target_machine') {
 				return makeTargetMachineNode(key, val, inputNode);
-			} else {
-				return [makeItemNode(key, val)];
 			}
+		} else if (key === 'value') {
+			return [makeItemNode(key, val)];
 		} else if (key === 'cores') {
 			if (type === 'target_machine') {
 				return [makeItemTextNode(key, val, inputNode)];
@@ -456,8 +458,8 @@
 							if (ioval.hasOwnProperty('type')) {
 								inputtype = ioval.type;
 							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('value')) {
-								ioval.value = "";
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
+								ioval.machine = "";
 							}
 							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
 								ioval.cores = 1;
@@ -572,8 +574,8 @@
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			innode = nodeData.input[i];
 			if (innode.type === 'target_machine') {
-				if (innode.hasOwnProperty('value') && innode.value) {
-					target_machine.targetconf = innode.value;
+				if (innode.hasOwnProperty('machine') && innode.machine) {
+					target_machine.machine = innode.machine;
 				}
 				if (innode.hasOwnProperty('cores') && innode.cores) {
 					target_machine.cores = innode.cores;
@@ -585,7 +587,7 @@
 			}
 		}
 		if (!hasTargetMachine) {
-			target_machine.targetconf = {
+			target_machine.machine = {
 				type : "local",
 				server : 'localhost',
 				workpath : "~/",
@@ -598,25 +600,16 @@
 		return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
 	}
 	
-	function getValueFromNode(nodeParam) {
+	function getValueFromNode(id, nodeParam) {
 		var res = {},
 			i;
 		if (nodeParam.hasOwnProperty('type')) {
 			if (nodeParam.type === 'target_machine') {
-				if (nodeParam.hasOwnProperty('value') && nodeParam.value) {
-					res.value = nodeParam.value;
-				}
-				if (nodeParam.hasOwnProperty('cores') && nodeParam.cores) {
-					res.cores = nodeParam.cores;
-				}
-				if (nodeParam.hasOwnProperty('nodes') && nodeParam.nodes) {
-					res.nodes = nodeParam.nodes;
-				}
-				return to_lua_json(res);
+				return "luajson_" + id.toString();
 			} else if (nodeParam.type === 'DFI') {
-				return "'" + nodeParam.file + "'";
+				return nodeParam;//"'" + nodeParam.file + "'";
 			} else {
-				return "'" + nodeParam.value + "'";
+				return nodeParam;//"'" + nodeParam.value + "'";
 			}
 		}
 		return null;
@@ -645,7 +638,7 @@
 					inputVar = resultPrefix + (inputIDs[i]).toString();
 					inputVars[inputPrefix + (parseInt(i, 10) + 1)] = inputVar + "[" + (i + 1).toString() + "]";
 				} else {
-					nodeVal = getValueFromNode(nodeData.input[i]);
+					nodeVal = getValueFromNode(id, nodeData.input[i]);
 					if (nodeVal) {
 						inputVars[inputPrefix + (parseInt(i, 10) + 1)] = nodeVal;
 					}
@@ -679,6 +672,7 @@
 		}
 	}
 
+	/*
 	function showAddNodeMenu(show, sx, sy, popupmode) {
 		var callback = null;
 		if (show === true) {
@@ -704,6 +698,7 @@
 			popupNodeList = null;
 		}
 	}
+	*/
 	
 	/*
 	function doubleClickCanvas(e) {
