@@ -433,6 +433,7 @@
 				console.log("reqFileSave failed:" + e);
 			}
 		});
+		
 		socket.on('reqNewFile', function (sdata) {
 			console.log('reqNewFile');
 			//var srcdir = sesstionTable[socket.id].dir,
@@ -540,14 +541,13 @@
 			}
 		});
 		
-		function getCMDInfo(srcdir, callback) {
+		function getCMDFileList(srcdir) {
 			var files = [],
 				caseFiles = [],
-				cmdData,
-				node,
-				nodeList = [],
+				caseFileList = {},
 				i,
 				k;
+				
 			util.getFiles(srcdir, files);
 			for (i = 0; i < files.length; i = i + 1) {
 				if (files[i].type === "dir") {
@@ -555,16 +555,28 @@
 					util.getFiles(files[i].path, caseFiles);
 
 					for (k = 0; k < caseFiles.length; k = k + 1) {
-						console.log(caseFiles[k]);
 						if (caseFiles[k].type === "file" && caseFiles[k].name === CMD_FILENAME) {
 							// found case dir
-							console.log("found case dir");
-							cmdData = fs.readFileSync(caseFiles[k].path, 'utf8');
-							node = makeNodeFromCMD(JSON.parse(cmdData), files[i].name, null, null);
-							if (node) {
-								nodeList.push(node);
-							}
+							caseFileList[files[i].name] = caseFiles[k].path;
 						}
+					}
+				}
+			}
+			return caseFileList;
+		}
+		
+		function getCMDInfo(srcdir, callback) {
+			var cmdFileList = getCMDFileList(srcdir),
+				nodeList = [],
+				node,
+				cmdData,
+				i;
+			for (i in cmdFileList) {
+				if (cmdFileList.hasOwnProperty(i)) {
+					cmdData = fs.readFileSync(cmdFileList[i], 'utf8');
+					node = makeNodeFromCMD(JSON.parse(cmdData), i, null, null);
+					if (node) {
+						nodeList.push(node);
 					}
 				}
 			}
@@ -573,23 +585,84 @@
 				callback(null, nodeList);
 			}
 		}
+		
+		function cleanCase(caseName) {
+			var srcdir = sesstionTable[socket.id].dir,
+				cmdFileList = getCMDFileList(srcdir),
+				cleanList,
+				cmdData,
+				cmdPath,
+				target,
+				k;
+			
+			console.log("cleanCase", caseName);
+			if (cmdFileList.hasOwnProperty(caseName)) {
+				cmdPath = cmdFileList[caseName];
+				cmdData = fs.readFileSync(cmdPath, 'utf8');
+				cmdData = JSON.parse(cmdData);
+				if (cmdData.hasOwnProperty('hpcpf')) {
+					if (cmdData.hpcpf.hasOwnProperty('case_meta_data')) {
+						if (cmdData.hpcpf.case_meta_data.hasOwnProperty('clean')) {
+							cleanList = cmdData.hpcpf.case_meta_data.clean;
+							console.log("CLEANLIST", cleanList);
+							for (k = 0; k < cleanList.length; k = k + 1) {
+								if (util.isRelative(cleanList[k].path)) {
+									target = path.join(srcdir, caseName);
+									target = path.join(target, cleanList[k].path);
+								} else {
+									target = cleanList[k].path;
+								}
+								
+								if (cleanList[k].type === 'dir') {
+									console.log("try delete fodler:" + target);
+									//util.deleteFolderRecursive(target);
+									//fs.rmdirSync(target);
+								} else {
+									console.log("try delete file:" + target);
+									//fs.unlinkSync(target);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		function cleanWorkflow(endCallback) {
+			var srcdir = sesstionTable[socket.id].dir,
+				cmdFileList = getCMDFileList(srcdir),
+				cleanList = [],
+				cleanData = {},
+				i,
+				k;
+			
+			console.log("cleanWorkflow");
+			for (i in cmdFileList) {
+				if (cmdFileList.hasOwnProperty(i)) {
+					cleanCase(i);
+				}
+			}
+			if (endCallback) {
+				endCallback();
+			}
+		}
 
 		socket.on('reqUpdateInformation', function () {
 			var pmdFile = path.join(sesstionTable[socket.id].dir, PMD_FILENAME),
 				srcdir = sesstionTable[socket.id].dir,
-				pmdData,
-				pmdStr;
+				pmdStr,
+				pmdData;
 			console.log("reqUpdateInformation:" + pmdFile);
 			try {
 				if (pmdFile && fs.existsSync(pmdFile)) {
 					console.log("reqUpdateInformation exists");
-					pmdData = fs.readFileSync(pmdFile);
-					pmdStr = JSON.parse(pmdData);
-					// console.log("pmdstr", pmdStr);
+					pmdStr = fs.readFileSync(pmdFile);
+					pmdData = JSON.parse(pmdStr);
+					// console.log("pmdstr", pmdData);
 				}
-				//console.log(pmdStr);
-				getCMDInfo(srcdir, function (err, cmdStr) {
-					socket.emit('updateInformation', JSON.stringify(pmdStr), JSON.stringify(cmdStr));
+				//console.log(pmdData);
+				getCMDInfo(srcdir, function (err, cmdData) {
+					socket.emit('updateInformation', JSON.stringify(pmdData), JSON.stringify(cmdData));
 				});
 			} catch (e) {
 				console.log("JSON parse error:" + pmdData);
@@ -718,6 +791,17 @@
 			} else {
 				socket.emit('stdout', 'Unknown file type. -> ' + data.file);
 			}
+		});
+		
+		socket.on('cleanWorkflow', function () {
+			var processspawn = sesstionTable[socket.id].proc;
+			if (processspawn) {
+				socket.emit('doneCleanWorkflow', false);
+				return;
+			}
+			cleanWorkflow(function () {
+				socket.emit('doneCleanWorkflow', true);
+			});
 		});
 
 		socket.on('run', function (data) {

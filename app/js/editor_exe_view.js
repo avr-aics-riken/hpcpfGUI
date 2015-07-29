@@ -101,7 +101,7 @@
 	};
 	
 	cleanProject = function () {
-		console.log("clean project");
+		editor.socket.emit('cleanWorkflow');
 	};
 
 	editor.socket.on('connect', function () {

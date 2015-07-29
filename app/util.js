@@ -32,10 +32,10 @@ function getFiles(dir, list) {
 			try {
 				if (fs.statSync(name).isDirectory()) {
 					//getFiles(name,list);
-					console.log(name);
+					//console.log(name);
 					list.push({"name" : files[i], "type" : "dir", "path" : name});
 				} else if (files[i].substring(0, 1) !== '.') {
-					console.log(name);
+					//console.log(name);
 					list.push({"name" : files[i], "type" : "file", "path" : name});
 				}
 			} catch (ex) {
