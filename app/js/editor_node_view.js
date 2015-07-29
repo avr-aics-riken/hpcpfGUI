@@ -604,7 +604,7 @@
 			for (i = 0; i < parentIDs.length; i = i + 1) {
 				if (parentIDs[i] !== null) {
 					parentVar = resultPrefix + (parentIDs[i]).toString();
-					parentVars[inputPrefix + (parseInt(i, 10) + 1)] = parentVar;
+					parentVars[inputPrefix + (parseInt(i, 10) + 1)] = parentVar + "[" + (i + 1).toString() + "]";
 				} else {
 					nodeVal = getValueFromNode(nodeData.input[i]);
 					if (nodeVal) {
