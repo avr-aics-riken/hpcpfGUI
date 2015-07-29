@@ -626,6 +626,13 @@
 					}
 				}
 			}
+			// delete cei.json
+			target = path.join(srcdir, caseName);
+			target = path.join(target, CEI_FILENAME);
+			if (fs.existsSync(target)) {
+				console.log("delete:", target);
+				fs.unlinkSync(target);
+			}
 		}
 		
 		function cleanWorkflow(endCallback) {
