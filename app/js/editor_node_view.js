@@ -147,6 +147,7 @@
 		nui.makeNodes(nodeData);
 	}
 	
+	/*
 	function updateNode(nodename) {
 		var node = nodeListTable[nodename], // node genearated from case
 			nodeData = nui.getNodeData(),
@@ -163,16 +164,6 @@
 				if (nodeData.nodeData[i].varname === node.varname) {
 					instNode = clone(node);
 					data = nodeData.nodeData[i];
-					/*
-					for (k in instNode) {
-						if (instNode.hasOwnProperty(k)) {
-							if (data.hasOwnProperty(k)) {
-								//instNode[k] = data[k];
-								//console.log("aaaa", instNode[k], data[k]);
-							}
-						}
-					}
-					*/
 					posx = nodeData.nodeData[i].pos[0];
 					posy = nodeData.nodeData[i].pos[1];
 					canErase = nodeData.nodeData[i].canErase;
@@ -186,6 +177,7 @@
 		nui.clearNodes();
 		nui.makeNodes(nodeData);
 	}
+	*/
 	
 	function deleteNode(node) {
 		var nodeData = nui.getNodeData(),
@@ -293,61 +285,6 @@
 		};
 	}
 
-	/*
-	function createSelectNodeList(callback, mx, my) {
-		var tray = document.createElement('div'),
-			addbtn = document.createElement('button'),
-			txt = document.createElement('input'),
-			listElement = document.createElement('select'),
-			item,
-			name,
-			i,
-			width = '100%';
-		
-		addbtn.classList.add('menuButtonClass');
-		addbtn.classList.add('noneselect');
-		addbtn.classList.add('nodeAddButton');
-		addbtn.innerHTML = 'Add';
-		tray.appendChild(addbtn);
-		tray.appendChild(txt);
-		tray.appendChild(document.createElement('div'));
-		tray.appendChild(listElement);
-		txt.setAttribute('type', 'input');
-		txt.setAttribute('placeholder', 'filter...');
-		txt.className = "nodeFilterInput";
-		//txt.style.width = width;
-		listElement.style.width = width;
-		listElement.setAttribute('size', 15);
-		listElement.setAttribute('name', 'NodeList');
-		listElement.className = 'selectNodeList';
-		addbtn.addEventListener('click', addSystemNode(listElement, callback, mx, my));
-		
-		txt.timer    = null;
-		txt.prev_val = txt.value;
-		txt.new_val  = '';
-		txt.addEventListener("focus", (function (listElement, txt) {
-			return function () {
-				window.clearInterval(txt.timer);
-				txt.timer = window.setInterval(function () {
-					txt.new_val = txt.value;
-					if (txt.prev_val !== txt.new_val) {
-						updateSelectNodeList(listElement, txt.new_val);
-					}
-					txt.prev_val = txt.new_val;
-				}, 10);
-			};
-		}(listElement, txt)), false);
-		txt.addEventListener("blur", (function (listElement, txt) {
-			return function () {
-				window.clearInterval(txt.timer);
-			};
-		}(listElement, txt)), false);
-		
-		updateSelectNodeList(listElement, '');
-		return tray;
-	}
-	*/
-	
 	function updatePropertyDebug(nodeData) {
 		var property = document.getElementById('nodeProperty'),
 			key,
@@ -671,44 +608,6 @@
 			}
 		}
 	}
-
-	/*
-	function showAddNodeMenu(show, sx, sy, popupmode) {
-		var callback = null;
-		if (show === true) {
-			if (popupmode) {
-				callback = function () {
-					document.body.removeChild(popupNodeList);
-					popupNodeList = null;
-				};
-			}
-			popupNodeList = createSelectNodeList(callback, sx, sy);
-			popupNodeList.setAttribute('style', 'position:absolute;top:' + sy + 'px;left:' + sx + 'px');
-			popupNodeList.className = "popupNodeList";
-			document.body.appendChild(popupNodeList);
-			
-			// filter focus
-			if (popupmode) {
-				popupNodeList.children[1].focus();
-			}
-		} else {
-			if (popupNodeList !== null) {
-				document.body.removeChild(popupNodeList);
-			}
-			popupNodeList = null;
-		}
-	}
-	*/
-	
-	/*
-	function doubleClickCanvas(e) {
-		showAddNodeMenu(true, e.clientX, e.clientY, true);
-	}
-	function clickCanvas(e) {
-		//console.log(e.clientX, e.clientY);
-		showAddNodeMenu(false);
-	}
-	*/
 	
 	function init() {
 		var draw = SVG('nodecanvas'),
@@ -761,6 +660,7 @@
 		};
 	}
 	
+	/*
 	function reload() {
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.once('reloadNodeList', function (caseNodeList) {
@@ -796,6 +696,7 @@
 			}
 		});
 	}
+	*/
 	
 	function save(endCallback) {
 		var data = nui.getNodeData(),
@@ -962,7 +863,7 @@
 		return executeWorkflow(true, endcallback);
 	};
 	window.node_edit_view.init = init;
-	window.node_edit_view.reload = reload;
+	//window.node_edit_view.reload = reload;
 	window.node_edit_view.save = save;
 	window.node_edit_view.load = load;
 	
