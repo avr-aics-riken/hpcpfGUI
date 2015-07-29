@@ -557,18 +557,20 @@ function svgNodeUI(draw) {
 						if (node.plugConnectors.hasOwnProperty(i)) {
 							connector = node.plugConnectors[i];
 							if (connector.type === 'NodeConnector') {
+								if (!parents.hasOwnProperty(varname)) {
+									parents[varname] = [];
+								}
 								if (plugArray.hasOwnProperty(connector.varname)) {
 									nextConnector = plugArray[connector.varname];
 									if (nextConnector.hasOwnProperty('parentNode')) {
 										if (!visitFunc(nextConnector.parentNode.nodeData.varname, nodeChecks)) {
 											return false;
 										} else {
-											if (!parents.hasOwnProperty(varname)) {
-												parents[varname] = [];
-											}
 											parents[varname].push(nextConnector.parentNode.nodeData);
 										}
 									}
+								} else {
+									parents[varname].push(null);
 								}
 							}
 						}

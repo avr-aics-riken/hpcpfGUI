@@ -489,6 +489,10 @@
 			index = 0,
 			jsonLength = Object.keys(json).length;
 		
+		if (!json) {
+			return "''";
+		}
+		
 		for (i in json) {
 			if (json.hasOwnProperty(i)) {
 				if (typeof json[i] === "object") {
@@ -542,34 +546,6 @@
 		res = res + " }";
 		return res;
 	}
-
-	// local result_0 = executeCASE(name, luajson_0, isDryRun);
-	// result_0 is a table of { node_varname : value, node_varname : value ... }
-	function exportOneNode(id, parentIDs, nodeData, isDryRun) {
-		var i,
-			innode,
-			strid = id.toString(),
-			strdryrun = isDryRun.toString(),
-			parentVar = null,
-			parentVars = {},
-			input,
-			exec,
-			inputPrefix = "luainput_",
-			resultPrefix = "luaresult_";
-
-		console.log(nodeData.varname, parentIDs, nodeData);
-		if (parentIDs) {
-			for (i = 0; i < parentIDs.length; i = i + 1) {
-				parentVar = resultPrefix + (parentIDs[i]).toString();
-				parentVars[inputPrefix + (parseInt(i, 10) + 1)] = parentVar;
-			}
-		}
-		console.log("parentIDs", parentIDs);
-		console.log("parentVars", parentVars);
-		input = "local " + inputPrefix + strid + " = " + to_lua_list(parentVars).split('"').join('') + ";\n";
-		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ")\n";
-		return input + exec;
-	}
 	
 	// local luajson_0 = { target_machine };
 	function exportTargetMachine(id, parentIDs, nodeData) {
@@ -579,18 +555,6 @@
 			hasTargetMachine = false;
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			innode = nodeData.input[i];
-			if (innode.type === 'target_machine') {
-				if (innode.hasOwnProperty('value') && innode.value) {
-					target_machine.targetconf = innode.value;
-				}
-				if (innode.hasOwnProperty('cores') && innode.cores) {
-					target_machine.cores = innode.cores;
-				}
-				if (innode.hasOwnProperty('nodes') && innode.nodes) {
-					target_machine.nodes = innode.nodes;
-				}
-				hasTargetMachine = true;
-			}
 		}
 		if (!hasTargetMachine) {
 			target_machine.targetconf = {
@@ -604,6 +568,65 @@
 			target_machine.nodes = 1;
 		}
 		return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
+	}
+	
+	function getValueFromNode(nodeParam) {
+		var res;
+		if (nodeParam.hasOwnProperty('type')) {
+			if (nodeParam.type === 'target_machine') {
+				return null;
+			} else if (nodeParam.type === 'DFI') {
+				return nodeParam.file;
+			} else {
+				return nodeParam.value;
+			}
+		}
+		return null;
+	}
+
+	// local result_0 = executeCASE(name, luajson_0, isDryRun);
+	// result_0 is a table of { node_varname : value, node_varname : value ... }
+	function exportOneNode(id, parentIDs, nodeData, isDryRun) {
+		var i,
+			innode,
+			strid = id.toString(),
+			strdryrun = isDryRun.toString(),
+			parentVar = null,
+			parentVars = {},
+			nodeVal,
+			input,
+			exec,
+			inputPrefix = "luainput_",
+			resultPrefix = "luaresult_";
+
+		console.log(nodeData.varname, parentIDs, nodeData);
+		if (parentIDs) {
+			for (i = 0; i < parentIDs.length; i = i + 1) {
+				if (parentIDs[i] !== null) {
+					parentVar = resultPrefix + (parentIDs[i]).toString();
+					parentVars[inputPrefix + (parseInt(i, 10) + 1)] = parentVar;
+				} else {
+					nodeVal = getValueFromNode(nodeData.input[i]);
+					if (nodeVal) {
+						parentVars[inputPrefix + (parseInt(i, 10) + 1)] = "'" + nodeVal + "'";
+					}
+				}
+			}
+		} else {
+			// root node. add all params.
+			for (i = 0; i < nodeData.input.length; i = i + 1) {
+				console.log("ROOTPARAM:", i, nodeData.input[i]);
+				nodeVal = getValueFromNode(nodeData.input[i]);
+				if (nodeVal) {
+					parentVars[inputPrefix + (parseInt(i, 10) + 1)] = "'" + nodeVal + "'";
+				}
+			}
+		}
+		console.log("parentIDs", parentIDs);
+		console.log("parentVars", parentVars);
+		input = "local " + inputPrefix + strid + " = " + to_lua_list(parentVars).split('"').join('') + ";\n";
+		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ")\n";
+		return input + exec;
 	}
 	
 	// gather password,passphrase machine
@@ -829,11 +852,17 @@
 					sortedDatas = [],
 					parentIDFunc = function (sortedDatas, parents) {
 						var ids = [],
-							i;
+							i,
+							index;
 						
 						//console.log("sorted", sortedDatas);
 						for (i = 0; i < parents.length; i = i + 1) {
-							ids.push(sortedDatas.indexOf(parents[i]));
+							index = sortedDatas.indexOf(parents[i]);
+							if (index >= 0) {
+								ids.push(index);
+							} else {
+								ids.push(null);
+							}
 						}
 						return ids;
 					},
