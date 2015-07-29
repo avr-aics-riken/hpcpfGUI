@@ -548,7 +548,7 @@
 	}
 	
 	// local luajson_0 = { target_machine };
-	function exportTargetMachine(id, parentIDs, nodeData) {
+	function exportTargetMachine(id, inputIDs, nodeData) {
 		var i,
 			innode,
 			target_machine = {},
@@ -586,7 +586,7 @@
 
 	// local result_0 = executeCASE(name, luajson_0, isDryRun);
 	// result_0 is a table of { node_varname : value, node_varname : value ... }
-	function exportOneNode(id, parentIDs, nodeData, isDryRun) {
+	function exportOneNode(id, inputIDs, nodeData, isDryRun) {
 		var i,
 			innode,
 			strid = id.toString(),
@@ -599,11 +599,11 @@
 			inputPrefix = "luainput_",
 			resultPrefix = "luaresult_";
 
-		console.log(nodeData.varname, parentIDs, nodeData);
-		if (parentIDs) {
-			for (i = 0; i < parentIDs.length; i = i + 1) {
-				if (parentIDs[i] !== null) {
-					parentVar = resultPrefix + (parentIDs[i]).toString();
+		console.log(nodeData.varname, inputIDs, nodeData);
+		if (inputIDs) {
+			for (i = 0; i < inputIDs.length; i = i + 1) {
+				if (inputIDs[i] !== null) {
+					parentVar = resultPrefix + (inputIDs[i]).toString();
 					parentVars[inputPrefix + (parseInt(i, 10) + 1)] = parentVar + "[" + (i + 1).toString() + "]";
 				} else {
 					nodeVal = getValueFromNode(nodeData.input[i]);
@@ -612,17 +612,8 @@
 					}
 				}
 			}
-		} else {
-			// root node. add all params.
-			for (i = 0; i < nodeData.input.length; i = i + 1) {
-				console.log("ROOTPARAM:", i, nodeData.input[i]);
-				nodeVal = getValueFromNode(nodeData.input[i]);
-				if (nodeVal) {
-					parentVars[inputPrefix + (parseInt(i, 10) + 1)] = "'" + nodeVal + "'";
-				}
-			}
 		}
-		console.log("parentIDs", parentIDs);
+		console.log("inputIDs", inputIDs);
 		console.log("parentVars", parentVars);
 		input = "local " + inputPrefix + strid + " = " + to_lua_list(parentVars).split('"').join('') + ";\n";
 		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ")\n";
@@ -848,14 +839,12 @@
 					innode,
 					password_need_machines = [],
 					node,
-					parentIDs = [],
+					inputIDs = [],
 					sortedDatas = [],
-					parentIDFunc = function (sortedDatas, parents) {
+					createInputIDList = function (sortedDatas, parents) {
 						var ids = [],
 							i,
 							index;
-						
-						//console.log("sorted", sortedDatas);
 						for (i = 0; i < parents.length; i = i + 1) {
 							index = sortedDatas.indexOf(parents[i]);
 							if (index >= 0) {
@@ -897,15 +886,16 @@
 					var node,
 						nodeData,
 						script = "require('hpcpf')\n";
+					
+					// create lua script
 					for (i = 0; i < sorted.length; i = i + 1) {
 						node = sorted[i];
 						nodeData = node.nodeData;
 						if (parents.hasOwnProperty(nodeData.varname)) {
 							// has parents
-							console.log(parents, parents[nodeData.varname]);
-							parentIDs = parentIDFunc(sortedDatas, parents[nodeData.varname]);
-							script = script + exportTargetMachine(i, parentIDs, nodeData, password_need_machines);
-							script = script + exportOneNode(i, parentIDs, nodeData, isDryRun);
+							inputIDs = createInputIDList(sortedDatas, parents[nodeData.varname]);
+							script = script + exportTargetMachine(i, inputIDs, nodeData, password_need_machines);
+							script = script + exportOneNode(i, inputIDs, nodeData, isDryRun);
 						} else {
 							// root node
 							script = script + exportTargetMachine(i, null, nodeData, password_need_machines);
