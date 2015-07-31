@@ -597,8 +597,8 @@
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			innode = nodeData.input[i];
 			if (innode.type === 'target_machine') {
-				if (innode.hasOwnProperty('value') && innode.value) {
-					target_name_to_machine[innode.name_hr] = innode.value;
+				if (innode.hasOwnProperty('machine') && innode.machine) {
+					target_name_to_machine[innode.name_hr] = innode.machine;
 				}
 			}
 		}
