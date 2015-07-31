@@ -402,7 +402,7 @@ function svgNodeUI(draw) {
 					status = draw.text(labelText).fill('#eee').move(100, 33).attr("id", statusTextID);
 				if (elem) {
 					elem.remove();
-					console.log("REMOVEELEM", elem);
+					//console.log("REMOVEELEM", elem);
 					group.add(status);
 				}
 			};

@@ -202,7 +202,7 @@
 							for (i = 0; i < targetConfData.hpcpf.targets.length; i = i + 1) {
 								if (targetConfData.hpcpf.targets[i].type === elem.target) {
 									targetElem.value = targetConfData.hpcpf.targets[i];
-									console.log(node);
+									//console.log(node);
 									break;
 								}
 							}
@@ -255,7 +255,7 @@
 			}
 		}
 		if (callback) {
-			console.log("nodelist:", nodeList);
+			//console.log("nodelist:", nodeList);
 			callback(null, nodeList);
 		}
 	}
@@ -532,7 +532,7 @@
 				}
 			}
 			if (callback) {
-				console.log("nodelist:", nodeList);
+				//console.log("nodelist:", nodeList);
 				callback(null, nodeList);
 			}
 		}

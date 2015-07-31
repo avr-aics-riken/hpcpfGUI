@@ -328,13 +328,16 @@ function getInputNodes(args_table)
 	return list;
 end
 
-function createDFIOutputs(fileList)
-	local list = {}
-	for i, k in pairs(fileList) do
-		local fileEntry = { file = k };
-		table.insert(list, fileEntry);
+function getOutputFiles()
+	local cmdFile = 'cmd.json';
+	local cmd = readJSON(cmdFile);
+	local result = nil;
+	if (cmd ~= nil) then
+		if (cmd.hpcpf.case_meta_data.outputs ~= nil) then
+			result = cmd.hpcpf.case_meta_data.outputs;
+		end
 	end
-	return list;
+	return result;
 end
 
 function getNodes(args_table)

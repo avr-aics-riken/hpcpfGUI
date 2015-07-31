@@ -74,7 +74,7 @@
 	}
 	
 	function loadExcludeFileList() {
-		console.log("loadExcludeFileList");
+		//console.log("loadExcludeFileList");
 		var excludeList;
 		if (fs.existsSync(excludeListPath)) {
 			fs.readFile(excludeListPath, function (err, data) {
@@ -106,7 +106,7 @@
 							excludeList.absolutepath[slashPath] = "1";
 						}
 					}
-					console.log("loadexcludeFileList", excludeList);
+					//console.log("loadexcludeFileList", excludeList);
 					excludeListOnBrowser = excludeList;
 				}
 				if (listData.hasOwnProperty('workspace')) {
@@ -128,7 +128,7 @@
 							excludeList.relativepath[slashPath] = "1";
 						}
 					}
-					console.log("loadexcludeFileList", excludeList);
+					//console.log("loadexcludeFileList", excludeList);
 					excludeListOnWorkSpace = excludeList;
 				}
 			});
