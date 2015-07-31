@@ -6,6 +6,7 @@ if (typeof window === 'undefined') { // Node.js
 		path = require('path'),
 		fsWatcheClients = {},
 		excludePath = require('./exclude_path'),
+		CEI_JSON_FILENAME = 'cei.json',
 		Filedialog = {
 			Disconnect: function (socketId) {
 				'use strict';
@@ -187,9 +188,28 @@ if (typeof window === 'undefined') { // Node.js
 				// set for root
 				socket.on(skname + ':setRootPath', (function (skt) {
 					return function (data) {
+						var i,
+							file,
+							files,
+							absolutePath,
+							relativePath;
 						workpath = data.path;
 						console.log('setRootPath:', workpath);
 						updateFileList('/', skt);
+						
+						// for cei.json, update(watch) all case list.
+						absolutePath = makeAbsolutePath('/');
+						files = fs.readdirSync(absolutePath);
+						for (i in files) {
+							if (files.hasOwnProperty(i)) {
+								file = absolutePath + '/' + files[i];
+								if (fs.statSync(file).isDirectory()) {
+									relativePath = path.relative(workpath, file).split(path.sep).join('/');
+									console.log("setRootPath - watch case:", relativePath);
+									updateFileList(relativePath, skt);
+								}
+							}
+						}
 					};
 				}(socket)));
 			}
@@ -208,6 +228,7 @@ if (typeof window === 'undefined') { // Node.js
 			this.tarDir = "/";
 			this.domElement = domElement;
 			this.fileClickCallback = (function () {}());
+			this.ceiJSONChangeCallback  = (function () {}());
 			this.dirClickCallback = (function () {}());
 			this.dirStatusChangeCallback = (function () {}());
 			this.openingDirList = {};
@@ -237,11 +258,15 @@ if (typeof window === 'undefined') { // Node.js
 		FileDialog.prototype.setFileClickCallback = function (callback) {
 			this.fileClickCallback = callback;
 		};
-
+		
 		FileDialog.prototype.setDirClickCallback = function (callback) {
 			this.dirClickCallback = callback;
 		};
 		
+		FileDialog.prototype.setCeiJSONChangeCallback = function (callback) {
+			this.ceiJSONChangeCallback = callback;
+		};
+
 		FileDialog.prototype.setDirStatusChangeCallback = function (callback) {
 			this.dirStatusChangeCallback = callback;
 		};
@@ -306,7 +331,11 @@ if (typeof window === 'undefined') { // Node.js
 			if (elem) {
 				elem.innerHTML = ''; // clear dom
 			}
-			this.UnwatchDir(relativepath); // unwatch dir
+			// widthout root dirs for watching cei.json
+			if (relativepath.indexOf('/') >= 0) {
+				console.log("UNWATCH:", relativepath);
+				this.UnwatchDir(relativepath); // unwatch dir
+			}
 		};
 		
 		
@@ -398,6 +427,9 @@ if (typeof window === 'undefined') { // Node.js
 				if (elem !== undefined) { // is waching?
 					depth = relativepath.split('/').length - 2;
 					this.makeFilelist(elem, filelist, depth, relativepath); // update
+				}
+				if (this.ceiJSONChangeCallback) {
+					this.ceiJSONChangeCallback(this, dirpath);
 				}
 			}
 			if (this.dirStatusChangeCallback) {

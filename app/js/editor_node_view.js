@@ -149,7 +149,7 @@
 	
 	/*
 	function updateNode(nodename) {
-		var node = nodeListTable[nodename], // node genearated from case
+		var node = nodeListTable[nodename],
 			nodeData = nui.getNodeData(),
 			data,
 			i,
@@ -609,14 +609,10 @@
 		}
 	}
 	
-	function init() {
+	function initNode() {
 		var draw = SVG('nodecanvas'),
-			propertyTab,
-			pos = { x : 0, y : 0 },
-			onMiddleButtonDown = false,
-			nodecanvas   = document.getElementById('nodecanvas'),
-			selectNodeList;
-		
+			nodecanvas   = document.getElementById('nodecanvas');
+		nodecanvas.innerHTML = "";
 		nui = svgNodeUI(draw);
 		nui.clearNodes();
 		nui.setTypeColorFunction(colorFunction);
@@ -627,6 +623,16 @@
 			updateProperty(nodeData);
 		});
 		nui.nodeDeleteEvent(deleteNode);
+	}
+	
+	function init() {
+		var propertyTab,
+			pos = { x : 0, y : 0 },
+			onMiddleButtonDown = false,
+			nodecanvas   = document.getElementById('nodecanvas'),
+			selectNodeList;
+		
+		initNode();
 		
 		propertyTab = window.animtab.create('right', {
 			'rightTab' : { min : '0px', max : 'auto' }
@@ -660,43 +666,33 @@
 		};
 	}
 	
-	/*
-	function reload() {
+	function updateStatus() {
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.once('reloadNodeList', function (caseNodeList) {
 			var i,
-				caseNodes = JSON.parse(caseNodeList),
-				tempNodeListTable = {};
+				k,
+				node,
+				nodes = nui.getNodeData(),
+				caseNodes = JSON.parse(caseNodeList);
 			
-			caseNodes.sort(
-				function (a, b) {
-					return a.name > b.name;
-				}
-			);
+			//console.log(caseNodeList);
 			
-			// add or update
 			for (i = 0; i < caseNodes.length; i = i + 1) {
-				if (!nodeListTable.hasOwnProperty(caseNodes[i].name)) {
-					nodeListTable[caseNodes[i].name] = caseNodes[i];
-					addNode(caseNodes[i].name, caseNodes[i].name_hr, 300, 100, false);
-				} else {
-					nodeListTable[caseNodes[i].name] = caseNodes[i];
-					updateNode(caseNodes[i].name);
+				if (nodeListTable.hasOwnProperty(caseNodes[i].name)) {
+					node = nodeListTable[caseNodes[i].name];
+					node.status = caseNodes[i].status;
 				}
-				tempNodeListTable[caseNodes[i].name] = caseNodes[i];
-			}
-			// delete
-			for (i in nodeListTable) {
-				if (nodeListTable.hasOwnProperty(i)) {
-					if (!tempNodeListTable.hasOwnProperty(i)) {
-						deleteNode(nodeListTable[i]);
-						delete nodeListTable[i];
+				for (k = 0; k < nodes.nodeData.length; k = k + 1) {
+					if (nodes.nodeData[i].type === node.type) {
+						nodes.nodeData[i].status = node.status;
 					}
+				}
+				if (nui.getNode(caseNodes[i].name) !== undefined) {
+					nui.getNode(caseNodes[i].name).changeStatusLabel(node.status);
 				}
 			}
 		});
 	}
-	*/
 	
 	function save(endCallback) {
 		var data = nui.getNodeData(),
@@ -853,7 +849,14 @@
 	editor.socket.on('init', function () {
 		init();
 		load();
+		updateStatus();
 	});
+	
+	// override
+	window.editor.ceiJSONChanged = function (fd, dirpath) {
+		console.log("ceiJSONChanged called:", dirpath);
+		updateStatus();
+	};
 	
 	window.node_edit_view = edit_view;
 	window.node_edit_view.executeWorkflow = function (endcallback) {

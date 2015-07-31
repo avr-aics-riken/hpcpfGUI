@@ -618,6 +618,7 @@
 		fd.setFileClickCallback(clickFile);
 		fd.setDirClickCallback(clickDir);
 		fd.setDirStatusChangeCallback(dirStatusChanged);
+		fd.setCeiJSONChangeCallback(window.editor.ceiJSONChanged);
 
 		socket.on('connect', function () {
 			console.log('connected');
@@ -765,5 +766,6 @@
 	window.editor.openedfile = null;
 	window.editor.edited = false;
 	window.editor.clickedfile = null;
+	window.editor.ceiJSONChanged = function (fd, dirpath) {};
 	window.editor.showNewNameArea = showNewNameArea;
 }());

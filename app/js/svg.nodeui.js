@@ -342,7 +342,8 @@ function svgNodeUI(draw) {
 			statusText,
 			inoutNum = 0,
 			nodeVarName,
-			plugConnectors = {};
+			plugConnectors = {},
+			statusTextID = varName + ":" + "statusLabel";
 		
 		if (inouts.hasOwnProperty('canErase')) {
 			canErase = inouts.canErase;
@@ -389,8 +390,23 @@ function svgNodeUI(draw) {
 		// status
 		statusLabelText = draw.text("Status : ").fill('#eee').move(20, 33);
 		group.add(statusLabelText);
-		statusText = draw.text("pending").fill('#eee').move(100, 33);
+		if (inouts.hasOwnProperty('status')) {
+			statusText = draw.text(inouts.status).fill('#eee').move(100, 33).attr("id", statusTextID);
+		} else {
+			statusText = draw.text("pending").fill('#eee').move(100, 33).attr("id", statusTextID);
+		}
 		group.add(statusText);
+		this.changeStatusLabel = (function (group, statusTextID) {
+			return function (labelText) {
+				var elem = SVG.get(statusTextID),
+					status = draw.text(labelText).fill('#eee').move(100, 33).attr("id", statusTextID);
+				if (elem) {
+					elem.remove();
+					console.log("REMOVEELEM", elem);
+					group.add(status);
+				}
+			};
+		}(group, statusTextID));
 		
 		function newNodeConnector(group, inNode, thisptr, i) {
 			var nodeText = draw.text(inNode.name).fill('#eee').move(20, 55 + i * 20),
@@ -500,34 +516,6 @@ function svgNodeUI(draw) {
 			}
 		}
 	}
-
-	/*
-	function pushNextNode(nextNode, dependency) {
-		if (!nextNode) {
-			return;
-		}
-		
-		var i, nextPlug, outNode;
-		// multiplex reference
-		i = dependency.indexOf(nextNode);
-		if (i >= 0) {
-			dependency.splice(i, 1);
-		}
-		dependency.push(nextNode);
-		
-		for (i in nextNode.plugConnectors) {
-			if (nextNode.plugConnectors.hasOwnProperty(i)) {
-				nextPlug = nextNode.plugConnectors[i];
-				if (nextPlug.type === 'NodeConnector') { // input
-					outNode = plugArray[nextPlug.varname];
-					if (outNode) {
-						pushNextNode(outNode.parentNode, dependency);
-					}
-				}
-			}
-		}
-	}
-	*/
 	
 	topologycalSort = function () {
 		var i,
@@ -607,157 +595,6 @@ function svgNodeUI(draw) {
 		scriptConverFunc(parents, sorted, endCallback);
 	}
 	
-	/*
-	function exportLua() {
-		var i,
-			j,
-			k,
-			node,
-			dependency = [],
-			plug,
-			plugname,
-			src = headerCode + '\n\n',
-			customfuncs = {},
-			customfuncSrc = '',
-			fn,
-			temp,
-			rootList = [];
-		
-		for (i in nodeArray) {
-			if (nodeArray.hasOwnProperty(i)) {
-				if (nodeArray[i].nodeData.rootnode) {
-					rootList.push(nodeArray[i]);
-				}
-			}
-		}
-		
-		for (i = 0; i < rootList.length; i = i + 1) {
-			pushNextNode(rootList[i], dependency);
-		}
-		console.log(dependency);
-
-		//Add Custom Func
-		for (i = dependency.length - 1; i >= 0; i -= 1) {
-			node = dependency[i].nodeData;
-			console.log(node);
-			if (node.customfunc) {
-				//customfunclist += node.customfunc + '\n';
-				customfuncs[node.name] = node;
-			}
-		}
-		
-		//console.log('Export:dependency.length: ' + dependency.length);
-		function makeValueSrc(node) {
-			var src = '';
-			if (node.type === 'string') {
-				src += node.name + '=\'' + node.value + '\'';
-			} else if (node.type === 'vec4') {
-				src += node.name + '={';
-				src += node.value[0] + ',';
-				src += node.value[1] + ',';
-				src += node.value[2] + ',';
-				src += node.value[3] + '}';
-			} else if (node.type === 'vec3') {
-				src += node.name + '={';
-				src += node.value[0] + ',';
-				src += node.value[1] + ',';
-				src += node.value[2] + '}';
-			} else if (node.type === 'vec2') {
-				src += node.name + '={';
-				src += node.value[0] + ',';
-				src += node.value[1] + '}';
-			} else if (node.type === 'float') {
-				src += node.name + ' = ' + node.value;
-			} else { // Unknown primitive
-				src += 'nil';
-			}
-			return src;
-		}
-		function makePlugValueSrc(nodevarname, node) {
-			var src = '',
-				plugname = getPlugVarName(nodevarname, node.name);
-			if (plugArray[plugname]) {
-				temp = plugArray[plugname].varname;
-				if (temp.substr(temp.length - 1, temp.length) === ':') {
-					src += node.name + '=' + temp.substr(0, temp.length - 1);
-				} else {
-					src += node.name + '=' + plugArray[plugname].varname + '()';
-				}
-			} else if (node.value) {
-				src += makeValueSrc(node);
-			} else {
-				src += 'nil';
-			}
-			return src;
-		}
-		for (i = dependency.length - 1; i >= 0; i -= 1) {
-			node = dependency[i].nodeData;
-			if (node.define) {
-				src += node.define;
-			}
-			//src += 'local ' + node.varname + ' = ' + node.name + '()\n';
-			//if (node.funcname) {
-			//	src += node.varname + ':' + node.funcname + '(';
-			//} else {
-			//	src += node.varname + '(';
-			//}
-			src += 'local ' + node.varname + ' = ' + node.funcname + '({';
-			if (node.input) {
-				for (j = 0; j < node.input.length; j += 1) {
-					if (Array.isArray(node.input[j].array)) {
-						src += node.input[j].name + '={';
-						for (k = 0; k < node.input[j].array.length; k = k + 1) {
-							src += makePlugValueSrc(node.varname, node.input[j].array[k]);
-							if (k !== node.input[j].array.length - 1) {
-								src += ', ';
-							}
-						}
-						src += '}';
-					} else {
-						src += makePlugValueSrc(node.varname, node.input[j]);
-						if (j !== node.input.length - 1) {
-							src += ', ';
-						}
-					}
-				}
-			}
-			src += '})\n';
-		}
-		for (fn in customfuncs) {
-			if (customfuncs.hasOwnProperty(fn)) {
-				customfuncSrc += customfuncs[fn].customfunc + '\n';
-			}
-		}
-		src = customfuncSrc + src;
-		src += footerCode + '\n';
-		//console.log(src);
-		return src;
-	}
-	
-	function pushDependencyNode(node, dependency, plugArray) {
-		if (!node) {
-			return;
-		}
-		var i, nextPlug, outNode;
-		// multiplex reference
-		i = dependency.indexOf(node);
-		if (i >= 0) {
-			dependency.splice(i, 1);
-		}
-		dependency.push(node);
-		
-		for (i in node.input) {
-			if (node.input.hasOwnProperty(i)) {
-				nextPlug = node.input[i];
-				outNode = plugArray[nextPlug.varname];
-				if (outNode) {
-					pushDependencyNode(outNode.parentNode, dependency, plugArray);
-				}
-			}
-		}
-	}
-	*/
-
 	function makeNodes(data) {
 		var nodeData = data.nodeData,
 			plugData = data.plugData,

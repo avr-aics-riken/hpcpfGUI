@@ -260,55 +260,6 @@
 		}
 	}
 	
-	function makeSystemNodeList(callback) {
-		var nodeDir = path.join(__dirname, 'nodes');
-		//console.log("makeCaseNodeList");
-		fs.readdir(nodeDir, function (err, files) {
-			var infofile,
-				nodeDirPath,
-				fileCounter,
-				customFuncLua,
-				nodelist = [],
-				i;
-			if (err) {
-				return;
-			}
-
-			fileCounter = 0;
-			function finishLoad() {
-				fileCounter = fileCounter - 1;
-				if (fileCounter === 0) {
-					callback(null, nodelist);
-				}
-			}
-			function loadFunc(nodeDirPath) {
-				return function (err, data) {
-					try {
-						var json = JSON.parse(data);
-						if (json.customfuncfile !== undefined) {
-							customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
-							json.customfunc = customFuncLua;
-						}
-						nodelist.push(json);
-					} catch (e) {
-						console.log('[Error] Failed Load:' + nodeDirPath + "/info.json", e);
-					}
-					finishLoad();
-				};
-			}
-			for (i in files) {
-				if (files.hasOwnProperty(i)) {
-					if (files[i].substr(0, 1) !== '.') {
-						nodeDirPath = nodeDir + "/" + files[i];
-						infofile = nodeDirPath + "/info.json";
-						fileCounter = fileCounter + 1;
-						fs.readFile(infofile, 'utf8', loadFunc(nodeDirPath));
-					}
-				}
-			}
-		});
-	}
-
 	function registerEditorEvent(socket, appCommands, appExtensions) {
 		var def_srcdir = __dirname;// + '/work/'
 		console.log('Working Dir=' + def_srcdir);
@@ -706,14 +657,6 @@
 						console.log("JSON parse error:", e);
 					}
 				});
-				/*
-				makeSystemNodeList(function (err, systemNodeList) {
-					if (err) {
-						console.log("ReloadNodeList error:", err);
-						return;
-					}
-				});
-				*/
 			} catch (e) {
 				console.log("JSON parse error", e);
 			}
