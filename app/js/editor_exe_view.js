@@ -49,7 +49,9 @@
 	executeProject = function () {
 		var exec = function (runFunc) {
 			runFunc(function (script) {
-				editor.showExeView();
+				if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
+					editor.showExeView();
+				}
 				window.editor_edit_view.openedfile = "";
 				window.editor_edit_view.clickedfile = "";
 				console.log("procRun");
@@ -61,31 +63,22 @@
 				executeButton.title = stopButtonTitle;
 			});
 		};
-		//if (window.editor_edit_view.edited) {
-		//editor.saveFile(function () {
-			/*
-			if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
-				exec(runWorkflow);
-			} else {
-			*/
-		exec(window.node_edit_view.executeWorkflow);
-			//}
-		//});
-		/*
-		} else {
-			if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
-				exec(runWorkflow);
-			} else {
+		
+		if (editor.getCurrentViewType() === editor.ViewTypes.edit) {
+			editor.saveFile(function () {
 				exec(window.node_edit_view.executeWorkflow);
-			}
+			});
+		} else {
+			exec(window.node_edit_view.executeWorkflow);
 		}
-		*/
 	};
 	
 	dryrunProject = function () {
 		var exec = function (runFunc) {
 			runFunc(function (script) {
-				editor.showExeView();
+				if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
+					editor.showExeView();
+				}
 				window.editor_edit_view.openedfile = "";
 				window.editor_edit_view.clickedfile = "";
 				console.log("procRun");
@@ -97,7 +90,15 @@
 				executeButton.title = stopButtonTitle;
 			});
 		};
-		exec(window.node_edit_view.dryrunWorkflow);
+		
+		if (editor.getCurrentViewType() === editor.ViewTypes.edit) {
+			editor.saveFile(function () {
+				exec(window.node_edit_view.dryrunWorkflow);
+			});
+		} else {
+			exec(window.node_edit_view.dryrunWorkflow);
+		}
+		
 	};
 	
 	cleanProject = function () {
