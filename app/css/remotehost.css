@@ -233,11 +233,11 @@
 }
 
 .change_mode_area {
-	position: relative;
+	position: absolute;
 	right: 10px;
 	top:90px;
-	min-width:800px;
-	width:100%;
+	/*min-width:800px;*/
+	/*width:100%;*/
 	height:-10px;
 	margin:0px;
 }
