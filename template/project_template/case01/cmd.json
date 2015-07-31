@@ -17,14 +17,14 @@
                 {
                     "name_hr":"格子生成情報",
                     "description_hr":"",
-                    "type":"initial_data",
+                    "type":"DFI",
                     "file_pattern":"*-domain-parameter.tp",
                     "required":true
                },
                {
                     "name_hr":"物体形状",
                     "description_hr":"流れ場中の物体形状STLファイル",
-                    "type":"geometry",
+                    "type":"DFI",
                     "file_pattern":"*.stl",
                     "required":true
                },
@@ -48,25 +48,25 @@
                  {
                      "name_hr":"時間平均圧力データ",
                      "description_hr":"",
-                     "type":"solver_result",
+                     "type":"DFI",
                      "file_pattern":"2d/prsa_*.sph"
                  },
                  {
                      "name_hr":"時間平均速度場データ",
                      "description_hr":"",
-                     "type":"solver_result",
+                     "type":"DFI",
                      "file_pattern":"2d/vela_*.sph"
                 },
                 {
                      "name_hr":"結果ファイル分割情報",
                      "description_hr":"",
-                     "type":"solver_result",
+                     "type":"DFI",
                      "file_pattern":"*.dfi"
                  },
                  {
                      "name_hr":"実行結果統計情報",
                      "description_hr":"",
-                     "type":"solver_result",
+                     "type":"DFI",
                      "file_pattern":"profiling.txt"
                  }
              ],
@@ -75,13 +75,13 @@
                  {
                       "name_hr":"速度場",
                       "description_hr":"結果ファイル分割情報",
-                      "type":"solver_result",
+                      "type":"DFI",
                       "file":"fvel.dfi"
                  },
                  {
                       "name_hr":"圧力",
                       "description_hr":"結果ファイル分割情報",
-                      "type":"solver_result",
+                      "type":"DFI",
                       "file":"prs.dfi"
                  }
              ],
