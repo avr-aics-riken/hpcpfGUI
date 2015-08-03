@@ -154,9 +154,12 @@ function registerEditorEvent(socket) {
 				hst.server = data.server;
 				hst.userid = data.userid;
 				hst.workpath = data.workpath;
-				if (data.hasOwnProperty('sshkey')) {
-					hst.sshkey = data.sshkey;
-				}
+			}
+			
+			if (data.hasOwnProperty('sshkey')) {
+				hst.sshkey = data.sshkey;
+			} else if (hst.hasOwnProperty('sshkey')) {
+				delete hst.sshkey;
 			}
 			
 			jslist = JSON.stringify(host, function (key, val) { return val;	}, "    ");
