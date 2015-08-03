@@ -762,12 +762,38 @@
 		});
 	}
 	
+	function gatherPasswordNeedMachines(parentNodes, sortedNodes) {
+		var i,
+			node,
+			nodeData,
+			password_need_machines = [],
+			tempProperty = prePropertyNodeName;
+		
+		for (i = 0; i < sortedNodes.length; i = i + 1) {
+			node = sortedNodes[i];
+			nodeData = node.nodeData;
+			updateProperty(nodeData);
+
+			if (parentNodes.hasOwnProperty(nodeData.varname)) {
+				gatherPasswordNeedMachine(i, parentNodes[nodeData.varname], nodeData, password_need_machines);
+			} else {
+				gatherPasswordNeedMachine(i, null, nodeData, password_need_machines);
+			}
+		}
+
+		if (nodeListTable.hasOwnProperty(tempProperty)) {
+			updateProperty(nodeListTable[tempProperty]);
+		} else {
+			updateProperty(null);
+		}
+		return password_need_machines;
+	}
+	
 	function executeWorkflow(isDryRun, endCallback) {
 		save(function () {
 			nui.exportLua(function (parents, sorted, exportEndCallback) {
 				var i = 0,
 					nodeData,
-					innode,
 					password_need_machines = [],
 					node,
 					inputIDs = [],
@@ -785,32 +811,16 @@
 							}
 						}
 						return ids;
-					},
-					tempProperty = prePropertyNodeName;
+					};
 
-				// gather password,passphrase machine
-				for (i = 0; i < sorted.length; i = i + 1) {
-					node = sorted[i];
-					nodeData = node.nodeData;
-					updateProperty(nodeData);
-					
-					if (parents.hasOwnProperty(nodeData.varname)) {
-						gatherPasswordNeedMachine(i, parents[nodeData.varname], nodeData, password_need_machines);
-					} else {
-						gatherPasswordNeedMachine(i, null, nodeData, password_need_machines);
-					}
-				}
 				
 				// create sorted node datas
 				for (i = 0; i < sorted.length; i = i + 1) {
 					sortedDatas.push(sorted[i].nodeData);
 				}
 				
-				if (nodeListTable.hasOwnProperty(tempProperty)) {
-					updateProperty(nodeListTable[tempProperty]);
-				} else {
-					updateProperty(null);
-				}
+				// gather password,passphrase machine
+				password_need_machines = gatherPasswordNeedMachines(parents, sorted);
 
 				// show password,passphrase input dialog
 				password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
@@ -846,6 +856,29 @@
 		});
 	}
 	
+	function cleanWorkflow(endCallback) {
+		console.log("cleanworkflow");
+		save(function () {
+			nui.exportLua(function (parents, sorted, exportEndCallback) {
+				var i = 0,
+					password_need_machines = [];
+				
+				// gather password,passphrase machine
+				password_need_machines = gatherPasswordNeedMachines(parents, sorted);
+				
+				// show password,passphrase input dialog
+				password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
+					editor.socket.emit('cleanWorkflow');
+					editor.socket.once('doneCleanWorkflow', function () {
+						if (endCallback) {
+							endCallback();
+						}
+					});
+				});
+			});
+		});
+	}
+	
 	editor.socket.on('init', function () {
 		init();
 		load();
@@ -864,6 +897,9 @@
 	};
 	window.node_edit_view.dryrunWorkflow = function (endcallback) {
 		return executeWorkflow(true, endcallback);
+	};
+	window.node_edit_view.cleanWorkflow = function (endcallback) {
+		return cleanWorkflow(endcallback);
 	};
 	window.node_edit_view.init = init;
 	//window.node_edit_view.reload = reload;
