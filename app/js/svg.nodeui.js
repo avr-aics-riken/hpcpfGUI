@@ -300,10 +300,10 @@ function svgNodeUI(draw) {
 	
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
-			nodeback1 = draw.rect(212, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(14, 0),
+			nodeback1 = draw.rect(305, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(14, 0),
 			nodeback2 = draw.rect(30, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(0, 14),
 			nodeback3 = draw.rect(24, 24).radius(4).attr({'fill': '#72ca29', 'fill-opacity': "1.0", 'stroke': "none"}).move(4.5, 4.5).rotate(45, 16, 16),
-			nodebase = draw.rect(220, 60).attr({'fill': "#4d4d4c", 'fill-opacity': "1.0", 'stroke': "none"}).move(3, 30),
+			nodebase = draw.rect(nodeback1.width() + 8, 60).attr({'fill': "#4d4d4c", 'fill-opacity': "1.0", 'stroke': "none"}).move(3, 30),
 			canErase = true,
 			erasebtn,
 			eraseA,
@@ -415,10 +415,10 @@ function svgNodeUI(draw) {
 			return new NodeConnector(nodeVarName, inNode.type, group, thisptr, 0, 65 + i * 20);
 		}
 		function newNodeOutConnector(group, outNode, thisptr, i) {
-			var nodeText = draw.text(outNode.name).fill('#eee').move(130, 55 + i * 20),
+			var nodeText = draw.text(outNode.name).fill('#eee').move(nodeback1.width() - 7 * 20, 55 + i * 20),
 				nodeVarName = getPlugVarName(varName, outNode.name);
 			group.add(nodeText);
-			return new NodePlug(nodeVarName, outNode.type, group, thisptr, 220, 65 + i * 20);
+			return new NodePlug(nodeVarName, outNode.type, group, thisptr, nodeback1.width() + 8, 65 + i * 20);
 		}
 		
 		// Node Params
