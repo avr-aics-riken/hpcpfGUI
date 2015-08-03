@@ -717,25 +717,30 @@
 	function load() {
 		editor.socket.emit('reqLoadNode');
 		editor.socket.once('doneLoadNode', function (nodeData) {
+			var isloaded = false,
+				nodes,
+				i;
 			try {
-				//console.log('doneLoadNode', nodeData);
-				if (nodeData && Object.keys(nodeData).length > 0) {
-					var nodes = JSON.parse(nodeData),
-						i;
-					for (i = 0; i < nodes.nodeData.length; i = i + 1) {
-						if (!nodeListTable.hasOwnProperty(nodes.nodeData[i].name)) {
-							nodeListTable[nodes.nodeData[i].name] = nodes.nodeData[i];
+				if (nodeData) {
+					nodes = JSON.parse(nodeData);
+					if (Object.keys(nodes).length > 0) {
+						for (i = 0; i < nodes.nodeData.length; i = i + 1) {
+							if (!nodeListTable.hasOwnProperty(nodes.nodeData[i].name)) {
+								nodeListTable[nodes.nodeData[i].name] = nodes.nodeData[i];
+							}
 						}
+						if (nodeListTable.hasOwnProperty(prePropertyNodeName)) {
+							updateProperty(nodeListTable[prePropertyNodeName]);
+						} else {
+							updateProperty(null);
+						}
+						console.log("NODES", nodes);
+						nui.clearNodes();
+						nui.makeNodes(nodes);
+						isloaded = true;
 					}
-					if (nodeListTable.hasOwnProperty(prePropertyNodeName)) {
-						updateProperty(nodeListTable[prePropertyNodeName]);
-					} else {
-						updateProperty(null);
-					}
-					console.log("NODES", nodes);
-					nui.clearNodes();
-					nui.makeNodes(nodes);
-				} else {
+				}
+				if (!isloaded) {
 					console.log("Init from Case");
 					// init from Case
 					editor.socket.emit('reqReloadNodeList');
@@ -756,8 +761,9 @@
 						}
 					});
 				}
+				
 			} catch (e) {
-				console.log(e);
+				console.error(e);
 			}
 		});
 	}
