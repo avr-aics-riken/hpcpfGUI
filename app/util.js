@@ -4,7 +4,8 @@
 var fs = require('fs'),
 	path = require('path'),
 	cp = require('child_process'),
-	exec = require('child_process').exec;
+	exec = require('child_process').exec,
+	os = require('os');
 
 //-------------------------------------
 // Utility functions
@@ -177,8 +178,54 @@ function deleteFolderRecursive(target) {
 	}
 }
 
+function deleteFiles(target, callback) {
+	"use strict";
+	var rmFileCmd = 'rm';
+	
+	if (os.platform().indexOf('win') === 0) { // win setting
+		rmFileCmd = 'del /Q';
+	}
+	console.log("util.deleteFiles:", rmFileCmd + ' "' + target + '"');
+	exec(rmFileCmd + ' "' + target + '"', (function (cb) {
+		return function (error, stdout, stderr) {
+			console.log('stdout: ' + stdout);
+			console.log('stderr: ' + stderr);
+			if (error !== null) {
+				console.log('exec error: ' + error);
+			}
+			if (cb) {
+				cb(error);
+			}
+		};
+	}(callback)));
+}
+
+function deleteDirectory(target, callback) {
+	"use strict";
+	var rmDirCmd  = 'rm -rf';
+	
+	if (os.platform().indexOf('win') === 0) {
+		rmDirCmd  = 'rd /q /s';
+	}
+	console.log("util.deleteDirectory:", rmDirCmd + ' "' + target + '"');
+	exec(rmDirCmd + ' "' + target + '"', (function (cb) {
+		return function (error, stdout, stderr) {
+			console.log('stdout: ' + stdout);
+			console.log('stderr: ' + stderr);
+			if (error !== null) {
+				console.log('exec error: ' + error);
+			}
+			if (cb) {
+				cb(error);
+			}
+		};
+	}(callback)));
+}
+
 module.exports.getExtention = getExtention;
 module.exports.getFiles = getFiles;
 module.exports.isRelative = isRelative;
 module.exports.extractTar = extractTar;
 module.exports.deleteFolderRecursive = deleteFolderRecursive;
+module.exports.deleteFiles = deleteFiles;
+module.exports.deleteDirectory = deleteDirectory;

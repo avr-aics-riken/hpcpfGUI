@@ -563,14 +563,14 @@
 								} else {
 									target = cleanList[k].path;
 								}
-								
-								if (cleanList[k].type === 'dir') {
-									console.log("try delete fodler:" + target);
-									//util.deleteFolderRecursive(target);
-									//fs.rmdirSync(target);
-								} else {
-									console.log("try delete file:" + target);
-									//fs.unlinkSync(target);
+								if (target !== srcdir && target !== ".") {
+									if (cleanList[k].type === 'dir') {
+										console.log("try clean directory:" + target);
+										util.deleteDirectory(target);
+									} else {
+										console.log("try clean file:" + target);
+										util.deleteFiles(target);
+									}
 								}
 							}
 						}
