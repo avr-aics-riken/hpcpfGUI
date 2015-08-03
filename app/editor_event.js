@@ -18,6 +18,7 @@
 		PMD_FILENAME = 'pmd.json',
 		CMD_FILENAME = 'cmd.json',
 		CEI_FILENAME = 'cei.json',
+		PWF_FILENAME = 'pwf.lua',
 		targetConfFile = path.resolve(__dirname, '../conf/targetconf.json'),
 		sesstionTable = {};
 
@@ -703,83 +704,27 @@
 			sesstionTable[socket.id].proc = null;
 		});
 		
-		socket.on('runWorkflow', function (data) {
-			var srcdir = sesstionTable[socket.id].dir,
-				processspawn = sesstionTable[socket.id].proc,
-				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
-			if (processspawn) {
-				killSpawn(processspawn);
-				sesstionTable[socket.id].proc = null;
-			}
-			
-			processspawn = spawn(LUA_CMD, ['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', '-e', data], {cwd : srcdir});
-			sesstionTable[socket.id].proc = processspawn;
-			if (processspawn) {
-				processspawn.stdout.on('data', function (data) {
-					console.log('stdout: ' + data);
-					socket.emit('stdout', data.toString());
-				});
-				processspawn.stderr.on('data', function (data) {
-					console.log('stderr: ' + data);
-					socket.emit('stderr', data.toString());
-				});
-				processspawn.on('exit', function (code) {
-					console.log('exit code: ' + code);
-				});
-				processspawn.on('close', function (code, signal) {
-					console.log('close code: ' + code);
-					updateFileList(srcdir);
-					if (sesstionTable[socket.id].hasOwnProperty('proc')) {
-						sesstionTable[socket.id].proc = null;
-					}
-					socket.emit('exit');
-				});
-				processspawn.on('error', function (err) {
-					console.log('process error', err);
-					socket.emit('stderr', "can't execute program\n");
-				});
-			} else {
-				socket.emit('stdout', 'Unknown file type. -> ' + data.file);
-			}
-		});
-		
-		socket.on('cleanWorkflow', function () {
-			var processspawn = sesstionTable[socket.id].proc;
-			if (processspawn) {
-				socket.emit('doneCleanWorkflow', false);
-				return;
-			}
-			cleanWorkflow(function () {
-				socket.emit('doneCleanWorkflow', true);
-			});
-		});
-
-		socket.on('run', function (data) {
+		function runPWF(fileName) {
 			var srcdir = sesstionTable[socket.id].dir,
 				processspawn = sesstionTable[socket.id].proc,
 				ext,
 				lualibpath,
 				sfile,
 				ofile;
-			console.log("runFile>" + data.file);
-			if (processspawn) {
-				killSpawn(processspawn);
-				sesstionTable[socket.id].proc = null;
-			}
 
-			ext = util.getExtention(data.file);
+			ext = util.getExtention(fileName);
 			console.log("EXT=" + ext);
 			if (ext === "lua" || ext === "pwl" || ext === "cwl") {
-				backupFile(srcdir, data.file);
+				backupFile(srcdir, fileName);
 				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
-				processspawn = spawn(LUA_CMD, ['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', data.file], {cwd : srcdir});
+				processspawn = spawn(LUA_CMD, ['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', fileName], {cwd : srcdir});
 			} else if (ext === "sh" || ext === "pwf" || ext === "cwf") {
-				processspawn = spawn(SH_CMD, [data.file], {cwd : srcdir});
+				processspawn = spawn(SH_CMD, [fileName], {cwd : srcdir});
 			} else if (ext === "bat") {
-				processspawn = spawn(data.file, [], {cwd : srcdir});
+				processspawn = spawn(fileName, [], {cwd : srcdir});
 			} else if (ext === "scn") {
-				console.log("KR:" + KRENDER_CMD + " / scn path=" + srcdir + data.file);
-				processspawn = spawn(KRENDER_CMD, [srcdir + data.file], function (err, stdout, stderr) {
+				console.log("KR:" + KRENDER_CMD + " / scn path=" + srcdir + fileName);
+				processspawn = spawn(KRENDER_CMD, [srcdir + fileName], function (err, stdout, stderr) {
 					if (!err) { return; }
 					console.log('Failed run krender.');
 					sesstionTable[socket.id].proc = null;
@@ -790,8 +735,8 @@
 					socket.emit('stderr', "can't find GLSL_COMPILER");
 					return;
 				}
-				sfile = srcdir + data.file;
-				ofile = srcdir + data.file;
+				sfile = srcdir + fileName;
+				ofile = srcdir + fileName;
 				ofile = ofile.substr(0, ofile.length - 4) + "so";
 				console.log("Target SO:" + ofile);
 				processspawn = spawn(process.env.GLSL_COMPILER, ['-o', ofile, sfile], function (err, stdout, stderr) {
@@ -824,8 +769,56 @@
 					socket.emit('stderr', "can't execute program\n");
 				});
 			} else {
-				socket.emit('stdout', 'Unknown file type. -> ' + data.file);
+				socket.emit('stdout', 'Unknown file type. -> ' + fileName);
 			}
+		}
+
+		function writePWF(data) {
+			var srcdir = sesstionTable[socket.id].dir,
+				pwfFile = path.join(srcdir, PWF_FILENAME);
+			if (!data) { return false; }
+			fs.writeFileSync(pwfFile, data);
+			return true;
+		}
+		
+		socket.on('runWorkflow', function (data) {
+			var srcdir = sesstionTable[socket.id].dir,
+				processspawn = sesstionTable[socket.id].proc,
+				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
+			if (processspawn) {
+				killSpawn(processspawn);
+				sesstionTable[socket.id].proc = null;
+			}
+			
+			if (writePWF(data)) {
+				runPWF(PWF_FILENAME);
+			}
+		});
+		
+		socket.on('cleanWorkflow', function () {
+			var processspawn = sesstionTable[socket.id].proc;
+			if (processspawn) {
+				socket.emit('doneCleanWorkflow', false);
+				return;
+			}
+			cleanWorkflow(function () {
+				socket.emit('doneCleanWorkflow', true);
+			});
+		});
+		
+		socket.on('run', function (data) {
+			var srcdir = sesstionTable[socket.id].dir,
+				processspawn = sesstionTable[socket.id].proc,
+				ext,
+				lualibpath,
+				sfile,
+				ofile;
+			
+			if (processspawn) {
+				killSpawn(processspawn);
+				sesstionTable[socket.id].proc = null;
+			}
+			runPWF(data.file);
 		});
 	}
 
