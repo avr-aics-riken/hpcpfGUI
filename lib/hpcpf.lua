@@ -334,7 +334,7 @@ function getOutputFiles()
 	local result = nil;
 	if (cmd ~= nil) then
 		if (cmd.hpcpf.case_meta_data.outputs ~= nil) then
-			result = cmd.hpcpf.case_meta_data.outputs;
+			result = '../' + cmd.hpcpf.case_meta_data.varname + '/' + cmd.hpcpf.case_meta_data.outputs;
 		end
 	end
 	return result;

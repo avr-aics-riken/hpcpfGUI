@@ -298,7 +298,7 @@ function svgNodeUI(draw) {
 		}
 	}
 	
-	function Node(typename, inouts) {
+	function Node(inouts) {
 		var varName = inouts.varname,
 			nodeback1 = draw.rect(305, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(14, 0),
 			nodeback2 = draw.rect(30, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(0, 14),
@@ -308,7 +308,7 @@ function svgNodeUI(draw) {
 			erasebtn,
 			eraseA,
 			eraseB,
-			titletext = draw.text(typename).fill('#4d4d4c').move(15, 2),
+			titletext = draw.text(inouts.name_hr).fill('#4d4d4c').move(15, 2),
 			eraseG,
 			group = draw.group(),
 			groupDragStart = function (self) {
@@ -605,7 +605,7 @@ function svgNodeUI(draw) {
 			outNode,
 			inpNode;
 		for (i = 0; i < nodeData.length; i += 1) {
-			node = new Node(nodeData[i].name, nodeData[i]);
+			node = new Node(nodeData[i]);
 			node.move(nodeData[i].pos[0], nodeData[i].pos[1]);
 		}
 		

@@ -131,7 +131,6 @@
 		if (!node) {
 			return;
 		}
-		node.name = nodename_hr;
 		nodeData = nui.getNodeData();
 		instNode = clone(node);
 		//console.log(instNode);
@@ -369,6 +368,10 @@
 		if (nodeData.hasOwnProperty('name')) {
 			value = nodeData.name;
 			property.appendChild(makeItemNode('name', value));
+		}
+		if (nodeData.hasOwnProperty('name_hr')) {
+			value = nodeData.name_hr;
+			property.appendChild(makeItemNode('name_hr', value));
 		}
 		if (nodeData.hasOwnProperty('varname')) {
 			value = nodeData.varname;
@@ -687,8 +690,8 @@
 						nodes.nodeData[i].status = node.status;
 					}
 				}
-				if (nui.getNode(caseNodes[i].name) !== undefined) {
-					nui.getNode(caseNodes[i].name).changeStatusLabel(node.status);
+				if (nui.getNode(caseNodes[i].varname) !== undefined) {
+					nui.getNode(caseNodes[i].varname).changeStatusLabel(node.status);
 				}
 			}
 		});
