@@ -88,7 +88,11 @@ local function getServerInfo(server)
         ["ff01ffv"] = focusSettingFFV,
     }
     info["ff01ffv"].server = "ff01"
-    return info[server]
+	if info[server] ~= nil then
+    	return info[server]
+	else
+		return localhostSetting
+	end
 end
 
 return {getServerInfo=getServerInfo}
