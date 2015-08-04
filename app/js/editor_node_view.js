@@ -375,7 +375,7 @@
 		}
 		if (nodeData.hasOwnProperty('varname')) {
 			value = nodeData.varname;
-			property.appendChild(makeItemNode('varname', value));
+			property.appendChild(makeItemNode('casename', value));
 		}
 		if (nodeData.hasOwnProperty('status')) {
 			value = nodeData.status;
@@ -911,7 +911,6 @@
 		return cleanWorkflow(endcallback);
 	};
 	window.node_edit_view.init = init;
-	//window.node_edit_view.reload = reload;
 	window.node_edit_view.save = save;
 	window.node_edit_view.load = load;
 	
