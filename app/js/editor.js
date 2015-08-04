@@ -295,6 +295,9 @@
 			return;
 		}
 		if (!window.editor.edited) {
+			if (endCallback) {
+				endCallback();
+			}
 			return;
 		}
 		console.log("Save:" + window.editor.openedfile);

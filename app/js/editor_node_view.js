@@ -868,6 +868,15 @@
 	function cleanWorkflow(endCallback) {
 		console.log("cleanworkflow");
 		save(function () {
+			
+			editor.socket.emit('cleanWorkflow');
+			editor.socket.once('doneCleanWorkflow', function () {
+				if (endCallback) {
+					endCallback();
+				}
+			});
+
+			/*
 			nui.exportLua(function (parents, sorted, exportEndCallback) {
 				var i = 0,
 					password_need_machines = [];
@@ -885,6 +894,7 @@
 					});
 				});
 			});
+			*/
 		});
 	}
 	
