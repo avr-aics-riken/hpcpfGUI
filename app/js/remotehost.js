@@ -116,9 +116,9 @@ function makeNode(cap, node) {
 			}(this, type)));
 			
 			if (node.password) {
-				testConnect.Connect(null, node.password);
+				testConnect.ConnectTest(null, node.password);
 			} else {
-				testConnect.Connect(node.passphrase, null);
+				testConnect.ConnectTest(node.passphrase, null);
 			}
 		};
 	}(type));

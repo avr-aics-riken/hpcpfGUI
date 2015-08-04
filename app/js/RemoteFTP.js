@@ -735,7 +735,7 @@ if (typeof window === 'undefined') { // Node.js
 		};
 
 		socket.on('RFTP:Connection', (function (thisptr) {
-			return function (sdata) {
+			return function (sdata, isTest) {
 				var data = JSON.parse(sdata),
 					rfile,
 					regList,
@@ -776,6 +776,10 @@ if (typeof window === 'undefined') { // Node.js
 				}
 				// create copy.
 				info = JSON.parse(JSON.stringify(target));
+
+				if (isTest) {
+					info.workpath = "";
+				}
 
 				if (!info.hasOwnProperty('type')) {
 					thisptr.errorMessage(data.cid, 'Invalid host type');
@@ -1085,9 +1089,17 @@ if (typeof window === 'undefined') { // Node.js
 		this.Connect = function (passphrase, password) {
 			console.log('CONNECT');
 			if (password) {
-				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, type : this.type, password : password}));
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, type : this.type, password : password}), false);
 			} else {
-				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, type : this.type, passphrase : passphrase }));
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, type : this.type, passphrase : passphrase }), false);
+			}
+		};
+		this.ConnectTest = function (passphrase, password) {
+			console.log('CONNECT');
+			if (password) {
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, type : this.type, password : password}), true);
+			} else {
+				this.socket.emit('RFTP:Connection', JSON.stringify({id : this.id, cid : this.cid, type : this.type, passphrase : passphrase }), true);
 			}
 		};
 		this.Disconnect = function () {
