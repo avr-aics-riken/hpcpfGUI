@@ -54,8 +54,8 @@
 /* host browser */
 .hostbrowser{
 	margin:auto;
-	margin-left:15px;
-	margin-top:10px;
+	/*margin-left:15px;*/
+	margin-top:50px;
 	border:solid;
 	border-radius:20px;
 	border-width:12px;
@@ -280,4 +280,42 @@
 
 .resumeList {
 	color: white;
+}
+
+.button_resume_execute {
+    width: 107px;
+    height: 40px;
+    position: relative;
+    background-image: url("../image/button_bg_action_play.png");
+    font-size: 18px;
+    font-weight: 600;
+    background-repeat: no-repeat;
+    background-size: contain;
+	margin-left : 10px;
+	top : 15px;
+}
+
+.button_resume_execute:active{
+	background-image:url("../image/button_bg_start_stop_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_resume_stop {
+    width: 107px;
+    height: 40px;
+    position: relative;
+    background-image: url("../image/button_bg_action_stop.png");
+    font-size: 18px;
+    font-weight: 600;
+    background-repeat: no-repeat;
+    background-size: contain;
+	margin-left : 10px;
+	top : 15px;
+}
+
+.button_resume_stop:active{
+	background-image:url("../image/button_bg_start_stop_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }

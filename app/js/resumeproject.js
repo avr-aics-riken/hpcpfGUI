@@ -14,9 +14,21 @@
 	
 	function addRow(name, status) {
 		var list = document.getElementById('resumeList'),
-			row = document.createElement('div');
-
-		row.innerHTML = "status:" + status + "   name:" + name;
+			row = document.createElement('div'),
+			button = document.createElement('button'),
+			text = document.createElement('span');
+		
+		if (status === "running") {
+			button.className = "button_resume_stop";
+			button.id = "button_resume_stop";
+		} else {
+			button.className = "button_resume_execute";
+			button.id = "button_resume_execute";
+		}
+		
+		text.innerHTML = "status:" + status + "   name:" + name;
+		row.appendChild(button);
+		row.appendChild(text);
 		list.appendChild(row);
 	}
 	
