@@ -328,13 +328,19 @@ function getInputNodes(args_table)
 	return list;
 end
 
-function getOutputFiles()
+function getOutputFiles(casename)
 	local cmdFile = 'cmd.json';
 	local cmd = readJSON(cmdFile);
 	local result = nil;
 	if (cmd ~= nil) then
 		if (cmd.hpcpf.case_meta_data.outputs ~= nil) then
-			result = '../' + cmd.hpcpf.case_meta_data.varname + '/' + cmd.hpcpf.case_meta_data.outputs;
+			for i, v in pairs(cmd.hpcpf.case_meta_data.outputs) do
+				print(i, v, v.file);
+				if v.file ~= nil then
+					v.file = '../' .. casename .. '/' .. v.file;
+				end
+			end
+			result = cmd.hpcpf.case_meta_data.outputs;
 		end
 	end
 	return result;
