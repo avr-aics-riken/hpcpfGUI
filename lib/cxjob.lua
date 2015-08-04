@@ -269,6 +269,11 @@ function cxjob:remoteDeleteDir(dirpath)
     return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
+function cxjob:remoteWorkDeleteDir(dirpath)
+    local cmd = 'rm -rf ' .. self.workdir .. dirpath
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
+end
+
 
 local function split(str, delim)
     local result,pat,lastPos = {},"(.-)" .. delim .. "()",1

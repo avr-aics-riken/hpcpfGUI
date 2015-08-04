@@ -144,7 +144,7 @@ function dxjob:SendDir(localdir)
 		--
 
 		-- DELETE now.
-		self.m_jobmgr:remoteDeleteDir(casename)
+		self.m_jobmgr:remoteWorkDeleteDir(casename)
 	end
 	
 	compressFile(casename, temptar, true, '-C '..dirpath) -- compress
