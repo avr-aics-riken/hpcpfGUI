@@ -237,3 +237,20 @@
 	margin-left:400px;
 	margin-top:200px;
 }
+
+.button_clean_case {
+	width:60px;
+	height:40px;
+	position:relative;
+	background-image:url("../image/button_bg_action_edit.png");
+	font-size:12px;
+	font-weight:600;
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_clean_case:active{
+	background-image:url("../image/button_bg_action_edit_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}

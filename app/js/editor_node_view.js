@@ -344,6 +344,28 @@
 		}
 	}
 	
+	function addCleanButton(nodeData) {
+		//<button class="button_clean" id="button_clean" title='Clean'>Clean</button>
+		var property = document.getElementById('nodeProperty'),
+			button = document.createElement('button');
+		button.innerHTML = "Clean";
+		button.className = "button_clean_case";
+		button.id = "button_clean_case";
+		button.onclick = (function (caseName) {
+			return function (evt) {
+				editor.socket.emit('cleanCase', caseName);
+				editor.socket.once('doneCleanCase', function (success) {
+					if (success) {
+						console.log('doneCleanCase');
+					} else {
+						console.error('CleanCase Failed');
+					}
+				});
+			};
+		}(nodeData.varname));
+		property.appendChild(button);
+	}
+	
 	function updateProperty(nodeData) {
 		var property = document.getElementById('nodeProperty'),
 			key,
@@ -362,6 +384,9 @@
 			prePropertyNodeName = null;
 			return;
 		}
+		
+		addCleanButton(nodeData);
+		
 		prePropertyNodeName = nodeData.name;
 		property.appendChild(makeItemNode('Property', 'Value', true));
 		

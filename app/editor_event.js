@@ -795,6 +795,16 @@
 			}
 		});
 		
+		socket.on('cleanCase', function (caseName) {
+			var processspawn = sesstionTable[socket.id].proc;
+			if (processspawn) {
+				socket.emit('doneCleanCase', false);
+				return;
+			}
+			cleanCase(caseName);
+			socket.emit('doneCleanCase', true);
+		});
+		
 		socket.on('cleanWorkflow', function () {
 			var processspawn = sesstionTable[socket.id].proc;
 			if (processspawn) {
