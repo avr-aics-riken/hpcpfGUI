@@ -352,15 +352,16 @@ function registerPTLEvent(socket) {
 							ceiFile = path.join(projectFiles[k].path, 'cei.json');
 							if (fs.existsSync(ceiFile)) {
 								hasCeiJSON = true;
-								//console.log("reqGetProjectList", ceiFile);
 								ceiData = fs.readFileSync(ceiFile);
-								status = getStatusFunc(ceiData);
+								status = getStatusFunc(JSON.parse(ceiData));
 							}
 						}
 					}
 
 					if (hasCeiJSON) {
-						result[files[i].name] = status;
+						if (status !== "finished" && status !== "pending") {
+							result[files[i].name] = status;
+						}
 					}
 				}
 			}
