@@ -251,6 +251,7 @@
 	function setProjectName(name) {
 		document.title = name;
 		$('info_project_title').innerHTML = "Project Name:";
+		$('node_title_text').innerHTML = name;
 		$('info_title_text').innerHTML = name;
 		$('exe_project_title_text').innerHTML = name;
 	}
