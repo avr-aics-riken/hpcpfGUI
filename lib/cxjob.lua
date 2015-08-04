@@ -38,7 +38,7 @@ end
 function cxjob.new(username_or_table, sshkey, server, port, workdir)
     local username
     if type(username_or_table) == 'table' then
-        username = username_or_table.user
+        username = username_or_table.userid
         sshkey   = username_or_table.sshkey
         server   = username_or_table.server
         port     = username_or_table.port
