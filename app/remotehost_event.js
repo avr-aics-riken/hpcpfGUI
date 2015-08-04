@@ -10,13 +10,16 @@ function updateHostList(socket) {
 		return function (err, filebuf) {
 			var host,
 				list = [],
-				k;
+				k,
+				sshkey;
 			if (err) {
 				console.log(err);
 				host = {};
 			} else {
 				host = JSON.parse(filebuf.toString());
 			}
+			
+			
 			if (host.hasOwnProperty('hpcpf') && host.hpcpf.hasOwnProperty('targets')) {
 				host = host.hpcpf.targets;
 			
@@ -24,9 +27,18 @@ function updateHostList(socket) {
 				for (k = 0; k < host.length; k = k + 1) {
 					if (host[k]) {
 						if (host[k].userid === undefined) {
-							list.push({type : host[k].type, name_hr : host[k].name_hr, server : host[k].server, userid : ""});
+							
+							if (host[k].hasOwnProperty('sshkey')) {
+								list.push({type : host[k].type, name_hr : host[k].name_hr, server : host[k].server, userid : "", sshkey: host[k].sshkey });
+							} else {
+								list.push({type : host[k].type, name_hr : host[k].name_hr, server : host[k].server, userid : "" });
+							}
 						} else {
-							list.push({type : host[k].type, name_hr : host[k].name_hr, server : host[k].server, userid : host[k].userid});
+							if (host[k].hasOwnProperty('sshkey')) {
+								list.push({type : host[k].type, name_hr : host[k].name_hr, server : host[k].server, userid : host[k].userid, sshkey: host[k].sshkey});
+							} else {
+								list.push({type : host[k].type, name_hr : host[k].name_hr, server : host[k].server, userid : host[k].userid });
+							}
 						}
 					}
 				}

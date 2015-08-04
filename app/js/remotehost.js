@@ -115,10 +115,10 @@ function makeNode(cap, node) {
 				};
 			}(this, type)));
 			
-			if (node.password) {
-				testConnect.ConnectTest(null, node.password);
-			} else {
+			if (node.hasOwnProperty('sshkey')) {
 				testConnect.ConnectTest(node.passphrase, null);
+			} else {
+				testConnect.ConnectTest(null, node.password);
 			}
 		};
 	}(type));
