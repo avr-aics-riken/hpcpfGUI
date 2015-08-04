@@ -787,7 +787,7 @@ if (typeof window === 'undefined') { // Node.js
 				}
 				
 				if (info.hasOwnProperty('sshkey')) {
-					isUsePassword = true;
+					isUsePassword = false;
 				}
 				
 				if (data.password) {
