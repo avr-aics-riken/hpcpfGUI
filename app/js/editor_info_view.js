@@ -92,7 +92,7 @@
 		$('info_case').innerHTML = "";
 		for (i = 0; i < cmdData.length; i = i + 1) {
 			if (cmdData[i].hasOwnProperty('name_hr')) {
-				$('info_case').innerHTML += createInfoLink(cmdData[i].name_hr, false, true);
+				$('info_case').innerHTML += createInfoLink(cmdData[i].varname, false, true);
 			}
 		}
 	});
