@@ -229,7 +229,7 @@ end
 function executeCASE(casename,...)
     local args_table = {...}
     --print("num="..#args_table)
-    local cf = loadfile('./'..casename..'/cwf.lua');
+    local cf = assert(loadfile('./'..casename..'/cwf.lua'));
 	local result = nil;
     if (cf == nil) then
         print("Can't find Case work flow:"..casename)
