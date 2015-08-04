@@ -157,16 +157,17 @@ end
 
 function dxjob:GetDir(remotedir, basedir)
 	print('get:'..remotedir)
+	local remotedir_asta = remotedir .. '/*';
 	local remotetarfile = 'HPCPF_case.tar.gz'
-	--self.m_jobmgr:remoteCompressFile(remotedir, remotetarfile, true)
+	--self.m_jobmgr:remoteCompressFile(remotedir_asta, remotetarfile, true)
 	local newdate = self.m_jobstartdate
 	
 	-- TODO: newer date
 	print('NEWDATE:',newdate)
 	if newdate == '' then
-		self.m_jobmgr:remoteCompressFile(remotedir, remotetarfile, true)
+		self.m_jobmgr:remoteCompressFile(remotedir_asta, remotetarfile, true)
 	else
-		self.m_jobmgr:remoteCompressNewerFile(remotedir, remotetarfile, newdate, true)
+		self.m_jobmgr:remoteCompressNewerFile(remotedir_asta, remotetarfile, newdate, true)
 	end
 	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
