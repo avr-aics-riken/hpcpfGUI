@@ -539,16 +539,23 @@
 	}
 	
 	// local luajson_0 = { target_machine };
-	function exportTargetMachine(id, inputIDs, nodeData) {
+	function exportTargetMachine(id, inputIDs, nodeData, targetMachineList) {
 		var i,
+			k,
 			innode,
 			target_machine = {},
-			hasTargetMachine = false;
+			hasTargetMachine = false,
+			targets = targetMachineList;
+				
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			innode = nodeData.input[i];
 			if (innode.type === 'target_machine') {
 				if (innode.hasOwnProperty('machine') && innode.machine) {
-					target_machine.machine = innode.machine;
+					for (k = 0; k < targets.length; k = k + 1) {
+						if (innode.machine.type === targets[k].type) {
+							target_machine.machine = targets[k];
+						}
+					}
 				}
 				if (innode.hasOwnProperty('cores') && innode.cores) {
 					target_machine.cores = innode.cores;
@@ -865,7 +872,7 @@
 				password_need_machines = gatherPasswordNeedMachines(parents, sorted);
 
 				// show password,passphrase input dialog
-				password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
+				password_input.createPasswordInputView(editor.socket, password_need_machines, function (password_need_machines) {
 					var node,
 						nodeData,
 						script = "require('hpcpf')\n";

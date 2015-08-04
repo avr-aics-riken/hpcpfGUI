@@ -109,7 +109,7 @@
 		if (okcallback) {
 			okButton.onclick = function (ev) {
 				background.style.display = "none";
-				okcallback(ev);
+				okcallback(machines);
 			};
 		}
 		
