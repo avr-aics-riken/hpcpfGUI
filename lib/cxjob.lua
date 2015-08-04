@@ -250,13 +250,13 @@ function cxjob:remoteDeleteFile(filename)
 end
 
 function cxjob:remoteMoveFile(fromFile, toFile)
-    -- TODO
-    print('not implemented yet!')
+    local cmd = 'mv ' .. fromFile .. ' ' .. toFile
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteCopyFile(fromFile, toFile)
-    -- TODO
-    print('not implemented yet!')
+    local cmd = 'cp ' .. fromFile .. ' ' .. toFile
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteMakeDir(dirpath)
@@ -264,9 +264,9 @@ function cxjob:remoteMakeDir(dirpath)
     return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
-function cxjob:remoteDeleteDir(dirname)
-    -- TODO
-    print('not implemented yet!')
+function cxjob:remoteDeleteDir(dirpath)
+    local cmd = 'rm -rf ' .. dirpath
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 

@@ -137,9 +137,16 @@ function dxjob:SendDir(localdir)
 	local dirpath, casename = getDirAndName(localdir)
 	local exist = self.m_jobmgr:isExistFile(casename)
 	if  exist == true then
-		print('[Error] Already exist case directory:', casename);
-		return false
+		print('Already exist case directory:', casename);
+		
+		--
+		-- TODO: backup directry
+		--
+
+		-- DELETE now.
+		self.m_jobmgr:remoteDeleteDir(casename)
 	end
+	
 	compressFile(casename, temptar, true, '-C '..dirpath) -- compress
 	self.m_jobmgr:sendFile(temptar, 'HPCPF_case.tar.gz')        -- send
 	deleteFile(temptar)                                         -- delete localtar file
