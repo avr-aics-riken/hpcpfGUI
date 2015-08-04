@@ -73,7 +73,7 @@
 		return itemRow;
 	}
 	
-	function makeTargetMachineNode(name, value, node, type) {
+	function makeTargetMachineNode(name, value, node, targetMachineList) {
 		var valueRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
 			valueProp = document.createElement('div'),
@@ -92,7 +92,7 @@
 		valueRow.appendChild(valueProp);
 		
 		// select box
-		targets = node.target_machine_list.hpcpf.targets;
+		targets = targetMachineList.hpcpf.targets;
 		valueSelect.className = "nodePropertyTargetMachine";
 		for (i = 0; i < targets.length; i = i + 1) {
 			target = targets[i];
@@ -321,11 +321,11 @@
 		}
 	}
 	
-	function makePropertyRow(type, key, val, inputNode) {
+	function makePropertyRow(type, key, val, inputNode, targetMachineList) {
 		//console.log("type key val", type, key, val);
 		if (key === 'machine') {
 			if (type === 'target_machine') {
-				return makeTargetMachineNode(key, val, inputNode);
+				return makeTargetMachineNode(key, val, inputNode, targetMachineList);
 			}
 		} else if (key === 'value') {
 			return [makeItemNode(key, val)];
@@ -366,7 +366,7 @@
 		property.appendChild(button);
 	}
 	
-	function updateProperty(nodeData) {
+	function updateProperty(nodeData, endCallback) {
 		var property = document.getElementById('nodeProperty'),
 			key,
 			value,
@@ -407,39 +407,44 @@
 			property.appendChild(makeItemNode('status', value));
 		}
 		
-		for (key in nodeData) {
-			if (nodeData.hasOwnProperty(key)) {
-				if (key === 'input') {
-					value = nodeData[key];
+		editor.socket.emit('reqGetTargetMachineList');
+		editor.socket.once('doneGetTargetMachineList', function (data) {
+			var targetMachineList = JSON.parse(data);
+			console.log(targetMachineList);
+			for (key in nodeData) {
+				if (nodeData.hasOwnProperty(key)) {
+					if (key === 'input') {
+						value = nodeData[key];
 
-					for (iokey in value) {
-						if (value.hasOwnProperty(iokey)) {
-							ioval = value[iokey];
-							if (ioval.hasOwnProperty('name')) {
-								iokey2 = 'Input';
-								ioval2 = ioval.name;
-								property.appendChild(makeItemNode(iokey2, "", true));
-							}
-							if (ioval.hasOwnProperty('type')) {
-								inputtype = ioval.type;
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
-								ioval.machine = "";
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
-								ioval.cores = 1;
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
-								ioval.nodes = 1;
-							}
-							for (iokey2 in ioval) {
-								if (ioval.hasOwnProperty(iokey2)) {
-									if (iokey2 !== 'name') {
-										if (ioval.hasOwnProperty(iokey2)) {
-											ioval2 = ioval[iokey2];
-											propertyRows = makePropertyRow(inputtype, iokey2, ioval2, ioval);
-											for (i = 0; i < propertyRows.length; i = i + 1) {
-												property.appendChild(propertyRows[i]);
+						for (iokey in value) {
+							if (value.hasOwnProperty(iokey)) {
+								ioval = value[iokey];
+								if (ioval.hasOwnProperty('name')) {
+									iokey2 = 'Input';
+									ioval2 = ioval.name;
+									property.appendChild(makeItemNode(iokey2, "", true));
+								}
+								if (ioval.hasOwnProperty('type')) {
+									inputtype = ioval.type;
+								}
+								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
+									ioval.machine = "";
+								}
+								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
+									ioval.cores = 1;
+								}
+								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
+									ioval.nodes = 1;
+								}
+								for (iokey2 in ioval) {
+									if (ioval.hasOwnProperty(iokey2)) {
+										if (iokey2 !== 'name') {
+											if (ioval.hasOwnProperty(iokey2)) {
+												ioval2 = ioval[iokey2];
+												propertyRows = makePropertyRow(inputtype, iokey2, ioval2, ioval, targetMachineList);
+												for (i = 0; i < propertyRows.length; i = i + 1) {
+													property.appendChild(propertyRows[i]);
+												}
 											}
 										}
 									}
@@ -449,7 +454,10 @@
 					}
 				}
 			}
-		}
+			if (endCallback) {
+				endCallback();
+			}
+		});
 	}
 	
 	editor.socket.on('connect', function () {

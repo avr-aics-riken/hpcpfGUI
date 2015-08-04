@@ -163,12 +163,14 @@
 						if (!inputElem.hasOwnProperty('name') && inputElem.hasOwnProperty('name_hr')) {
 							nodeInput.name = inputElem.name_hr;
 						}
+						/*
 						if (inputElem.hasOwnProperty('type') && inputElem.type === 'target_machine') {
 							if (targetConfData) {
 								nodeInput.target_machine_list = targetConfData;
 							}
-							targetElem = nodeInput;
 						}
+						*/
+						targetElem = nodeInput;
 						node.input.push(nodeInput);
 					}
 				}
@@ -689,6 +691,11 @@
 			} catch (e) {
 				console.log(e);
 			}
+		});
+		
+		socket.on('reqGetTargetMachineList', function () {
+			var confData = readTargetConf();
+			socket.emit('doneGetTargetMachineList', JSON.stringify(confData));
 		});
 
 		socket.on('stop', function (data) {
