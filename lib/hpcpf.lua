@@ -335,7 +335,6 @@ function getOutputFiles(casename)
 	if (cmd ~= nil) then
 		if (cmd.hpcpf.case_meta_data.outputs ~= nil) then
 			for i, v in pairs(cmd.hpcpf.case_meta_data.outputs) do
-				print(i, v, v.file);
 				if v.file ~= nil then
 					v.file = '../' .. casename .. '/' .. v.file;
 				end
