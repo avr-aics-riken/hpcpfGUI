@@ -259,7 +259,7 @@ function executeCASE(casename,...)
 				writeCEI(ceiFile, cei, 'Running')
 			end
 		else
-			if (cei.hpcpf.case_exec_info.status == 'Finished' or cei.hpcpf.case_exec_info.status == 'Finished(Dry)') then
+			if (cei.hpcpf.case_exec_info.status == 'Finished') then
 				print("--- End   CASE: "..casename.." ---")
 				return cei.hpcpf.case_exec_info.result;
 			end

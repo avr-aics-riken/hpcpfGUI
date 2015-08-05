@@ -81,7 +81,9 @@ end
 
 function excase(args_table)
 	local caseDir = getCurrentDir() .. getBasePath()
-	local upPath, caseName = getDirAndName(caseDir)
+	local upPath;
+	local caseName;
+	upPath, caseName = getDirAndName(caseDir);
 	local inst = {
 		targetConf = generateTargetConf(args_table),
 		cores = getCores(args_table),
