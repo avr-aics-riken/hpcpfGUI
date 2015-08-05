@@ -338,7 +338,7 @@ if (typeof window === 'undefined') { // Node.js
 			}
 			// widthout root dirs for watching cei.json
 			if (this.isAlwaysWatchRootDirCallback) {
-				if (!isAlwaysWatchRootDirCallback()) {
+				if (!this.isAlwaysWatchRootDirCallback()) {
 					if (relativepath.indexOf('/') >= 0) {
 						console.log("UNWATCH:", relativepath);
 						this.UnwatchDir(relativepath); // unwatch dir

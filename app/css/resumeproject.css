@@ -319,3 +319,25 @@
 	background-repeat:no-repeat;
 	background-size: contain;
 }
+
+.button_resume_open {
+	width:60px;
+	height:40px;
+	position:relative;
+	margin-left : 20px;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_resume_open:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_resume_open_label {
+	position: relative;
+	top: -10px;
+	font-size: 11px;
+}

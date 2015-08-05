@@ -265,7 +265,7 @@
 		}
 	}
 	
-	function registerEditorEvent(socket, appCommands, appExtensions) {
+	function registerEditorEvent(socket, appCommands, appExtensions, backfire_filedialog) {
 		var def_srcdir = __dirname;// + '/work/'
 		console.log('Working Dir=' + def_srcdir);
 
@@ -551,44 +551,50 @@
 				target,
 				k;
 			
-			console.log("cleanCase", caseName);
-			if (cmdFileList.hasOwnProperty(caseName)) {
-				cmdPath = cmdFileList[caseName];
-				cmdData = fs.readFileSync(cmdPath, 'utf8');
-				cmdData = JSON.parse(cmdData);
-				if (cmdData.hasOwnProperty('hpcpf')) {
-					if (cmdData.hpcpf.hasOwnProperty('case_meta_data')) {
-						if (cmdData.hpcpf.case_meta_data.hasOwnProperty('clean')) {
-							cleanList = cmdData.hpcpf.case_meta_data.clean;
-							console.log("CLEANLIST", cleanList);
-							for (k = 0; k < cleanList.length; k = k + 1) {
-								if (util.isRelative(cleanList[k].path)) {
-									target = path.join(srcdir, caseName);
-									target = path.join(target, cleanList[k].path);
-								} else {
-									target = cleanList[k].path;
-								}
-								if (target !== srcdir && target !== ".") {
-									if (cleanList[k].type === 'dir') {
-										console.log("try clean directory:" + target);
-										util.deleteDirectory(target);
+			backfire_filedialog.Disconnect(socket.id);
+			try {
+				console.log("cleanCase", caseName);
+				if (cmdFileList.hasOwnProperty(caseName)) {
+					cmdPath = cmdFileList[caseName];
+					cmdData = fs.readFileSync(cmdPath, 'utf8');
+					cmdData = JSON.parse(cmdData);
+					if (cmdData.hasOwnProperty('hpcpf')) {
+						if (cmdData.hpcpf.hasOwnProperty('case_meta_data')) {
+							if (cmdData.hpcpf.case_meta_data.hasOwnProperty('clean')) {
+								cleanList = cmdData.hpcpf.case_meta_data.clean;
+								console.log("CLEANLIST", cleanList);
+								for (k = 0; k < cleanList.length; k = k + 1) {
+									if (util.isRelative(cleanList[k].path)) {
+										target = path.join(srcdir, caseName);
+										target = path.join(target, cleanList[k].path);
 									} else {
-										console.log("try clean file:" + target);
-										util.deleteFiles(target);
+										target = cleanList[k].path;
+									}
+									if (target !== srcdir && target !== ".") {
+										if (cleanList[k].type === 'dir') {
+											console.log("try clean directory:" + target);
+											util.deleteDirectory(target);
+										} else {
+											console.log("try clean file:" + target);
+											util.deleteFiles(target);
+										}
 									}
 								}
 							}
 						}
 					}
 				}
+				// delete cei.json
+				target = path.join(srcdir, caseName);
+				target = path.join(target, CEI_FILENAME);
+				if (fs.existsSync(target)) {
+					console.log("delete:", target);
+					fs.unlinkSync(target);
+				}
+			} catch (e) {
+				console.error(e);
 			}
-			// delete cei.json
-			target = path.join(srcdir, caseName);
-			target = path.join(target, CEI_FILENAME);
-			if (fs.existsSync(target)) {
-				console.log("delete:", target);
-				fs.unlinkSync(target);
-			}
+			backfire_filedialog.SocketEvent(socket, 'opendlg');
 		}
 		
 		function cleanWorkflow(endCallback) {

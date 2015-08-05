@@ -102,7 +102,9 @@
 	};
 	
 	cleanProject = function () {
-		return window.node_edit_view.cleanWorkflow(null);
+		window.node_edit_view.cleanWorkflow(function () {
+			editor.closeDirectoryFunc();
+		});
 	};
 
 	editor.socket.on('connect', function () {
