@@ -21,6 +21,15 @@
 		}
 	}
 	
+	function openProject(projectPath) {
+		return function (evt) {
+			var encoded = encodeURIComponent(projectPath);
+			//updateProjectList();
+			console.log("resumeExecute");
+			window.open("editor.html?" + encoded, "_blank");
+		}
+	}
+	
 	function resumeStop(projectName) {
 		return function (evt) {
 			
@@ -31,7 +40,9 @@
 		var list = document.getElementById('resumeList'),
 			row = document.createElement('div'),
 			button = document.createElement('button'),
-			text = document.createElement('span');
+			text = document.createElement('span'),
+			openButton = document.createElement('button'),
+			openButtonLabel = document.createElement('span');
 		
 		if (status === "Running") {
 			button.className = "button_resume_stop";
@@ -43,9 +54,16 @@
 			button.onclick = resumeExecute(path);
 		}
 		
+		openButton.className = "button_resume_open";
+		openButton.onclick = openProject(path);
+		openButtonLabel.innerHTML = "Open";
+		openButtonLabel.className = "button_resume_open_label";
+		openButton.appendChild(openButtonLabel);
+		
 		text.innerHTML = "status:" + status + "   name:" + name;
 		row.appendChild(button);
 		row.appendChild(text);
+		row.appendChild(openButton);
 		list.appendChild(row);
 	}
 	
