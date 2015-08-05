@@ -352,6 +352,8 @@ function svgNodeUI(draw) {
 					labelColor = 'red';
 				} else if (labelText === "Finished" || labelText === "Finished(Dry)") {
 					labelColor = '#72ca29';
+				} else if (labelText === "Uploaded" || labelText === "Uploaded(Dry)") {
+					labelColor = 'orange';
 				}
 				return labelColor;
 			};
