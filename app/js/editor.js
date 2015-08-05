@@ -587,7 +587,7 @@
 		console.log("path" + path);
 		
 		if (path !== window.editor.openedfile) {
-			if (window.editor.edited) {
+			if (window.editor.edited && window.editor.openedfile) {
 				showOpenWarningMessage(
 					function (isOK) {
 						console.log(isOK);

@@ -158,7 +158,7 @@
 		return [valueRow];
 	}
 
-	function addNode(nodename, nodename_hr, nx, ny, canErase) {
+	function addNode(nodename, nx, ny, canErase) {
 		var node = nodeListTable[nodename],
 			instNode,
 			nodeData;
@@ -179,38 +179,6 @@
 		nui.clearNodes();
 		nui.makeNodes(nodeData);
 	}
-	
-	/*
-	function updateNode(nodename) {
-		var node = nodeListTable[nodename],
-			nodeData = nui.getNodeData(),
-			data,
-			i,
-			k,
-			instNode,
-			posx,
-			posy,
-			canErase;
-		
-		for (i in nodeData.nodeData) {
-			if (nodeData.nodeData.hasOwnProperty(i)) {
-				if (nodeData.nodeData[i].varname === node.varname) {
-					instNode = clone(node);
-					data = nodeData.nodeData[i];
-					posx = nodeData.nodeData[i].pos[0];
-					posy = nodeData.nodeData[i].pos[1];
-					canErase = nodeData.nodeData[i].canErase;
-					nodeData.nodeData[i] = instNode;
-					nodeData.nodeData[i].pos[0] = posx;
-					nodeData.nodeData[i].pos[1] = posy;
-					nodeData.nodeData[i].canErase = canErase;
-				}
-			}
-		}
-		nui.clearNodes();
-		nui.makeNodes(nodeData);
-	}
-	*/
 	
 	function deleteNode(node) {
 		var nodeData = nui.getNodeData(),
@@ -292,30 +260,6 @@
 				}
 			}
 		}
-	}
-
-	function addSystemNode(listElement, cb, nx, ny) {
-		return function (e) {
-			var index = listElement.selectedIndex,
-				text,
-				node,
-				instNode;
-			
-			if (index === -1) {
-				return;
-			}
-			text = listElement.options[index].text;
-			if (nx === undefined || ny === undefined) {
-				// center
-				addNode(text, text, window.innerWidth / 4, window.innerHeight / 4, true);
-			} else {
-				// specific pos
-				addNode(text, text, nx, ny, true);
-			}
-			if (cb) {
-				cb();
-			}
-		};
 	}
 
 	function updatePropertyDebug(nodeData) {
@@ -847,7 +791,7 @@
 
 						for (i = 0; i < caseNodes.length; i = i + 1) {
 							nodeListTable[caseNodes[i].name] = caseNodes[i];
-							addNode(caseNodes[i].name, caseNodes[i].name_hr, 50, 50 + (150 * i), false);
+							addNode(caseNodes[i].name, 50, 50 + (150 * i), false);
 						}
 					});
 				}
@@ -910,9 +854,6 @@
 						});
 					} else {
 						hiddenOKCancelDialog();
-						if (endCallback) {
-							endCallback();
-						}
 					}
 				}, "Are you sure you want to reset workflow ?");
 			};
