@@ -12,18 +12,35 @@
 		resumeList.innerHTML = "";
 	}
 	
+	function resumeExecute(projectPath) {
+		return function (evt) {
+			var encoded = encodeURIComponent(projectPath);
+			//updateProjectList();
+			console.log("resumeExecute");
+			window.open("editor.html?" + encoded, "_blank");
+		}
+	}
+	
+	function resumeStop(projectName) {
+		return function (evt) {
+			
+		}
+	}
+	
 	function addRow(name, status) {
 		var list = document.getElementById('resumeList'),
 			row = document.createElement('div'),
 			button = document.createElement('button'),
 			text = document.createElement('span');
 		
-		if (status === "running") {
+		if (status === "Running") {
 			button.className = "button_resume_stop";
 			button.id = "button_resume_stop";
+			button.onclick = resumeStop(name);
 		} else {
 			button.className = "button_resume_execute";
 			button.id = "button_resume_execute";
+			button.onclick = resumeExecute(name);
 		}
 		
 		text.innerHTML = "status:" + status + "   name:" + name;
@@ -40,7 +57,6 @@
 		list.id = "resumeList";
 		list.className = "resumeList";
 		projectList.appendChild(list);
-		addRow("hogehoge", "test");
 	}
 	
 	socket.on('getProjectList', function (datastr) {
