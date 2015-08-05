@@ -193,7 +193,7 @@
 				node.funcname = "Case";
 				node.name = dirname;
 				node.varname = dirname;
-				node.status = "Pending";
+				node.status = "Ready";
 			}
 			
 			if (cei && cei.hasOwnProperty('hpcpf')) {
@@ -700,6 +700,43 @@
 			socket.emit('doneGetTargetMachineList', JSON.stringify(confData));
 		});
 
+		
+		function changeCEIStatus(changeFunc) {
+			var srcdir = sesstionTable[socket.id].dir,
+				cmdFileList = getCMDFileList(srcdir),
+				i,
+				ceiPath,
+				caseDirName,
+				preStatus,
+				postStatus,
+				data;
+			
+			try {
+				for (caseDirName in cmdFileList) {
+					if (cmdFileList.hasOwnProperty(caseDirName)) {
+						ceiPath = path.join(srcdir, caseDirName);
+						if (fs.existsSync(ceiPath)) {
+							ceiPath = path.join(ceiPath, CEI_FILENAME);
+							if (fs.existsSync(ceiPath)) {
+								data = JSON.parse(fs.readFileSync(ceiPath));
+								console.log(data);
+								if (data.hasOwnProperty('hpcpf') && data.hpcpf.hasOwnProperty('case_exec_info')) {
+									preStatus = data.hpcpf.case_exec_info.status;
+									postStatus = changeFunc(caseDirName, preStatus);
+									if (preStatus !== postStatus) {
+										data.hpcpf.case_exec_info.status = postStatus;
+										fs.writeFileSync(ceiPath, JSON.stringify(data));
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		
 		socket.on('stop', function (data) {
 			var processspawn = sesstionTable[socket.id].proc;
 			if (!processspawn) {
@@ -708,6 +745,14 @@
 			console.log('kill');
 			killSpawn(processspawn, function (success) {
 				sesstionTable[socket.id].proc = null;
+				changeCEIStatus(function (caseDirName, pre) {
+					if (pre === 'Running(Dry)') {
+						return 'Uploaded(Dry)';
+					} else if (pre === 'Running') {
+						return 'Uploaded';
+					}
+					return pre;
+				});
 				socket.emit('stopdone', success);
 			});
 			sesstionTable[socket.id].proc = null;
