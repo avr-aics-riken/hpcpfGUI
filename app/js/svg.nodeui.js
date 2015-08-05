@@ -351,7 +351,7 @@ function svgNodeUI(draw) {
 				} else if (labelText === "failed") {
 					labelColor = 'red';
 				} else if (labelText === "finished") {
-					labelColor = 'green';
+					labelColor = '#72ca29';
 				}
 				return labelColor;
 			};
