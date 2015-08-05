@@ -126,23 +126,19 @@ function dxjob:SendCaseDir()
 	return true
 end
 
-function dxjob:GetCaseDir()
+
+function dxjob:GetFiles(files, newdate)
 	local projuppath = self.m_excase.projectUpDir
 	local casename  = self.m_excase.caseName
 	local projname  = self.m_excase.projectName
 	local remotedir = projname .. '/' .. casename
 
-	print('get:'..remotedir)
-	local remotedir_asta = remotedir .. '/*';
 	local remotetarfile = projname .. '/HPCPF_case_' .. projname .. '_'.. casename .. '.tar.gz'
-	local newdate = self.m_jobstartdate
-	
-	-- TODO: newer date
-	print('NEWDATE:',newdate)
-	if newdate == '' then
-		self.m_jobmgr:remoteCompressFile(remotedir_asta, remotetarfile, true)
+
+	if newdate == '' or newdate == nil then
+		self.m_jobmgr:remoteCompressFile(files, remotetarfile, true)
 	else
-		self.m_jobmgr:remoteCompressNewerFile(remotedir_asta, remotetarfile, newdate, true)
+		self.m_jobmgr:remoteCompressNewerFile(files, remotetarfile, newdate, true)
 	end
 	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
@@ -153,8 +149,21 @@ function dxjob:GetCaseDir()
 	deleteFile(temptar)
 end
 
+function dxjob:GetCaseDir()
+	local casename  = self.m_excase.caseName
+	local projname  = self.m_excase.projectName
+	local remotedir = projname .. '/' .. casename
 
-function dxjob:SubmitAndWait()
+	print('get:'..remotedir)
+	local remotedir_asta = remotedir .. '/*';
+	local newdate = self.m_jobstartdate
+	
+	print('NEWDATE:',newdate)
+	self:GetFiles(remotedir_asta, newdate)
+end
+
+
+function dxjob:SubmitAndWait(poolingfunc)
 	local casename  = self.m_excase.caseName
 	local projname  = self.m_excase.projectName
 	local remoteCasePath = projname .. '/' .. casename
@@ -186,7 +195,43 @@ function dxjob:SubmitAndWait()
 			sleep(10)
 		end
 		print('JOB: QUE='.. #self.m_jobque .. ' / SUBMIT='.. #self.m_submitque .. ' DONE=' .. #self.m_doneque)
+		if poolingfunc then
+			poolingfunc()
+		end
 	end
+end
+
+function dxjob:GetRemoteDate()
+	return self.m_jobmgr:remoteDate()
+end
+
+function dxjob:IsExistFile(filepath)
+	local casename  = self.m_excase.caseName
+	local projname  = self.m_excase.projectName
+	local remoteCasePath = projname .. '/' .. casename
+	return self.m_jobmgr:isExistFile(remoteCasePath .. '/' .. filepath)
+end
+
+function dxjob:CollectionFileList()
+	return self.m_excase.collectionFiles
+end
+
+function dxjob:GetCollectionFiles()
+	local collectfiles = self:CollectionFileList()
+    local casename = self.m_excase.caseName
+    local projname = self.m_excase.projectName
+    
+    local files = ''
+    for i, v in pairs(collectfiles) do
+        print('COLLECT:', i, v.path)
+        if self:IsExistFile(v.path) then
+            --files = files .. v.path .. ' ' -- TODO: relative from case
+            files = files .. projname .. '/' .. casename .. '/' .. v.path .. ' ' -- Tempolary
+        end
+    end
+    if files ~= '' then
+        self:GetFiles(files)
+    end
 end
 
 return dxjob
