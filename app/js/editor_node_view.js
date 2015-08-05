@@ -849,6 +849,7 @@
 						hiddenOKCancelDialog();
 						editor.socket.emit('resetWorkflow');
 						editor.socket.once('doneResetWorkflow', function () {
+							nui.clearNodes();
 							initNode();
 							load();
 						});
