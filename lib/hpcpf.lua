@@ -1,7 +1,7 @@
 
+local excase = require('excase')
 
 --- for detection platform (return "Windows", "Darwin" or "Linux")
-
 function getPlatform()
     --- command capture
     function captureRedirectErr(cmd)
@@ -226,20 +226,6 @@ function getInitialCeiDescription(workdir, server, hosttype)
 	}
 end
 
-function generateTargetConf(args_table)
-	for i, k in pairs(args_table) do
-		--print(i, k);
-		if (i == 1) and next(k) then
-			for n, m in pairs(k) do
-				--print(n, m);
-				if n == "machine" then
-					return m;
-				end
-			end
-		end
-	end
-end
-
 function executeCASE(casename,...)
     local args_table = {...}
     --print("num="..#args_table)
@@ -254,11 +240,13 @@ function executeCASE(casename,...)
         local oldPackagePath = package.path
         package.path = "./" .. casename .. "/?.lua;" .. oldPackagePath
 		
+		local ex = excase(args_table);
+		
 		-- write cei.json
 		local ceiFile = "cei.json";
 		local cei = readJSON(ceiFile);
 		if (cei == nil) then
-			local targetconf = generateTargetConf(args_table);
+			local targetconf = ex.targetConf
 			local workdir = targetconf.workpath;
 			if string.sub(workdir, workdir:len()) ~= '/' then
 				workdir = workdir .. '/'
@@ -274,7 +262,6 @@ function executeCASE(casename,...)
 		end
 		
 		-- execute
-		local ex = require('excase')(args_table)
 		result = cf(ex)
 		
 		-- write result to cei.json
