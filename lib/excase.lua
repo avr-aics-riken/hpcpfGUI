@@ -79,16 +79,20 @@ function isDryRun(args_table)
 	return false;
 end
 
-function excase.new(args_table, casename)
+function excase(args_table)
+	local caseDir = getCurrentDir() .. getBasePath()
+	local upPath, caseName = getDirAndName(caseDir)
 	local inst = {
 		targetConf = generateTargetConf(args_table),
 		cores = getCores(args_table),
 		nodes = getNodes(args_table),
 		inputNodes = getInputNodes(args_table),
-		outputFiles = getOutputFiles(casename),
-		isDryRun = isDryRun(args_table)
+		outputFiles = getOutputFiles(caseName),
+		isDryRun = isDryRun(args_table),
+		casename = caseName,
+		casedir = caseDir,
+		uppath = upPath;
 	}
-	setmetatable(inst, {__index = excase})
 	return inst;
 end
 

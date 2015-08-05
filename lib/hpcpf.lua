@@ -274,7 +274,8 @@ function executeCASE(casename,...)
 		end
 		
 		-- execute
-		result = cf(args_table)
+		local ex = require('excase')(args_table)
+		result = cf(ex)
 		
 		-- write result to cei.json
 		if (result ~= nil) then
