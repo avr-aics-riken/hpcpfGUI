@@ -133,7 +133,7 @@ function gettempTarFile()
 	end
 end
 
-function dxjob:SendDir()
+function dxjob:SendCaseDir()
 	local localdir = self.m_excase.caseDir
 	print('PATH='..localdir)
 	local temptar = gettempTarFile()
@@ -159,7 +159,7 @@ function dxjob:SendDir()
 	return true
 end
 
-function dxjob:GetDir()
+function dxjob:GetCaseDir()
 	local remotedir = self.m_excase.caseName
 	local basedir = self.m_excase.projectDir
 	print('get:'..remotedir)
