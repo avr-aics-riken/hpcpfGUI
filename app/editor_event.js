@@ -193,7 +193,7 @@
 				node.funcname = "Case";
 				node.name = dirname;
 				node.varname = dirname;
-				node.status = "Pending";
+				node.status = "Ready";
 			}
 			
 			if (cei && cei.hasOwnProperty('hpcpf')) {

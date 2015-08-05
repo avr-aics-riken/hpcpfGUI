@@ -253,9 +253,13 @@ function executeCASE(casename,...)
 			end
 			workdir = workdir .. casename .. '/'
 			cei = getInitialCeiDescription(workdir,  targetconf.server, targetconf.type);
-			writeCEI(ceiFile, cei, 'running')
+			if (ex.isDryRun) then
+				writeCEI(ceiFile, cei, 'Running(Dry)')
+			else
+				writeCEI(ceiFile, cei, 'Running')
+			end
 		else
-			if (cei.hpcpf.case_exec_info.status == 'finished') then
+			if (cei.hpcpf.case_exec_info.status == 'Finished' or cei.hpcpf.case_exec_info.status == 'Finished(Dry)') then
 				print("--- End   CASE: "..casename.." ---")
 				return cei.hpcpf.case_exec_info.result;
 			end
@@ -267,9 +271,17 @@ function executeCASE(casename,...)
 		-- write result to cei.json
 		if (result ~= nil) then
 			cei.hpcpf.case_exec_info.result = result;
-			writeCEI(ceiFile, cei, 'finished');
+			if (ex.isDryRun) then
+				writeCEI(ceiFile, cei, 'Finished(Dry)');
+			else
+				writeCEI(ceiFile, cei, 'Finished');
+			end
 		else
-			writeCEI(ceiFile, cei, 'failed');
+			if (ex.isDryRun) then
+				writeCEI(ceiFile, cei, 'Failed(Dry)');
+			else
+				writeCEI(ceiFile, cei, 'Failed');
+			end
 		end
 		
         package.path = oldPackagePath

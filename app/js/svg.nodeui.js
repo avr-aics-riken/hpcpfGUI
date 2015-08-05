@@ -346,11 +346,11 @@ function svgNodeUI(draw) {
 			statusTextID = varName + ":" + "statusLabel",
 			labelColorFunc = function (labelText) {
 				var labelColor = "#eee";
-				if (labelText === "running") {
+				if (labelText === "Running" || labelText === "Running(Dry)") {
 					labelColor = "skyblue";
-				} else if (labelText === "failed") {
+				} else if (labelText === "Failed" || labelText === "Failed(Dry)") {
 					labelColor = 'red';
-				} else if (labelText === "finished") {
+				} else if (labelText === "Finished" || labelText === "Finished(Dry)") {
 					labelColor = '#72ca29';
 				}
 				return labelColor;
@@ -404,7 +404,7 @@ function svgNodeUI(draw) {
 		if (inouts.hasOwnProperty('status')) {
 			statusText = draw.text(inouts.status).fill(labelColorFunc(inouts.status)).move(100, 33).attr("id", statusTextID);
 		} else {
-			statusText = draw.text("pending").fill('#eee').move(100, 33).attr("id", statusTextID);
+			statusText = draw.text("Ready").fill('#eee').move(100, 33).attr("id", statusTextID);
 		}
 		group.add(statusText);
 		this.changeStatusLabel = (function (group, statusTextID) {
