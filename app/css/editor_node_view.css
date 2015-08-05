@@ -239,6 +239,78 @@
 }
 
 .button_clean_case {
+	position:relative;
+	width:71px;
+	height:46px;
+	/*
+	left:135px;
+	top:-35px;
+	*/
+	text-align:left;
+	/*padding-bottom:15px;*/
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:11px;
+}
+
+.button_clean_case:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_clean_case_label1 {
+	position: relative;
+	top : -7px;
+	left : 10px;
+}
+
+.button_clean_case_label2 {
+	position: relative;
+	top : -8px;
+	left : 23px;
+}
+
+.button_reset_workflow {
+	position:absolute;
+	width:71px;
+	height:46px;
+	
+	bottom:0px;
+	left:10px;
+	text-align:left;
+	/*padding-bottom:15px;*/
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	color:#fff;
+	font-weight:300;
+	font-size:11px;
+}
+
+.button_reset_workflow:active{
+	background-image:url("../image/button_bg_action_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_reset_workflow_label1 {
+	position: relative;
+	top : -7px;
+	left : 10px;
+}
+
+.button_reset_workflow_label2 {
+	position: relative;
+	top : -8px;
+	left : 10px;
+}
+
+/*
+.button_clean_case {
 	width:60px;
 	height:40px;
 	position:relative;
@@ -254,3 +326,4 @@
 	background-repeat:no-repeat;
 	background-size: contain;
 }
+*/

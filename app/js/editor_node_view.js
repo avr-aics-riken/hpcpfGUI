@@ -345,10 +345,16 @@
 	}
 	
 	function addCleanButton(nodeData) {
-		//<button class="button_clean" id="button_clean" title='Clean'>Clean</button>
 		var property = document.getElementById('nodeProperty'),
-			button = document.createElement('button');
-		button.innerHTML = "Clean";
+			button = document.createElement('button'),
+			label1 = document.createElement('div'),
+			label2 = document.createElement('div');
+		label1.innerHTML = "Clean";
+		label1.className = "button_clean_case_label1";
+		label2.innerHTML = "Case";
+		label2.className = "button_clean_case_label2";
+		button.appendChild(label1);
+		button.appendChild(label2);
 		button.className = "button_clean_case";
 		button.id = "button_clean_case";
 		button.onclick = (function (caseName) {
@@ -838,6 +844,31 @@
 		return password_need_machines;
 	}
 	
+	function addResetWorkflowButton() {
+		var property = document.getElementById('nodediv'),
+			button = document.createElement('button'),
+			label1 = document.createElement('div'),
+			label2 = document.createElement('div');
+		label1.innerHTML = "Reset";
+		label1.className = "button_reset_workflow_label1";
+		label2.innerHTML = "Workflow";
+		label2.className = "button_reset_workflow_label2";
+		button.appendChild(label1);
+		button.appendChild(label2);
+		button.className = "button_reset_workflow";
+		button.id = "button_reset_workflow";
+		button.onclick = (function () {
+			return function (evt) {
+				editor.socket.emit('resetWorkflow');
+				editor.socket.once('doneResetWorkflow', function () {
+					initNode();
+					load();
+				});
+			};
+		}());
+		property.appendChild(button);
+	}
+	
 	function executeWorkflow(isDryRun, endCallback) {
 		save(function () {
 			nui.exportLua(function (parents, sorted, exportEndCallback) {
@@ -940,6 +971,7 @@
 	
 	editor.socket.on('init', function () {
 		init();
+		addResetWorkflowButton();
 		load();
 		updateStatus();
 	});

@@ -19,6 +19,8 @@
 		CMD_FILENAME = 'cmd.json',
 		CEI_FILENAME = 'cei.json',
 		PWF_FILENAME = 'pwf.lua',
+		NODEJSON_FILENAME = 'nodedata.json',
+		NODEJSON_ORG_FILENAME = 'nodedata.default',
 		targetConfFile = path.resolve(__dirname, '../conf/targetconf.json'),
 		sesstionTable = {};
 
@@ -810,6 +812,23 @@
 			}
 			cleanCase(caseName);
 			socket.emit('doneCleanCase', true);
+		});
+		
+		socket.on('resetWorkflow', function () {
+			var srcdir = sesstionTable[socket.id].dir,
+				nodeFile = path.join(srcdir, NODEJSON_FILENAME),
+				nodeOrgFile = path.join(srcdir, NODEJSON_ORG_FILENAME);
+			try {
+				if (fs.existsSync(nodeFile)) {
+					fs.unlinkSync(nodeFile);
+				}
+				if (fs.existsSync(nodeOrgFile)) {
+					fs.createReadStream(nodeOrgFile).pipe(fs.createWriteStream(nodeFile));
+				}
+				socket.emit('doneResetWorkflow');
+			} catch (e) {
+				console.error(e);
+			}
 		});
 		
 		socket.on('cleanWorkflow', function () {
