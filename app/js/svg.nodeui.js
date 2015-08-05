@@ -343,7 +343,18 @@ function svgNodeUI(draw) {
 			inoutNum = 0,
 			nodeVarName,
 			plugConnectors = {},
-			statusTextID = varName + ":" + "statusLabel";
+			statusTextID = varName + ":" + "statusLabel",
+			labelColorFunc = function (labelText) {
+				var labelColor = "#eee";
+				if (labelText === "running") {
+					labelColor = "skyblue";
+				} else if (labelText === "failed") {
+					labelColor = 'red';
+				} else if (labelText === "finished") {
+					labelColor = 'green';
+				}
+				return labelColor;
+			};
 		
 		if (inouts.hasOwnProperty('canErase')) {
 			canErase = inouts.canErase;
@@ -391,7 +402,7 @@ function svgNodeUI(draw) {
 		statusLabelText = draw.text("Status : ").fill('#eee').move(20, 33);
 		group.add(statusLabelText);
 		if (inouts.hasOwnProperty('status')) {
-			statusText = draw.text(inouts.status).fill('#eee').move(100, 33).attr("id", statusTextID);
+			statusText = draw.text(inouts.status).fill(labelColorFunc(inouts.status)).move(100, 33).attr("id", statusTextID);
 		} else {
 			statusText = draw.text("pending").fill('#eee').move(100, 33).attr("id", statusTextID);
 		}
@@ -399,7 +410,11 @@ function svgNodeUI(draw) {
 		this.changeStatusLabel = (function (group, statusTextID) {
 			return function (labelText) {
 				var elem = SVG.get(statusTextID),
-					status = draw.text(labelText).fill('#eee').move(100, 33).attr("id", statusTextID);
+					status,
+					labelColor = labelColorFunc(labelText);
+				
+				status = draw.text(labelText).fill(labelColor).move(100, 33).attr("id", statusTextID);
+				
 				if (elem) {
 					elem.remove();
 					//console.log("REMOVEELEM", elem);
