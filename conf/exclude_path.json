@@ -9,6 +9,7 @@
 		"history.json",
 		"*/history.json",
 		"*/cei.json",
-		"nodedata.json"
+		"nodedata.json",
+		"nodedata.default"
 	]
 }

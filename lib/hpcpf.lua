@@ -226,6 +226,20 @@ function getInitialCeiDescription(workdir, server, hosttype)
 	}
 end
 
+function generateTargetConf(args_table)
+	for i, k in pairs(args_table) do
+		--print(i, k);
+		if (i == 1) and next(k) then
+			for n, m in pairs(k) do
+				--print(n, m);
+				if n == "machine" then
+					return m;
+				end
+			end
+		end
+	end
+end
+
 function executeCASE(casename,...)
     local args_table = {...}
     --print("num="..#args_table)
@@ -289,83 +303,40 @@ function sleep(n)
     end
 end
 
-function generateTargetConf(args_table)
-	for i, k in pairs(args_table) do
-		--print(i, k);
-		if (i == 1) and next(k) then
-			for n, m in pairs(k) do
-				--print(n, m);
-				if n == "machine" then
-					return m;
-				end
-			end
-		end
+function getDirAndName(fullpath)
+	local str = string.reverse(fullpath)
+	local placenum = string.find(str, "/")
+	if placenum == nil then
+		placenum = string.find(str, "\\")
 	end
+	if placenum == fullpath:len() then
+		str = string.sub(str, 0, placenum - 1)
+		placenum = string.find(str, "/")
+		if placenum == nil then
+			placenum = string.find(str, "\\")
+		end		
+	end
+	local name = string.sub(str, 0, placenum-1):reverse()
+	local dirpath = string.sub(str, placenum):reverse()
+	return dirpath, name
 end
 
-function getCores(args_table)
-	for i, k in pairs(args_table) do
-		if (i == 1) and next(k) then
-			for n, m in pairs(k) do
-				if n == "cores" then
-					return m;
-				end
-			end
-		end
+function getRelativeCasePath()
+	local p = getBasePath()
+	if (p == "") then
+		local uppath
+		local casename
+		local caseDir = getCurrentDir()
+		uppath, casename = getDirAndName(caseDir)
+		return casename
+	else
+		local projDir = getCurrentDir()
+		local uppath
+		local projname
+		uppath, projname = getDirAndName(projDir)
+		return projname .. p
 	end
-	return 1;
-end
-
-function getInputNodes(args_table)
-	local list = {}
-	for i, k in pairs(args_table) do
-		if (i == 3) then
-			for n, m in pairs(k) do
-				table.insert(list, m);
-			end
-		end
-	end
-	return list;
-end
-
-function getOutputFiles(casename)
-	local cmdFile = 'cmd.json';
-	local cmd = readJSON(cmdFile);
-	local result = nil;
-	if (cmd ~= nil) then
-		if (cmd.hpcpf.case_meta_data.outputs ~= nil) then
-			for i, v in pairs(cmd.hpcpf.case_meta_data.outputs) do
-				if v.file ~= nil then
-					v.file = '../' .. casename .. '/' .. v.file;
-				end
-			end
-			result = cmd.hpcpf.case_meta_data.outputs;
-		end
-	end
-	return result;
-end
-
-function getNodes(args_table)
-	for i, k in pairs(args_table) do
-		if (i == 1) and next(k) then
-			for n, m in pairs(k) do
-				if n == "nodes" then
-					return m;
-				end
-			end
-		end
-	end
-	return 1;
-end
-
-function isDryRun(args_table)
-	for i, k in pairs(args_table) do
-		if (i == 2) then
-			return k;
-		end
-	end
-	return false;
 end
 
 -- xjob
-require('xjob')
+-- require('xjob')
