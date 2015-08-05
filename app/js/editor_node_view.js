@@ -806,7 +806,7 @@
 
 						for (i = 0; i < caseNodes.length; i = i + 1) {
 							nodeListTable[caseNodes[i].name] = caseNodes[i];
-							addNode(caseNodes[i].name, caseNodes[i].name_hr, 300, 100, false);
+							addNode(caseNodes[i].name, caseNodes[i].name_hr, 50, 50 + (150 * i), false);
 						}
 					});
 				}
