@@ -27,7 +27,7 @@
 		}
 	}
 	
-	function addRow(name, status) {
+	function addRow(name, path, status) {
 		var list = document.getElementById('resumeList'),
 			row = document.createElement('div'),
 			button = document.createElement('button'),
@@ -36,11 +36,11 @@
 		if (status === "Running") {
 			button.className = "button_resume_stop";
 			button.id = "button_resume_stop";
-			button.onclick = resumeStop(name);
+			button.onclick = resumeStop(path);
 		} else {
 			button.className = "button_resume_execute";
 			button.id = "button_resume_execute";
-			button.onclick = resumeExecute(name);
+			button.onclick = resumeExecute(path);
 		}
 		
 		text.innerHTML = "status:" + status + "   name:" + name;
@@ -63,6 +63,7 @@
 		var data,
 			i,
 			name,
+			path,
 			status;
 		
 		try {
@@ -71,8 +72,9 @@
 			for (i in data) {
 				if (data.hasOwnProperty(i)) {
 					name = i;
-					status = data[i];
-					addRow(name, status);
+					status = data[i].status;
+					path = data[i].path;
+					addRow(name, path, status);
 				}
 			}
 		} catch (e) {

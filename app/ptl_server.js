@@ -360,7 +360,7 @@ function registerPTLEvent(socket) {
 
 					if (hasCeiJSON) {
 						if (status !== "finished" && status !== "pending") {
-							result[files[i].name] = status;
+							result[files[i].name] = { status : status, path : files[i].path };
 						}
 					}
 				}
