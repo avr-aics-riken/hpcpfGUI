@@ -24,6 +24,40 @@
 		return JSON.parse(JSON.stringify(obj));
 	}
 	
+	/// hidden open warning messsage
+	function hiddenOKCancelDialog(callback) {
+		document.getElementById("confirm_area").style.visibility = "hidden";
+		document.getElementById("save_message_area").style.visibility = "hidden";
+		document.getElementById("ok_cancel_dialog").style.visibility = "hidden";
+		document.getElementById('save_message_area').className = 'fadeOut';
+	}
+
+	/// show open warning messsage dialog
+	function showOKCancelDialog(callback, message) {
+		var ok = document.getElementById('button_clean_ok'),
+			cancel = document.getElementById('button_clean_cancel'),
+			okfunc,
+			cancelfunc;
+		document.getElementById("confirm_area").style.visibility = "visible";
+		document.getElementById('save_message_area').className = 'fadeIn';
+		document.getElementById("save_message_area").style.visibility = "visible";
+		document.getElementById("ok_cancel_dialog").style.visibility = "visible";
+		document.getElementById('ok_cancel_message').innerHTML = message;
+
+		okfunc = function () {
+			callback(true);
+			ok.removeEventListener("click", okfunc, true);
+			cancel.removeEventListener("click", cancelfunc, true);
+		};
+		cancelfunc = function () {
+			callback(false);
+			ok.removeEventListener("click", okfunc, true);
+			cancel.removeEventListener("click", cancelfunc, true);
+		};
+		ok.addEventListener("click",  okfunc, true);
+		cancel.addEventListener("click", cancelfunc, true);
+	}
+	
 	function makeItemNode(name, text, top) {
 		var itemRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
@@ -359,14 +393,21 @@
 		button.id = "button_clean_case";
 		button.onclick = (function (caseName) {
 			return function (evt) {
-				editor.socket.emit('cleanCase', caseName);
-				editor.socket.once('doneCleanCase', function (success) {
-					if (success) {
-						console.log('doneCleanCase');
+				showOKCancelDialog(function (isOK) {
+					if (isOK) {
+						hiddenOKCancelDialog();
+						editor.socket.emit('cleanCase', caseName);
+						editor.socket.once('doneCleanCase', function (success) {
+							if (success) {
+								console.log('doneCleanCase');
+							} else {
+								console.error('CleanCase Failed');
+							}
+						});
 					} else {
-						console.error('CleanCase Failed');
+						hiddenOKCancelDialog();
 					}
-				});
+				}, "Are you sure you want to clean case ?");
 			};
 		}(nodeData.varname));
 		property.appendChild(button);
@@ -859,11 +900,21 @@
 		button.id = "button_reset_workflow";
 		button.onclick = (function () {
 			return function (evt) {
-				editor.socket.emit('resetWorkflow');
-				editor.socket.once('doneResetWorkflow', function () {
-					initNode();
-					load();
-				});
+				showOKCancelDialog(function (isOK) {
+					if (isOK) {
+						hiddenOKCancelDialog();
+						editor.socket.emit('resetWorkflow');
+						editor.socket.once('doneResetWorkflow', function () {
+							initNode();
+							load();
+						});
+					} else {
+						hiddenOKCancelDialog();
+						if (endCallback) {
+							endCallback();
+						}
+					}
+				}, "Are you sure you want to reset workflow ?");
 			};
 		}());
 		property.appendChild(button);
@@ -938,15 +989,25 @@
 	
 	function cleanWorkflow(endCallback) {
 		console.log("cleanworkflow");
-		save(function () {
-			
-			editor.socket.emit('cleanWorkflow');
-			editor.socket.once('doneCleanWorkflow', function () {
+		
+		showOKCancelDialog(function (isOK) {
+			if (isOK) {
+				hiddenOKCancelDialog();
+				save(function () {
+					editor.socket.emit('cleanWorkflow');
+					editor.socket.once('doneCleanWorkflow', function () {
+						if (endCallback) {
+							endCallback();
+						}
+					});
+				});
+			} else {
+				hiddenOKCancelDialog();
 				if (endCallback) {
 					endCallback();
 				}
-			});
-		});
+			}
+		}, "Are you sure you want to clean workflow ?");
 	}
 	
 	editor.socket.on('init', function () {
