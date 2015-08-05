@@ -3,7 +3,8 @@ local dxjob = {}
 local cxjob = require('cxjob')
 
 
-function dxjob.new(targetConf)
+function dxjob.new(excase)
+	local targetConf = excase.targetConf
     if type(targetConf) ~= 'table' then
        errorlog('[Error] failed dxjob new')
        return
@@ -16,6 +17,7 @@ function dxjob.new(targetConf)
 		m_maxsubmitnum = 5,
 		m_targetconf = targetConf,
 		m_jobstartdate = "",
+		m_excase = excase
     }
     inst.m_jobmgr = cxjob.new(targetConf)
 
@@ -41,7 +43,8 @@ function dxjob:AddJob(job)
 end
 
 
-function dxjob:GenerateBootSh(run)
+function dxjob:GenerateBootSh()
+	local run = not self.m_excase.isDryRun
 	for i,v in pairs(self.m_jobque) do
 		print(v.path, v.name, v.job)
 		if (v.path == nil) then
@@ -80,7 +83,7 @@ function dxjob:GenerateBootSh(run)
 	end
 end
 
-
+--[[
 function getDirAndName(fullpath)
 	local str = string.reverse(fullpath)
 	local placenum = string.find(str, "/")
@@ -98,13 +101,13 @@ function getDirAndName(fullpath)
 	local dirpath = string.sub(str, placenum):reverse()
 	return dirpath, name
 end
-
+--]]
 --[[
 function getJobCaseName(casename)
 	return casename .. os.date("_%Y%m%d_%H%M%S")
 end
 --]]
-
+--[[
 function getRelativeCasePath()
 	local p = getBasePath()
 	if (p == "") then
@@ -121,7 +124,7 @@ function getRelativeCasePath()
 		return projname .. p
 	end
 end
-
+--]]
 function gettempTarFile()
 	if getPlatform() == 'Windows' then
 		return '..' .. os.tmpname() .. 'tar.gz'
@@ -130,7 +133,8 @@ function gettempTarFile()
 	end
 end
 
-function dxjob:SendDir(localdir)
+function dxjob:SendDir()
+	local localdir = self.m_excase.caseDir
 	print('PATH='..localdir)
 	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
@@ -155,7 +159,9 @@ function dxjob:SendDir(localdir)
 	return true
 end
 
-function dxjob:GetDir(remotedir, basedir)
+function dxjob:GetDir()
+	local remotedir = self.m_excase.caseName
+	local basedir = self.m_excase.projectDir
 	print('get:'..remotedir)
 	local remotedir_asta = remotedir .. '/*';
 	local remotetarfile = 'HPCPF_case.tar.gz'
@@ -180,7 +186,8 @@ function dxjob:GetDir(remotedir, basedir)
 end
 
 
-function dxjob:SubmitAndWait(remoteCasePath)
+function dxjob:SubmitAndWait()
+	local remoteCasePath = self.m_excase.caseName
 	--self.m_jobstartdate = os.date('20%y-%m-%d %H:%M:%S')
 	self.m_jobstartdate = self.m_jobmgr:remoteDate()
     while #self.m_jobque > 0 or #self.m_submitque > 0 do

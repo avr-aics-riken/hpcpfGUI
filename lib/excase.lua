@@ -89,9 +89,9 @@ function excase(args_table)
 		inputNodes = getInputNodes(args_table),
 		outputFiles = getOutputFiles(caseName),
 		isDryRun = isDryRun(args_table),
-		casename = caseName,
-		casedir = caseDir,
-		uppath = upPath;
+		caseName = caseName,
+		caseDir = caseDir,
+		projectDir = upPath;
 	}
 	return inst;
 end
