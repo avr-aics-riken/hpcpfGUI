@@ -74,7 +74,7 @@ function cxjob.new(username_or_table, sshkey, server, port, workdir)
     setmetatable(inst, {__index = cxjob})
 
     -- remote directory generation
-    inst:remoteMakeDir(inst.workdir)
+    inst:remoteMakeDirFullpath(inst.workdir)
     
 
     -- auto generate date folder(to be DELETE)
@@ -200,9 +200,10 @@ local function sshCmd(user, server, port, key, password, cmd, disableErr)
     return result
 end
 
-function cxjob:remoteExtractFile(filepath, verbose)
+function cxjob:remoteExtractFile(filepath, verbose, opt)
     local option = (verbose == true) and '-xvf' or '-xf'
-    local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. filepath
+    local addopt = ((opt ~= nil) and opt or '')
+    local cmd = 'cd ' .. self.workdir .. ';tar ' .. option .. ' ' .. filepath .. ' ' .. addopt
     print(cmd)
     return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
@@ -224,8 +225,7 @@ function cxjob:remoteCompressFile(srcfile, tarfile, verbose)
 end
 
 function cxjob:sendFile(localfile, remotefile)
-    local fromfile = localfile
-    --local tofile = self.user .. '@' .. self.server .. ':' .. self.workdir .. remotefile
+    local fromfile = localfile    
     local tofile = self.server .. ':' .. self.workdir .. remotefile
     if self.user ~= nil then
         tofile = self.user .. '@' .. tofile;
@@ -234,7 +234,6 @@ function cxjob:sendFile(localfile, remotefile)
 end
 
 function cxjob:getFile(localfile, remotefile)
-    --local fromfile = self.user .. '@' .. self.server .. ':' .. self.workdir .. remotefile
     local fromfile = self.server .. ':' .. self.workdir .. remotefile
     if self.user ~= nil then
         fromfile = self.user .. '@' .. fromfile;
@@ -243,37 +242,63 @@ function cxjob:getFile(localfile, remotefile)
     return scpCmd(self.user, self.server, self.port, self.sshkey, self.password, fromfile, tofile)
 end
 
+----
 
-function cxjob:remoteDeleteFile(filename)
-    local cmd = 'rm -f ' .. self.workdir .. filename
+function cxjob:remoteDeleteFile(filepath)
+    local cmd = 'rm -f ' .. self.workdir .. filepath
     return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteMoveFile(fromFile, toFile)
-    local cmd = 'mv ' .. fromFile .. ' ' .. toFile
+    local cmd = 'mv ' .. self.workdir .. fromFile .. ' ' .. self.workdir .. toFile
     return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteCopyFile(fromFile, toFile)
-    local cmd = 'cp ' .. fromFile .. ' ' .. toFile
+    local cmd = 'cp ' .. self.workdir .. fromFile .. ' ' .. self.workdir .. toFile
     return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteMakeDir(dirpath)
-    local cmd = 'mkdir -p ' .. dirpath
+    local cmd = 'mkdir -p ' .. self.workdir .. dirpath
     return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
 function cxjob:remoteDeleteDir(dirpath)
-    local cmd = 'rm -rf ' .. dirpath
-    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
-end
-
-function cxjob:remoteWorkDeleteDir(dirpath)
     local cmd = 'rm -rf ' .. self.workdir .. dirpath
     return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
 end
 
+--
+--  Full path version directory versions
+--
+function cxjob:remoteDeleteFileFullpath(filepath)
+    local cmd = 'rm -f ' .. filepath
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
+end
+
+function cxjob:remoteMoveFileFullpath(fromFile, toFile)
+    local cmd = 'mv ' .. fromFile .. ' ' .. toFile
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
+end
+
+function cxjob:remoteCopyFileFullpath(fromFile, toFile)
+    local cmd = 'cp ' .. fromFile .. ' ' .. toFile
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
+end
+
+function cxjob:remoteMakeDirFullpath(dirpath)
+    local cmd = 'mkdir -p ' .. dirpath
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
+end
+
+function cxjob:remoteDeleteDirFullpath(dirpath)
+    local cmd = 'rm -rf ' .. dirpath
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
+end
+
+
+---------------------
 
 local function split(str, delim)
     local result,pat,lastPos = {},"(.-)" .. delim .. "()",1

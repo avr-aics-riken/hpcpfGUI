@@ -83,48 +83,6 @@ function dxjob:GenerateBootSh()
 	end
 end
 
---[[
-function getDirAndName(fullpath)
-	local str = string.reverse(fullpath)
-	local placenum = string.find(str, "/")
-	if placenum == nil then
-		placenum = string.find(str, "\\")
-	end
-	if placenum == fullpath:len() then
-		str = string.sub(str, 0, placenum - 1)
-		placenum = string.find(str, "/")
-		if placenum == nil then
-			placenum = string.find(str, "\\")
-		end		
-	end
-	local name = string.sub(str, 0, placenum-1):reverse()
-	local dirpath = string.sub(str, placenum):reverse()
-	return dirpath, name
-end
---]]
---[[
-function getJobCaseName(casename)
-	return casename .. os.date("_%Y%m%d_%H%M%S")
-end
---]]
---[[
-function getRelativeCasePath()
-	local p = getBasePath()
-	if (p == "") then
-		local uppath
-		local casename
-		local caseDir = getCurrentDir()
-		uppath, casename = getDirAndName(caseDir)
-		return casename
-	else
-		local projDir = getCurrentDir()
-		local uppath
-		local projname
-		uppath, projname = getDirAndName(projDir)
-		return projname .. p
-	end
-end
---]]
 function gettempTarFile()
 	if getPlatform() == 'Windows' then
 		return '..' .. os.tmpname() .. 'tar.gz'
@@ -135,37 +93,46 @@ end
 
 function dxjob:SendCaseDir()
 	local localdir = self.m_excase.caseDir
-	print('PATH='..localdir)
+	local casename = self.m_excase.caseName
+	local projname = self.m_excase.projectName
+	print('CASE PATH='..localdir)
 	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
-	local dirpath, casename = getDirAndName(localdir)
-	local exist = self.m_jobmgr:isExistFile(casename)
+	local remotedir = projname .. '/' .. casename
+	local projectdir = self.m_excase.projectDir
+	print('PROJECT UP PATH=' .. projectdir)
+	local exist = self.m_jobmgr:isExistFile(remotedir)
 	if  exist == true then
-		print('Already exist case directory:', casename);
+		print('Already exist case directory:', remotedir);
 		
 		--
 		-- TODO: backup directry
 		--
 
 		-- DELETE now.
-		self.m_jobmgr:remoteWorkDeleteDir(casename)
+		print('Delete case directory...')
+		self.m_jobmgr:remoteDeleteDir(remotedir)
 	end
+	self.m_jobmgr:remoteMakeDir(remotedir)
 	
-	compressFile(casename, temptar, true, '-C '..dirpath) -- compress
-	self.m_jobmgr:sendFile(temptar, 'HPCPF_case.tar.gz')        -- send
-	deleteFile(temptar)                                         -- delete localtar file
-	self.m_jobmgr:remoteExtractFile('HPCPF_case.tar.gz', true)  -- extract
-	self.m_jobmgr:remoteDeleteFile ('HPCPF_case.tar.gz')        -- delete temp file
+	compressFile(casename, temptar, true, '-C ' .. projectdir) -- compress	
+	local tarfilename = projname .. '/HPCPF_case_' .. projname .. '_'.. casename .. '.tar.gz'
+	self.m_jobmgr:sendFile(temptar, tarfilename)        -- send
+	deleteFile(temptar)                                 -- delete localtar file
+	self.m_jobmgr:remoteExtractFile(tarfilename, true, '-C ./' .. projname)  -- extract
+	self.m_jobmgr:remoteDeleteFile (tarfilename)        -- delete temp file
 	return true
 end
 
 function dxjob:GetCaseDir()
-	local remotedir = self.m_excase.caseName
-	local basedir = self.m_excase.projectDir
+	local projuppath = self.m_excase.projectUpDir
+	local casename  = self.m_excase.caseName
+	local projname  = self.m_excase.projectName
+	local remotedir = projname .. '/' .. casename
+
 	print('get:'..remotedir)
 	local remotedir_asta = remotedir .. '/*';
-	local remotetarfile = 'HPCPF_case.tar.gz'
-	--self.m_jobmgr:remoteCompressFile(remotedir_asta, remotetarfile, true)
+	local remotetarfile = projname .. '/HPCPF_case_' .. projname .. '_'.. casename .. '.tar.gz'
 	local newdate = self.m_jobstartdate
 	
 	-- TODO: newer date
@@ -177,17 +144,19 @@ function dxjob:GetCaseDir()
 	end
 	local temptar = gettempTarFile()
 	print('temptar = ' .. temptar)
-	self.m_jobmgr:getFile(temptar, remotetarfile)        -- get
+	self.m_jobmgr:getFile(temptar, remotetarfile)   -- get
 	
-	--local dirpath, casename = getDirAndName(localdir)
-	extractFile(temptar, true, '-C '..basedir) -- compress
-	self.m_jobmgr:remoteDeleteFile (remotetarfile) -- delete temp file
+	extractFile(temptar, true, '-C ' .. projuppath) -- compress
+	self.m_jobmgr:remoteDeleteFile (remotetarfile)  -- delete temp file
 	deleteFile(temptar)
 end
 
 
 function dxjob:SubmitAndWait()
-	local remoteCasePath = self.m_excase.caseName
+	local casename  = self.m_excase.caseName
+	local projname  = self.m_excase.projectName
+	local remoteCasePath = projname .. '/' .. casename
+
 	--self.m_jobstartdate = os.date('20%y-%m-%d %H:%M:%S')
 	self.m_jobstartdate = self.m_jobmgr:remoteDate()
     while #self.m_jobque > 0 or #self.m_submitque > 0 do

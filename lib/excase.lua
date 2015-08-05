@@ -81,7 +81,22 @@ end
 
 function excase(args_table)
 	local caseDir = getCurrentDir() .. getBasePath()
-	local upPath, caseName = getDirAndName(caseDir)
+	local projectDir
+	local upPath
+	local caseName
+	local projectName
+	projectDir, caseName = getDirAndName(caseDir)
+	projectDir = projectDir:sub(1, projectDir:len()-1) -- remove sparator
+	upPath, projectName = getDirAndName(projectDir)
+
+	--[[
+	print('-------------')
+	print('Case:', caseDir, '/', caseName)
+	print('Project:', projectDir, '/', projectName)
+	print('UpPath:', upPath)
+	print('-------------')
+	--]]
+
 	local inst = {
 		targetConf = generateTargetConf(args_table),
 		cores = getCores(args_table),
@@ -91,7 +106,9 @@ function excase(args_table)
 		isDryRun = isDryRun(args_table),
 		caseName = caseName,
 		caseDir = caseDir,
-		projectDir = upPath;
+		projectDir = projectDir,
+		projectName = projectName,
+		projectUpDir = upPath
 	}
 	return inst;
 end
