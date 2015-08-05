@@ -686,7 +686,7 @@
 		propertyTab = window.animtab.create('right', {
 			'rightTab' : { min : '0px', max : 'auto' }
 		}, {
-			'nodePropertyTab' : { min : '0px', max : '200px' }
+			'nodePropertyTab' : { min : '0px', max : '330px' }
 		}, 'property');
 		propertyTab(false);
 		
@@ -946,26 +946,6 @@
 					endCallback();
 				}
 			});
-
-			/*
-			nui.exportLua(function (parents, sorted, exportEndCallback) {
-				var i = 0,
-					password_need_machines = [];
-				
-				// gather password,passphrase machine
-				password_need_machines = gatherPasswordNeedMachines(parents, sorted);
-				
-				// show password,passphrase input dialog
-				password_input.createPasswordInputView(editor.socket, password_need_machines, function () {
-					editor.socket.emit('cleanWorkflow');
-					editor.socket.once('doneCleanWorkflow', function () {
-						if (endCallback) {
-							endCallback();
-						}
-					});
-				});
-			});
-			*/
 		});
 	}
 	
