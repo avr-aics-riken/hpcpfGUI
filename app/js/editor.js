@@ -754,6 +754,12 @@
 		fd = setupFileDialog();
 		setupWorkingPath(fd);
 		initButton(fd);
+		window.editor.closeDirectoryFunc = (function (fd) {
+			return function () {
+				console.log("window.editor.closeDirectoryFunc");
+				fd.FileList('/');
+			};
+		}(fd));
 	});
 
 	window.onload = init;
@@ -771,6 +777,7 @@
 	window.editor.openedfile = null;
 	window.editor.edited = false;
 	window.editor.clickedfile = null;
+	window.editor.closeDirectoryFunc = null;
 	window.editor.ceiJSONChanged = function (fd, dirpath) {};
 	window.editor.showNewNameArea = showNewNameArea;
 }());

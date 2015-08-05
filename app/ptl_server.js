@@ -404,7 +404,7 @@ io.sockets.on('connection', function (socket) {
 	console.log("[CONNECT] ID=" + socket.id);
 
 	remoteFTP(socket);
-	editorevent.registerEditorEvent(socket, appCommands, appExtensions);
+	editorevent.registerEditorEvent(socket, appCommands, appExtensions, backfire_filedialog);
 	remotehostevent.registerEditorEvent(socket);
 	registerPTLEvent(socket);
 });
