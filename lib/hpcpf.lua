@@ -226,6 +226,16 @@ function getInitialCeiDescription(workdir, server, hosttype)
 	}
 end
 
+function getSeparator()
+	local pathsep
+	if (getPlatform() == 'Windows') then
+	   pathsep = '\\'
+	else
+	   pathsep = '/'
+	end
+	return pathsep;
+end
+
 function executeCASE(casename,...)
     local args_table = {...}
     --print("num="..#args_table)
@@ -236,7 +246,7 @@ function executeCASE(casename,...)
         print("or can't find " .. casename..'/cwf.lua')
     else
         print("--- Start CASE: "..casename.." ---")
-        setBasePath('/' .. casename)
+        setBasePath(getSeparator() .. casename)
         local oldPackagePath = package.path
         package.path = "./" .. casename .. "/?.lua;" .. oldPackagePath
 		
@@ -248,10 +258,10 @@ function executeCASE(casename,...)
 		if (cei == nil or (cei and not ex.isDryRun and string.find(cei.hpcpf.case_exec_info.status, '(Dry)'))) then
 			local targetconf = ex.targetConf
 			local workdir = targetconf.workpath;
-			if string.sub(workdir, workdir:len()) ~= '/' then
-				workdir = workdir .. '/'
+			if string.sub(workdir, workdir:len()) ~= getSeparator() then
+				workdir = workdir .. getSeparator()
 			end
-			workdir = workdir .. casename .. '/'
+			workdir = workdir .. casename .. getSeparator()
 			cei = getInitialCeiDescription(workdir,  targetconf.server, targetconf.type);
 			if (ex.isDryRun) then
 				writeCEI(ceiFile, cei, 'Running(Dry)')

@@ -85,7 +85,9 @@ end
 
 function gettempTarFile()
 	if getPlatform() == 'Windows' then
-		return '..' .. os.tmpname() .. 'tar.gz'
+		--return os.getenv('TMP') .. os.tmpname() .. 'tar.gz'
+		local tmp = '..' .. os.tmpname() .. 'tar.gz'
+		return tmp:gsub('\\', '/')
 	else
 		return os.tmpname() .. '.tar.gz'
 	end
