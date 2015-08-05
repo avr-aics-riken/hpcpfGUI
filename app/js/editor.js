@@ -623,6 +623,7 @@
 		fd.setDirClickCallback(clickDir);
 		fd.setDirStatusChangeCallback(dirStatusChanged);
 		fd.setCeiJSONChangeCallback(window.editor.ceiJSONChanged);
+		fd.setIsAlwaysWatchRootDirCallback(window.node_exe_view.isExecuting);
 
 		socket.on('connect', function () {
 			console.log('connected');

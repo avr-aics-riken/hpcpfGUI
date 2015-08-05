@@ -138,4 +138,9 @@
 		//$('button_stop_').onclick = stopProject;
 	});
 	
+	window.node_exe_view = {};
+	window.node_exe_view.isExecuting = function () {
+		return executeButton.style.backgroundImage === stopButtonURL;
+	};
+	
 }(window.editor));

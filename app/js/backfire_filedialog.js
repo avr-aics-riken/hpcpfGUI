@@ -229,6 +229,7 @@ if (typeof window === 'undefined') { // Node.js
 			this.domElement = domElement;
 			this.fileClickCallback = (function () {}());
 			this.ceiJSONChangeCallback  = (function () {}());
+			this.isAlwaysWatchRootDirCallback  = (function () {}());
 			this.dirClickCallback = (function () {}());
 			this.dirStatusChangeCallback = (function () {}());
 			this.openingDirList = {};
@@ -265,6 +266,10 @@ if (typeof window === 'undefined') { // Node.js
 		
 		FileDialog.prototype.setCeiJSONChangeCallback = function (callback) {
 			this.ceiJSONChangeCallback = callback;
+		};
+		
+		FileDialog.prototype.setIsAlwaysWatchRootDirCallback = function (callback) {
+			this.isAlwaysWatchRootDirCallback = callback;
 		};
 
 		FileDialog.prototype.setDirStatusChangeCallback = function (callback) {
@@ -332,9 +337,18 @@ if (typeof window === 'undefined') { // Node.js
 				elem.innerHTML = ''; // clear dom
 			}
 			// widthout root dirs for watching cei.json
-			if (relativepath.indexOf('/') >= 0) {
-				console.log("UNWATCH:", relativepath);
-				this.UnwatchDir(relativepath); // unwatch dir
+			if (this.isAlwaysWatchRootDirCallback) {
+				if (!isAlwaysWatchRootDirCallback()) {
+					if (relativepath.indexOf('/') >= 0) {
+						console.log("UNWATCH:", relativepath);
+						this.UnwatchDir(relativepath); // unwatch dir
+					}
+				}
+			} else {
+				if (relativepath.indexOf('/') >= 0) {
+					console.log("UNWATCH:", relativepath);
+					this.UnwatchDir(relativepath); // unwatch dir
+				}
 			}
 		};
 		
