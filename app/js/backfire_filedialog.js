@@ -8,6 +8,7 @@ if (typeof window === 'undefined') { // Node.js
 		excludePath = require('./exclude_path'),
 		CEI_JSON_FILENAME = 'cei.json',
 		Filedialog = {
+			
 			Disconnect: function (socketId) {
 				'use strict';
 				var fsWatches = fsWatcheClients[socketId],
@@ -25,10 +26,48 @@ if (typeof window === 'undefined') { // Node.js
 				}
 				delete fsWatcheClients[socketId];
 			},
-			SocketEvent: function (socket, skname) {
+			SocketEvent: function (socket, skname, isSecondTime) {
 				'use strict';
 				var workpath = "",
-					fsWatches = {};
+					fsWatches = {},
+					reqFileListFunc = (function (skt) {
+						return function (relativepath) {
+							console.log('PATH = ' + relativepath);
+							updateFileList(relativepath, skt);
+						};
+					}(socket)),
+					unwatchDirFunc = (function (skt) {
+						return function (relativePath) {
+							unwatchDir(relativePath, skt);
+						};
+					}(socket)),
+					setRootPathFunc = (function (skt) {
+						return function (data) {
+							var i,
+								file,
+								files,
+								absolutePath,
+								relativePath;
+							workpath = data.path;
+							console.log('setRootPath:', workpath);
+							updateFileList('/', skt);
+
+							// for cei.json, update(watch) all case list.
+							absolutePath = makeAbsolutePath('/');
+							files = fs.readdirSync(absolutePath);
+							for (i in files) {
+								if (files.hasOwnProperty(i)) {
+									file = absolutePath + '/' + files[i];
+									if (fs.statSync(file).isDirectory()) {
+										relativePath = path.relative(workpath, file).split(path.sep).join('/');
+										console.log("setRootPath - watch case:", relativePath);
+										updateFileList(relativePath, skt);
+									}
+								}
+							}
+						};
+					}(socket));
+				
 				fsWatcheClients[socket.id] = fsWatches;
 				
 				function loadFileList(dir, callback) {
@@ -169,49 +208,16 @@ if (typeof window === 'undefined') { // Node.js
 					}
 				}
 				
-				// get for subdir
-				socket.on(skname + ':FileDialogReqFileList', (function (skt) {
-					return function (relativepath) {
-						console.log('PATH = ' + relativepath);
-						updateFileList(relativepath, skt);
-					};
-				}(socket)));
+				if (!isSecondTime) {
+					// get for subdir
+					socket.on(skname + ':FileDialogReqFileList', reqFileListFunc);
 
-				// get for subdir
-				socket.on(skname + ':UnwatchDir', (function (skt) {
-					return function (relativePath) {
-						unwatchDir(relativePath, skt);
-					};
-				}(socket)));
+					// get for subdir
+					socket.on(skname + ':UnwatchDir', unwatchDirFunc);
 
-				
-				// set for root
-				socket.on(skname + ':setRootPath', (function (skt) {
-					return function (data) {
-						var i,
-							file,
-							files,
-							absolutePath,
-							relativePath;
-						workpath = data.path;
-						console.log('setRootPath:', workpath);
-						updateFileList('/', skt);
-						
-						// for cei.json, update(watch) all case list.
-						absolutePath = makeAbsolutePath('/');
-						files = fs.readdirSync(absolutePath);
-						for (i in files) {
-							if (files.hasOwnProperty(i)) {
-								file = absolutePath + '/' + files[i];
-								if (fs.statSync(file).isDirectory()) {
-									relativePath = path.relative(workpath, file).split(path.sep).join('/');
-									console.log("setRootPath - watch case:", relativePath);
-									updateFileList(relativePath, skt);
-								}
-							}
-						}
-					};
-				}(socket)));
+					// set for root
+					socket.on(skname + ':setRootPath', setRootPathFunc);
+				}
 			}
 		};
 	module.exports = Filedialog;
