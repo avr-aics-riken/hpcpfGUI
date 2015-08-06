@@ -343,6 +343,7 @@
 						editor.socket.emit('cleanCase', caseName);
 						editor.socket.once('doneCleanCase', function (success) {
 							if (success) {
+								editor.closeDirectoryFunc();
 								console.log('doneCleanCase');
 							} else {
 								console.error('CleanCase Failed');

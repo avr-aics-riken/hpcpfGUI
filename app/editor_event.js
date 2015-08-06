@@ -594,7 +594,7 @@
 			} catch (e) {
 				console.error(e);
 			}
-			backfire_filedialog.SocketEvent(socket, 'opendlg');
+			backfire_filedialog.SocketEvent(socket, 'opendlg', true);
 		}
 		
 		function cleanWorkflow(endCallback) {

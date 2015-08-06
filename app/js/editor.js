@@ -616,25 +616,13 @@
 
 	/// initialize dialog and set callbacks 
 	function setupFileDialog() {
-		var errormsg = document.getElementById('errormsg'),
-			fd = new FileDialog('opendlg', document.getElementById("filelist"), true, false);
+		var fd = new FileDialog('opendlg', document.getElementById("filelist"), true, false);
 		fd.registerSocketEvent(socket);
 		fd.setFileClickCallback(clickFile);
 		fd.setDirClickCallback(clickDir);
 		fd.setDirStatusChangeCallback(dirStatusChanged);
 		fd.setCeiJSONChangeCallback(window.editor.ceiJSONChanged);
 		fd.setIsAlwaysWatchRootDirCallback(window.node_exe_view.isExecuting);
-
-		socket.on('connect', function () {
-			console.log('connected');
-			socket.on('event', function (data) {
-				console.log(data);
-			});
-			socket.on('showError', function (data) {
-				//console.log('Err:', data)
-				errormsg.innerHTML = data;
-			});
-		});
 
 		//fd.FileList('/');
 
@@ -745,19 +733,26 @@
 	}
 
 	socket.on('connect', function () {
-		var fd;
+		var fd,
+			errormsg = document.getElementById('errormsg');
+
 		console.log('connected');
 		socket.on('event', function (data) {
 			console.log(data);
 		});
+		socket.on('showError', function (data) {
+			//console.log('Err:', data)
+			errormsg.innerHTML = data;
+		});
 		setupSeparator();
 		fd = setupFileDialog();
+		
 		setupWorkingPath(fd);
 		initButton(fd);
 		window.editor.closeDirectoryFunc = (function (fd) {
 			return function () {
 				console.log("window.editor.closeDirectoryFunc");
-				fd.FileList('/');
+				setupWorkingPath(fd);
 			};
 		}(fd));
 	});
