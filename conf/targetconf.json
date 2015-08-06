@@ -5,7 +5,7 @@
                 "type": "local",
                 "name_hr": "ローカルPC",
                 "server": "localhost",
-                "workpath": "~/hpcpfwork"
+                "workpath": "/"
             }
         ]
     }
