@@ -126,8 +126,7 @@ function dxjob:SendCaseDir()
 	return true
 end
 
-
-function dxjob:GetFiles(files, newdate)
+function dxjob:getFilesInternal(files, newdate)
 	local projuppath = self.m_excase.projectUpDir
 	local casename  = self.m_excase.caseName
 	local projname  = self.m_excase.projectName
@@ -149,21 +148,27 @@ function dxjob:GetFiles(files, newdate)
 	deleteFile(temptar)
 end
 
-function dxjob:GetCaseDir()
-	local casename  = self.m_excase.caseName
+function dxjob:GetFiles(filesTable, newdate)
+	local casename = self.m_excase.caseName
 	local projname  = self.m_excase.projectName
-	local remotedir = projname .. '/' .. casename
 
-	print('get:'..remotedir)
-	local remotedir_asta = remotedir .. '/*';
+	local files = ''
+	for i, v in pairs(filesTable) do
+    	files = files .. projname .. '/' .. casename .. '/' .. v .. ' '
+	end
+	self:getFilesInternal(files, newdate)
+end
+
+function dxjob:GetCaseDir()
+	local casedir = '*';
 	local newdate = self.m_jobstartdate
 	
 	print('NEWDATE:',newdate)
-	self:GetFiles(remotedir_asta, newdate)
+	self:GetFiles({casedir}, newdate)
 end
 
 
-function dxjob:SubmitAndWait(poolingfunc)
+function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
 	local casename  = self.m_excase.caseName
 	local projname  = self.m_excase.projectName
 	local remoteCasePath = projname .. '/' .. casename
@@ -177,6 +182,11 @@ function dxjob:SubmitAndWait(poolingfunc)
 		    if self.m_jobmgr:remoteJobStat(v) == 'END' then
 		        self.m_doneque[#self.m_doneque + 1] = v
 				table.remove(self.m_submitque, i)
+
+				print('EEEEEEEEEEEEE JOB END', jobCompleteFunc)
+		        if jobCompleteFunc then		        	
+					jobCompleteFunc(v)
+		        end
 		    end
 		    sleep(1) -- wait
 		end
@@ -195,10 +205,30 @@ function dxjob:SubmitAndWait(poolingfunc)
 			sleep(10)
 		end
 		print('JOB: QUE='.. #self.m_jobque .. ' / SUBMIT='.. #self.m_submitque .. ' DONE=' .. #self.m_doneque)
-		if poolingfunc then
-			poolingfunc()
+		if poolingFunc then
+			poolingFunc()
 		end
 	end
+end
+
+function dxjob:SubmitAndWaitWithCollectionFiles()
+	local dj = self
+	local nowdate = dj:GetRemoteDate()
+	dj.m_jobcollectiondate = nowdate
+	self:SubmitAndWait(function ()
+			dj:GetPollingFiles()
+		end,
+		function (job)
+			local jobname = job.path
+			if jobname:sub(jobname:len()) == '/' then
+				jobname = jobname:sub(1, jobname:len()-1)
+			end
+			print('END Job:', jobname)
+
+			local nowdate = dj:GetRemoteDate()
+			dj:GetCollectionJobFiles(jobname, dj.m_jobcollectiondate)
+			dj.m_jobcollectiondate = nowdate
+		end)
 end
 
 function dxjob:GetRemoteDate()
@@ -216,21 +246,59 @@ function dxjob:CollectionFileList()
 	return self.m_excase.collectionFiles
 end
 
-function dxjob:GetCollectionFiles()
+function dxjob:CollectionJobFileList()
+	return self.m_excase.collectionJobFiles
+end
+
+function dxjob:PollingFileList()
+	return self.m_excase.pollingFiles
+end
+
+function dxjob:GetCollectionFiles(newdate)
 	local collectfiles = self:CollectionFileList()
-    local casename = self.m_excase.caseName
-    local projname = self.m_excase.projectName
-    
-    local files = ''
-    for i, v in pairs(collectfiles) do
-        print('COLLECT:', i, v.path)
-        if self:IsExistFile(v.path) then
-            --files = files .. v.path .. ' ' -- TODO: relative from case
-            files = files .. projname .. '/' .. casename .. '/' .. v.path .. ' ' -- Tempolary
-        end
+    if collectfiles == nil or #collectfiles == 0 then
+    	return
     end
-    if files ~= '' then
-        self:GetFiles(files)
+    
+    local filesTable = {}
+    for i, v in pairs(collectfiles) do
+        filesTable[#filesTable + 1] = v.path
+    end
+
+    if #filesTable > 0 then
+        self:GetFiles(filesTable, newdate)
+    end
+end
+
+function dxjob:GetPollingFiles(newdate)
+	local collectfiles = self:PollingFileList()
+    if collectfiles == nil or #collectfiles == 0 then
+    	return
+    end
+    
+    local filesTable = {}
+    for i, v in pairs(collectfiles) do
+        filesTable[#filesTable + 1] = v.path
+    end
+
+    if #filesTable > 0 then
+        self:GetFiles(filesTable, newdate)
+    end
+end
+
+function dxjob:GetCollectionJobFiles(jobname, newdate)
+	local collectfiles = self:CollectionJobFileList()
+    if collectfiles == nil or #collectfiles == 0 then
+    	return
+    end
+
+    local filesTable = {}
+    for i, v in pairs(collectfiles) do
+        filesTable[#filesTable + 1] = jobname .. '/' .. v.path
+    end
+
+    if #filesTable > 0 then
+        self:GetFiles(filesTable, newdate)
     end
 end
 

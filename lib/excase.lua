@@ -57,18 +57,37 @@ function getOutputFiles(casename)
 	return result;
 end
 
-function getCollectionFiles(casename)
+function getPollingFiles()
+	local cmdFile = 'cmd.json';
+	local cmd = readJSON(cmdFile);
+	local result = nil;
+	if (cmd ~= nil) then
+		if (cmd.hpcpf.case_meta_data.polling_files ~= nil) then
+			result = cmd.hpcpf.case_meta_data.polling_files;
+		end
+	end
+	return result;
+end
+
+function getCollectionFiles()
 	local cmdFile = 'cmd.json';
 	local cmd = readJSON(cmdFile);
 	local result = nil;
 	if (cmd ~= nil) then
 		if (cmd.hpcpf.case_meta_data.collection_files ~= nil) then
-			--for i, v in pairs(cmd.hpcpf.case_meta_data.collection_files) do
-			--	if v.path ~= nil then
-			--		v.path = casename .. '/' .. v.path;
-			--	end
-			--end
 			result = cmd.hpcpf.case_meta_data.collection_files;
+		end
+	end
+	return result;
+end
+
+function getCollectionJobFiles()
+	local cmdFile = 'cmd.json';
+	local cmd = readJSON(cmdFile);
+	local result = nil;
+	if (cmd ~= nil) then
+		if (cmd.hpcpf.case_meta_data.collection_job_files ~= nil) then
+			result = cmd.hpcpf.case_meta_data.collection_job_files;
 		end
 	end
 	return result;
@@ -120,7 +139,9 @@ function excase(args_table)
 		nodes = getNodes(args_table),
 		inputNodes = getInputNodes(args_table),
 		outputFiles = getOutputFiles(caseName),
-		collectionFiles = getCollectionFiles(caseName),
+		pollingFiles = getPollingFiles(),
+		collectionFiles = getCollectionFiles(),
+		collectionJobFiles = getCollectionJobFiles(),
 		isDryRun = isDryRun(args_table),
 		caseName = caseName,
 		caseDir = caseDir,
