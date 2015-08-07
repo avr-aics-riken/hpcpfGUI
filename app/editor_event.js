@@ -551,7 +551,6 @@
 				target,
 				k;
 			
-			backfire_filedialog.Disconnect(socket.id);
 			try {
 				console.log("cleanCase", caseName);
 				if (cmdFileList.hasOwnProperty(caseName)) {
@@ -594,7 +593,6 @@
 			} catch (e) {
 				console.error(e);
 			}
-			backfire_filedialog.SocketEvent(socket, 'opendlg', true);
 		}
 		
 		function cleanWorkflow(endCallback) {
@@ -606,11 +604,13 @@
 				k;
 			
 			console.log("cleanWorkflow");
+			backfire_filedialog.Disconnect(socket.id);
 			for (i in cmdFileList) {
 				if (cmdFileList.hasOwnProperty(i)) {
 					cleanCase(i);
 				}
 			}
+			backfire_filedialog.SocketEvent(socket, 'opendlg', true);
 			if (endCallback) {
 				endCallback();
 			}
@@ -861,8 +861,11 @@
 				socket.emit('doneCleanCase', false);
 				return;
 			}
+			
+			backfire_filedialog.Disconnect(socket.id);
 			cleanCase(caseName);
 			socket.emit('doneCleanCase', true);
+			backfire_filedialog.SocketEvent(socket, 'opendlg', true);
 		});
 		
 		socket.on('resetWorkflow', function () {
