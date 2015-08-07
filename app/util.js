@@ -202,13 +202,13 @@ function deleteFiles(target, callback) {
 
 function deleteDirectory(target, callback) {
 	"use strict";
-	var rmDirCmd  = 'rm -rf';
+	var rmDirCmd  = 'rm -rf' + ' "' + target + '"';
 	
 	if (os.platform().indexOf('win') === 0) {
-		rmDirCmd  = 'rd /q /s';
+		rmDirCmd  = 'for /d %1 in ("' + target + '") do rmdir /q /s %1';
 	}
-	console.log("util.deleteDirectory:", rmDirCmd + ' "' + target + '"');
-	exec(rmDirCmd + ' "' + target + '"', (function (cb) {
+	console.log("util.deleteDirectory:", rmDirCmd);
+	exec(rmDirCmd, (function (cb) {
 		return function (error, stdout, stderr) {
 			console.log('stdout: ' + stdout);
 			console.log('stderr: ' + stderr);

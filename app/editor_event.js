@@ -566,6 +566,7 @@
 									if (util.isRelative(cleanList[k].path)) {
 										target = path.join(srcdir, caseName);
 										target = path.join(target, cleanList[k].path);
+                                        target = path.resolve(target);
 									} else {
 										target = cleanList[k].path;
 									}
