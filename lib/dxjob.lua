@@ -183,8 +183,7 @@ function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
 		        self.m_doneque[#self.m_doneque + 1] = v
 				table.remove(self.m_submitque, i)
 
-				print('EEEEEEEEEEEEE JOB END', jobCompleteFunc)
-		        if jobCompleteFunc then		        	
+				if jobCompleteFunc then		        	
 					jobCompleteFunc(v)
 		        end
 		    end
@@ -211,7 +210,7 @@ function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
 	end
 end
 
-function dxjob:SubmitAndWaitWithCollectionFiles()
+function dxjob:SubmitAndWaitWithCollectionJobFiles()
 	local dj = self
 	local nowdate = dj:GetRemoteDate()
 	dj.m_jobcollectiondate = nowdate
