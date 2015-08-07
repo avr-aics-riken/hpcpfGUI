@@ -13,6 +13,8 @@ function svgNodeUI(draw) {
 		nodeClickFunction = null,
 		nodeDeleteFunction = null,
 		colorTableFunction = null,
+		connectChangedFunction = null,
+		nodeMovedFunction = null,
 		headerCode = '',
 		footerCode = '',
 		topologycalSort;
@@ -23,6 +25,15 @@ function svgNodeUI(draw) {
 	function setTypeColorFunction(typeColorFunc) {
 		colorTableFunction = typeColorFunc;
 	}
+	
+	function setConnectChangedFunction(changedFunc) {
+		connectChangedFunction = changedFunc;
+	}
+	
+	function setNodeMovedFunction(movedFunc) {
+		nodeMovedFunction = movedFunc;
+	}
+	
 	function getTypeColor(type) {
 		if (colorTableFunction !== null) {
 			return colorTableFunction(type);
@@ -146,6 +157,10 @@ function svgNodeUI(draw) {
 			this.connected = null;
 			this.line = null;
 			delete plugArray[this.varname];
+			
+			if (connectChangedFunction) {
+				connectChangedFunction();
+			}
 		},
 		connectPlug: function (plug) {
 			var plugline;
@@ -175,6 +190,10 @@ function svgNodeUI(draw) {
 			
 			this.fit();
 			plug.fit();
+			
+			if (connectChangedFunction) {
+				connectChangedFunction();
+			}
 		},
 		erase: function () {
 			this.disconnect();
@@ -331,6 +350,9 @@ function svgNodeUI(draw) {
 					event.stopPropagation();
 					self.orgPos[0] = self.nodeData.pos[0];
 					self.orgPos[1] = self.nodeData.pos[1];
+					if (nodeMovedFunction) {
+						nodeMovedFunction();
+					}
 				};
 			},
 			i,
@@ -710,6 +732,8 @@ function svgNodeUI(draw) {
 		nodeClickEvent: nodeClickEvent,
 		nodeDeleteEvent: nodeDeleteEvent,
 		setTypeColorFunction: setTypeColorFunction,
+		setConnectChangedFunction : setConnectChangedFunction,
+		setNodeMovedFunction : setNodeMovedFunction,
 		setHeaderCode: setHeaderCode,
 		setFooterCode: setFooterCode,
 		moveAll: moveAll

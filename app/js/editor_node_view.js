@@ -644,6 +644,18 @@
 		}
 	}
 	
+	// callback of connect changed
+	function connectChangedFunction() {
+		console.log("connect changed");
+		save();
+	}
+	
+	// callback of node moved
+	function nodeMovedFunction() {
+		console.log("node moved");
+		save();
+	}
+	
 	function initNode() {
 		var draw = SVG('nodecanvas'),
 			nodecanvas   = document.getElementById('nodecanvas');
@@ -651,6 +663,8 @@
 		nui = svgNodeUI(draw);
 		nui.clearNodes();
 		nui.setTypeColorFunction(colorFunction);
+		nui.setConnectChangedFunction(connectChangedFunction);
+		nui.setNodeMovedFunction(nodeMovedFunction);
 		nui.nodeClickEvent(function (nodeData) {
 			console.log("node cliecked");
 			save();
@@ -697,6 +711,10 @@
 			}
 		};
 		document.getElementById('node_area').onmouseup = function (evt) {
+			if (onMiddleButtonDown) {
+				console.log("middle button up. saving node");
+				save();
+			}
 			onMiddleButtonDown = false;
 		};
 	}
