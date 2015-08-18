@@ -543,7 +543,7 @@
 
 	function dirStatusChanged(fd, dirpath) {
 		var elem = null;
-		console.log(getEditView());
+		//console.log(getEditView());
 		
 		if (window.editor.clickedfile && window.editor.clickedfile.indexOf(dirpath) >= 0) {
 			console.log("dirchanged:", window.editor.clickedfile);

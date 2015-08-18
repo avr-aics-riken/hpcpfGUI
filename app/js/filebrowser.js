@@ -806,9 +806,15 @@ function startPasswordInput(typeA, typeB) {
 			}
 			
 			if (Object.keys(datas).length > 0) {
-				password_input.createPasswordInputView(socket, datas, function () {
+				password_input.createPasswordInputView(socket, datas, function (datas) {
+					if (datas.hasOwnProperty(typeA)) {
+						dataA = datas[typeA];
+					}
+					if (datas.hasOwnProperty(typeB)) {
+						dataB = datas[typeB];
+					}
 					startFileList(dataA, dataB);
-				});
+				}, true);
 			} else {
 				startFileList(dataA, dataB);
 			}

@@ -4,8 +4,22 @@
 
 (function (editor) {
 	"use strict";
-	var str_textclass = 'nodePropertyText';
+	var str_textclass = 'nodePropertyText',
+		temporaryPass = {};
 
+	function getCachePass(node, passwordInput) {
+		if (temporaryPass.hasOwnProperty(node.type)) {
+			if (passwordInput) {
+				passwordInput.value = temporaryPass[node.type];
+			}
+			if (node.hasOwnProperty('sshkey')) {
+				node.passphrase = temporaryPass[node.type];
+			} else {
+				node.password = temporaryPass[node.type];
+			}
+		}
+	}
+	
 	function makePasswordInput(socket, node) {
 		var row = document.createElement('div'),
 			name = null,
@@ -41,17 +55,13 @@
 			}(node, passwordInput)));
 			row.appendChild(passwordInput);
 			
-			if (node.hasOwnProperty('password')) {
-				passwordInput.value = node.password;
-			} else if (node.hasOwnProperty('passphrase')) {
-				passwordInput.value = node.passphrase;
-			}
+			getCachePass(node, passwordInput);
 		}
 
 		testbtn = document.createElement('button');
 		testbtn.setAttribute('class', "connecttest");
 		row.appendChild(testbtn);
-		clickfunc = (function (type) {
+		clickfunc = (function (type, nodeData) {
 			return function (e) {
 				e.stopPropagation();
 				this.classList.remove('connecttest_ok');
@@ -71,12 +81,15 @@
 						thisptr.addEventListener('click', clickfunc); // add clickfunc
 					};
 				}(this, type)));
-				testConnect.on('processed', function (data) { console.log('Processed', data); });
+				testConnect.on('processed', function (data) {
+					console.log('Processed', data);
+				});
 				testConnect.on('openDir', (function (thisptr, type) {
 					return function (data) {
 						thisptr.classList.add('connecttest_ok');
 						testConnect.deleteConnection();
 						testConnect = null;
+						temporaryPass[nodeData.type] = passwordInput.value;
 						thisptr.addEventListener('click', clickfunc); // add clickfunc
 					};
 				}(this, type)));
@@ -87,7 +100,7 @@
 					testConnect.ConnectTest(null, node.password);
 				}
 			};
-		}(type));
+		}(type, node));
 		testbtn.addEventListener('click', clickfunc);
 
 		row.addEventListener('click', (function (type) {
@@ -98,7 +111,7 @@
 		return row;
 	}
 	
-	function createPasswordInputView(socket, machines, okcallback) {
+	function createPasswordInputView(socket, machines, okcallback, autoFlag) {
 		var machine,
 			i,
 			row,
@@ -107,7 +120,22 @@
 			regiterlist = document.getElementById('regiterlist'),
 			okButton = document.getElementById('password_input_button_ok'),
 			cancelButton = document.getElementById('password_input_button_cancel'),
-			testbutton;
+			testbutton,
+			isAuto = false;
+		
+		if (autoFlag) {
+			isAuto = true;
+			for (i in machines) {
+				if (machines.hasOwnProperty(i)) {
+					machine = machines[i];
+					getCachePass(machine);
+					if (!machine.hasOwnProperty('password') && !machine.hasOwnProperty('passphrase')) {
+						isAuto = false;
+					}
+				}
+			}
+		}
+		console.log("isAuto", isAuto);
 		
 		cancelButton.onclick = function (evt) {
 			background.style.display = "none";
@@ -119,6 +147,12 @@
 			};
 		}
 		
+		if (isAuto && okcallback) {
+			background.style.display = "none";
+			okcallback(machines);
+			return;
+		}
+		
 		regiterlist.innerHTML = "";
 		regiterlist.onclick = function (evt) {
 			evt.stopPropagation();
@@ -127,7 +161,7 @@
 		for (i in machines) {
 			if (machines.hasOwnProperty(i)) {
 				machine = machines[i];
-				console.log("createPasswordInputView", machine);
+				getCachePass(machine);
 				regiterlist.appendChild(makePasswordInput(socket, machine));
 			}
 		}
