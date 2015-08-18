@@ -754,9 +754,9 @@
 				sesstionTable[socket.id].proc = null;
 				changeCEIStatus(function (caseDirName, pre) {
 					if (pre === 'Running(Dry)') {
-						return 'Uploaded(Dry)';
+						return 'Ready';
 					} else if (pre === 'Running') {
-						return 'Uploaded';
+						return 'Ready';
 					}
 					return pre;
 				});

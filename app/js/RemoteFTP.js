@@ -650,7 +650,7 @@ if (typeof window === 'undefined') { // Node.js
 		};
 
 		this.Connect = function (args, callback) {
-			console.log("ARGS", args);
+			//console.log("ARGS", args);
 			this.ssh2.on('connect', function () {
 				console.log("- connected");
 			});
