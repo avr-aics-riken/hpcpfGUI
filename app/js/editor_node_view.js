@@ -627,6 +627,8 @@
 	// gather password,passphrase machine
 	function gatherPasswordNeedMachine(id, parents, nodeData, password_need_machines) {
 		var i,
+			k,
+			hasSameMachine,
 			innode,
 			target_name_to_machine = {};
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
@@ -639,7 +641,18 @@
 		}
 		for (i in target_name_to_machine) {
 			if (target_name_to_machine.hasOwnProperty(i)) {
-				password_need_machines.push(target_name_to_machine[i]);
+				
+				hasSameMachine = false;
+				for (k = 0; k < password_need_machines.length; k = k + 1) {
+					if (password_need_machines[k].type === target_name_to_machine[i].type) {
+						hasSameMachine = true;
+						break;
+					}
+				}
+				
+				if (!hasSameMachine) {
+					password_need_machines.push(target_name_to_machine[i]);
+				}
 			}
 		}
 	}
