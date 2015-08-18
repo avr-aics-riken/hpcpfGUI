@@ -360,11 +360,8 @@
 	
 	function updateProperty(nodeData, endCallback) {
 		var property = document.getElementById('nodeProperty'),
-			key,
 			value,
-			iokey,
 			ioval,
-			iokey2,
 			ioval2,
 			hr,
 			inputtype,
@@ -401,7 +398,10 @@
 		
 		editor.socket.emit('reqGetTargetMachineList');
 		editor.socket.once('doneGetTargetMachineList', function (data) {
-			var targetMachineList = JSON.parse(data);
+			var key,
+				iokey,
+				iokey2,
+				targetMachineList = JSON.parse(data);
 			console.log(targetMachineList);
 			for (key in nodeData) {
 				if (nodeData.hasOwnProperty(key)) {
