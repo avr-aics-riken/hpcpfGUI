@@ -17,7 +17,7 @@
 			var encoded = encodeURIComponent(projectPath);
 			//updateProjectList();
 			console.log("resumeExecute");
-			window.open("editor.html?" + encoded, "_blank");
+			window.open("editor.html?" + encoded + "?resume", "_blank");
 		};
 	}
 	

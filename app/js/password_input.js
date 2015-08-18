@@ -99,15 +99,21 @@
 						thisptr.classList.add('connecttest_ok');
 						testConnect.deleteConnection();
 						testConnect = null;
-						temporaryPass[nodeData.type] = passwordInput.value;
+						if (passwordInput && passwordInput.hasOwnProperty("value")) {
+							temporaryPass[nodeData.type] = passwordInput.value;
+						}
 						thisptr.addEventListener('click', clickfunc); // add clickfunc
 					};
 				}(this, type)));
 				
-				if (node.hasOwnProperty('sshkey')) {
-					testConnect.ConnectTest(node.passphrase, null);
-				} else {
-					testConnect.ConnectTest(null, node.password);
+				try {
+					if (node.hasOwnProperty('sshkey')) {
+						testConnect.ConnectTest(node.passphrase, null);
+					} else {
+						testConnect.ConnectTest(null, node.password);
+					}
+				} catch (ee) {
+					console.error(ee);
 				}
 			};
 		}(type, node));

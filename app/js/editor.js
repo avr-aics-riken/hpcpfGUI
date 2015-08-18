@@ -9,10 +9,6 @@
 	function getEditView() {
 		return window.editor_edit_view;
 	}
-	
-	function init() {
-		socket.emit('reqInit');
-	}
 
 	/// hidden exist warning dialog
 	function hiddenExistWarning(callback) {
@@ -112,6 +108,20 @@
 	/// @param path dir path of upper input box
 	function changeDir(fd, path) {
 		document.getElementById('dirpath').value = path;
+	}
+	
+	function isResume() {
+		var url = location.href,
+			addrs = decodeURIComponent(url).split("?");
+
+		if (addrs) {
+			if (addrs.length > 2) {
+				if (addrs[2] === "resume") {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	function getWorkingPath() {
@@ -756,7 +766,16 @@
 			};
 		}(fd));
 	});
-
+	
+	function init() {
+		socket.emit('reqInit');
+		socket.once('init', function () {
+			if (isResume()) {
+				document.getElementById('button_execute_').click();
+			}
+		});
+	}
+	
 	window.onload = init;
 	
 	window.editor = {};
