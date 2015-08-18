@@ -105,14 +105,24 @@ function registerEditorEvent(socket) {
 					if (host[k] && host[k].type === data.type) {
 						hst = host[k];
 						console.log("hst", hst);
-						socket.emit('updateRemoteInfo', JSON.stringify({
-							name_hr : hst.name_hr,
-							server : hst.server,
-							workpath : hst.workpath,
-							userid : hst.userid,
-							sshkey : hst.sshkey,
-							type : hst.type
-						}));
+						if (hst.hasOwnProperty('sshkey')) {
+							socket.emit('updateRemoteInfo', JSON.stringify({
+								name_hr : hst.name_hr,
+								server : hst.server,
+								workpath : hst.workpath,
+								userid : hst.userid,
+								sshkey : hst.sshkey,
+								type : hst.type
+							}));
+						} else {
+							socket.emit('updateRemoteInfo', JSON.stringify({
+								name_hr : hst.name_hr,
+								server : hst.server,
+								workpath : hst.workpath,
+								userid : hst.userid,
+								type : hst.type
+							}));
+						}
 					}
 				}
 			}

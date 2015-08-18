@@ -40,6 +40,12 @@
 				};
 			}(node, passwordInput)));
 			row.appendChild(passwordInput);
+			
+			if (node.hasOwnProperty('password')) {
+				passwordInput.value = node.password;
+			} else if (node.hasOwnProperty('passphrase')) {
+				passwordInput.value = node.passphrase;
+			}
 		}
 
 		testbtn = document.createElement('button');
