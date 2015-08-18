@@ -18,7 +18,7 @@
 			//updateProjectList();
 			console.log("resumeExecute");
 			window.open("editor.html?" + encoded, "_blank");
-		}
+		};
 	}
 	
 	function openProject(projectPath) {
@@ -27,13 +27,13 @@
 			//updateProjectList();
 			console.log("resumeExecute");
 			window.open("editor.html?" + encoded, "_blank");
-		}
+		};
 	}
 	
 	function resumeStop(projectName) {
 		return function (evt) {
 			
-		}
+		};
 	}
 	
 	function addRow(name, path, status) {

@@ -418,7 +418,7 @@ function withConfirm(target, src, dest, doFunction) {
 	});
 }
 
-function startFileList(dataA, dataB) {
+function startFileList(dataA, dataB, connectedCallbackA, connectedCallbackB) {
 	"use strict";
 	console.log('startFileList');
 	
@@ -715,6 +715,10 @@ function startFileList(dataA, dataB) {
 				changeA = changeB = false;
 				rftpB.UpdateList(rftpB.tarDir);
 			}
+			
+			if (connectedCallbackA) {
+				connectedCallbackA();
+			}
 		});
 		clearListA();
 		showmsgA('Connecting.');
@@ -774,6 +778,10 @@ function startFileList(dataA, dataB) {
 				changeA = changeB = false;
 				rftpA.UpdateList(rftpA.tarDir);
 			}
+			
+			if (connectedCallbackB) {
+				connectedCallbackB();
+			}
 		});
 		clearListB();
 		showmsgB('Connecting.');
@@ -813,7 +821,11 @@ function startPasswordInput(typeA, typeB) {
 					if (datas.hasOwnProperty(typeB)) {
 						dataB = datas[typeB];
 					}
-					startFileList(dataA, dataB);
+					startFileList(dataA, dataB, function () {
+						password_input.saveConnection(dataA);
+					}, function () {
+						password_input.saveConnection(dataB);
+					});
 				}, true);
 			} else {
 				startFileList(dataA, dataB);

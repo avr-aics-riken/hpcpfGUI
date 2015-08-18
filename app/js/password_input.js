@@ -20,6 +20,16 @@
 		}
 	}
 	
+	function saveConnection(connectionData) {
+		if (connectionData.hasOwnProperty("type")) {
+			if (connectionData.hasOwnProperty("password")) {
+				temporaryPass[connectionData.type] = connectionData.password;
+			} else if (connectionData.hasOwnProperty("passphrase")) {
+				temporaryPass[connectionData.type] = connectionData.passphrase;
+			}
+		}
+	}
+	
 	function makePasswordInput(socket, node) {
 		var row = document.createElement('div'),
 			name = null,
@@ -171,4 +181,5 @@
 	window.password_input = {};
 	window.password_input.makePasswordInput = makePasswordInput;
 	window.password_input.createPasswordInputView = createPasswordInputView;
+	window.password_input.saveConnection = saveConnection;
 }(window.editor));
