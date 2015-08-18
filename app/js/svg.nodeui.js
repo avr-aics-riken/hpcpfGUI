@@ -298,8 +298,16 @@ function svgNodeUI(draw) {
 		}
 	};
 	
+	var preNode = null;
 	function getNodeInfo(data) {
 		var nodeData = data.nodeData;
+		if (data.changeColor) {
+			if (preNode) {
+				preNode.changeColor('#72ca29');
+			}
+			data.changeColor('#10FF00');
+			preNode = data;
+		}
 		if (nodeClickFunction) {
 			nodeClickFunction(nodeData);
 		}
@@ -418,6 +426,11 @@ function svgNodeUI(draw) {
 		group.dragend = groupDragEnd(this);
 		this.nodeData = inouts;
 		this.orgPos = [0, 0];
+		this.changeColor = function (color) {
+			nodeback1.fill(color);
+			nodeback2.fill(color);
+			nodeback3.fill(color);
+		};
 		
 		this.group = group;
 		this.plugConnectors = plugConnectors;
