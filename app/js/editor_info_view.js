@@ -139,7 +139,7 @@
 	}
 	*/
 	
-	function makeItemNode(name, text, top) {
+	function makeItemNode(name, text, top, highlight) {
 		var itemRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
 			textProp = document.createElement('div'),
@@ -147,14 +147,18 @@
 			str_nameclass = 'json_title',
 			str_constclass = 'json_text',
 			str_nameclass_top = 'json_title_top',
-			str_constclass_top = 'json_text_top';
+			str_constclass_top = 'json_text_top',
+			str_nameclass_highlight = 'json_title_highlight';
 
 		itemRow.classList.add(str_rowclass);
 		nameProp.innerHTML = name;
 		textProp.innerHTML = text;
 		nameProp.classList.add(str_nameclass);
 		textProp.classList.add(str_constclass);
-		if (top) {
+		if (highlight) {
+			nameProp.classList.add(str_nameclass_highlight);
+			itemRow.appendChild(nameProp);
+		} else if (top) {
 			nameProp.classList.add(str_nameclass_top);
 			itemRow.appendChild(nameProp);
 		} else {
@@ -191,20 +195,44 @@
 				if (key === 'inputs' || key === 'outputs' || key === 'polling_files' || key === 'clean' || key === 'collection_files' || key === 'softwares') {
 					value = json[key];
 
+					k = 0;
 					for (iokey in value) {
 						if (value.hasOwnProperty(iokey)) {
+							// hightlight row
+							if (k === 0) {
+								if (key === "inputs") {
+									property.appendChild(makeItemNode('Inputs', "", true, true));
+								} else if (key === "outputs") {
+									property.appendChild(makeItemNode('Outputs', "", true, true));
+								} else if (key === "polling_files") {
+									property.appendChild(makeItemNode('PollingFiles', "", true, true));
+								} else if (key === "clean") {
+									property.appendChild(makeItemNode('Clean', "", true, true));
+								} else if (key === "collection_files") {
+									property.appendChild(makeItemNode('CollectionFiles', "", true, true));
+								} else if (key === "collection_job_files") {
+									property.appendChild(makeItemNode('CollectionJobFiles', "", true, true));
+								} else if (key === "softwares") {
+									property.appendChild(makeItemNode('Softwares', "", true, true));
+								}
+							}
+							k = k + 1;
+							
+							// top row
 							if (key === "inputs") {
-								property.appendChild(makeItemNode('Input', "", true));
+								property.appendChild(makeItemNode('Input' + k, "", true));
 							} else if (key === "outputs") {
-								property.appendChild(makeItemNode('Output', "", true));
+								property.appendChild(makeItemNode('Output' + k, "", true));
 							} else if (key === "polling_files") {
-								property.appendChild(makeItemNode('PollingFile', "", true));
+								property.appendChild(makeItemNode('PollingFile' + k, "", true));
 							} else if (key === "clean") {
-								property.appendChild(makeItemNode('Clean', "", true));
+								property.appendChild(makeItemNode('Clean' + k, "", true));
 							} else if (key === "collection_files") {
-								property.appendChild(makeItemNode('CollectionFile', "", true));
+								property.appendChild(makeItemNode('CollectionFile' + k, "", true));
+							} else if (key === "collection_job_files") {
+								property.appendChild(makeItemNode('CollectionJobFile' + k, "", true));
 							} else if (key === "softwares") {
-								property.appendChild(makeItemNode('Software', "", true));
+								property.appendChild(makeItemNode('Software' + k, "", true));
 							}
 							
 							ioval = value[iokey];
