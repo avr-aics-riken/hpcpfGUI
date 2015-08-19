@@ -22,6 +22,31 @@
 	user-select: text;
 }
 
+.node_area_disable {
+	position:absolute;
+	top:110px;
+	left:315px;
+	right:10px;
+	bottom:10px;
+	min-height:425px; /* + 175 = 600 */
+	min-width:465px; /* + 315 + 20 = 800 */
+	
+	overflow:hidden;
+	border:solid;
+	border-radius:2px;
+	border-width:3px;
+	border-color:#000;
+	background-color:rgba(0, 0, 0, 0);
+	-webkit-touch-callout: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+	z-index: 100;
+	display: none;
+}
+
 .node_edit_area {
 	position:absolute;
 	overflow:auto;

@@ -159,7 +159,7 @@
 		changeDir(fd, path + "/");
 		socket.emit('setWorkingPath', JSON.stringify({path: path})); // pass to editor_event.js
 		socket.once('isExecuting', function () {
-			window.node_exe_view.setExecuting();
+			window.node_exe_view.setExecuting(true);
 		});
 	}
 

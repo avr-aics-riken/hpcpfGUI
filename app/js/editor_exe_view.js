@@ -29,29 +29,39 @@
 		editor.socket.emit('run', {file: targetFile});
 	}
 
+	
+	function setExecuting(isExecuting) {
+		if (isExecuting) {
+			window.editor_edit_view.openedfile = "";
+			window.editor_edit_view.clickedfile = "";
+			executeButton.onclick = stopProject;
+			executeButton.style.backgroundImage = stopButtonURL;
+			executeButton.title = stopButtonTitle;
+
+			window.editor_edit_view.setReadOnly(true);
+			document.getElementById('node_area_disable').style.display = "block";
+		} else {
+			executeButton.style.backgroundImage = playButtonURL;
+			executeButton.title = playButtonTitle;
+			executeButton.onclick = executeProject;
+			
+			document.getElementById('node_area_disable').style.display = "none";
+		}
+	}
+	
 	function stopWorkflow() {
 		console.log("stop");
 		editor.socket.emit('stop');
 		editor.socket.once('stopdone', function (success) {
 			console.log("stopdone");
 			editor.showStoppedMessage();
-			executeButton.style.backgroundImage = playButtonURL;
-			executeButton.title = playButtonTitle;
-			executeButton.onclick = executeProject;
+			setExecuting(false);
 		});
 	}
 
 	function stopProject() {
 		editor.showExeView();
 		stopWorkflow();
-	}
-	
-	function setExecuting() {
-		window.editor_edit_view.openedfile = "";
-		window.editor_edit_view.clickedfile = "";
-		executeButton.onclick = stopProject;
-		executeButton.style.backgroundImage = stopButtonURL;
-		executeButton.title = stopButtonTitle;
 	}
 	
 	executeProject = function () {
@@ -62,9 +72,8 @@
 				}
 				console.log("procRun");
 				clearOutput();
-				
+				setExecuting(true);
 				editor.socket.emit('runWorkflow', script);
-				setExecuting();
 			});
 		};
 		
@@ -87,7 +96,7 @@
 				clearOutput();
 				
 				editor.socket.emit('runWorkflow', script);
-				setExecuting();
+				setExecuting(true);
 			});
 		};
 		
@@ -111,7 +120,7 @@
 	});
 
 	function isExecuting() {
-		return executeButton.style.backgroundImage === stopButtonURL;
+		return executeButton.title === stopButtonTitle;
 	}
 	
 	editor.socket.on('stdout', function (data) {
@@ -121,7 +130,7 @@
 		//s.scrollTop = s.scrollHeight;
 		area.scrollTop = area.scrollHeight;
 		if (!isExecuting()) {
-			setExecuting();
+			setExecuting(true);
 		}
 	});
 
@@ -135,9 +144,7 @@
 	});
 
 	editor.socket.on('exit', function () {
-		executeButton.style.backgroundImage = playButtonURL;
-		executeButton.title = playButtonTitle;
-		executeButton.onclick = executeProject;
+		setExecuting(false);
 	});
 	
 	editor.socket.on('init', function () {

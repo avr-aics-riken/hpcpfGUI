@@ -230,10 +230,17 @@
 		if (window.editor_edit_view.onFileOpened) {
 			window.editor_edit_view.onFileOpened();
 		}
+		if (window.node_exe_view.isExecuting()) {
+			ace_editor.setReadOnly(true);
+		}
 	});
 
 	function getFileList() {
 		editor.socket.emit('reqFileList');
+	}
+	
+	function setReadOnly(isReadOnly) {
+		ace_editor.setReadOnly(isReadOnly);
 	}
 	
 	window.editor_edit_view = edit_view;
@@ -242,4 +249,5 @@
 	window.editor_edit_view.onFileOpened = null;
 	window.editor_edit_view.changeEditor = changeEditor;
 	window.editor_edit_view.modeChange = modeChange;
+	window.editor_edit_view.setReadOnly = setReadOnly;
 }(window.editor));
