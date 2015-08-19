@@ -362,10 +362,12 @@
 	width:60px;
 	height:40px;
 	position:relative;
-	margin-left : 20px;
+	top : 37px;
+	right : 20px;
 	background-image:url("../image/button_bg_action.png");
 	background-repeat:no-repeat;
 	background-size: contain;
+	float : right;
 }
 
 .button_resume_open:active{
@@ -376,6 +378,6 @@
 
 .button_resume_open_label {
 	position: relative;
-	top: -10px;
+	top: -12px;
 	font-size: 11px;
 }
