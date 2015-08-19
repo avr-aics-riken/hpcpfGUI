@@ -155,7 +155,7 @@ function registerPTLEvent(socket) {
 				}
 			);
 		} else {
-			fs.linkSync(src, dst);
+			fs.writeFileSync(dst, fs.readFileSync(src));
 		}
 	}
 
@@ -178,6 +178,50 @@ function registerPTLEvent(socket) {
 		return newpath;
 	}
 	
+	function dateFormat(date, fstr, utc) {
+		utc = utc ? 'getUTC' : 'get';
+		return fstr.replace(/%[YmdHMS]/g, function (m) {
+			switch (m) {
+			case '%Y':
+				return date[utc + 'FullYear'](); // no leading zeros required
+			case '%m':
+				m = 1 + date[utc + 'Month']();
+				break;
+			case '%d':
+				m = date[utc + 'Date']();
+				break;
+			case '%H':
+				m = date[utc + 'Hours']();
+				break;
+			case '%M':
+				m = date[utc + 'Minutes']();
+				break;
+			case '%S':
+				m = date[utc + 'Seconds']();
+				break;
+			default:
+				return m.slice(1); // unknown code, remove %
+			}
+			// add leading zero if required
+			return ('0' + m).slice(-2);
+		});
+	}
+
+	function createProjectHistoryJson(projectpath) {
+		var newdate = dateFormat(new Date(), '%Y-%m-%dT%H:%M:%S', true),
+			projectUri = 'file://' + projectpath,
+			historydata = {
+				'hpcpf': [
+					{'status': 'created', 'uri': projectUri, 'date': newdate}
+				]
+			};
+		
+		console.log('HISTORY:', projectpath + '/history.json');
+		fs.writeFile(projectpath + '/history.json', JSON.stringify(historydata, null, "    "), function (err) {
+			console.log(err);
+		});
+	}
+	
 	/// @param newpath native path
 	function createNewProject(newpath) {
 		if (!fs.existsSync(newpath)) {
@@ -185,7 +229,7 @@ function registerPTLEvent(socket) {
 				fs.mkdirSync(newpath);
 				if (fs.existsSync(newpath)) {
 					copyTemplate(projectTemplate, newpath);
-					console.log("createNewProject:" + newpath);
+					createProjectHistoryJson(newpath);
 					socket.emit('createNewProject', toSlashPath(newpath));
 				}
 			} catch (e) {
