@@ -14,7 +14,8 @@
 		str_nameclass = 'nodePropertyName',
 		str_textclass = 'nodePropertyText',
 		str_constclass = 'nodePropertyConst',
-		prePropertyNodeName = null;
+		prePropertyNodeName = null,
+		propertyTabFunc;
 	
 	function $(id) {
 		return document.getElementById(id);
@@ -299,7 +300,7 @@
 		}
 	}
 	
-	function makePropertyRow(type, key, val, inputNode, targetMachineList) {
+	function makePropertyInputRow(type, key, val, inputNode, targetMachineList) {
 		//console.log("type key val", type, key, val);
 		if (key === 'machine') {
 			if (type === 'target_machine') {
@@ -320,6 +321,10 @@
 		} else {
 			return [makeItemNode(key, val)];
 		}
+	}
+	
+	function makePropertyOutputRow(type, key, val, inputNode, targetMachineList) {
+		return [makeItemNode(key, val)];
 	}
 	
 	function addCleanButton(nodeData) {
@@ -365,6 +370,7 @@
 			ioval2,
 			hr,
 			inputtype,
+			outputtype,
 			propertyRows,
 			i;
 
@@ -433,7 +439,35 @@
 										if (iokey2 !== 'name') {
 											if (ioval.hasOwnProperty(iokey2)) {
 												ioval2 = ioval[iokey2];
-												propertyRows = makePropertyRow(inputtype, iokey2, ioval2, ioval, targetMachineList);
+												propertyRows = makePropertyInputRow(inputtype, iokey2, ioval2, ioval, targetMachineList);
+												for (i = 0; i < propertyRows.length; i = i + 1) {
+													property.appendChild(propertyRows[i]);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					} else if (key === 'output') {
+						value = nodeData[key];
+						for (iokey in value) {
+							if (value.hasOwnProperty(iokey)) {
+								ioval = value[iokey];
+								if (ioval.hasOwnProperty('name')) {
+									iokey2 = 'Output';
+									ioval2 = ioval.name;
+									property.appendChild(makeItemNode(iokey2, "", true));
+								}
+								if (ioval.hasOwnProperty('type')) {
+									outputtype = ioval.type;
+								}
+								for (iokey2 in ioval) {
+									if (ioval.hasOwnProperty(iokey2)) {
+										if (iokey2 !== 'name') {
+											if (ioval.hasOwnProperty(iokey2)) {
+												ioval2 = ioval[iokey2];
+												propertyRows = makePropertyOutputRow(outputtype, iokey2, ioval2, ioval, targetMachineList);
 												for (i = 0; i < propertyRows.length; i = i + 1) {
 													property.appendChild(propertyRows[i]);
 												}
@@ -683,26 +717,28 @@
 			save();
 			//updatePropertyDebug(nodeData);
 			updateProperty(nodeData);
+			
+			if (propertyTabFunc) {
+				propertyTabFunc(true);
+			}
 		});
 		nui.nodeDeleteEvent(deleteNode);
 	}
 	
 	function init() {
-		var propertyTab,
-			pos = { x : 0, y : 0 },
+		var pos = { x : 0, y : 0 },
 			onMiddleButtonDown = false,
 			nodecanvas   = document.getElementById('nodecanvas'),
 			selectNodeList;
 		
-		initNode();
-		
-		propertyTab = window.animtab.create('right', {
+		propertyTabFunc = window.animtab.create('right', {
 			'rightTab' : { min : '0px', max : 'auto' }
 		}, {
 			'nodePropertyTab' : { min : '0px', max : '330px' }
 		}, 'property');
-		propertyTab(false);
+		propertyTabFunc(false);
 		
+		initNode();
 		
 		document.getElementById('node_area').onmousedown = function (evt) {
 			onMiddleButtonDown = (evt.button === 1);
@@ -742,19 +778,22 @@
 				caseNodes = JSON.parse(caseNodeList);
 			
 			//console.log(caseNodeList);
-			
 			for (i = 0; i < caseNodes.length; i = i + 1) {
 				if (nodeListTable.hasOwnProperty(caseNodes[i].name)) {
 					node = nodeListTable[caseNodes[i].name];
 					node.status = caseNodes[i].status;
 				}
-				for (k = 0; k < nodes.nodeData.length; k = k + 1) {
-					if (nodes.nodeData[i].type === node.type) {
-						nodes.nodeData[i].status = node.status;
+				if (node !== undefined) {
+					if (node.hasOwnProperty('type')) {
+						for (k = 0; k < nodes.nodeData.length; k = k + 1) {
+							if (nodes.nodeData[k].type === node.type) {
+								nodes.nodeData[k].status = node.status;
+							}
+						}
 					}
-				}
-				if (nui.getNode(caseNodes[i].varname) !== undefined) {
-					nui.getNode(caseNodes[i].varname).changeStatusLabel(node.status);
+					if (nui.getNode(caseNodes[i].varname) !== undefined) {
+						nui.getNode(caseNodes[i].varname).changeStatusLabel(node.status);
+					}
 				}
 			}
 		});
@@ -881,9 +920,10 @@
 						hiddenOKCancelDialog();
 						editor.socket.emit('resetWorkflow');
 						editor.socket.once('doneResetWorkflow', function () {
-							nui.clearNodes();
+							//nui.clearNodes();
 							initNode();
 							load();
+							console.log("doneResetWorkflow");
 						});
 					} else {
 						hiddenOKCancelDialog();
