@@ -23,8 +23,8 @@
 		NODEJSON_ORG_FILENAME = 'nodedata.default',
 		targetConfFile = path.resolve(__dirname, '../conf/targetconf.json'),
 		sessionTable = {}, // prjectDir to sessionObj
-		idTable = {},
-		socketTable = {}; // socket.id to prjectDir
+		idTable = {}, // socket.id to prjectDir
+		socketTable = {}; // socket.id to socket
 
 	if (os.platform() === 'linux') { // Linux setting
 		KRENDER_CMD = __dirname + '/krender_linux';
@@ -310,6 +310,9 @@
 			session = getSession(socket.id);
 			if (session && session.proc) {
 				session.canRemoveID = true;
+			} else {
+				delete idTable[socket.id];
+				delete socketTable[socket.id];
 			}
 		});
 
