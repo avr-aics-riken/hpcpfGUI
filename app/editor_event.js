@@ -681,10 +681,10 @@
 				srcdir = getSession(socket.id).dir,
 				pmdStr,
 				pmdData;
-			console.log("reqUpdateInformation:" + pmdFile);
+			//console.log("reqUpdateInformation:" + pmdFile);
 			try {
 				if (pmdFile && fs.existsSync(pmdFile)) {
-					console.log("reqUpdateInformation exists");
+					//console.log("reqUpdateInformation exists");
 					pmdStr = fs.readFileSync(pmdFile);
 					pmdData = JSON.parse(pmdStr);
 					// console.log("pmdstr", pmdData);

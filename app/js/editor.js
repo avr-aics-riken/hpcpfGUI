@@ -212,7 +212,6 @@
 		}
 		if (viewtype === window.editor.ViewTypes.info) {
 			$("info_mode").style.display = "block";
-			socket.emit('reqUpdateInformation');
 		} else if (viewtype === window.editor.ViewTypes.log) {
 			$("exe_mode").style.display = "block";
 			$("info_back_button_area").style.display = "none";
@@ -226,6 +225,7 @@
 			$("nodePropertyTab").style.display = "block";
 			$("info_back_button_area").style.display = "none";
 		}
+		socket.emit('reqUpdateInformation');
 	}
 	
 	function getCurrentViewType() {
