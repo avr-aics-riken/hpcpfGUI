@@ -299,7 +299,7 @@
 		}
 	}
 	
-	function makePropertyRow(type, key, val, inputNode, targetMachineList) {
+	function makePropertyInputRow(type, key, val, inputNode, targetMachineList) {
 		//console.log("type key val", type, key, val);
 		if (key === 'machine') {
 			if (type === 'target_machine') {
@@ -320,6 +320,10 @@
 		} else {
 			return [makeItemNode(key, val)];
 		}
+	}
+	
+	function makePropertyOutputRow(type, key, val, inputNode, targetMachineList) {
+		return [makeItemNode(key, val)];
 	}
 	
 	function addCleanButton(nodeData) {
@@ -365,6 +369,7 @@
 			ioval2,
 			hr,
 			inputtype,
+			outputtype,
 			propertyRows,
 			i;
 
@@ -433,7 +438,35 @@
 										if (iokey2 !== 'name') {
 											if (ioval.hasOwnProperty(iokey2)) {
 												ioval2 = ioval[iokey2];
-												propertyRows = makePropertyRow(inputtype, iokey2, ioval2, ioval, targetMachineList);
+												propertyRows = makePropertyInputRow(inputtype, iokey2, ioval2, ioval, targetMachineList);
+												for (i = 0; i < propertyRows.length; i = i + 1) {
+													property.appendChild(propertyRows[i]);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					} else if (key === 'output') {
+						value = nodeData[key];
+						for (iokey in value) {
+							if (value.hasOwnProperty(iokey)) {
+								ioval = value[iokey];
+								if (ioval.hasOwnProperty('name')) {
+									iokey2 = 'Output';
+									ioval2 = ioval.name;
+									property.appendChild(makeItemNode(iokey2, "", true));
+								}
+								if (ioval.hasOwnProperty('type')) {
+									outputtype = ioval.type;
+								}
+								for (iokey2 in ioval) {
+									if (ioval.hasOwnProperty(iokey2)) {
+										if (iokey2 !== 'name') {
+											if (ioval.hasOwnProperty(iokey2)) {
+												ioval2 = ioval[iokey2];
+												propertyRows = makePropertyOutputRow(outputtype, iokey2, ioval2, ioval, targetMachineList);
 												for (i = 0; i < propertyRows.length; i = i + 1) {
 													property.appendChild(propertyRows[i]);
 												}
