@@ -11,7 +11,7 @@ var exec = require('child_process').exec,
 	remotehostevent = require('./remotehost_event'),
 	filedialog = require('./js/filedialog'),
 	backfire_filedialog = require('./js/backfire_filedialog'),
-	remoteFTP = require('./js/RemoteFTP'),
+	RemoteFTP = require('./js/RemoteFTP'),
 	excludePath = require('./js/exclude_path'),
 	
 	confFile = path.resolve(__dirname, '../conf/hpcpfGUI.conf'),
@@ -347,10 +347,11 @@ var io = require('socket.io').listen(server);//, {'log level': 1});
 
 io.sockets.on('connection', function (socket) {
 	"use strict";
+	var ftp;
 	socket.emit('event', 'Server Connected.');
 	console.log("[CONNECT] ID=" + socket.id);
 
-	remoteFTP(socket);
+	ftp = new RemoteFTP(socket);
 	editorevent.registerEditorEvent(socket, appCommands, appExtensions, backfire_filedialog);
 	remotehostevent.registerEditorEvent(socket);
 	registerPTLEvent(socket);
