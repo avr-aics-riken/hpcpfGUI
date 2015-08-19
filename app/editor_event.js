@@ -304,10 +304,12 @@
 		//sessionTable[socket.id] = { "dir" : def_srcdir, "proc" : null };
 
 		socket.on('disconnect', function () {
+			var session;
 			console.log("[DISCONNECT] ID=" + socket.id);
-			//if (idTable.hasOwnProperty(socket.id)) {
-			//	delete idTable[socket.id];
-			//}
+			session = getSession(socket.id);
+			if (session && session.proc) {
+				session.canRemoveID = true;
+			}
 		});
 
 		function updateFileList(path) {
@@ -858,9 +860,15 @@
 					console.log('exit code: ' + code);
 				});
 				processspawn.on('close', function (code, signal) {
+					var session;
 					console.log('close code: ' + code);
 					updateFileList(srcdir);
-					getSession(socket.id).proc = null;
+					session = getSession(socket.id);
+					session.proc = null;
+					if (session.hasOwnProperty('canRemoveID') && session.canRemoveID) {
+						delete idTable[socket.id];
+						session.canRemoveID = false;
+					}
 					socket.emit('exit');
 				});
 				processspawn.on('error', function (err) {
