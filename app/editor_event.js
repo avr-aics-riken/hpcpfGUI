@@ -1019,7 +1019,6 @@
 			hasCeiJSON = false,
 			status = "Ready",
 			result = {},
-			skip = false,
 			getStatusFunc = function (cei) {
 				var elem;
 				if (cei && cei.hasOwnProperty('hpcpf')) {
@@ -1051,32 +1050,25 @@
 										ceiData = fs.readFileSync(ceiFile);
 										status = getStatusFunc(JSON.parse(ceiData));
 										if (status === "Running" || status === "Running(Dry)") {
-											skip = true;
 											break;
 										} else if (status === "Failed" || status === "Failed(Dry)") {
-											skip = true;
 											break;
 										} else if (status === "Ready") {
-											skip = true;
 											break;
 										}
 									} else {
 										console.log("not found cei file:", ceiFile);
 										status = "Ready";
-										skip = true;
 										break;
 									}
 								}
 							}
-							if (skip) {
-								break;
-							}
+							console.log(status);
+							result[path.basename(session.dir)] = { status : status, path : session.dir };
 						}
 					}
 				}
 			}
-			console.log(status);
-			result[path.basename(session.dir)] = { status : status, path : session.dir };
 			return result;
 		} catch (e) {
 			console.error(e);
