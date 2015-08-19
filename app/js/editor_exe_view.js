@@ -46,21 +46,25 @@
 		stopWorkflow();
 	}
 	
+	function setExecuting() {
+		window.editor_edit_view.openedfile = "";
+		window.editor_edit_view.clickedfile = "";
+		executeButton.onclick = stopProject;
+		executeButton.style.backgroundImage = stopButtonURL;
+		executeButton.title = stopButtonTitle;
+	}
+	
 	executeProject = function () {
 		var exec = function (runFunc) {
 			runFunc(function (script) {
 				if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
 					editor.showExeView();
 				}
-				window.editor_edit_view.openedfile = "";
-				window.editor_edit_view.clickedfile = "";
 				console.log("procRun");
 				clearOutput();
 				
 				editor.socket.emit('runWorkflow', script);
-				executeButton.onclick = stopProject;
-				executeButton.style.backgroundImage = stopButtonURL;
-				executeButton.title = stopButtonTitle;
+				setExecuting();
 			});
 		};
 		
@@ -79,15 +83,11 @@
 				if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
 					editor.showExeView();
 				}
-				window.editor_edit_view.openedfile = "";
-				window.editor_edit_view.clickedfile = "";
 				console.log("procRun");
 				clearOutput();
 				
 				editor.socket.emit('runWorkflow', script);
-				executeButton.onclick = stopProject;
-				executeButton.style.backgroundImage = stopButtonURL;
-				executeButton.title = stopButtonTitle;
+				setExecuting();
 			});
 		};
 		
@@ -128,13 +128,15 @@
 	});
 
 	editor.socket.on('exit', function () {
-		executeButton.style.backgroundImage = playButtonURL;
-		executeButton.title = playButtonTitle;
-		executeButton.onclick = executeProject;
+		//executeButton.style.backgroundImage = playButtonURL;
+		//executeButton.title = playButtonTitle;
+		//executeButton.onclick = executeProject;
 	});
 	
 	editor.socket.on('init', function () {
-		executeButton.onclick = executeProject;
+		if (!executeButton.onclick) {
+			executeButton.onclick = executeProject;
+		}
 		dryrunButton.onclick = dryrunProject;
 		cleanButton.onclick = cleanProject;
 		//$('button_stop_').onclick = stopProject;
@@ -144,5 +146,6 @@
 	window.node_exe_view.isExecuting = function () {
 		return executeButton.style.backgroundImage === stopButtonURL;
 	};
+	window.node_exe_view.setExecuting = setExecuting;
 	
 }(window.editor));

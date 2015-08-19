@@ -332,8 +332,11 @@
 			session = searchSession(path);
 			if (!session) {
 				sessionTable[path] = { "dir" : path, "proc" : null };
+			} else if (session.proc) {
+				socket.emit('isExecuting', true);
 			}
 			updateFileList(path);
+			
 		});
 
 		socket.on('reqFileList', function (data) {
