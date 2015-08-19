@@ -14,7 +14,8 @@
 		str_nameclass = 'nodePropertyName',
 		str_textclass = 'nodePropertyText',
 		str_constclass = 'nodePropertyConst',
-		prePropertyNodeName = null;
+		prePropertyNodeName = null,
+		propertyTabFunc;
 	
 	function $(id) {
 		return document.getElementById(id);
@@ -716,26 +717,28 @@
 			save();
 			//updatePropertyDebug(nodeData);
 			updateProperty(nodeData);
+			
+			if (propertyTabFunc) {
+				propertyTabFunc(true);
+			}
 		});
 		nui.nodeDeleteEvent(deleteNode);
 	}
 	
 	function init() {
-		var propertyTab,
-			pos = { x : 0, y : 0 },
+		var pos = { x : 0, y : 0 },
 			onMiddleButtonDown = false,
 			nodecanvas   = document.getElementById('nodecanvas'),
 			selectNodeList;
 		
-		initNode();
-		
-		propertyTab = window.animtab.create('right', {
+		propertyTabFunc = window.animtab.create('right', {
 			'rightTab' : { min : '0px', max : 'auto' }
 		}, {
 			'nodePropertyTab' : { min : '0px', max : '330px' }
 		}, 'property');
-		propertyTab(false);
+		propertyTabFunc(false);
 		
+		initNode();
 		
 		document.getElementById('node_area').onmousedown = function (evt) {
 			onMiddleButtonDown = (evt.button === 1);
@@ -775,19 +778,22 @@
 				caseNodes = JSON.parse(caseNodeList);
 			
 			//console.log(caseNodeList);
-			
 			for (i = 0; i < caseNodes.length; i = i + 1) {
 				if (nodeListTable.hasOwnProperty(caseNodes[i].name)) {
 					node = nodeListTable[caseNodes[i].name];
 					node.status = caseNodes[i].status;
 				}
-				for (k = 0; k < nodes.nodeData.length; k = k + 1) {
-					if (nodes.nodeData[i].type === node.type) {
-						nodes.nodeData[i].status = node.status;
+				if (node !== undefined) {
+					if (node.hasOwnProperty('type')) {
+						for (k = 0; k < nodes.nodeData.length; k = k + 1) {
+							if (nodes.nodeData[k].type === node.type) {
+								nodes.nodeData[k].status = node.status;
+							}
+						}
 					}
-				}
-				if (nui.getNode(caseNodes[i].varname) !== undefined) {
-					nui.getNode(caseNodes[i].varname).changeStatusLabel(node.status);
+					if (nui.getNode(caseNodes[i].varname) !== undefined) {
+						nui.getNode(caseNodes[i].varname).changeStatusLabel(node.status);
+					}
 				}
 			}
 		});
@@ -914,9 +920,10 @@
 						hiddenOKCancelDialog();
 						editor.socket.emit('resetWorkflow');
 						editor.socket.once('doneResetWorkflow', function () {
-							nui.clearNodes();
+							//nui.clearNodes();
 							initNode();
 							load();
+							console.log("doneResetWorkflow");
 						});
 					} else {
 						hiddenOKCancelDialog();
