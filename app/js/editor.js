@@ -110,6 +110,7 @@
 		document.getElementById('dirpath').value = path;
 	}
 	
+	/*
 	function isResume() {
 		var url = location.href,
 			addrs = decodeURIComponent(url).split("?");
@@ -123,6 +124,7 @@
 		}
 		return false;
 	}
+	*/
 
 	function getWorkingPath() {
 		var url = location.href,
@@ -772,11 +774,13 @@
 	
 	function init() {
 		socket.emit('reqInit');
+		/*
 		socket.once('init', function () {
 			if (isResume()) {
 				document.getElementById('button_execute_').click();
 			}
 		});
+		*/
 	}
 	
 	window.onload = init;

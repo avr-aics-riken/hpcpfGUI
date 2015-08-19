@@ -15,8 +15,6 @@
 	function openProject(projectPath) {
 		return function (evt) {
 			var encoded = encodeURIComponent(projectPath);
-			//updateProjectList();
-			console.log("resumeExecute");
 			window.open("editor.html?" + encoded, "_blank");
 		};
 	}
@@ -80,6 +78,9 @@
 					name = i;
 					status = data[i].status;
 					path = data[i].path;
+					if (path[path.length - 1] === "/") {
+						path = path.substr(0, (path.length - 1));
+					}
 					addRow(name, path, status);
 				}
 			}
