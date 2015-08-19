@@ -362,7 +362,7 @@
 	width:60px;
 	height:40px;
 	position:relative;
-	top : 37px;
+	top : 40px;
 	right : 20px;
 	background-image:url("../image/button_bg_action.png");
 	background-repeat:no-repeat;
@@ -380,4 +380,9 @@
 	position: relative;
 	top: -12px;
 	font-size: 11px;
+}
+
+.projectDirName {
+	position : relative;
+	left : 50px;
 }

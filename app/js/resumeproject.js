@@ -24,6 +24,7 @@
 			row = document.createElement('div'),
 			button = document.createElement('button'),
 			text = document.createElement('span'),
+			text2 = document.createElement('span'),
 			openButton = document.createElement('button'),
 			openButtonLabel = document.createElement('span');
 		
@@ -46,10 +47,13 @@
 		openButtonLabel.className = "button_resume_open_label";
 		openButton.appendChild(openButtonLabel);
 		
-		text.innerHTML =  ":" + status + "   Name:" + name;
+		text.innerHTML =  ":" + status;
+		text2.innerHTML = "Name:" + name;
+		text2.className = "projectDirName";
 		row.appendChild(button);
 		row.appendChild(text);
 		row.appendChild(openButton);
+		row.appendChild(text2);
 		list.appendChild(row);
 	}
 	
