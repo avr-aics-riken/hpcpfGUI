@@ -125,3 +125,13 @@ a.info_link:hover {
 	border-bottom: 1px solid #FFF;
 	width: 60%;
 }
+
+.json_title_top {
+	display:table-cell;
+	padding-left:5px;
+	border-left: 6px solid #808080;
+	border-bottom: 1px solid #808080;
+	width: 40%;
+	min-width: 150px;
+	background-color: #868686;
+}

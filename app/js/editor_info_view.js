@@ -108,6 +108,7 @@
 		console.log($('info_opened_text_area').innerHTML);
 	});
 
+	/*
 	function convertJSONtoTable(parentKey, json) {
 		var key,
 			result = "";
@@ -136,7 +137,119 @@
 		}
 		return result;
 	}
+	*/
+	
+	function makeItemNode(name, text, top) {
+		var itemRow = document.createElement('div'),
+			nameProp = document.createElement('div'),
+			textProp = document.createElement('div'),
+			str_rowclass = 'row',
+			str_nameclass = 'json_title',
+			str_constclass = 'json_text',
+			str_nameclass_top = 'json_title_top',
+			str_constclass_top = 'json_text_top';
 
+		itemRow.classList.add(str_rowclass);
+		nameProp.innerHTML = name;
+		textProp.innerHTML = text;
+		nameProp.classList.add(str_nameclass);
+		textProp.classList.add(str_constclass);
+		if (top) {
+			nameProp.classList.add(str_nameclass_top);
+			itemRow.appendChild(nameProp);
+		} else {
+			itemRow.appendChild(nameProp);
+			itemRow.appendChild(textProp);
+		}
+		return itemRow;
+	}
+	
+	function makePropertyInputRow(type, key, val, inputNode, targetMachineList) {
+		return [makeItemNode(key, val)];
+	}
+	
+	function makePropertyOutputRow(type, key, val, inputNode, targetMachineList) {
+		return [makeItemNode(key, val)];
+	}
+	
+	function convertJSONtoTable(json) {
+		var i,
+			k,
+			key,
+			value,
+			iokey,
+			iokey2,
+			ioval,
+			ioval2,
+			propertyRows,
+			inputtype,
+			outputtype,
+			property = document.getElementById('info_opened_text_area');
+			
+		json = json.hpcpf.case_meta_data;
+		for (key in json) {
+			if (json.hasOwnProperty(key)) {
+				if (key === 'inputs') {
+					value = json[key];
+					console.log(key, value);
+
+					for (iokey in value) {
+						if (value.hasOwnProperty(iokey)) {
+							property.appendChild(makeItemNode('Input', "", true));
+							
+							ioval = value[iokey];
+							if (ioval.hasOwnProperty('type')) {
+								inputtype = ioval.type;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
+								ioval.machine = "";
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
+								ioval.cores = 1;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
+								ioval.nodes = 1;
+							}
+							for (iokey2 in ioval) {
+								if (ioval.hasOwnProperty(iokey2)) {
+									if (ioval.hasOwnProperty(iokey2)) {
+										ioval2 = ioval[iokey2];
+										propertyRows = makePropertyInputRow(inputtype, iokey2, ioval2, ioval);
+										for (i = 0; i < propertyRows.length; i = i + 1) {
+											property.appendChild(propertyRows[i]);
+										}
+									}
+								}
+							}
+						}
+					}
+				} else if (key === 'outputs') {
+					value = json[key];
+					for (iokey in value) {
+						if (value.hasOwnProperty(iokey)) {
+							property.appendChild(makeItemNode('Output', "", true));
+							ioval = value[iokey];
+							if (ioval.hasOwnProperty('type')) {
+								outputtype = ioval.type;
+							}
+							for (iokey2 in ioval) {
+								if (ioval.hasOwnProperty(iokey2)) {
+									if (ioval.hasOwnProperty(iokey2)) {
+										ioval2 = ioval[iokey2];
+										propertyRows = makePropertyOutputRow(outputtype, iokey2, ioval2, ioval);
+										for (i = 0; i < propertyRows.length; i = i + 1) {
+											property.appendChild(propertyRows[i]);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	editor.socket.on('openJSON', function (data) {
 		var textArea = $('info_opened_text_area'),
 			json;
@@ -145,7 +258,8 @@
 		$('info_opened_text_area').style.display = "block";
 		try {
 			json = JSON.parse(data);
-			textArea.innerHTML = convertJSONtoTable("", json);
+			textArea.innerHTML = "";
+			convertJSONtoTable(json);
 		} catch (e) {
 			textArea.innerHTML +=
 				"<p style='background:red'>JSON Parse Error:" + e + "</p>"
