@@ -893,18 +893,22 @@
 					console.log('stderr: ' + data);
 					//socket.emit('stderr', data.toString());
 					emitToAllSessions(srcdir, 'stderr', data.toString());
-					
-					changeCEIStatus(function (caseDirName, pre) {
-						if (pre === 'Running(Dry)') {
-							return 'Failed(Dry)';
-						} else if (pre === 'Running') {
-							return 'Failed';
-						}
-						return pre;
-					});
 				});
 				processspawn.on('exit', function (code) {
+					var session;
 					console.log('exit code: ' + code);
+					
+					session = getSession(socket.id);
+					if (session && session.proc) {
+						changeCEIStatus(function (caseDirName, pre) {
+							if (pre === 'Running(Dry)') {
+								return 'Failed(Dry)';
+							} else if (pre === 'Running') {
+								return 'Failed';
+							}
+							return pre;
+						});
+					}
 				});
 				processspawn.on('close', function (code, signal) {
 					var session,
@@ -1067,6 +1071,11 @@
 										ceiData = fs.readFileSync(ceiFile);
 										status = getStatusFunc(JSON.parse(ceiData));
 										if (status === "Running" || status === "Running(Dry)") {
+											if (!session.proc && status === "Running") {
+												status = "Failed";
+											} else if (!session.proc && status === "Running(Dry)") {
+												status = "Failed(Dry)";
+											}
 											break;
 										} else if (status === "Failed" || status === "Failed(Dry)") {
 											break;
