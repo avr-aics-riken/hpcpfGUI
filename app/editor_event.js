@@ -1007,6 +1007,82 @@
 			runPWF(data.file);
 		});
 	}
+	
+	function getProjectList() {
+		var session,
+			files = [],
+			projectFiles = [],
+			i,
+			k,
+			ceiFile,
+			ceiData,
+			hasCeiJSON = false,
+			status = "Ready",
+			result = {},
+			skip = false,
+			getStatusFunc = function (cei) {
+				var elem;
+				if (cei && cei.hasOwnProperty('hpcpf')) {
+					if (cei.hpcpf.hasOwnProperty('case_exec_info')) {
+						elem = cei.hpcpf.case_exec_info;
+						if (elem.hasOwnProperty('status')) {
+							return elem.status;
+						}
+					}
+				}
+				return "Ready";
+			};
+		
+		try {
+			for (i in sessionTable) {
+				if (sessionTable.hasOwnProperty(i)) {
+					session = sessionTable[i];
+					if (session.hasOwnProperty('dir')) {
+						if (session.dir !== __dirname) {
+							projectFiles = [];
+							util.getFiles(session.dir, projectFiles);
+
+							hasCeiJSON = false;
+							for (k = 0; k < projectFiles.length; k = k + 1) {
+								if (projectFiles[k].type === "dir") {
+									ceiFile = path.join(projectFiles[k].path, 'cei.json');
+									if (fs.existsSync(ceiFile)) {
+										hasCeiJSON = true;
+										ceiData = fs.readFileSync(ceiFile);
+										status = getStatusFunc(JSON.parse(ceiData));
+										if (status === "Running" || status === "Running(Dry)") {
+											skip = true;
+											break;
+										} else if (status === "Failed" || status === "Failed(Dry)") {
+											skip = true;
+											break;
+										} else if (status === "Ready") {
+											skip = true;
+											break;
+										}
+									} else {
+										console.log("not found cei file:", ceiFile);
+										status = "Ready";
+										skip = true;
+										break;
+									}
+								}
+							}
+							if (skip) {
+								break;
+							}
+						}
+					}
+				}
+			}
+			console.log(status);
+			result[path.basename(session.dir)] = { status : status, path : session.dir };
+			return result;
+		} catch (e) {
+			console.error(e);
+		}
+	}
 
 	module.exports.registerEditorEvent = registerEditorEvent;
+	module.exports.getProjectList = getProjectList;
 }());

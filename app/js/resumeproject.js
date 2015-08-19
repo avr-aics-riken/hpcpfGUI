@@ -12,27 +12,12 @@
 		resumeList.innerHTML = "";
 	}
 	
-	function resumeExecute(projectPath) {
-		return function (evt) {
-			var encoded = encodeURIComponent(projectPath);
-			//updateProjectList();
-			console.log("resumeExecute");
-			window.open("editor.html?" + encoded + "?resume", "_blank");
-		};
-	}
-	
 	function openProject(projectPath) {
 		return function (evt) {
 			var encoded = encodeURIComponent(projectPath);
 			//updateProjectList();
 			console.log("resumeExecute");
 			window.open("editor.html?" + encoded, "_blank");
-		};
-	}
-	
-	function resumeStop(projectName) {
-		return function (evt) {
-			
 		};
 	}
 	
@@ -44,23 +29,26 @@
 			openButton = document.createElement('button'),
 			openButtonLabel = document.createElement('span');
 		
-		if (status === "Running") {
-			button.className = "button_resume_stop";
-			button.id = "button_resume_stop";
-			button.onclick = resumeStop(path);
-		} else {
-			button.className = "button_resume_execute";
-			button.id = "button_resume_execute";
-			button.onclick = resumeExecute(path);
+		if (status === "Running" || status === "Running(Dry)") {
+			button.className = "button_status_running";
+			button.id = "button_status_running";
+		} else if (status === "Ready" || status === "Ready(Dry)") {
+			button.className = "button_status_ready";
+			button.id = "button_status_ready";
+		} else if (status === "Finished" || status === "Finished(Dry)") {
+			button.className = "button_status_finished";
+			button.id = "button_status_finished";
+		} else if (status === "Failed" || status === "Failed(Dry)") {
+			button.className = "button_status_failed";
+			button.id = "button_status_failed";
 		}
-		
 		openButton.className = "button_resume_open";
 		openButton.onclick = openProject(path);
 		openButtonLabel.innerHTML = "Open";
 		openButtonLabel.className = "button_resume_open_label";
 		openButton.appendChild(openButtonLabel);
 		
-		text.innerHTML = "status:" + status + "   name:" + name;
+		text.innerHTML =  status + " Name:" + name;
 		row.appendChild(button);
 		row.appendChild(text);
 		row.appendChild(openButton);

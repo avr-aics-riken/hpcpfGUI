@@ -282,11 +282,11 @@
 	color: white;
 }
 
-.button_resume_execute {
-    width: 107px;
-    height: 40px;
+.button_status_running {
+    width: 60px;
+    height: 60px;
     position: relative;
-    background-image: url("../image/button_bg_action_play.png");
+    background-image: url("../image/Running.png");
     font-size: 18px;
     font-weight: 600;
     background-repeat: no-repeat;
@@ -295,17 +295,17 @@
 	top : 15px;
 }
 
-.button_resume_execute:active{
-	background-image:url("../image/button_bg_start_stop_press.png");
+.button_status_running:active{
+	background-image:url("../image/Running.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 }
 
-.button_resume_stop {
-    width: 107px;
-    height: 40px;
+.button_status_ready {
+    width: 60px;
+    height: 60px;
     position: relative;
-    background-image: url("../image/button_bg_action_stop.png");
+    background-image: url("../image/Ready.png");
     font-size: 18px;
     font-weight: 600;
     background-repeat: no-repeat;
@@ -314,8 +314,46 @@
 	top : 15px;
 }
 
-.button_resume_stop:active{
-	background-image:url("../image/button_bg_start_stop_press.png");
+.button_status_ready:active{
+	background-image:url("../image/Ready.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_status_finished {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    background-image: url("../image/Finished.png");
+    font-size: 18px;
+    font-weight: 600;
+    background-repeat: no-repeat;
+    background-size: contain;
+	margin-left : 10px;
+	top : 15px;
+}
+
+.button_status_finished:active{
+	background-image:url("../image/Finished.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.button_status_failed {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    background-image: url("../image/Failed.png");
+    font-size: 18px;
+    font-weight: 600;
+    background-repeat: no-repeat;
+    background-size: contain;
+	margin-left : 10px;
+	top : 15px;
+}
+
+.button_status_failed:active{
+	background-image:url("../image/Failed.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 }

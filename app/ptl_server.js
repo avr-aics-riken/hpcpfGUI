@@ -315,61 +315,8 @@ function registerPTLEvent(socket) {
 	
 	socket.on('reqGetProjectList', function () {
 		console.log("reqGetProjectList");
-		var files = [],
-			projectFiles = [],
-			i,
-			k,
-			ceiFile,
-			ceiData,
-			hasCeiJSON = false,
-			status = "pending",
-			result = {},
-			getStatusFunc = function (cei) {
-				var elem;
-				if (cei && cei.hasOwnProperty('hpcpf')) {
-					if (cei.hpcpf.hasOwnProperty('case_exec_info')) {
-						elem = cei.hpcpf.case_exec_info;
-						if (elem.hasOwnProperty('status')) {
-							return elem.status;
-						}
-					}
-				}
-				return "pending";
-			};
-		
-		try {
-			files = [];
-			util.getFiles(projectBasePath, files);
-			for (i = 0; i < files.length; i = i + 1) {
-				if (files[i].type === "dir") {
-					projectFiles = [];
-					util.getFiles(files[i].path, projectFiles);
-
-					console.log(files[i].path);
-					hasCeiJSON = false;
-					for (k = 0; k < projectFiles.length; k = k + 1) {
-						if (projectFiles[k].type === "dir") {
-							ceiFile = path.join(projectFiles[k].path, 'cei.json');
-							if (fs.existsSync(ceiFile)) {
-								hasCeiJSON = true;
-								ceiData = fs.readFileSync(ceiFile);
-								status = getStatusFunc(JSON.parse(ceiData));
-							}
-						}
-					}
-
-					if (hasCeiJSON) {
-						if (status !== "finished" && status !== "pending") {
-							result[files[i].name] = { status : status, path : files[i].path };
-						}
-					}
-				}
-			}
-
-			socket.emit('getProjectList', JSON.stringify(result));
-		} catch (e) {
-			console.error(e);
-		}
+		var projectList = editorevent.getProjectList();
+		socket.emit('getProjectList', JSON.stringify(projectList));
 	});
 	
 	// no use function on home
