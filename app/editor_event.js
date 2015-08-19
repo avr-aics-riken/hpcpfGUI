@@ -893,6 +893,15 @@
 					console.log('stderr: ' + data);
 					//socket.emit('stderr', data.toString());
 					emitToAllSessions(srcdir, 'stderr', data.toString());
+					
+					changeCEIStatus(function (caseDirName, pre) {
+						if (pre === 'Running(Dry)') {
+							return 'Failed(Dry)';
+						} else if (pre === 'Running') {
+							return 'Failed';
+						}
+						return pre;
+					});
 				});
 				processspawn.on('exit', function (code) {
 					console.log('exit code: ' + code);
@@ -902,7 +911,6 @@
 						ids,
 						i;
 					console.log('close code: ' + code);
-					emitToAllSessions(srcdir, 'exit');
 					updateFileList(srcdir);
 					session = getSession(socket.id);
 					session.proc = null;
@@ -911,12 +919,21 @@
 						delete socketTable[socket.id];
 						session.canRemoveID = false;
 					}
-					//socket.emit('exit');
+					emitToAllSessions(srcdir, 'exit');
 				});
 				processspawn.on('error', function (err) {
 					console.log('process error', err);
 					//socket.emit('stderr', "can't execute program\n");
 					emitToAllSessions(srcdir, 'stderr', "can't execute program\n");
+
+					changeCEIStatus(function (caseDirName, pre) {
+						if (pre === 'Running(Dry)') {
+							return 'Failed(Dry)';
+						} else if (pre === 'Running') {
+							return 'Failed';
+						}
+						return pre;
+					});
 				});
 			} else {
 				//socket.emit('stdout', 'Unknown file type. -> ' + fileName);
