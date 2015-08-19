@@ -110,12 +110,19 @@
 	editor.socket.on('connect', function () {
 	});
 
+	function isExecuting() {
+		return executeButton.style.backgroundImage === stopButtonURL;
+	}
+	
 	editor.socket.on('stdout', function (data) {
 		var s = $('exe_log'),
 			area = $('exe_log_area');
 		s.innerHTML += data.toString() + '</br>';
 		//s.scrollTop = s.scrollHeight;
 		area.scrollTop = area.scrollHeight;
+		if (!isExecuting()) {
+			setExecuting();
+		}
 	});
 
 	editor.socket.on('stderr', function (data) {
@@ -128,9 +135,9 @@
 	});
 
 	editor.socket.on('exit', function () {
-		//executeButton.style.backgroundImage = playButtonURL;
-		//executeButton.title = playButtonTitle;
-		//executeButton.onclick = executeProject;
+		executeButton.style.backgroundImage = playButtonURL;
+		executeButton.title = playButtonTitle;
+		executeButton.onclick = executeProject;
 	});
 	
 	editor.socket.on('init', function () {
@@ -143,9 +150,7 @@
 	});
 	
 	window.node_exe_view = {};
-	window.node_exe_view.isExecuting = function () {
-		return executeButton.style.backgroundImage === stopButtonURL;
-	};
+	window.node_exe_view.isExecuting = isExecuting;
 	window.node_exe_view.setExecuting = setExecuting;
 	
 }(window.editor));
