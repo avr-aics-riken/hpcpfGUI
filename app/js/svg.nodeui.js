@@ -305,7 +305,7 @@ function svgNodeUI(draw) {
 			if (preNode) {
 				preNode.changeColor('#72ca29');
 			}
-			data.changeColor('#10FF00');
+			data.changeColor('#f4c537');
 			preNode = data;
 		}
 		if (nodeClickFunction) {

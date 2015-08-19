@@ -46,7 +46,7 @@
 		openButtonLabel.className = "button_resume_open_label";
 		openButton.appendChild(openButtonLabel);
 		
-		text.innerHTML =  status + " Name:" + name;
+		text.innerHTML =  ":" + status + "   Name:" + name;
 		row.appendChild(button);
 		row.appendChild(text);
 		row.appendChild(openButton);
