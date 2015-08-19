@@ -22,7 +22,8 @@
 		NODEJSON_FILENAME = 'nodedata.json',
 		NODEJSON_ORG_FILENAME = 'nodedata.default',
 		targetConfFile = path.resolve(__dirname, '../conf/targetconf.json'),
-		sesstionTable = {};
+		sessionTable = {}, // prjectDir to sessionObj
+		idTable = {}; // socket.id to prjectDir
 
 	if (os.platform() === 'linux') { // Linux setting
 		KRENDER_CMD = __dirname + '/krender_linux';
@@ -32,6 +33,35 @@
 		KRENDER_CMD = __dirname + '/krender.exe';
 		LUA_CMD = __dirname + '/lua.exe';
 		TAR_CMD = __dirname + '/tar.exe';
+	}
+
+	function searchSession(dir) {
+		if (sessionTable.hasOwnProperty(dir)) {
+			return sessionTable[dir];
+		}
+		return null;
+	}
+	
+	function searchSocketID(dir) {
+		var id,
+			idList = [];
+		for (id in idTable) {
+			if (idTable.hasOwnProperty(id)) {
+				if (idTable[id] === dir) {
+					idList.push(id);
+				}
+			}
+		}
+		return idList;
+	}
+	
+	function getSession(socketid) {
+		if (idTable.hasOwnProperty(socketid)) {
+			if (sessionTable.hasOwnProperty(idTable[socketid])) {
+				return sessionTable[idTable[socketid]];
+			}
+		}
+		return null;
 	}
 
 	// find launchApp name from extension
@@ -269,14 +299,15 @@
 		var def_srcdir = __dirname;// + '/work/'
 		console.log('Working Dir=' + def_srcdir);
 
-		sesstionTable[socket.id] = { "dir" : def_srcdir, "proc" : null };
+		idTable[socket.id] = def_srcdir;
+		sessionTable[def_srcdir] = { "dir" : def_srcdir, "proc" : null };
+		//sessionTable[socket.id] = { "dir" : def_srcdir, "proc" : null };
 
 		socket.on('disconnect', function () {
 			console.log("[DISCONNECT] ID=" + socket.id);
-			if (sesstionTable[socket.id].proc) {
-				killSpawn(sesstionTable[socket.id].proc);
+			if (idTable.hasOwnProperty(socket.id)) {
+				delete idTable[socket.id];
 			}
-			delete sesstionTable[socket.id];
 		});
 
 		function updateFileList(path) {
@@ -286,23 +317,30 @@
 				socket.emit('updatefilelist', JSON.stringify(list));
 			}
 		}
-
+		
 		socket.on('setWorkingPath', function (data) {
-			var path = JSON.parse(data).path.toString();
+			var path = JSON.parse(data).path.toString(),
+				session;
+			
 			if (path.substr(path.length - 1) !== "/") {
 				path += "/";
 			}
-			sesstionTable[socket.id].dir = path;
+			
+			idTable[socket.id] = path;
+			session = getSession(socket.id);
+			if (!session) {
+				sessionTable[path] = { "dir" : path, "proc" : null };
+			}
 			updateFileList(path);
 		});
 
 		socket.on('reqFileList', function (data) {
-			var srcdir = sesstionTable[socket.id].dir;
+			var srcdir = getSession(socket.id).dir;
 			updateFileList(srcdir);
 		});
 
 		socket.on('reqSelectFile', function (data) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				ext = util.getExtention(data),
 				launchAppNames = findLaunchApp(appExtensions, ext),
 				relativePath = "";
@@ -318,7 +356,7 @@
 		});
 
 		socket.on('reqOpenFile', function (relativePath) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				filepath = path.join(srcdir, path.normalize(relativePath)),
 				file;
 			console.log("reqOpenFile:", filepath);
@@ -339,7 +377,7 @@
 		});
 
 		socket.on('reqFileOpen', function (data) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				ext = util.getExtention(data),
 				editType = getEditTypeByExtension(ext),
 				absolutePath = path.join(srcdir, data),
@@ -374,9 +412,9 @@
 
 		socket.on('reqFileSave', function (sdata) {
 			//console.log(data.file);
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				data = JSON.parse(sdata),
-				targetPath = sesstionTable[socket.id].dir + data.file;
+				targetPath = getSession(socket.id).dir + data.file;
 			try {
 				if (fs.existsSync(targetPath)) {
 					fs.writeFileSync(targetPath, data.data);
@@ -392,7 +430,7 @@
 		
 		socket.on('reqNewFile', function (sdata) {
 			console.log('reqNewFile');
-			//var srcdir = sesstionTable[socket.id].dir,
+			//var srcdir = getSession(socket.id).dir,
 			var data = JSON.parse(sdata),
 				targetBaseDir = data.basedir,
 				targetPath = data.target;
@@ -415,7 +453,7 @@
 		});
 		
 		socket.on('reqNewDir', function (sdata) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				data = JSON.parse(sdata),
 				targetBaseDir = data.basedir,
 				targetPath = data.target;
@@ -437,7 +475,7 @@
 		});
 
 		socket.on('reqRename', function (sdata) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				dstpath,
 				data = JSON.parse(sdata),
 				target = data.target, // This is full path
@@ -473,7 +511,7 @@
 		});
 
 		socket.on('reqDelete', function (sdata) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				data = JSON.parse(sdata),
 				target = data.target;
 
@@ -543,7 +581,7 @@
 		}
 		
 		function cleanCase(caseName) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				cmdFileList = getCMDFileList(srcdir),
 				cleanList,
 				cmdData,
@@ -597,7 +635,7 @@
 		}
 		
 		function cleanWorkflow(endCallback) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				cmdFileList = getCMDFileList(srcdir),
 				cleanList = [],
 				cleanData = {},
@@ -618,8 +656,8 @@
 		}
 
 		socket.on('reqUpdateInformation', function () {
-			var pmdFile = path.join(sesstionTable[socket.id].dir, PMD_FILENAME),
-				srcdir = sesstionTable[socket.id].dir,
+			var pmdFile = path.join(getSession(socket.id).dir, PMD_FILENAME),
+				srcdir = getSession(socket.id).dir,
 				pmdStr,
 				pmdData;
 			console.log("reqUpdateInformation:" + pmdFile);
@@ -654,7 +692,7 @@
 		}
 		
 		socket.on('reqReloadNodeList', function () {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				confData = readTargetConf();
 			try {
 				makeCaseNodeList(srcdir, confData, function (err, caseNodeList) {
@@ -675,7 +713,7 @@
 		});
 		
 		socket.on('reqSaveNode', function (data) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				targetPath = path.join(srcdir, 'nodedata.json');
 			try {
 				fs.writeFileSync(targetPath, data);
@@ -687,7 +725,7 @@
 		});
 		
 		socket.on('reqLoadNode', function () {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				targetPath = path.join(srcdir, 'nodedata.json'),
 				data;
 			try {
@@ -709,7 +747,7 @@
 
 		
 		function changeCEIStatus(changeFunc) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				cmdFileList = getCMDFileList(srcdir),
 				i,
 				ceiPath,
@@ -745,13 +783,13 @@
 		}
 		
 		socket.on('stop', function (data) {
-			var processspawn = sesstionTable[socket.id].proc;
+			var processspawn = getSession(socket.id).proc;
 			if (!processspawn) {
 				return;
 			}
 			console.log('kill');
 			killSpawn(processspawn, function (success) {
-				sesstionTable[socket.id].proc = null;
+				getSession(socket.id).proc = null;
 				changeCEIStatus(function (caseDirName, pre) {
 					if (pre === 'Running(Dry)') {
 						return 'Ready';
@@ -762,12 +800,12 @@
 				});
 				socket.emit('stopdone', success);
 			});
-			sesstionTable[socket.id].proc = null;
+			getSession(socket.id).proc = null;
 		});
 		
 		function runPWF(fileName) {
-			var srcdir = sesstionTable[socket.id].dir,
-				processspawn = sesstionTable[socket.id].proc,
+			var srcdir = getSession(socket.id).dir,
+				processspawn = getSession(socket.id).proc,
 				ext,
 				lualibpath,
 				sfile,
@@ -788,7 +826,7 @@
 				processspawn = spawn(KRENDER_CMD, [srcdir + fileName], function (err, stdout, stderr) {
 					if (!err) { return; }
 					console.log('Failed run krender.');
-					sesstionTable[socket.id].proc = null;
+					getSession(socket.id).proc = null;
 				});
 			} else if (ext === "frag") {
 				if (!process.env.GLSL_COMPILER) {
@@ -803,10 +841,10 @@
 				processspawn = spawn(process.env.GLSL_COMPILER, ['-o', ofile, sfile], function (err, stdout, stderr) {
 					if (!err) { return; }
 					console.log('Failed run glslc.');
-					sesstionTable[socket.id].proc = null;
+					getSession(socket.id).proc = null;
 				});
 			}
-			sesstionTable[socket.id].proc = processspawn;
+			getSession(socket.id).proc = processspawn;
 			if (processspawn) {
 				processspawn.stdout.on('data', function (data) {
 					console.log('stdout: ' + data);
@@ -822,7 +860,7 @@
 				processspawn.on('close', function (code, signal) {
 					console.log('close code: ' + code);
 					updateFileList(srcdir);
-					sesstionTable[socket.id].proc = null;
+					getSession(socket.id).proc = null;
 					socket.emit('exit');
 				});
 				processspawn.on('error', function (err) {
@@ -835,7 +873,7 @@
 		}
 
 		function writePWF(data) {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				pwfFile = path.join(srcdir, PWF_FILENAME);
 			if (!data) { return false; }
 			fs.writeFileSync(pwfFile, data);
@@ -843,12 +881,12 @@
 		}
 		
 		socket.on('runWorkflow', function (data) {
-			var srcdir = sesstionTable[socket.id].dir,
-				processspawn = sesstionTable[socket.id].proc,
+			var srcdir = getSession(socket.id).dir,
+				processspawn = getSession(socket.id).proc,
 				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
 			if (processspawn) {
 				killSpawn(processspawn);
-				sesstionTable[socket.id].proc = null;
+				getSession(socket.id).proc = null;
 			}
 			
 			if (writePWF(data)) {
@@ -857,7 +895,7 @@
 		});
 		
 		socket.on('cleanCase', function (caseName) {
-			var processspawn = sesstionTable[socket.id].proc;
+			var processspawn = getSession(socket.id).proc;
 			if (processspawn) {
 				socket.emit('doneCleanCase', false);
 				return;
@@ -870,7 +908,7 @@
 		});
 		
 		socket.on('resetWorkflow', function () {
-			var srcdir = sesstionTable[socket.id].dir,
+			var srcdir = getSession(socket.id).dir,
 				nodeFile = path.join(srcdir, NODEJSON_FILENAME),
 				nodeOrgFile = path.join(srcdir, NODEJSON_ORG_FILENAME);
 			try {
@@ -887,7 +925,7 @@
 		});
 		
 		socket.on('cleanWorkflow', function () {
-			var processspawn = sesstionTable[socket.id].proc;
+			var processspawn = getSession(socket.id).proc;
 			if (processspawn) {
 				socket.emit('doneCleanWorkflow', false);
 				return;
@@ -898,8 +936,8 @@
 		});
 		
 		socket.on('run', function (data) {
-			var srcdir = sesstionTable[socket.id].dir,
-				processspawn = sesstionTable[socket.id].proc,
+			var srcdir = getSession(socket.id).dir,
+				processspawn = getSession(socket.id).proc,
 				ext,
 				lualibpath,
 				sfile,
@@ -907,7 +945,7 @@
 			
 			if (processspawn) {
 				killSpawn(processspawn);
-				sesstionTable[socket.id].proc = null;
+				getSession(socket.id).proc = null;
 			}
 			runPWF(data.file);
 		});
