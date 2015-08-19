@@ -305,9 +305,9 @@
 
 		socket.on('disconnect', function () {
 			console.log("[DISCONNECT] ID=" + socket.id);
-			if (idTable.hasOwnProperty(socket.id)) {
-				delete idTable[socket.id];
-			}
+			//if (idTable.hasOwnProperty(socket.id)) {
+			//	delete idTable[socket.id];
+			//}
 		});
 
 		function updateFileList(path) {
@@ -327,7 +327,7 @@
 			}
 			
 			idTable[socket.id] = path;
-			session = getSession(socket.id);
+			session = searchSession(path);
 			if (!session) {
 				sessionTable[path] = { "dir" : path, "proc" : null };
 			}
