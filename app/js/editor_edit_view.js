@@ -230,9 +230,11 @@
 		if (window.editor_edit_view.onFileOpened) {
 			window.editor_edit_view.onFileOpened();
 		}
+		/*
 		if (window.node_exe_view.isExecuting()) {
 			ace_editor.setReadOnly(true);
 		}
+		*/
 	});
 
 	function getFileList() {
@@ -240,7 +242,7 @@
 	}
 	
 	function setReadOnly(isReadOnly) {
-		ace_editor.setReadOnly(isReadOnly);
+		//ace_editor.setReadOnly(isReadOnly);
 	}
 	
 	window.editor_edit_view = edit_view;
