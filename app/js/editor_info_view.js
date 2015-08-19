@@ -182,39 +182,41 @@
 			ioval,
 			ioval2,
 			propertyRows,
-			inputtype,
-			outputtype,
+			type,
 			property = document.getElementById('info_opened_text_area');
 			
 		json = json.hpcpf.case_meta_data;
 		for (key in json) {
 			if (json.hasOwnProperty(key)) {
-				if (key === 'inputs') {
+				if (key === 'inputs' || key === 'outputs' || key === 'polling_files' || key === 'clean' || key === 'collection_files' || key === 'softwares') {
 					value = json[key];
-					console.log(key, value);
 
 					for (iokey in value) {
 						if (value.hasOwnProperty(iokey)) {
-							property.appendChild(makeItemNode('Input', "", true));
+							if (key === "inputs") {
+								property.appendChild(makeItemNode('Input', "", true));
+							} else if (key === "outputs") {
+								property.appendChild(makeItemNode('Output', "", true));
+							} else if (key === "polling_files") {
+								property.appendChild(makeItemNode('PollingFile', "", true));
+							} else if (key === "clean") {
+								property.appendChild(makeItemNode('Clean', "", true));
+							} else if (key === "collection_files") {
+								property.appendChild(makeItemNode('CollectionFile', "", true));
+							} else if (key === "softwares") {
+								property.appendChild(makeItemNode('Software', "", true));
+							}
 							
 							ioval = value[iokey];
+							type = "";
 							if (ioval.hasOwnProperty('type')) {
-								inputtype = ioval.type;
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
-								ioval.machine = "";
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
-								ioval.cores = 1;
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
-								ioval.nodes = 1;
+								type = ioval.type;
 							}
 							for (iokey2 in ioval) {
 								if (ioval.hasOwnProperty(iokey2)) {
 									if (ioval.hasOwnProperty(iokey2)) {
 										ioval2 = ioval[iokey2];
-										propertyRows = makePropertyInputRow(inputtype, iokey2, ioval2, ioval);
+										propertyRows = makePropertyInputRow(type, iokey2, ioval2, ioval);
 										for (i = 0; i < propertyRows.length; i = i + 1) {
 											property.appendChild(propertyRows[i]);
 										}
@@ -223,27 +225,10 @@
 							}
 						}
 					}
-				} else if (key === 'outputs') {
-					value = json[key];
-					for (iokey in value) {
-						if (value.hasOwnProperty(iokey)) {
-							property.appendChild(makeItemNode('Output', "", true));
-							ioval = value[iokey];
-							if (ioval.hasOwnProperty('type')) {
-								outputtype = ioval.type;
-							}
-							for (iokey2 in ioval) {
-								if (ioval.hasOwnProperty(iokey2)) {
-									if (ioval.hasOwnProperty(iokey2)) {
-										ioval2 = ioval[iokey2];
-										propertyRows = makePropertyOutputRow(outputtype, iokey2, ioval2, ioval);
-										for (i = 0; i < propertyRows.length; i = i + 1) {
-											property.appendChild(propertyRows[i]);
-										}
-									}
-								}
-							}
-						}
+				} else {
+					propertyRows = makePropertyInputRow("", key, json[key]);
+					for (i = 0; i < propertyRows.length; i = i + 1) {
+						property.appendChild(propertyRows[i]);
 					}
 				}
 			}
