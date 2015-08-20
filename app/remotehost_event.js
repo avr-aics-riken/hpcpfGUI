@@ -2,6 +2,7 @@
 /*global require, global, $, io, socket, FileDialog, RemoteFTP */
 
 var fs = require('fs'),
+	path = require('path'),
 	regFile = '../conf/targetconf.json';
 
 function updateHostList(socket) {
@@ -193,6 +194,14 @@ function registerEditorEvent(socket) {
 				updateHostList(socket);//socket.emit('updateRemoteHostList', JSON.stringify(makeHostList(jslist)));
 			});
 		});
+	});
+	socket.on('toNativePath', function (target) {
+		var isWin32 = (process.platform === 'win32'),
+			resolved = target;
+		if (isWin32) {
+			resolved = path.resolve(target);
+		}
+		socket.emit('doneToNativePath', resolved);
 	});
 }
 

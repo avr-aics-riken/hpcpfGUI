@@ -219,7 +219,11 @@ function open_selectedFile() {
 	closefileDialog();
 	//openProject(tarPath);
 	var kpath = document.getElementById('input_key');
-	kpath.value = tarPath;
+	socket.emit('toNativePath', tarPath);
+	socket.once('doneToNativePath', function (nativePath) {
+		kpath.value = nativePath;
+		console.log(nativePath);
+	});
 }
 
 

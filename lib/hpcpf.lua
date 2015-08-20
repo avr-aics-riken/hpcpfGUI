@@ -381,3 +381,11 @@ function getRelativeCasePath()
 	end
 end
 
+function toNativePath(keyPath)
+	if (getPlatform() == 'Windows') then
+		return string.gsub(keyPath, "\\", '\\\\');
+	else
+		return keyPath;
+	end
+end
+

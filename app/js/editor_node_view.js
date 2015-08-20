@@ -578,31 +578,39 @@
 				if (i === 'userid') {
 					console.log("userid", json[i]);
 				}
-				if (typeof json[i] === "object") {
-					if (json[i]) {
-						res = res + "\t" + i + ' = ' + to_lua_json(json[i]);
-					} else {
-						res = res + "\t" + i + ' = ""';
-					}
+				if (i === 'sshkey') {
 					if (index === (jsonLength - 1)) {
-						res = res + '\n';
+						res = res + "\t" + i + ' = ' + 'toNativePath([[' + json[i] + ']])\n';
 					} else {
-						res = res + ',\n';
+						res = res + "\t" + i + ' = ' + 'toNativePath([[' + json[i] + ']]),\n';
 					}
 				} else {
-					if (json[i] === true) {
-						res = res + "\t" + i + ' = "true';
-					} else if (json[i] === false) {
-						res = res + "\t" + i + ' = "false';
-					} else if (json[i]) {
-						res = res + "\t" + i + ' = "' + json[i];
+					if (typeof json[i] === "object") {
+						if (json[i]) {
+							res = res + "\t" + i + ' = ' + to_lua_json(json[i]);
+						} else {
+							res = res + "\t" + i + ' = ""';
+						}
+						if (index === (jsonLength - 1)) {
+							res = res + '\n';
+						} else {
+							res = res + ',\n';
+						}
 					} else {
-						res = res + "\t" + i + ' = "';
-					}
-					if (index === (jsonLength - 1)) {
-						res = res + '"\n';
-					} else {
-						res = res + '",\n';
+						if (json[i] === true) {
+							res = res + "\t" + i + ' = "true';
+						} else if (json[i] === false) {
+							res = res + "\t" + i + ' = "false';
+						} else if (json[i]) {
+							res = res + "\t" + i + ' = "' + json[i];
+						} else {
+							res = res + "\t" + i + ' = "';
+						}
+						if (index === (jsonLength - 1)) {
+							res = res + '"\n';
+						} else {
+							res = res + '",\n';
+						}
 					}
 				}
 				index = index + 1;
