@@ -484,15 +484,17 @@
 	/// @param basedir relatative dir path from project dir
 	/// @param filename filename
 	function deleteFileOrDirectory(fd, basedir, filename) {
-		var target = basedir + filename,
-			elem = fd.findFileElement(basedir, window.editor.clickedfile);
+		var target = basedir + filename;
+			//elem = fd.findFileElement(target, window.editor.clickedfile);
 		console.log("deleteFileOrDirectory: " + basedir);
 		console.log("deleteFileOrDirectory: " + filename);
+		/*
 		if (elem) {
 			if (isFileItemDisabled(elem)) {
 				return;
 			}
 		}
+		*/
 
 		if (filename === "") {
 			fd.UnwatchDir(basedir.split(getWorkingPath() + '/').join(''));
