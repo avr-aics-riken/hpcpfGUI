@@ -302,7 +302,7 @@ function dxjob:GetCollectionJobFiles(jobname, newdate)
 end
 
 function dxjob:CleanUp()
-	if self.m_excase.isDryRun or self.m_excase.delete_directory then
+	if self.m_excase.isDryRun or self.m_excase.cleanup then
 		local casename  = self.m_excase.caseName
 		local projname  = self.m_excase.projectName
 
