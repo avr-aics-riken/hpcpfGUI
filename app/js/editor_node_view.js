@@ -843,8 +843,11 @@
 			var i,
 				k,
 				node,
-				nodes = nui.getNodeData(),
+				nodes,
 				caseNodes = JSON.parse(caseNodeList);
+			
+			if (!nui) { return; }
+			nodes = nui.getNodeData();
 			
 			//console.log(caseNodeList);
 			for (i = 0; i < caseNodes.length; i = i + 1) {
