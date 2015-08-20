@@ -604,6 +604,9 @@
 				disableDirEdit();
 			}
 		}
+		if (isFileItemDisabled(element)) {
+			disableFileEdit();
+		}
 		
 		isFolderSelected = false;
 		console.log("openedfile" + window.editor.openedfile);
