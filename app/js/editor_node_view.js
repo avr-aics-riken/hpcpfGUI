@@ -17,6 +17,16 @@
 		prePropertyNodeName = null,
 		propertyTabFunc;
 	
+	function defaultLocalHost() {
+		return {
+			type : "local",
+			server : 'localhost',
+			workpath : "~/",
+			userid : "",
+			name_hr : ""
+		};
+	}
+	
 	function $(id) {
 		return document.getElementById(id);
 	}
@@ -459,8 +469,9 @@
 			var key,
 				iokey,
 				iokey2,
+				targets,
 				targetMachineList = JSON.parse(data);
-			console.log(targetMachineList);
+			//console.log(targetMachineList);
 			for (key in nodeData) {
 				if (nodeData.hasOwnProperty(key)) {
 					if (key === 'input') {
@@ -478,7 +489,15 @@
 									inputtype = ioval.type;
 								}
 								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
-									ioval.machine = "";
+									if (targetMachineList.hasOwnProperty("hpcpf") && targetMachineList.hpcpf.hasOwnProperty("targets")) {
+										targets = targetMachineList.hpcpf.targets;
+										if (targets.length > 0) {
+											ioval.machine = targets[0];
+										}
+									}
+									if (!ioval.machine) {
+										ioval.machine = defaultLocalHost();
+									}
 								}
 								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
 									ioval.cores = 1;
@@ -622,7 +641,7 @@
 		res = res + " }";
 		return res;
 	}
-	
+
 	// local luajson_0 = { target_machine };
 	function exportTargetMachine(id, inputIDs, nodeData, targetMachineList) {
 		var i,
@@ -661,13 +680,7 @@
 			}
 		}
 		if (!hasTargetMachine) {
-			target_machine.machine = {
-				type : "local",
-				server : 'localhost',
-				workpath : "~/",
-				userid : "",
-				name_hr : ""
-			};
+			target_machine.machine = defaultLocalHost();
 			target_machine.cores = 1;
 			target_machine.nodes = 1;
 			target_machine.cleanup = false;
@@ -871,6 +884,52 @@
 		});
 	}
 	
+	function insertInitialParam(nodeData, targetMachineList) {
+		var i,
+			key,
+			value,
+			iokey,
+			ioval,
+			inputtype,
+			targets;
+		for (key in nodeData) {
+			if (nodeData.hasOwnProperty(key)) {
+				if (key === 'input') {
+					value = nodeData[key];
+
+					for (iokey in value) {
+						if (value.hasOwnProperty(iokey)) {
+							ioval = value[iokey];
+							if (ioval.hasOwnProperty('type')) {
+								inputtype = ioval.type;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
+								if (targetMachineList.hasOwnProperty("hpcpf") && targetMachineList.hpcpf.hasOwnProperty("targets")) {
+									targets = targetMachineList.hpcpf.targets;
+									if (targets.length > 0) {
+										ioval.machine = targets[0];
+									}
+								}
+								if (!ioval.machine) {
+									ioval.machine = defaultLocalHost();
+								}
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
+								ioval.cores = 1;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
+								ioval.nodes = 1;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cleanup')) {
+								ioval.cleanup = false;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	function save(endCallback) {
 		var data = nui.getNodeData(),
 			strData,
@@ -932,10 +991,14 @@
 							}
 						);
 
-						for (i = 0; i < caseNodes.length; i = i + 1) {
-							nodeListTable[caseNodes[i].name] = caseNodes[i];
-							addNode(caseNodes[i].name, 50, 50 + (150 * i), false);
-						}
+						editor.socket.emit('reqGetTargetMachineList');
+						editor.socket.once('doneGetTargetMachineList', function (data) {
+							for (i = 0; i < caseNodes.length; i = i + 1) {
+								nodeListTable[caseNodes[i].name] = caseNodes[i];
+								addNode(caseNodes[i].name, 50, 50 + (150 * i), false);
+								insertInitialParam(caseNodes[i], data);
+							}
+						});
 					});
 				}
 				
@@ -943,42 +1006,6 @@
 				console.error(e);
 			}
 		});
-	}
-	
-	function insertDefaultParam(nodeData) {
-		var key,
-			value,
-			iokey,
-			ioval,
-			inputtype;
-		for (key in nodeData) {
-			if (nodeData.hasOwnProperty(key)) {
-				if (key === 'input') {
-					value = nodeData[key];
-
-					for (iokey in value) {
-						if (value.hasOwnProperty(iokey)) {
-							ioval = value[iokey];
-							if (ioval.hasOwnProperty('type')) {
-								inputtype = ioval.type;
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
-								ioval.machine = "";
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
-								ioval.cores = 1;
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
-								ioval.nodes = 1;
-							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cleanup')) {
-								ioval.cleanup = false;
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 	
 	function gatherPasswordNeedMachines(parentNodes, sortedNodes) {
@@ -990,7 +1017,7 @@
 		for (i = 0; i < sortedNodes.length; i = i + 1) {
 			node = sortedNodes[i];
 			nodeData = node.nodeData;
-			insertDefaultParam(nodeData);
+			insertInitialParam(nodeData, []);
 
 			if (parentNodes.hasOwnProperty(nodeData.varname)) {
 				gatherPasswordNeedMachine(i, parentNodes[nodeData.varname], nodeData, password_need_machines);
@@ -1026,6 +1053,7 @@
 							initNode();
 							load();
 							console.log("doneResetWorkflow");
+							updateProperty("");
 						});
 					} else {
 						hiddenOKCancelDialog();
