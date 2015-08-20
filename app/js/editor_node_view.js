@@ -571,7 +571,11 @@
 						res = res + ',\n';
 					}
 				} else {
-					if (json[i]) {
+					if (json[i] === true) {
+						res = res + "\t" + i + ' = "true';
+					} else if (json[i] === false) {
+						res = res + "\t" + i + ' = "false';
+					} else if (json[i]) {
 						res = res + "\t" + i + ' = "' + json[i];
 					} else {
 						res = res + "\t" + i + ' = "';
@@ -640,12 +644,18 @@
 				}
 				if (innode.hasOwnProperty('cores') && innode.cores) {
 					target_machine.cores = innode.cores;
+				} else {
+					target_machine.cores = "1";
 				}
 				if (innode.hasOwnProperty('nodes') && innode.nodes) {
 					target_machine.nodes = innode.nodes;
+				} else {
+					target_machine.nodes = "1";
 				}
 				if (innode.hasOwnProperty('delete_directory') && innode.delete_directory) {
 					target_machine.delete_directory = innode.delete_directory;
+				} else {
+					target_machine.delete_directory = false;
 				}
 				hasTargetMachine = true;
 			}
@@ -932,6 +942,42 @@
 		});
 	}
 	
+	function insertDefaultParam(nodeData) {
+		var key,
+			value,
+			iokey,
+			ioval,
+			inputtype;
+		for (key in nodeData) {
+			if (nodeData.hasOwnProperty(key)) {
+				if (key === 'input') {
+					value = nodeData[key];
+
+					for (iokey in value) {
+						if (value.hasOwnProperty(iokey)) {
+							ioval = value[iokey];
+							if (ioval.hasOwnProperty('type')) {
+								inputtype = ioval.type;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
+								ioval.machine = "";
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
+								ioval.cores = 1;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
+								ioval.nodes = 1;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('delete_directory')) {
+								ioval.delete_directory = false;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	function gatherPasswordNeedMachines(parentNodes, sortedNodes) {
 		var i,
 			node,
@@ -941,6 +987,7 @@
 		for (i = 0; i < sortedNodes.length; i = i + 1) {
 			node = sortedNodes[i];
 			nodeData = node.nodeData;
+			insertDefaultParam(nodeData);
 
 			if (parentNodes.hasOwnProperty(nodeData.varname)) {
 				gatherPasswordNeedMachine(i, parentNodes[nodeData.varname], nodeData, password_need_machines);
