@@ -301,4 +301,20 @@ function dxjob:GetCollectionJobFiles(jobname, newdate)
     end
 end
 
+function dxjob:CleanUp()
+	if self.m_excase.isDryRun or self.m_excase.delete_directory then
+		local casename  = self.m_excase.caseName
+		local projname  = self.m_excase.projectName
+
+		local remotedir = projname .. '/' .. casename
+		local projectdir = self.m_excase.projectDir
+		local exist = self.m_jobmgr:isExistFile(remotedir)
+		if  exist == true then
+			-- DELETE now.
+			print('Delete case directory...')
+			self.m_jobmgr:remoteDeleteDir(remotedir)
+		end
+	end
+end
+
 return dxjob

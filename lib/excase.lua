@@ -28,6 +28,19 @@ function getCores(args_table)
 	return 1;
 end
 
+function getCleanUp(args_table)
+	for i, k in pairs(args_table) do
+		if (i == 1) and next(k) then
+			for n, m in pairs(k) do
+				if n == "cleanup" then
+					return m == "true";
+				end
+			end
+		end
+	end
+	return false;
+end
+
 function getInputNodes(args_table)
 	local list = {}
 	for i, k in pairs(args_table) do
@@ -137,6 +150,7 @@ function excase(args_table)
 		targetConf = generateTargetConf(args_table),
 		cores = getCores(args_table),
 		nodes = getNodes(args_table),
+		cleanup = getCleanUp(args_table),
 		inputNodes = getInputNodes(args_table),
 		outputFiles = getOutputFiles(caseName),
 		pollingFiles = getPollingFiles(),

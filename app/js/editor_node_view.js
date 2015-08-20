@@ -188,17 +188,17 @@
 
 			valueSelect.appendChild(optionElem);
 			
-			if (node.hasOwnProperty('delete_directory')) {
-				if (node.delete_directory) {
+			if (node.hasOwnProperty('cleanup')) {
+				if (node.cleanup) {
 					initialIndex = 1;
 				}
 			}
 		}
 		valueSelect.options[initialIndex].selected = "true";
-		node.delete_directory = targets[initialIndex];
+		node.cleanup = targets[initialIndex];
 		valueSelect.onchange = (function (nodeData, node, targets) {
 			return function (e) {
-				node.delete_directory = targets[this.selectedIndex];
+				node.cleanup = targets[this.selectedIndex];
 				nodeListTable[nodeData.name] = nodeData;
 				save();
 			};
@@ -364,7 +364,7 @@
 			if (type === 'target_machine') {
 				return [makeItemTextNode(key, val, inputNode)];
 			}
-		} else if (key === 'delete_directory') {
+		} else if (key === 'cleanup') {
 			if (type === 'target_machine') {
 				return makeBoolNode(key, val, nodeData, inputNode);
 			}
@@ -486,8 +486,8 @@
 								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
 									ioval.nodes = 1;
 								}
-								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('delete_directory')) {
-									ioval.delete_directory = false;
+								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cleanup')) {
+									ioval.cleanup = false;
 								}
 								for (iokey2 in ioval) {
 									if (ioval.hasOwnProperty(iokey2)) {
@@ -652,10 +652,10 @@
 				} else {
 					target_machine.nodes = "1";
 				}
-				if (innode.hasOwnProperty('delete_directory') && innode.delete_directory) {
-					target_machine.delete_directory = innode.delete_directory;
+				if (innode.hasOwnProperty('cleanup') && innode.cleanup) {
+					target_machine.cleanup = innode.cleanup;
 				} else {
-					target_machine.delete_directory = false;
+					target_machine.cleanup = false;
 				}
 				hasTargetMachine = true;
 			}
@@ -670,7 +670,7 @@
 			};
 			target_machine.cores = 1;
 			target_machine.nodes = 1;
-			target_machine.delete_directory = false;
+			target_machine.cleanup = false;
 		}
 		return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
 	}
@@ -705,7 +705,7 @@
 			inputPrefix = "luainput_",
 			resultPrefix = "luaresult_";
 
-		console.log(nodeData.varname, inputIDs, nodeData);
+		//console.log(nodeData.varname, inputIDs, nodeData);
 		// create input scripts
 		if (inputIDs) {
 			for (i = 0; i < inputIDs.length; i = i + 1) {
@@ -720,8 +720,8 @@
 				}
 			}
 		}
-		console.log("inputIDs", inputIDs);
-		console.log("inputVars", inputVars);
+		//console.log("inputIDs", inputIDs);
+		//console.log("inputVars", inputVars);
 		input = "local " + inputPrefix + strid + " = " + to_lua_list(inputVars) + ";\n";
 		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ")\n";
 		return input + exec;
@@ -908,7 +908,7 @@
 						} else {
 							updateProperty(null);
 						}
-						console.log("NODES", nodes);
+						//console.log("NODES", nodes);
 						nui.clearNodes();
 						nui.makeNodes(nodes);
 						isloaded = true;
@@ -968,8 +968,8 @@
 							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
 								ioval.nodes = 1;
 							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('delete_directory')) {
-								ioval.delete_directory = false;
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cleanup')) {
+								ioval.cleanup = false;
 							}
 						}
 					}
@@ -1093,7 +1093,7 @@
 					}
 				});
 			}, function (script) {
-				console.log("finish creating script:\n", script);
+				//console.log("finish creating script:\n", script);
 				if (endCallback) {
 					endCallback(script);
 				}
