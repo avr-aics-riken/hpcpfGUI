@@ -291,6 +291,7 @@ function executeCASE(casename,...)
 		local ceiFile = "cei.json";
 		local cei = readJSON(ceiFile);
 		if (cei == nil or (cei and not ex.isDryRun and string.find(cei.hpcpf.case_exec_info.status, '(Dry)'))) then
+			local targetconf = ex.targetConf
 			local workdir = getTargetCaseDir(ex, casename)
 			cei = getInitialCeiDescription(workdir,  targetconf.server, targetconf.type);
 			if (ex.isDryRun) then

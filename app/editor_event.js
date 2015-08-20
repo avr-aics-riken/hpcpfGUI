@@ -973,16 +973,20 @@
 			}
 		}
 		
-		function writePWF(data) {
+		function writePWF(data, isDryRun) {
 			if (!getSession(socket.id)) { return; }
 			var srcdir = getSession(socket.id).dir,
-				pwfFile = path.join(srcdir, PWF_FILENAME);
+				pwfFile = path.join(srcdir, PWF_FILENAME),
+				toFile = "pwf_" + getDateStr() + ".lua";
 			if (!data) { return false; }
+			if (!isDryRun) {
+				data = "require('hpcpf')\ncopyFile('pwf.lua','" + toFile + "');\n" + data;
+			}
 			fs.writeFileSync(pwfFile, data);
 			return true;
 		}
 		
-		socket.on('runWorkflow', function (data) {
+		socket.on('runWorkflow', function (data, isDryRun) {
 			var srcdir = getSession(socket.id).dir,
 				processspawn = getSession(socket.id).proc,
 				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
@@ -991,7 +995,7 @@
 				getSession(socket.id).proc = null;
 			}
 			
-			if (writePWF(data)) {
+			if (writePWF(data, isDryRun)) {
 				runPWF(PWF_FILENAME);
 			}
 		});
@@ -1003,7 +1007,6 @@
 				socket.emit('doneCleanCase', false);
 				return;
 			}
-			
 			backfire_filedialog.Disconnect(socket.id);
 			cleanCase(caseName);
 			socket.emit('doneCleanCase', true);

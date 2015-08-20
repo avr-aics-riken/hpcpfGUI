@@ -67,13 +67,14 @@
 	executeProject = function () {
 		var exec = function (runFunc) {
 			runFunc(function (script) {
+				var isDryRun = false;
 				if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
 					editor.showExeView();
 				}
 				console.log("procRun");
 				clearOutput();
 				setExecuting(true);
-				editor.socket.emit('runWorkflow', script);
+				editor.socket.emit('runWorkflow', script, isDryRun);
 			});
 		};
 		
@@ -89,13 +90,14 @@
 	dryrunProject = function () {
 		var exec = function (runFunc) {
 			runFunc(function (script) {
+				var isDryRun = true;
 				if (editor.getCurrentViewType() !== editor.ViewTypes.node) {
 					editor.showExeView();
 				}
 				console.log("procRun");
 				clearOutput();
 				
-				editor.socket.emit('runWorkflow', script);
+				editor.socket.emit('runWorkflow', script, isDryRun);
 				setExecuting(true);
 			});
 		};
