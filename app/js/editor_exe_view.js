@@ -129,9 +129,6 @@
 		s.innerHTML += data.toString() + '</br>';
 		//s.scrollTop = s.scrollHeight;
 		area.scrollTop = area.scrollHeight;
-		if (!isExecuting()) {
-			setExecuting(true);
-		}
 	});
 
 	editor.socket.on('stderr', function (data) {

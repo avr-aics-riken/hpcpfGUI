@@ -326,7 +326,9 @@
 		
 		socket.on('setWorkingPath', function (data) {
 			var path = JSON.parse(data).path.toString(),
-				session;
+				session,
+				i,
+				log;
 			
 			if (path.substr(path.length - 1) !== "/") {
 				path += "/";
@@ -339,6 +341,13 @@
 				sessionTable[path] = { "dir" : path, "proc" : null };
 			} else if (session.proc) {
 				socket.emit('isExecuting', true);
+				console.log("isExecuting TRUE");
+			}
+			if (session.hasOwnProperty('log')) {
+				for (i = 0; i < session.log.length; i = i + 1) {
+					log = session.log[i];
+					socket.emit(log.type, log.data);
+				}
 			}
 			updateFileList(path);
 			
@@ -842,8 +851,9 @@
 		
 		function runPWF(fileName) {
 			if (!getSession(socket.id)) { return; }
-			var srcdir = getSession(socket.id).dir,
-				processspawn = getSession(socket.id).proc,
+			var session = getSession(socket.id),
+				srcdir = session.dir,
+				processspawn = session.proc,
 				ext,
 				lualibpath,
 				sfile,
@@ -861,11 +871,13 @@
 				processspawn = spawn(fileName, [], {cwd : srcdir});
 			} else if (ext === "scn") {
 				console.log("KR:" + KRENDER_CMD + " / scn path=" + srcdir + fileName);
-				processspawn = spawn(KRENDER_CMD, [srcdir + fileName], function (err, stdout, stderr) {
-					if (!err) { return; }
-					console.log('Failed run krender.');
-					getSession(socket.id).proc = null;
-				});
+				processspawn = spawn(KRENDER_CMD, [srcdir + fileName], (function (session) {
+					return function (err, stdout, stderr) {
+						if (!err) { return; }
+						console.log('Failed run krender.');
+						getSession(socket.id).proc = null;
+					};
+				}(session)));
 			} else if (ext === "frag") {
 				if (!process.env.GLSL_COMPILER) {
 					console.log("can't find GLSL_COMPILER");
@@ -876,30 +888,73 @@
 				ofile = srcdir + fileName;
 				ofile = ofile.substr(0, ofile.length - 4) + "so";
 				console.log("Target SO:" + ofile);
-				processspawn = spawn(process.env.GLSL_COMPILER, ['-o', ofile, sfile], function (err, stdout, stderr) {
-					if (!err) { return; }
-					console.log('Failed run glslc.');
-					getSession(socket.id).proc = null;
-				});
+				processspawn = spawn(process.env.GLSL_COMPILER, ['-o', ofile, sfile], (function (session) {
+					return function (err, stdout, stderr) {
+						if (!err) { return; }
+						console.log('Failed run glslc.');
+						getSession(socket.id).proc = null;
+					};
+				}(session)));
 			}
-			getSession(socket.id).proc = processspawn;
+			session.proc = processspawn;
+			session.log = [];
 			if (processspawn) {
-				processspawn.stdout.on('data', function (data) {
-					console.log('stdout: ' + data);
-					//socket.emit('stdout', data.toString());
-					emitToAllSessions(srcdir, 'stdout', data.toString());
-				});
-				processspawn.stderr.on('data', function (data) {
-					console.log('stderr: ' + data);
-					//socket.emit('stderr', data.toString());
-					emitToAllSessions(srcdir, 'stderr', data.toString());
-				});
-				processspawn.on('exit', function (code) {
-					var session;
-					console.log('exit code: ' + code);
-					
-					session = getSession(socket.id);
-					if (session && session.proc) {
+				processspawn.stdout.on('data', (function (session) {
+					return function (data) {
+						var str = data.toString();
+						console.log('stdout: ' + data);
+						session.log.push({ type: 'stdout', data : str});
+						//socket.emit('stdout', data.toString());
+						emitToAllSessions(srcdir, 'stdout', str);
+					};
+				}(session)));
+				processspawn.stderr.on('data', (function (session) {
+					return function (data) {
+						var str = data.toString();
+						console.log('stderr: ' + data);
+						session.log.push({ type: 'stderr', data : str});
+						//socket.emit('stderr', data.toString());
+						emitToAllSessions(srcdir, 'stderr', str);
+					};
+				}(session)));
+				processspawn.on('exit', (function (session) {
+					return function (code) {
+						console.log('exit code: ' + code);
+
+						session.proc = null;
+						if (session && session.proc) {
+							changeCEIStatus(function (caseDirName, pre) {
+								if (pre === 'Running(Dry)') {
+									return 'Failed(Dry)';
+								} else if (pre === 'Running') {
+									return 'Failed';
+								}
+								return pre;
+							});
+						}
+					};
+				}(session)));
+				processspawn.on('close', (function (session) {
+					return function (code, signal) {
+						var ids,
+							i;
+						console.log('close code: ' + code);
+						updateFileList(srcdir);
+						session.proc = null;
+						if (session.hasOwnProperty('canRemoveID') && session.canRemoveID) {
+							delete idTable[socket.id];
+							delete socketTable[socket.id];
+							session.canRemoveID = false;
+						}
+						emitToAllSessions(srcdir, 'exit');
+					};
+				}(session)));
+				processspawn.on('error', (function (session) {
+					return function (err) {
+						console.log('process error', err);
+						//socket.emit('stderr', "can't execute program\n");
+						emitToAllSessions(srcdir, 'stderr', "can't execute program\n");
+
 						changeCEIStatus(function (caseDirName, pre) {
 							if (pre === 'Running(Dry)') {
 								return 'Failed(Dry)';
@@ -908,37 +963,8 @@
 							}
 							return pre;
 						});
-					}
-				});
-				processspawn.on('close', function (code, signal) {
-					var session,
-						ids,
-						i;
-					console.log('close code: ' + code);
-					updateFileList(srcdir);
-					session = getSession(socket.id);
-					session.proc = null;
-					if (session.hasOwnProperty('canRemoveID') && session.canRemoveID) {
-						delete idTable[socket.id];
-						delete socketTable[socket.id];
-						session.canRemoveID = false;
-					}
-					emitToAllSessions(srcdir, 'exit');
-				});
-				processspawn.on('error', function (err) {
-					console.log('process error', err);
-					//socket.emit('stderr', "can't execute program\n");
-					emitToAllSessions(srcdir, 'stderr', "can't execute program\n");
-
-					changeCEIStatus(function (caseDirName, pre) {
-						if (pre === 'Running(Dry)') {
-							return 'Failed(Dry)';
-						} else if (pre === 'Running') {
-							return 'Failed';
-						}
-						return pre;
-					});
-				});
+					};
+				}(session)));
 			} else {
 				//socket.emit('stdout', 'Unknown file type. -> ' + fileName);
 				emitToAllSessions(srcdir, 'stdout', 'Unknown file type. -> ' + fileName);
