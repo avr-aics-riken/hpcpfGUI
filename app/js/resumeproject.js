@@ -57,14 +57,21 @@
 		list.appendChild(row);
 	}
 	
-	function init() {
+	function reload() {
 		var list = document.createElement('div'),
 			projectList = document.getElementById('projectlist');
-	
+		
+		projectList.innerHTML = "";
 		socket.emit('reqGetProjectList');
 		list.id = "resumeList";
 		list.className = "resumeList";
 		projectList.appendChild(list);
+		console.log("reload");
+		setTimeout(reload, 1000 * 30);
+	}
+	
+	function init() {
+		reload();
 	}
 	
 	socket.on('getProjectList', function (datastr) {
