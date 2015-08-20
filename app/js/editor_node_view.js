@@ -159,6 +159,53 @@
 		return [valueRow];
 	}
 
+	function makeBoolNode(name, value, node) {
+		var valueRow = document.createElement('div'),
+			nameProp = document.createElement('div'),
+			valueProp = document.createElement('div'),
+			valueSelect = document.createElement('select'),
+			optionElem,
+			target,
+			targets,
+			initialIndex = 0,
+			i;
+		
+		valueRow.classList.add(str_rowclass);
+		nameProp.innerHTML = name;
+		nameProp.classList.add(str_nameclass);
+		valueRow.appendChild(nameProp);
+		valueProp.className = str_constclass;
+		valueRow.appendChild(valueProp);
+		
+		// select box
+		targets = [false, true];
+		valueSelect.className = "nodePropertyTargetMachine";
+		for (i = 0; i < targets.length; i = i + 1) {
+			target = targets[i];
+			optionElem = document.createElement('option');
+			optionElem.innerHTML = target;
+
+			valueSelect.appendChild(optionElem);
+			
+			if (node.hasOwnProperty('delete_directory')) {
+				if (node.delete_directory) {
+					initialIndex = 1;
+				}
+			}
+		}
+		valueSelect.options[initialIndex].selected = "true";
+		node.machine = targets[initialIndex];
+		valueSelect.onchange = (function (nodeData, targets) {
+			return function (e) {
+				nodeData.delete_directory = targets[this.selectedIndex];
+				nodeListTable[nodeData.name] = nodeData;
+				save();
+			};
+		}(node, targets));
+		valueProp.appendChild(valueSelect);
+		return [valueRow];
+	}
+
 	function addNode(nodename, nx, ny, canErase) {
 		var node = nodeListTable[nodename],
 			instNode,
@@ -316,6 +363,10 @@
 			if (type === 'target_machine') {
 				return [makeItemTextNode(key, val, inputNode)];
 			}
+		} else if (key === 'delete_directory') {
+			if (type === 'target_machine') {
+				return makeBoolNode(key, val, inputNode);
+			}
 		} else if (key === 'file') {
 			return [makeItemTextNode(key, val, inputNode)];
 		} else {
@@ -433,6 +484,9 @@
 								}
 								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
 									ioval.nodes = 1;
+								}
+								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('delete_directory')) {
+									ioval.delete_directory = false;
 								}
 								for (iokey2 in ioval) {
 									if (ioval.hasOwnProperty(iokey2)) {
@@ -589,6 +643,9 @@
 				if (innode.hasOwnProperty('nodes') && innode.nodes) {
 					target_machine.nodes = innode.nodes;
 				}
+				if (innode.hasOwnProperty('delete_directory') && innode.delete_directory) {
+					target_machine.delete_directory = innode.delete_directory;
+				}
 				hasTargetMachine = true;
 			}
 		}
@@ -602,6 +659,7 @@
 			};
 			target_machine.cores = 1;
 			target_machine.nodes = 1;
+			target_machine.delete_directory = false;
 		}
 		return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
 	}
