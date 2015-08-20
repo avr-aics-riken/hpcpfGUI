@@ -1101,8 +1101,12 @@
 				password_input.createPasswordInputView(editor.socket, password_need_machines, function (password_need_machines) {
 					var node,
 						nodeData,
-						script = "require('hpcpf')\n";
+						script = "require('hpcpf')\n",
+						i;
 					
+					for (i = 0; i < password_need_machines.length; i = i + 1) {
+						password_input.saveConnection(password_need_machines[i]);
+					}
 					
 					// create lua script
 					for (i = 0; i < sorted.length; i = i + 1) {
