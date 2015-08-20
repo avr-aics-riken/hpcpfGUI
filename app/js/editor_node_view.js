@@ -108,7 +108,7 @@
 		return itemRow;
 	}
 	
-	function makeTargetMachineNode(name, value, node, targetMachineList) {
+	function makeTargetMachineNode(name, value, nodeData, node, targetMachineList) {
 		var valueRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
 			valueProp = document.createElement('div'),
@@ -148,13 +148,61 @@
 		}
 		valueSelect.options[initialIndex].selected = "true";
 		node.machine = targets[initialIndex];
-		valueSelect.onchange = (function (nodeData, targets) {
+		valueSelect.onchange = (function (nodeData, node, targets) {
 			return function (e) {
-				nodeData.machine = targets[this.selectedIndex];
+				node.machine = targets[this.selectedIndex];
+				console.log(nodeData.name, node.machine);
 				nodeListTable[nodeData.name] = nodeData;
 				save();
 			};
-		}(node, targets));
+		}(nodeData, node, targets));
+		valueProp.appendChild(valueSelect);
+		return [valueRow];
+	}
+
+	function makeBoolNode(name, value, nodeData, node) {
+		var valueRow = document.createElement('div'),
+			nameProp = document.createElement('div'),
+			valueProp = document.createElement('div'),
+			valueSelect = document.createElement('select'),
+			optionElem,
+			target,
+			targets,
+			initialIndex = 0,
+			i;
+		
+		valueRow.classList.add(str_rowclass);
+		nameProp.innerHTML = name;
+		nameProp.classList.add(str_nameclass);
+		valueRow.appendChild(nameProp);
+		valueProp.className = str_constclass;
+		valueRow.appendChild(valueProp);
+		
+		// select box
+		targets = [false, true];
+		valueSelect.className = "nodePropertyTargetMachine";
+		for (i = 0; i < targets.length; i = i + 1) {
+			target = targets[i];
+			optionElem = document.createElement('option');
+			optionElem.innerHTML = target;
+
+			valueSelect.appendChild(optionElem);
+			
+			if (node.hasOwnProperty('cleanup')) {
+				if (node.cleanup) {
+					initialIndex = 1;
+				}
+			}
+		}
+		valueSelect.options[initialIndex].selected = "true";
+		node.cleanup = targets[initialIndex];
+		valueSelect.onchange = (function (nodeData, node, targets) {
+			return function (e) {
+				node.cleanup = targets[this.selectedIndex];
+				nodeListTable[nodeData.name] = nodeData;
+				save();
+			};
+		}(nodeData, node, targets));
 		valueProp.appendChild(valueSelect);
 		return [valueRow];
 	}
@@ -300,11 +348,11 @@
 		}
 	}
 	
-	function makePropertyInputRow(type, key, val, inputNode, targetMachineList) {
+	function makePropertyInputRow(nodeData, type, key, val, inputNode, targetMachineList) {
 		//console.log("type key val", type, key, val);
 		if (key === 'machine') {
 			if (type === 'target_machine') {
-				return makeTargetMachineNode(key, val, inputNode, targetMachineList);
+				return makeTargetMachineNode(key, val, nodeData, inputNode, targetMachineList);
 			}
 		} else if (key === 'value') {
 			return [makeItemNode(key, val)];
@@ -315,6 +363,10 @@
 		} else if (key === 'nodes') {
 			if (type === 'target_machine') {
 				return [makeItemTextNode(key, val, inputNode)];
+			}
+		} else if (key === 'cleanup') {
+			if (type === 'target_machine') {
+				return makeBoolNode(key, val, nodeData, inputNode);
 			}
 		} else if (key === 'file') {
 			return [makeItemTextNode(key, val, inputNode)];
@@ -434,12 +486,15 @@
 								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
 									ioval.nodes = 1;
 								}
+								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cleanup')) {
+									ioval.cleanup = false;
+								}
 								for (iokey2 in ioval) {
 									if (ioval.hasOwnProperty(iokey2)) {
 										if (iokey2 !== 'name') {
 											if (ioval.hasOwnProperty(iokey2)) {
 												ioval2 = ioval[iokey2];
-												propertyRows = makePropertyInputRow(inputtype, iokey2, ioval2, ioval, targetMachineList);
+												propertyRows = makePropertyInputRow(nodeData, inputtype, iokey2, ioval2, ioval, targetMachineList);
 												for (i = 0; i < propertyRows.length; i = i + 1) {
 													property.appendChild(propertyRows[i]);
 												}
@@ -516,7 +571,11 @@
 						res = res + ',\n';
 					}
 				} else {
-					if (json[i]) {
+					if (json[i] === true) {
+						res = res + "\t" + i + ' = "true';
+					} else if (json[i] === false) {
+						res = res + "\t" + i + ' = "false';
+					} else if (json[i]) {
 						res = res + "\t" + i + ' = "' + json[i];
 					} else {
 						res = res + "\t" + i + ' = "';
@@ -585,9 +644,18 @@
 				}
 				if (innode.hasOwnProperty('cores') && innode.cores) {
 					target_machine.cores = innode.cores;
+				} else {
+					target_machine.cores = "1";
 				}
 				if (innode.hasOwnProperty('nodes') && innode.nodes) {
 					target_machine.nodes = innode.nodes;
+				} else {
+					target_machine.nodes = "1";
+				}
+				if (innode.hasOwnProperty('cleanup') && innode.cleanup) {
+					target_machine.cleanup = innode.cleanup;
+				} else {
+					target_machine.cleanup = false;
 				}
 				hasTargetMachine = true;
 			}
@@ -602,6 +670,7 @@
 			};
 			target_machine.cores = 1;
 			target_machine.nodes = 1;
+			target_machine.cleanup = false;
 		}
 		return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
 	}
@@ -636,7 +705,7 @@
 			inputPrefix = "luainput_",
 			resultPrefix = "luaresult_";
 
-		console.log(nodeData.varname, inputIDs, nodeData);
+		//console.log(nodeData.varname, inputIDs, nodeData);
 		// create input scripts
 		if (inputIDs) {
 			for (i = 0; i < inputIDs.length; i = i + 1) {
@@ -651,8 +720,8 @@
 				}
 			}
 		}
-		console.log("inputIDs", inputIDs);
-		console.log("inputVars", inputVars);
+		//console.log("inputIDs", inputIDs);
+		//console.log("inputVars", inputVars);
 		input = "local " + inputPrefix + strid + " = " + to_lua_list(inputVars) + ";\n";
 		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ")\n";
 		return input + exec;
@@ -839,7 +908,7 @@
 						} else {
 							updateProperty(null);
 						}
-						console.log("NODES", nodes);
+						//console.log("NODES", nodes);
 						nui.clearNodes();
 						nui.makeNodes(nodes);
 						isloaded = true;
@@ -873,17 +942,52 @@
 		});
 	}
 	
+	function insertDefaultParam(nodeData) {
+		var key,
+			value,
+			iokey,
+			ioval,
+			inputtype;
+		for (key in nodeData) {
+			if (nodeData.hasOwnProperty(key)) {
+				if (key === 'input') {
+					value = nodeData[key];
+
+					for (iokey in value) {
+						if (value.hasOwnProperty(iokey)) {
+							ioval = value[iokey];
+							if (ioval.hasOwnProperty('type')) {
+								inputtype = ioval.type;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
+								ioval.machine = "";
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
+								ioval.cores = 1;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
+								ioval.nodes = 1;
+							}
+							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cleanup')) {
+								ioval.cleanup = false;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	function gatherPasswordNeedMachines(parentNodes, sortedNodes) {
 		var i,
 			node,
 			nodeData,
-			password_need_machines = [],
-			tempProperty = prePropertyNodeName;
+			password_need_machines = [];
 		
 		for (i = 0; i < sortedNodes.length; i = i + 1) {
 			node = sortedNodes[i];
 			nodeData = node.nodeData;
-			updateProperty(nodeData);
+			insertDefaultParam(nodeData);
 
 			if (parentNodes.hasOwnProperty(nodeData.varname)) {
 				gatherPasswordNeedMachine(i, parentNodes[nodeData.varname], nodeData, password_need_machines);
@@ -892,11 +996,6 @@
 			}
 		}
 
-		if (nodeListTable.hasOwnProperty(tempProperty)) {
-			updateProperty(nodeListTable[tempProperty]);
-		} else {
-			updateProperty(null);
-		}
 		return password_need_machines;
 	}
 	
@@ -973,6 +1072,7 @@
 						nodeData,
 						script = "require('hpcpf')\n";
 					
+					
 					// create lua script
 					for (i = 0; i < sorted.length; i = i + 1) {
 						node = sorted[i];
@@ -993,7 +1093,7 @@
 					}
 				});
 			}, function (script) {
-				console.log("finish creating script:\n", script);
+				//console.log("finish creating script:\n", script);
 				if (endCallback) {
 					endCallback(script);
 				}
