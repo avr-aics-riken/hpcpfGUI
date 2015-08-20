@@ -108,7 +108,7 @@
 		return itemRow;
 	}
 	
-	function makeTargetMachineNode(name, value, node, targetMachineList) {
+	function makeTargetMachineNode(name, value, nodeData, node, targetMachineList) {
 		var valueRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
 			valueProp = document.createElement('div'),
@@ -148,18 +148,19 @@
 		}
 		valueSelect.options[initialIndex].selected = "true";
 		node.machine = targets[initialIndex];
-		valueSelect.onchange = (function (nodeData, targets) {
+		valueSelect.onchange = (function (nodeData, node, targets) {
 			return function (e) {
-				nodeData.machine = targets[this.selectedIndex];
+				node.machine = targets[this.selectedIndex];
+				console.log(nodeData.name, node.machine);
 				nodeListTable[nodeData.name] = nodeData;
 				save();
 			};
-		}(node, targets));
+		}(nodeData, node, targets));
 		valueProp.appendChild(valueSelect);
 		return [valueRow];
 	}
 
-	function makeBoolNode(name, value, node) {
+	function makeBoolNode(name, value, nodeData, node) {
 		var valueRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
 			valueProp = document.createElement('div'),
@@ -194,14 +195,14 @@
 			}
 		}
 		valueSelect.options[initialIndex].selected = "true";
-		node.machine = targets[initialIndex];
-		valueSelect.onchange = (function (nodeData, targets) {
+		node.delete_directory = targets[initialIndex];
+		valueSelect.onchange = (function (nodeData, node, targets) {
 			return function (e) {
-				nodeData.delete_directory = targets[this.selectedIndex];
+				node.delete_directory = targets[this.selectedIndex];
 				nodeListTable[nodeData.name] = nodeData;
 				save();
 			};
-		}(node, targets));
+		}(nodeData, node, targets));
 		valueProp.appendChild(valueSelect);
 		return [valueRow];
 	}
@@ -347,11 +348,11 @@
 		}
 	}
 	
-	function makePropertyInputRow(type, key, val, inputNode, targetMachineList) {
+	function makePropertyInputRow(nodeData, type, key, val, inputNode, targetMachineList) {
 		//console.log("type key val", type, key, val);
 		if (key === 'machine') {
 			if (type === 'target_machine') {
-				return makeTargetMachineNode(key, val, inputNode, targetMachineList);
+				return makeTargetMachineNode(key, val, nodeData, inputNode, targetMachineList);
 			}
 		} else if (key === 'value') {
 			return [makeItemNode(key, val)];
@@ -365,7 +366,7 @@
 			}
 		} else if (key === 'delete_directory') {
 			if (type === 'target_machine') {
-				return makeBoolNode(key, val, inputNode);
+				return makeBoolNode(key, val, nodeData, inputNode);
 			}
 		} else if (key === 'file') {
 			return [makeItemTextNode(key, val, inputNode)];
@@ -493,7 +494,7 @@
 										if (iokey2 !== 'name') {
 											if (ioval.hasOwnProperty(iokey2)) {
 												ioval2 = ioval[iokey2];
-												propertyRows = makePropertyInputRow(inputtype, iokey2, ioval2, ioval, targetMachineList);
+												propertyRows = makePropertyInputRow(nodeData, inputtype, iokey2, ioval2, ioval, targetMachineList);
 												for (i = 0; i < propertyRows.length; i = i + 1) {
 													property.appendChild(propertyRows[i]);
 												}

@@ -233,6 +233,7 @@
 					if (elem.hasOwnProperty('status')) {
 						node.status = elem.status;
 					}
+					/*
 					if (elem.hasOwnProperty('target')) {
 						if (targetElem && targetConfData) {
 							for (i = 0; i < targetConfData.hpcpf.targets.length; i = i + 1) {
@@ -244,6 +245,7 @@
 							}
 						}
 					}
+					*/
 				}
 			}
 			
