@@ -936,13 +936,11 @@
 		var i,
 			node,
 			nodeData,
-			password_need_machines = [],
-			tempProperty = prePropertyNodeName;
+			password_need_machines = [];
 		
 		for (i = 0; i < sortedNodes.length; i = i + 1) {
 			node = sortedNodes[i];
 			nodeData = node.nodeData;
-			updateProperty(nodeData);
 
 			if (parentNodes.hasOwnProperty(nodeData.varname)) {
 				gatherPasswordNeedMachine(i, parentNodes[nodeData.varname], nodeData, password_need_machines);
@@ -951,11 +949,6 @@
 			}
 		}
 
-		if (nodeListTable.hasOwnProperty(tempProperty)) {
-			updateProperty(nodeListTable[tempProperty]);
-		} else {
-			updateProperty(null);
-		}
 		return password_need_machines;
 	}
 	
@@ -1031,6 +1024,7 @@
 					var node,
 						nodeData,
 						script = "require('hpcpf')\n";
+					
 					
 					// create lua script
 					for (i = 0; i < sorted.length; i = i + 1) {
