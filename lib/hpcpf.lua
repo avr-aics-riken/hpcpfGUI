@@ -226,6 +226,16 @@ function getInitialCeiDescription(workdir, server, hosttype)
 	}
 end
 
+function getInitialHistoryDescription(workdir, server, date)
+    return {
+        hpcpf = {
+            history = {
+                {status = "created", uri = server .. ":" .. workdir, date = date}
+            }
+        }
+    }
+end
+
 function getSeparator()
 	local pathsep
 	if (getPlatform() == 'Windows') then
@@ -234,6 +244,31 @@ function getSeparator()
 	   pathsep = '/'
 	end
 	return pathsep;
+end
+
+function getTargetCaseDir(ex, casename)
+    local targetconf = ex.targetConf
+    local workdir = targetconf.workpath;
+    if string.sub(workdir, workdir:len()) ~= getSeparator() then
+        workdir = workdir .. getSeparator()
+    end
+    workdir = workdir .. casename .. getSeparator()
+    return workdir
+end
+
+function addExecuteHistory(ex, casename)
+    local histFile = "history.json";
+    local hist = readJSON(histFile);
+    local workdir = getTargetCaseDir(ex, casename)
+    local targetconf = ex.targetConf
+    local server = targetconf.server
+    local date = os.date("!%Y-%m-%dT%H:%M:%S")    
+    if hist == nil or hist.hpcpf == nil or hist.hpcpf.history == nil then
+        hist = getInitialHistoryDescription(workdir, server, date);
+    end
+    
+    hist.hpcpf.history[#hist.hpcpf.history + 1] = {status = "execute", uri = "file://" .. workdir, date = date}
+    writeJSON(histFile, hist)
 end
 
 function executeCASE(casename,...)
@@ -256,12 +291,7 @@ function executeCASE(casename,...)
 		local ceiFile = "cei.json";
 		local cei = readJSON(ceiFile);
 		if (cei == nil or (cei and not ex.isDryRun and string.find(cei.hpcpf.case_exec_info.status, '(Dry)'))) then
-			local targetconf = ex.targetConf
-			local workdir = targetconf.workpath;
-			if string.sub(workdir, workdir:len()) ~= getSeparator() then
-				workdir = workdir .. getSeparator()
-			end
-			workdir = workdir .. casename .. getSeparator()
+			local workdir = getTargetCaseDir(ex, casename)
 			cei = getInitialCeiDescription(workdir,  targetconf.server, targetconf.type);
 			if (ex.isDryRun) then
 				writeCEI(ceiFile, cei, 'Running(Dry)')
@@ -274,6 +304,8 @@ function executeCASE(casename,...)
 				return cei.hpcpf.case_exec_info.result;
 			end
 		end
+        -- write history.json
+        addExecuteHistory(ex, casename)
 		
 		-- execute
 		result = cf(ex)
