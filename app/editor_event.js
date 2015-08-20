@@ -343,7 +343,7 @@
 				socket.emit('isExecuting', true);
 				console.log("isExecuting TRUE");
 			}
-			if (session.hasOwnProperty('log')) {
+			if (session && session.hasOwnProperty('log')) {
 				for (i = 0; i < session.log.length; i = i + 1) {
 					log = session.log[i];
 					socket.emit(log.type, log.data);
