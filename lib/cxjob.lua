@@ -101,7 +101,7 @@ function cxjob:uploadFile(localfile, remotefile)
         scpcmd = scpcmd .. '-P '.. self.port .. ' ';
     end
     scpcmd = scpcmd .. localfile .. ' ';
-    if self.user ~= nil then
+    if self.user ~= nil and self.user ~= "" then
         scpcmd = scpcmd .. self.user ..'@';
     end
     scpcmd = scpcmd .. self.server .. ':' .. self.workdir .. remotefile;
@@ -123,7 +123,7 @@ function cxjob:downloadFile(remotefile, localfile)
     if self.port ~= nil then
         scpcmd = scpcmd .. '-P '.. self.port .. ' ';
     end
-    if self.user ~= nil then
+    if self.user ~= nil and self.user ~= "" then
         scpcmd = scpcmd .. self.user ..'@';
     end
     scpcmd = scpcmd .. self.server .. ':' .. self.workdir .. remotefile .. ' ' .. localfile;
@@ -178,7 +178,7 @@ local function sshCmd(user, server, port, key, password, cmd, disableErr)
     if port ~= nil then
         sshcmd = sshcmd .. '-p '.. port .. ' ';
     end
-    if user ~= nil then
+    if user ~= nil and user ~= "" then
         sshcmd = sshcmd .. user ..'@';
     end
 	local handle;
@@ -227,7 +227,7 @@ end
 function cxjob:sendFile(localfile, remotefile)
     local fromfile = localfile    
     local tofile = self.server .. ':' .. self.workdir .. remotefile
-    if self.user ~= nil then
+    if self.user ~= nil and self.user ~= "" then
         tofile = self.user .. '@' .. tofile;
     end
     return scpCmd(self.user, self.server, self.port, self.sshkey, self.password, fromfile, tofile)
@@ -235,7 +235,7 @@ end
 
 function cxjob:getFile(localfile, remotefile)
     local fromfile = self.server .. ':' .. self.workdir .. remotefile
-    if self.user ~= nil then
+    if self.user ~= nil and self.user ~= "" then
         fromfile = self.user .. '@' .. fromfile;
     end
     local tofile = localfile
