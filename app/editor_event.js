@@ -817,7 +817,7 @@
 									postStatus = changeFunc(caseDirName, preStatus);
 									if (preStatus !== postStatus) {
 										data.hpcpf.case_exec_info.status = postStatus;
-										fs.writeFileSync(ceiPath, JSON.stringify(data));
+										fs.writeFileSync(ceiPath, JSON.stringify(data, "    "));
 									}
 								}
 							}
