@@ -308,9 +308,6 @@ function svgNodeUI(draw) {
 			data.changeColor('#f4c537');
 			preNode = data;
 		}
-		if (nodeClickFunction) {
-			nodeClickFunction(nodeData);
-		}
 	}
 	
 	function moveAll(mx, my) {
@@ -356,10 +353,15 @@ function svgNodeUI(draw) {
 			groupDragEnd = function (self) {
 				return function (delta, event) {
 					event.stopPropagation();
+					if (self.orgPos[0] !== self.nodeData.pos[0] && self.orgPos[1] !== self.nodeData.pos[1]) {
+						if (nodeMovedFunction) {
+							nodeMovedFunction();
+						}
+					}
 					self.orgPos[0] = self.nodeData.pos[0];
 					self.orgPos[1] = self.nodeData.pos[1];
-					if (nodeMovedFunction) {
-						nodeMovedFunction();
+					if (nodeClickFunction) {
+						nodeClickFunction(self.nodeData);
 					}
 				};
 			},

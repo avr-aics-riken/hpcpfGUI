@@ -804,9 +804,12 @@
 		nui.setNodeMovedFunction(nodeMovedFunction);
 		nui.nodeClickEvent(function (nodeData) {
 			console.log("node cliecked");
-			save();
+			//save();
 			//updatePropertyDebug(nodeData);
-			updateProperty(nodeData);
+			//console.log(prePropertyNodeName, nodeData);
+			if (prePropertyNodeName !== nodeData.name) {
+				updateProperty(nodeData);
+			}
 			
 			if (propertyTabFunc) {
 				propertyTabFunc(true);
