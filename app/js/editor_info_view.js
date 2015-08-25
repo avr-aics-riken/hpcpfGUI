@@ -286,6 +286,10 @@
 	
 	editor.socket.on('connect', function () {
 		editor.socket.emit('reqUpdateInformation');
+		
+		$('validtags').onclick = function () {
+			window.open('infodescription.html');
+		};
 	});
 
 	window.editor_info_view = {};

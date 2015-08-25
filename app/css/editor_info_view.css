@@ -152,3 +152,20 @@ a.info_link:hover {
 	background-color: #808080;
 	color : white;
 }
+
+#info_description_sample {
+	display : none
+}
+
+.validtags {
+	color:#555;
+	font-size:14px;
+	text-decoration:underline;
+	padding-top:5px;
+	padding-top : 5px;
+	padding-bottom : 3px;
+	cursor: pointer;
+}
+.validtags:hover {
+	color : #AAA;
+}

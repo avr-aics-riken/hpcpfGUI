@@ -1,0 +1,25 @@
+.json_text {
+	-webkit-touch-callout: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;"
+}
+
+.info_text_area {
+	margin-left: 10px;
+	margin-top: 10px;
+	border: solid;
+	border-radius: 2px;
+	border-color: #72ca2a;
+	background:#CBCBCB;
+	position : absolute;
+	left : 0px;
+	right : 0px;
+	top : 65px;
+	bottom : 10px;
+	min-height: 450px;
+	min-width: 600px;
+}
+
