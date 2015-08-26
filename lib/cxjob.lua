@@ -287,6 +287,10 @@ function cxjob:remoteDeleteDirFullpath(dirpath)
     return sshCmd(self.user, self.port, self.projectdir, self.authkey, self.hosttype, cmd)
 end
 
+function cxjob:remoteCommand(cmd)
+    local cmd = cmd
+    return sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
+end
 
 ---------------------
 

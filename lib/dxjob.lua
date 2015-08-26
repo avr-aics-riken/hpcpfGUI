@@ -2,6 +2,14 @@
 local dxjob = {}
 local cxjob = require('cxjob')
 
+local function uuid()
+	local random = math.random
+    local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    return string.gsub(template, '[xy]', function (c)
+        local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
+        return string.format('%x', v)
+    end)
+end
 
 function dxjob.new(excase)
 	local targetConf = excase.targetConf
@@ -113,6 +121,8 @@ function dxjob:SendCaseDir()
 		--
 		-- TODO: backup directry
 		--
+		--local newcasename =  casename .. '_' .. uuid()
+		--self.m_jobmgr:remoteCopyDir(remotedir, newcasename)
 
 		-- DELETE now.
 		print('Delete case directory...')
@@ -170,6 +180,9 @@ function dxjob:GetCaseDir()
 	self:GetFiles({casedir}, newdate)
 end
 
+function dxjob:Command(cmd)
+	self.m_jobmgr:remoteCommand(cmd)
+end
 
 function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
 	local casename  = self.m_excase.caseName
@@ -259,12 +272,17 @@ end
 function dxjob:GetCollectionFiles(newdate)
 	local collectfiles = self:CollectionFileList()
     if collectfiles == nil or #collectfiles == 0 then
+    	print('[Warning] There is no collectfile.')
     	return
     end
     
     local filesTable = {}
     for i, v in pairs(collectfiles) do
-        filesTable[#filesTable + 1] = v.path
+    	if v.path == nil then
+	    	print('[Warning] There is no "path" field in collection file list.')
+    	else
+	        filesTable[#filesTable + 1] = v.path
+	    end
     end
 
     if #filesTable > 0 then
@@ -280,7 +298,11 @@ function dxjob:GetPollingFiles(newdate)
     
     local filesTable = {}
     for i, v in pairs(collectfiles) do
-        filesTable[#filesTable + 1] = v.path
+    	if v.path == nil then
+	    	print('[Warning] There is no "path" field in polling file list.')
+    	else
+      		filesTable[#filesTable + 1] = v.path
+	    end
     end
 
     if #filesTable > 0 then
@@ -296,7 +318,11 @@ function dxjob:GetCollectionJobFiles(jobname, newdate)
 
     local filesTable = {}
     for i, v in pairs(collectfiles) do
-        filesTable[#filesTable + 1] = jobname .. '/' .. v.path
+    	if v.path == nil then
+	    	print('[Warning] There is no "path" field in collection job file list.')
+    	else
+    	    filesTable[#filesTable + 1] = jobname .. '/' .. v.path
+	    end
     end
 
     if #filesTable > 0 then
