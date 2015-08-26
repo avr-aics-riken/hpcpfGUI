@@ -830,6 +830,14 @@
 			}
 		}
 		
+		function tryRemoveTmpfile() {
+			var srcdir = getSession(socket.id).dir,
+				tmpFile = path.join(srcdir, "tmpfile");
+			if (fs.existsSync(tmpFile)) {
+				fs.unlinkSync(tmpFile);
+			}
+		}
+		
 		socket.on('stop', function (data) {
 			if (!getSession(socket.id)) { return; }
 			var processspawn = getSession(socket.id).proc;
@@ -838,6 +846,7 @@
 			}
 			console.log('kill');
 			killSpawn(processspawn, function (success) {
+				tryRemoveTmpfile();
 				getSession(socket.id).proc = null;
 				changeCEIStatus(function (caseDirName, pre) {
 					if (pre === 'Running(Dry)') {
@@ -850,6 +859,7 @@
 				socket.emit('stopdone', success);
 			});
 			getSession(socket.id).proc = null;
+			
 		});
 		
 		function runPWF(fileName, authkey) {
@@ -949,6 +959,7 @@
 							delete socketTable[socket.id];
 							session.canRemoveID = false;
 						}
+						tryRemoveTmpfile();
 						emitToAllSessions(srcdir, 'exit');
 					};
 				}(session)));
