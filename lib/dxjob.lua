@@ -2,6 +2,14 @@
 local dxjob = {}
 local cxjob = require('cxjob')
 
+local function uuid()
+	local random = math.random
+    local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    return string.gsub(template, '[xy]', function (c)
+        local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
+        return string.format('%x', v)
+    end)
+end
 
 function dxjob.new(excase)
 	local targetConf = excase.targetConf
@@ -110,6 +118,8 @@ function dxjob:SendCaseDir()
 		--
 		-- TODO: backup directry
 		--
+		--local newcasename =  casename .. '_' .. uuid()
+		--self.m_jobmgr:remoteCopyDir(remotedir, newcasename)
 
 		-- DELETE now.
 		print('Delete case directory...')
@@ -167,6 +177,9 @@ function dxjob:GetCaseDir()
 	self:GetFiles({casedir}, newdate)
 end
 
+function dxjob:Command(cmd)
+	self.m_jobmgr:remoteCommand(cmd)
+end
 
 function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
 	local casename  = self.m_excase.caseName
