@@ -651,7 +651,7 @@
 	}
 
 	// local luajson_0 = { target_machine };
-	function exportTargetMachine(id, inputIDs, nodeData, targetMachineList) {
+	function exportTargetMachine(id, inputIDs, nodeData, targetMachineList, dst_machines_with_pass) {
 		var i,
 			k,
 			innode,
@@ -665,7 +665,14 @@
 				if (innode.hasOwnProperty('machine') && innode.machine) {
 					for (k = 0; k < targets.length; k = k + 1) {
 						if (innode.machine.type === targets[k].type) {
-							target_machine.machine = targets[k];
+							dst_machines_with_pass[targets[k].type] = targets[k];
+							target_machine.machine = JSON.parse(JSON.stringify(targets[k]));
+							if (target_machine.machine.hasOwnProperty('password')) {
+								delete target_machine.machine.password;
+							}
+							if (target_machine.machine.hasOwnProperty('passphrase')) {
+								delete target_machine.machine.password;
+							}
 						}
 					}
 				}
@@ -744,7 +751,7 @@
 		//console.log("inputIDs", inputIDs);
 		//console.log("inputVars", inputVars);
 		input = "local " + inputPrefix + strid + " = " + to_lua_list(inputVars) + ";\n";
-		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ")\n";
+		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ", arg[1])\n";
 		return input + exec;
 	}
 	
@@ -1113,7 +1120,8 @@
 					var node,
 						nodeData,
 						script = "require('hpcpf')\n",
-						i;
+						i,
+						dst_machines_with_pass = {};
 					
 					for (i = 0; i < password_need_machines.length; i = i + 1) {
 						password_input.saveConnection(password_need_machines[i]);
@@ -1126,22 +1134,22 @@
 						if (parents.hasOwnProperty(nodeData.varname)) {
 							// has parents
 							inputIDs = createInputIDList(sortedDatas, parents[nodeData.varname]);
-							script = script + exportTargetMachine(i, inputIDs, nodeData, password_need_machines);
+							script = script + exportTargetMachine(i, inputIDs, nodeData, password_need_machines, dst_machines_with_pass);
 							script = script + exportOneNode(i, inputIDs, nodeData, isDryRun);
 						} else {
 							// root node
-							script = script + exportTargetMachine(i, null, nodeData, password_need_machines);
+							script = script + exportTargetMachine(i, null, nodeData, password_need_machines, dst_machines_with_pass);
 							script = script + exportOneNode(i, null, nodeData, isDryRun);
 						}
 					}
 					if (exportEndCallback) {
-						exportEndCallback(script);
+						exportEndCallback(script, dst_machines_with_pass);
 					}
 				});
-			}, function (script) {
+			}, function (script, machines_with_pass) {
 				//console.log("finish creating script:\n", script);
 				if (endCallback) {
-					endCallback(script);
+					endCallback(script, machines_with_pass);
 				}
 			});
 		});

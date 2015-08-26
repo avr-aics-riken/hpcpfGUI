@@ -1,11 +1,12 @@
-/*jslint devel:true nomen: true*/
+/*jslint devel:true nomen: true, bitwise:true, regexp:true*/
 /*global require, __dirname, process, io, module */
 
 var fs = require('fs'),
 	path = require('path'),
 	cp = require('child_process'),
 	exec = require('child_process').exec,
-	os = require('os');
+	os = require('os'),
+	crypto = require('crypto');
 
 //-------------------------------------
 // Utility functions
@@ -222,6 +223,24 @@ function deleteDirectory(target, callback) {
 	}(callback)));
 }
 
+function uuidFromBytes(rnd) {
+	"use strict";
+	rnd[6] = (rnd[6] & 0x0f) | 0x40;
+	rnd[8] = (rnd[8] & 0x3f) | 0x80;
+	rnd = rnd.toString('hex').match(/(.{8})(.{4})(.{4})(.{4})(.{12})/);
+	rnd.shift();
+	return rnd.join('-');
+}
+
+/**
+ * @method generateUUID8
+ * @return CallExpression
+ */
+function generateUUID8() {
+	"use strict";
+	return uuidFromBytes(crypto.randomBytes(16)).slice(0, 8);
+}
+
 module.exports.getExtention = getExtention;
 module.exports.getFiles = getFiles;
 module.exports.isRelative = isRelative;
@@ -229,3 +248,4 @@ module.exports.extractTar = extractTar;
 module.exports.deleteFolderRecursive = deleteFolderRecursive;
 module.exports.deleteFiles = deleteFiles;
 module.exports.deleteDirectory = deleteDirectory;
+module.exports.generateUUID8 = generateUUID8;

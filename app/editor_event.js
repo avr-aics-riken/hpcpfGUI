@@ -10,6 +10,7 @@
 		os = require('os'),
 		util = require('./util'),
 		path = require('path'),
+		crypto = require('crypto'),
 		// MacOSX setting
 		KRENDER_CMD = __dirname + '/krender_mac',
 		LUA_CMD     = __dirname + '/lua_mac',
@@ -851,7 +852,7 @@
 			getSession(socket.id).proc = null;
 		});
 		
-		function runPWF(fileName) {
+		function runPWF(fileName, authkey) {
 			if (!getSession(socket.id)) { return; }
 			var session = getSession(socket.id),
 				srcdir = session.dir,
@@ -866,7 +867,7 @@
 			if (ext === "lua" || ext === "pwl" || ext === "cwl") {
 				backupFile(srcdir, fileName);
 				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
-				processspawn = spawn(LUA_CMD, ['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', fileName], {cwd : srcdir});
+				processspawn = spawn(LUA_CMD, ['-e', lualibpath, '-e', 'HPCPF_BIN_DIR = [[' + __dirname + ']]', fileName, authkey], {cwd : srcdir});
 			} else if (ext === "sh" || ext === "pwf" || ext === "cwf") {
 				processspawn = spawn(SH_CMD, [fileName], {cwd : srcdir});
 			} else if (ext === "bat") {
@@ -986,17 +987,52 @@
 			return true;
 		}
 		
-		socket.on('runWorkflow', function (data, isDryRun) {
+		function encrypt(text, key) {
+			var cipher = crypto.createCipher('aes-256-ctr', key),
+				crypted = cipher.update(text, 'utf8', 'hex');
+			crypted += cipher.final('hex');
+			return crypted;
+		}
+		
+		function writePass(machines_with_pass) {
+			if (!getSession(socket.id)) { return; }
+			var srcdir = getSession(socket.id).dir,
+				tmpFile = path.join(srcdir, "tmpfile"),
+				i,
+				key = util.generateUUID8();
+			
+			if (!machines_with_pass) { return false; }
+			for (i in machines_with_pass) {
+				if (machines_with_pass.hasOwnProperty(i)) {
+					if (machines_with_pass[i].hasOwnProperty('password')) {
+						machines_with_pass[i].password = encrypt(machines_with_pass[i].password, key);
+					}
+					if (machines_with_pass[i].hasOwnProperty('passphrase')) {
+						machines_with_pass[i].passphrase = encrypt(machines_with_pass[i].passphrase, key);
+					}
+				}
+			}
+			fs.writeFileSync(tmpFile, JSON.stringify(machines_with_pass));
+			return key;
+		}
+		
+		socket.on('runWorkflow', function (data, machinesWithPass, isDryRun) {
 			var srcdir = getSession(socket.id).dir,
 				processspawn = getSession(socket.id).proc,
-				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;';
+				lualibpath = 'package.path = [[' + __dirname + '/../lib/?.lua;]] .. package.path;',
+				machines_with_pass = JSON.parse(machinesWithPass),
+				key;
+				
 			if (processspawn) {
 				killSpawn(processspawn);
 				getSession(socket.id).proc = null;
 			}
 			
+			//console.log(machines_with_pass);
+			key = writePass(machines_with_pass);
 			if (writePWF(data, isDryRun)) {
-				runPWF(PWF_FILENAME);
+				//console.log("key:", key);
+				runPWF(PWF_FILENAME, key);
 			}
 		});
 		

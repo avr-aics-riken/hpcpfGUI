@@ -53,6 +53,15 @@ function getInputNodes(args_table)
 	return list;
 end
 
+function getAuthKey(args_table)
+	for i, k in pairs(args_table) do
+		if (i == 4) then
+			return k;
+		end
+	end
+	return false;
+end
+
 function getOutputFiles(casename)
 	local cmdFile = 'cmd.json';
 	local cmd = readJSON(cmdFile);
@@ -156,6 +165,7 @@ function excase(args_table)
 		pollingFiles = getPollingFiles(),
 		collectionFiles = getCollectionFiles(),
 		collectionJobFiles = getCollectionJobFiles(),
+		authKey = getAuthKey(args_table),
 		isDryRun = isDryRun(args_table),
 		caseName = caseName,
 		caseDir = caseDir,
