@@ -214,6 +214,32 @@ function writeCEI(path, tbl, status)
 	writeJSON(path, tbl);
 end
 
+function getAppPath(name)
+    local confFile = HPCPF_BIN_DIR .. '/../conf/hpcpfGUI.conf';
+    local fp = io.open(confFile, 'r');
+    local cf = nil
+    if (fp) then
+        filestr = fp:read("*all")
+        cf = json.decode (filestr, 1, nil)
+    end
+    
+    local platform  = getPlatform()
+    if platform == 'Windows' then
+        platform = 'win32'
+    elseif platform == 'Darwin' then
+        platform = 'darwin'
+    elseif platform == 'Linux' then
+        platform = 'linux'
+    end
+    
+    if cf ~= nil then
+        local appnode = cf[name]
+        if appnode ~= nil then
+            return appnode[platform]
+        end
+    end
+    return nil
+end
 
 function getInitialCeiDescription(workdir, server, hosttype)
 	return {
