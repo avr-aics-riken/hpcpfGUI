@@ -2,9 +2,11 @@
 local dxjob = {}
 local cxjob = require('cxjob')
 
+math.randomseed( os.time() )
+
 local function uuid()
 	local random = math.random
-    local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    local template ='xxxxxxxx'
     return string.gsub(template, '[xy]', function (c)
         local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
         return string.format('%x', v)
@@ -115,15 +117,16 @@ function dxjob:SendCaseDir()
 	if  exist == true then
 		print('Already exist case directory:', remotedir);
 		
-		--
-		-- TODO: backup directry
-		--
-		--local newcasename =  casename .. '_' .. uuid()
-		--self.m_jobmgr:remoteCopyDir(remotedir, newcasename)
+		-- backup directry
+		print('Backup old case directory')
+		local randomName = uuid()
+		local newcasename =  remotedir .. '_BAK' .. randomName
+		print('From:', remotedir, 'To:', newcasename)
+		self.m_jobmgr:remoteMoveFile(remotedir, newcasename)
 
 		-- DELETE now.
-		print('Delete case directory...')
-		self.m_jobmgr:remoteDeleteDir(remotedir)
+		--print('Delete case directory...')
+		--self.m_jobmgr:remoteDeleteDir(remotedir)
 	end
 	self.m_jobmgr:remoteMakeDir(remotedir)
 	
