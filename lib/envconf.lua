@@ -17,6 +17,7 @@ local focusSetting = {
 #SBATCH -J JOB.NAME
 #SBATCH -o stdout.%J.log
 #SBATCH -e stderr.%J.log
+JOB.OPTION
 sh JOB.JOB
 ]]      
 }
@@ -42,6 +43,7 @@ local focusSettingFFV = {
 #SBATCH -e stderr.%J.log
 module load PrgEnv-intel
 module load intel/openmpi165
+JOB.OPTION
 sh JOB.JOB
 ]]
 }
@@ -73,6 +75,7 @@ local localhostSetting = {
     --end,
     bootsh = [[
 #!/bin/bash
+JOB.OPTION
 sh JOB.JOB
 ]]    
 }

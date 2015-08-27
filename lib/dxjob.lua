@@ -84,6 +84,11 @@ function dxjob:GenerateBootSh()
 			str = str:gsub("JOB.NODE", v.node)
 			str = str:gsub("JOB.CORE", v.core)
 			str = str:gsub("JOB.NAME", v.name)
+			if v.option ~= nil then
+				str = str:gsub("JOB.OPTION", v.option)
+			else
+				str = str:gsub("JOB.OPTION", '')
+			end
 			if run == false then
 				str = str:gsub("JOB.JOB", '--version')
 			else
