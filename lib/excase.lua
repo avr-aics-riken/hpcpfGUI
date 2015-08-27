@@ -62,9 +62,7 @@ function getAuthKey(args_table)
 	return false;
 end
 
-function getOutputFiles(casename)
-	local cmdFile = 'cmd.json';
-	local cmd = readJSON(cmdFile);
+function getOutputFiles(casename,cmd)
 	local result = nil;
 	if (cmd ~= nil) then
 		if (cmd.hpcpf.case_meta_data.outputs ~= nil) then
@@ -79,9 +77,7 @@ function getOutputFiles(casename)
 	return result;
 end
 
-function getPollingFiles()
-	local cmdFile = 'cmd.json';
-	local cmd = readJSON(cmdFile);
+function getPollingFiles(cmd)
 	local result = nil;
 	if (cmd ~= nil) then
 		if (cmd.hpcpf.case_meta_data.polling_files ~= nil) then
@@ -91,9 +87,7 @@ function getPollingFiles()
 	return result;
 end
 
-function getCollectionFiles()
-	local cmdFile = 'cmd.json';
-	local cmd = readJSON(cmdFile);
+function getCollectionFiles(cmd)
 	local result = nil;
 	if (cmd ~= nil) then
 		if (cmd.hpcpf.case_meta_data.collection_files ~= nil) then
@@ -103,9 +97,7 @@ function getCollectionFiles()
 	return result;
 end
 
-function getCollectionJobFiles()
-	local cmdFile = 'cmd.json';
-	local cmd = readJSON(cmdFile);
+function getCollectionJobFiles(cmd)
 	local result = nil;
 	if (cmd ~= nil) then
 		if (cmd.hpcpf.case_meta_data.collection_job_files ~= nil) then
@@ -154,6 +146,8 @@ function excase(args_table)
 	print('UpPath:', upPath)
 	print('-------------')
 	--]]
+	local cmdFile = 'cmd.json';
+	local cmd = readJSON(cmdFile);
 
 	local inst = {
 		targetConf = generateTargetConf(args_table),
@@ -161,10 +155,10 @@ function excase(args_table)
 		nodes = getNodes(args_table),
 		cleanup = getCleanUp(args_table),
 		inputNodes = getInputNodes(args_table),
-		outputFiles = getOutputFiles(caseName),
-		pollingFiles = getPollingFiles(),
-		collectionFiles = getCollectionFiles(),
-		collectionJobFiles = getCollectionJobFiles(),
+		outputFiles = getOutputFiles(caseName, cmd),
+		pollingFiles = getPollingFiles(cmd),
+		collectionFiles = getCollectionFiles(cmd),
+		collectionJobFiles = getCollectionJobFiles(cmd),
 		authKey = getAuthKey(args_table),
 		isDryRun = isDryRun(args_table),
 		caseName = caseName,
