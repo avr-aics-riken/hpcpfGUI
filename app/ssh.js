@@ -269,8 +269,7 @@
 	function sendCommand(commandName, tempPath, key, hostType, commandStr, targetPath) {
 		console.log("connecting..", commandName, "\r\n");
 		var data = {
-				cid : "Test",
-				hostname : "192.168.1.25"
+				cid : hostType
 			},
 			info,
 			sfc = null,
