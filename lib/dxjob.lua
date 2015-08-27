@@ -29,6 +29,9 @@ function dxjob.new(excase)
 		m_jobstartdate = "",
 		m_excase = excase
     }
+	targetConf.projectdir = excase.projectDir;
+	targetConf.authkey = excase.authKey;
+	
     inst.m_jobmgr = cxjob.new(targetConf)
 
     setmetatable(inst, {__index = dxjob})
