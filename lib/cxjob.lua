@@ -246,8 +246,6 @@ local function sshNodeCmd(user, port, projectdir, authkey, hosttype, cmd, disabl
 end
 
 function cxjob:sshCmd(cmd, disableErr)
-	local isDirect = true
-	
 	if self.jobinfo.portForwarding then
 		return sshLuaCmd2(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 	else
@@ -272,7 +270,7 @@ function cxjob:scpCmd(mode, localfile, remotefile)
 		tofile = tmp
 	end
 	
-	if isDirect then
+	if self.jobinfo.portForwarding  then
 		return scpLuaCmd2(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 	else
 		return scpNodeCmd(mode, self.user, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
