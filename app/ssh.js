@@ -6,6 +6,7 @@
 		ssh2 = require('ssh2'),
 		exec = require('child_process').exec,
 		path = require('path'),
+		net = require('net'),
 		readline = require('readline'),
 		os = require('os'),
 		crypto = require('crypto'),
@@ -261,15 +262,129 @@
 
 	}; // SFTPClass
 
+	function sendForwardCommand(param, info) {
+		var stepInfo = null,
+			stepConn = null,
+			stepServer = null,
+			stepServerLogin = null,
+			stepServerLogin = null;
+
+		
+		try {
+			stepInfo = JSON.parse(param.stepInfo);
+		} catch (e) {
+			console.error(e);
+			return;
+		}
+		
+		stepServerLogin = {
+			host : stepInfo.host,
+			port : 22,
+			username : stepInfo.user,
+			password : stepInfo.password
+		};
+		if (stepInfo.privateKey) {
+			stepServerLogin.privateKey = stepInfo.privateKey;
+			stepServerLogin.passphrase = stepInfo.passphrase;
+			delete stepServerLogin.password;
+		}
+
+		stepConn = new ssh2();
+		stepConn.on('ready', (function (stepInfo) {
+			return function () {
+				var forwardLogin = {
+					host: stepInfo.host,
+					port: stepInfo.port,
+					username: info.username,
+					password: info.password
+				};
+				if (info.privateKey) {
+					forwardLogin.privateKey = info.privateKey;
+					forwardLogin.passphrase = info.passphrase;
+					delete forwardLogin.password;
+				}
+
+				stepServer = net.createServer(function (sock) {
+					// console.log(param.stepServer, sock.remotePort, info.host, info.port);
+					stepConn.forwardOut(stepInfo.host, sock.remotePort, info.host, info.port, function (err, stream) {
+						if (err) {
+							console.log('Error forwarding connection: ' + err);
+							return sock.end();
+						}
+						sock.pipe(stream).pipe(sock);
+					});
+				});
+				stepServer.listen(stepInfo.port, function () {
+					// console.log('Forwarding connections on ' + stepInfo.port + ' to ' + info.host + ':' + info.port);
+					
+					var sfc = new SFTPClass();
+					sfc.Connect(forwardLogin, (function (sfc) {
+						return function (err) {
+							if (err) {
+								console.log("Connection Failed " + err);
+								return;
+							}
+							if (param.commandName === 'sshforward') {
+								sfc.RemoteCommand(param.commandStr, function (err) {
+									if (err) {
+										console.log("Error:", err);
+									}
+								}, function (data) {
+									console.log(data);
+								});
+							} else if (param.commandName === 'sftpgetforward') {
+								sfc.DownloadFile(param.srcPath, param.dstPath, function (err) {
+									if (err) {
+										console.log("Error:", err);
+									}
+								});
+							} else if (param.commandName === 'sftpsendforward') {
+								sfc.UploadFile(param.srcPath, param.dstPath, function (err) {
+									if (err) {
+										console.log("Error:", err);
+									}
+								});
+							}
+						};
+					}(sfc)));
+
+					/*
+					var newconnection = new ssh2();
+					newconnection.on('ready', function () {
+						newconnection.shell(function (err, stream) {
+							stream.on('close', function () {
+								console.log('connection closed');
+								newconnection.end();
+								stepConn.end();
+							}).on('data', function (data) {
+								console.log('stdout: ' + data);
+							}).stderr.on('data', function (data) {
+								console.log('stderr: ' + data);
+							});
+							stream.end(param.commandStr + '\nexit\n');
+						});
+					}).on('close', function () {
+						//console.log('close');
+					}).connect(forwardLogin);
+					*/
+				});
+			};
+		}(stepInfo))).on('close', function () {
+			if (stepServer) {
+				stepServer.close();
+			}
+		}).connect(stepServerLogin);
+	}
+
 	/**
 	 * tempPath temporary file path for auth
 	 * key for auth
 	 * commandStr 'ssh' or 'sftpget' or 'sftpsend'
 	 */
-	function sendCommand(commandName, tempPath, key, hostType, commandStr, targetPath, port) {
-		//console.log("connecting..", commandName, "\r\n");
+	function sendCommand(param) {
+		//console.log("connecting..", param.commandName, "\r\n");
 		var data = {
-				cid : hostType
+				cid : param.hostType
 			},
 			info,
 			sfc = null,
@@ -277,38 +392,39 @@
 			file,
 			parsed;
 
-
 		if (data.cid === '') {
 			console.log('Error: cid parameter. must set unique id.');
 			return;
 		}
 
-		file = fs.readFileSync(tempPath);
-		//console.log(file);
-		parsed = JSON.parse(file);
-		if (parsed.hasOwnProperty(hostType)) {
-			info = parsed[hostType];
+		try {
+			file = fs.readFileSync(param.tempPath);
+			parsed = JSON.parse(file);
+		} catch (e) {
+			console.error(e);
+			return;
+		}
+		if (parsed.hasOwnProperty(param.hostType)) {
+			info = parsed[param.hostType];
 			info.usepassword = !info.hasOwnProperty('sshkey');
 			info.host = info.server;
 			info.path = info.workpath;
 			info.username = info.userid;
 			delete info.server;
 			if (info.hasOwnProperty('password')) {
-				info.password = decrypt(info.password, key);
+				info.password = decrypt(info.password, param.key);
 			} else if (info.hasOwnProperty('passphrase')) {
-				info.passphrase = decrypt(info.passphrase, key);
+				info.passphrase = decrypt(info.passphrase, param.key);
 			}
 			if (info.hasOwnProperty('sshkey')) {
 				info.privateKeyFile = info.sshkey;
 			}
-			if (port !== undefined && port) {
-				info.port = port;
+			if (param.hasOwnProperty('port') && param.port !== 'undefined' && param.port) {
+				info.port = param.port;
+			} else {
+				info.port = 22;
 			}
 		}
-
-		//console.log("-----------------------------------------\n");
-		//console.log(info);
-		//console.log("-----------------------------------------\n");
 
 		if (!info.hasOwnProperty('type')) {
 			console.log(data.cid, 'Invalid host type');
@@ -321,16 +437,10 @@
 			delete info.usepassword;
 		}
 
-		//console.log("isUsePassword", isUsePassword);
-
 		if (info.type === 'local') {
-			//console.log('RFTP:Local Connection:id=' + data.cid);
 			sfc = new LFTPClass();
 			ftparray[data.cid] = sfc;
-			//connectedMessage(data.cid, "Local mode : connection success", info.host, info.path);
 		} else {
-			//console.log('RFTP:Remote Connection:id=' + data.cid);
-			sfc = new SFTPClass();
 
 			try {
 				if (isUsePassword) {
@@ -353,56 +463,92 @@
 				}
 			} catch (ee) {
 				console.log(data.cid, "Failed read SSH key file:" + info.privateKeyFile);
-				//errorMessage(data.cid, "Failed read SSH key file:" + info.privateKeyFile);
 				return;
 			}
 
-			sfc.Connect(info, (function (data, sfc) {
-				return function (err) {
-					if (err) {
-						console.log(data.cid, "Connection Failed " + err);
-						//errorMessage(data.cid, "Connection Failed " + err);
-						return;
-					}
-					//console.log(data.cid, "Remote mode : connection success", info.host, info.path);
-					//connectedMessage(data.cid, "Remote mode : connection success", info.host, info.path);
-					ftparray[data.cid] = sfc;
+			if (param.commandName === 'sshforward' || param.commandName === 'sftpsendforward' || param.comandName === 'sftpgetforward') {
+				sendForwardCommand(param, info);
+			} else {
+				sfc = new SFTPClass();
+				sfc.Connect(info, (function (data, sfc) {
+					return function (err) {
+						if (err) {
+							console.log(data.cid, "Connection Failed " + err);
+							return;
+						}
+						ftparray[data.cid] = sfc;
 
-					if (commandName === 'ssh') {
-						sfc.RemoteCommand(commandStr, function (err) {
-							if (err) {
-								console.log("Error:", err);
-							}
-						}, function (data) {
-							console.log(data);
-						});
-					} else if (commandName === 'sftpget') {
-						sfc.DownloadFile(commandStr, targetPath, function (err) {
-							if (err) {
-								console.log("Error:", err);
-							}
-						});
-					} else if (commandName === 'sftpsend') {
-						sfc.UploadFile(commandStr, targetPath, function (err) {
-							if (err) {
-								console.log("Error:", err);
-							}
-						});
-					}
-				};
-			}(data, sfc)));
+						if (param.commandName === 'ssh') {
+							sfc.RemoteCommand(param.commandStr, function (err) {
+								if (err) {
+									console.log("Error:", err);
+								}
+							}, function (data) {
+								console.log(data);
+							});
+						} else if (param.commandName === 'sftpget') {
+							sfc.DownloadFile(param.srcPath, param.dstPath, function (err) {
+								if (err) {
+									console.log("Error:", err);
+								}
+							});
+						} else if (param.commandName === 'sftpsend') {
+							sfc.UploadFile(param.srcPath, param.dstPath, function (err) {
+								if (err) {
+									console.log("Error:", err);
+								}
+							});
+						}
+					};
+				}(data, sfc)));
+			}
 		}
 	}
 
 	if (process.argv.length > 3) {
-		if (process.argv.length === 8) {
-			//console.log("run sftp\r\n");
-			// sendCommand(commandName, tempPath, key, hostType, srcPath, dstPath, port:option )
-			sendCommand(process.argv[2], process.argv[3], process.argv[4], process.argv[5], process.argv[6], process.argv[7], process.argv[8]);
-		} else if (process.argv.length === 7) {
-			//console.log("run ssh\r\n");
-			// sendCommand(commandName, tempPath, key, hostType, commandStr)
-			sendCommand(process.argv[2], process.argv[3], process.argv[4], process.argv[5], process.argv[6], "", process.argv[7]);
+		console.error(process.argv);
+		if (process.argv[2] === 'sshforward') {
+			sendCommand({
+				commandName : process.argv[2],
+				stepInfo : process.argv[3],
+				tempPath : process.argv[4],
+				key : process.argv[5],
+				hostType : process.argv[6],
+				commandStr : process.argv[7],
+				port : process.argv[8]
+			});
+		} else if (process.argv[2] === 'sftpsendforward' || process.argv[2] === 'sftpgetforward') {
+			sendCommand({
+				commandName : process.argv[2],
+				stepInfo : process.argv[3],
+				tempPath : process.argv[4],
+				key : process.argv[5],
+				hostType : process.argv[6],
+				srcPath : process.argv[7],
+				dstPath : process.argv[8],
+				port : process.argv[9]
+			});
+		} else if (process.argv[2] === 'sftpsend' || process.argv[2] === 'sftpget') {
+			sendCommand({
+				commandName : process.argv[2],
+				tempPath : process.argv[3],
+				key : process.argv[4],
+				hostType : process.argv[5],
+				srcPath : process.argv[6],
+				dstPath : process.argv[7],
+				port : process.argv[8]
+			});
+		} else if (process.argv[2] === 'ssh') {
+			sendCommand({
+				commandName : process.argv[2],
+				tempPath : process.argv[3],
+				key : process.argv[4],
+				hostType : process.argv[5],
+				commandStr : process.argv[6],
+				port : process.argv[7]
+			});
 		}
+		setTimeout(function () {
+		}, 2 * 1000);
 	}
 }());

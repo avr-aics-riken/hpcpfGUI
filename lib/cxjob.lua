@@ -96,37 +96,7 @@ function cxjob:getBootSh()
     return self.jobinfo.bootsh;
 end
 
---[[
---- Remote(ssh) commands
-local function scpLuaCmd(user, server, port, key, password, fromfile, tofile)
-    --local scpcmd = 'scp  -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
-    local scpcmd = 'scp ';
-    if key ~= nil then
-        scpcmd = scpcmd .. '-i '.. key .. ' ';
-    end
-    if port ~= nil then
-        scpcmd = scpcmd .. '-P '.. port .. ' ';
-    end
-    scpcmd = scpcmd .. fromfile .. ' ' .. tofile;
-    print('CMD>' .. scpcmd)
-    local handle;
-    local result;
-	if password ~= nil then
-		if (getPlatform() == 'Darwin') then
-			scpcmd = HPCPF_BIN_DIR .. '/sshpass_mac -p ' .. password .. ' ' .. scpcmd
-		elseif (getPlatform() ~= 'Windows') then
-			scpcmd = HPCPF_BIN_DIR .. '/sshpass_linux -p ' .. password .. ' ' .. scpcmd
-		end
-	end
-	handle = io.popen(scpcmd)
-	result = handle:read("*a")
-    print(result)
-    handle:close()
-    return result
-end
-]]
-
-local function scpLuaCmd2(user, server, port, projectdir, authkey, hosttype, fromfile, tofile)
+local function scpLuaCmd(user, server, port, projectdir, authkey, hosttype, fromfile, tofile)
     --local scpcmd = 'scp  -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
     local scpcmd = 'scp ';
     if key ~= nil then
@@ -147,44 +117,7 @@ local function scpLuaCmd2(user, server, port, projectdir, authkey, hosttype, fro
     return result
 end
 
---[[
-local function sshLuaCmd(user, server, port, key, password, cmd, disableErr)
-    local nullDev = '/dev/null'
-    if (getPlatform() == 'Windows') then
-        disableErr = nil
-    end
-    --local sshcmd = 'ssh -i '.. key .. ' ' .. user ..'@'.. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
-    local sshcmd = 'ssh ';
-    if key ~= nil then
-        sshcmd = sshcmd .. '-i '.. key .. ' ';
-    end
-    if port ~= nil then
-        sshcmd = sshcmd .. '-p '.. port .. ' ';
-    end
-    if user ~= nil and user ~= "" then
-        sshcmd = sshcmd .. user ..'@';
-    end
-	local handle;
-	local result;
-	
-	sshcmd = sshcmd .. server .. ' "' .. cmd ..'"' .. (disableErr and (' 2>'..nullDev) or '')
-	print('CMD>' .. sshcmd)
-	if password ~= nil then
-		if (getPlatform() == 'Darwin') then
-			sshcmd = HPCPF_BIN_DIR .. '/sshpass_mac -p ' .. password .. ' ' .. sshcmd
-		elseif (getPlatform() ~= 'Windows') then
-			sshcmd = HPCPF_BIN_DIR .. '/sshpass_linux -p ' .. password .. ' ' .. sshcmd
-		end
-	end
-	handle = io.popen(sshcmd)
-	result = handle:read("*a")
-	print('OUT>' .. result)
-    handle:close()
-    return result
-end
-]]
-
-local function sshLuaCmd2(user, server, port, projectdir, authkey, hosttype, cmd, disableErr)
+local function sshLuaCmd(user, server, port, projectdir, authkey, hosttype, cmd, disableErr)
     local nullDev = '/dev/null'
     if (getPlatform() == 'Windows') then
         disableErr = nil
@@ -235,7 +168,6 @@ local function sshNodeCmd(user, port, projectdir, authkey, hosttype, cmd, disabl
 	if (port ~= nil) then
 		sshcmd = sshcmd .. port;
 	end
-	--print(nodesshcmd);
 	local handle = io.popen(sshcmd)
 	local result = handle:read("*a")
 	if result ~= "" then
@@ -245,9 +177,44 @@ local function sshNodeCmd(user, port, projectdir, authkey, hosttype, cmd, disabl
     return result
 end
 
+local function sshNodePortForwardCmd(user, port, forwardingInfo, projectdir, authkey, hosttype, cmd, disableErr)
+	local sshcmd = 'node ' .. HPCPF_BIN_DIR .. '/ssh.js sshforward ';
+	sshcmd = sshcmd .. '\'' .. forwardingInfo .. '\' ';
+	sshcmd = sshcmd .. '"' .. projectdir .. '/tmpfile" ' .. authkey .. ' \'' .. hosttype .. '\' "' .. cmd ..'" ';
+	if (port ~= nil) then
+		sshcmd = sshcmd .. port;
+	end
+	local handle = io.popen(sshcmd)
+	local result = handle:read("*a")
+	if result ~= "" then
+		print('OUT>' .. result)
+	end
+    handle:close()
+    return result
+end
+
+local function scpNodePortForwardCmd(mode, user, port, forwardingInfo, projectdir, authkey, hosttype, fromfile, tofile)
+	local scpcmd = 'node ' .. HPCPF_BIN_DIR .. '/ssh.js ' ..  mode .. 'forward ';
+	scpcmd = scpcmd .. '\'' .. forwardingInfo .. '\' ';
+	scpcmd = scpcmd .. '"' ..projectdir .. '/tmpfile" ' .. authkey .. ' \'' .. hosttype .. '\' ';
+	scpcmd = scpcmd .. ' "' .. fromfile ..'" "' .. tofile .. '" ';
+	if (port ~= nil) then
+		sshcmd = sshcmd .. port;
+	end
+    local handle = io.popen(scpcmd);
+	local result = handle:read("*a");
+	if result ~= "" then
+    	print(result)
+	end
+    handle:close()
+    return result
+end
+
 function cxjob:sshCmd(cmd, disableErr)
 	if self.jobinfo.portForwarding then
-		return sshLuaCmd2(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
+		--local forwardingInfo = self.jobinfo.portForwardingInfo
+		--return sshNodePortForwardCmd(self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
+		return sshLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 	else
 		return sshNodeCmd(self.user, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 	end
@@ -271,7 +238,9 @@ function cxjob:scpCmd(mode, localfile, remotefile)
 	end
 	
 	if self.jobinfo.portForwarding  then
-		return scpLuaCmd2(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
+		--local forwardingInfo = self.jobinfo.portForwardingInfo
+		--return scpNodePortForwardCmd(mode, self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
+		return scpLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 	else
 		return scpNodeCmd(mode, self.user, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 	end
