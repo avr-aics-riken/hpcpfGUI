@@ -61,13 +61,9 @@
 						callback(err);
 					}
 				}).on('data', function (data) {
-					/*
-					console.log("hogehoge", data);
-					console.log(data);
 					if (dataCallback) {
-						dataCallback(data);
+						dataCallback(data.toString());
 					}
-					*/
 				});
 			};
 		}(callback, dataCallback)));
