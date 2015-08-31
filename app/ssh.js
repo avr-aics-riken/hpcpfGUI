@@ -49,12 +49,12 @@
 	remoteCmd = function (conn, cmd, callback, dataCallback) {
 		conn.exec(cmd, (function (cb, dataCallback) {
 			return function (err, stream) {
-				console.log('REMOTE CMD>' + cmd);
+				//console.log('REMOTE CMD>' + cmd);
 				if (err) {
 					console.log(err);
 				}
 				stream.on('close', function (code, signal) {
-					console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+					//console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
 					conn.end();
 				}).on('end', function () {
 					if (callback) {
@@ -79,7 +79,7 @@
 				this.errorLog('Not established connection.', callback);
 				return;
 			}
-			console.log('LocalCommand>', command);
+			// console.log('LocalCommand>', command);
 			localCmd(this.conn, command, callback);
 		};
 
@@ -203,7 +203,7 @@
 				this.errorLog('Not established connection.', callback);
 				return;
 			}
-			console.log('RemoteCommand>', command);
+			//console.log('RemoteCommand>', command);
 			remoteCmd(this.conn, command, callback, dataCallback);
 		};
 
@@ -246,11 +246,11 @@
 				}
 			});
 			conn.on('close', function (had_error) {
-				console.log('Connection close');
+				//console.log('Connection close');
 				process.exit();
 			});
 			conn.on('end', function () {
-				console.log('End remote session.');
+				//console.log('End remote session.');
 			});
 
 			try {
