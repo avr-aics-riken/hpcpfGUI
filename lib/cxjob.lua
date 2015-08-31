@@ -96,6 +96,7 @@ function cxjob:getBootSh()
     return self.jobinfo.bootsh;
 end
 
+--[[
 --- Remote(ssh) commands
 local function scpLuaCmd(user, server, port, key, password, fromfile, tofile)
     --local scpcmd = 'scp  -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
@@ -123,6 +124,7 @@ local function scpLuaCmd(user, server, port, key, password, fromfile, tofile)
     handle:close()
     return result
 end
+]]
 
 local function scpLuaCmd2(user, server, port, projectdir, authkey, hosttype, fromfile, tofile)
     --local scpcmd = 'scp  -i '.. key .. ' ' .. fromfile .. ' ' .. tofile
@@ -144,7 +146,8 @@ local function scpLuaCmd2(user, server, port, projectdir, authkey, hosttype, fro
     handle:close()
     return result
 end
-	
+
+--[[
 local function sshLuaCmd(user, server, port, key, password, cmd, disableErr)
     local nullDev = '/dev/null'
     if (getPlatform() == 'Windows') then
@@ -179,6 +182,7 @@ local function sshLuaCmd(user, server, port, key, password, cmd, disableErr)
     handle:close()
     return result
 end
+]]
 
 local function sshLuaCmd2(user, server, port, projectdir, authkey, hosttype, cmd, disableErr)
     local nullDev = '/dev/null'
@@ -199,12 +203,8 @@ local function sshLuaCmd2(user, server, port, projectdir, authkey, hosttype, cmd
 	local handle;
 	local result;
 	sshcmd = sshcmd .. server .. ' "' .. cmd ..'"';-- .. (disableErr and (' 2>'..nullDev) or '')
-	
+	print('CMD>' .. sshcmd)
     local sshNodeCmd = 'node "' .. HPCPF_BIN_DIR .. '/sshpass.js" "' .. projectdir .. '/tmpfile" ' .. ' \'' .. hosttype .. '\' '  .. authkey ..  ' \'' .. sshcmd ..'\'';
-    if user ~= nil and user ~= "" then
-        sshcmd = sshcmd .. user ..'@';
-    end
-	--print('CMD>' .. sshNodeCmd)
 	handle = io.popen(sshNodeCmd)
 	result = handle:read("*a")
 	print('OUT>' .. result)
