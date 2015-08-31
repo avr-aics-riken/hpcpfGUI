@@ -271,7 +271,7 @@
 	 * commandStr 'ssh' or 'sftpget' or 'sftpsend'
 	 */
 	function sendCommand(commandName, tempPath, key, hostType, commandStr, targetPath, port) {
-		console.log("connecting..", commandName, "\r\n");
+		//console.log("connecting..", commandName, "\r\n");
 		var data = {
 				cid : hostType
 			},

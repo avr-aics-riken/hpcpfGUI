@@ -136,8 +136,8 @@ local function scpLuaCmd2(user, server, port, projectdir, authkey, hosttype, fro
         scpcmd = scpcmd .. '-P '.. port .. ' ';
     end
     scpcmd = scpcmd .. fromfile .. ' ' .. tofile;
+    print('CMD>' .. scpcmd)
     local scpNodeCmd = 'node "' .. HPCPF_BIN_DIR .. '/sshpass.js" "' .. projectdir .. '/tmpfile" ' .. ' \'' .. hosttype .. '\' '  .. authkey ..  ' \'' .. scpcmd ..'\'';
-    print('CMD>' .. scpNodeCmd)
     local handle;
     local result;
 	handle = io.popen(scpNodeCmd)
@@ -207,19 +207,22 @@ local function sshLuaCmd2(user, server, port, projectdir, authkey, hosttype, cmd
     local sshNodeCmd = 'node "' .. HPCPF_BIN_DIR .. '/sshpass.js" "' .. projectdir .. '/tmpfile" ' .. ' \'' .. hosttype .. '\' '  .. authkey ..  ' \'' .. sshcmd ..'\'';
 	handle = io.popen(sshNodeCmd)
 	result = handle:read("*a")
-	print('OUT>' .. result)
+	if result ~= "" then
+		print('OUT>' .. result)
+	end
     handle:close()
     return result
 end
 
 --- Remote(ssh) commands
 local function scpNodeCmd(mode, user, port, projectdir, authkey, hosttype, fromfile, tofile)
+    --print('CMD>' .. scpcmd)
+	
 	local scpcmd = 'node ' .. HPCPF_BIN_DIR .. '/ssh.js ' ..  mode .. ' "' ..projectdir .. '/tmpfile" ' .. authkey .. ' \'' .. hosttype .. '\' ';
 	scpcmd = scpcmd .. ' "' .. fromfile ..'" "' .. tofile .. '" ';
 	if (port ~= nil) then
 		sshcmd = sshcmd .. port;
 	end
-    print('CMD>' .. scpcmd)
     local handle = io.popen(scpcmd);
 	local result = handle:read("*a");
     print(result)
@@ -235,7 +238,9 @@ local function sshNodeCmd(user, port, projectdir, authkey, hosttype, cmd, disabl
 	--print(nodesshcmd);
 	local handle = io.popen(sshcmd)
 	local result = handle:read("*a")
-	print('OUT>' .. result)
+	if result ~= "" then
+		print('OUT>' .. result)
+	end
     handle:close()
     return result
 end
