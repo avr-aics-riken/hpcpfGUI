@@ -243,7 +243,7 @@ end
 function cxjob:sshCmd(cmd, disableErr)
 	local isDirect = true
 	
-	if isDirect then
+	if self.jobinfo.portForwarding then
 		return sshLuaCmd2(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 	else
 		return sshNodeCmd(self.user, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
@@ -253,9 +253,8 @@ end
 function cxjob:scpCmd(mode, localfile, remotefile)
     local fromfile = self.workdir .. remotefile
     local tofile = localfile
-	
-	local isDirect = true
-	if isDirect then
+
+	if self.jobinfo.portForwarding then
 		fromfile = self.server .. ':' .. fromfile
 		if self.user ~= nil and self.user ~= "" then
 			fromfile = self.user .. '@' .. fromfile;

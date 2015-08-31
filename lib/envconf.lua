@@ -5,6 +5,7 @@ local focusSetting = {
     statCmd = 'fjstat',
     statStateColumn = 5,
     statStateRow = 4,
+	portForwarding = true,
     jobEndFunc = function (t)
         if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
         else return false end

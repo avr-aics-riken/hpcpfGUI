@@ -47,7 +47,7 @@
 	 * requires file commands.[cp,mv,tar,...]
 	 */
 	remoteCmd = function (conn, cmd, callback, dataCallback) {
-		conn.exec(cmd, (function (cb) {
+		conn.exec(cmd, (function (cb, dataCallback) {
 			return function (err, stream) {
 				console.log('REMOTE CMD>' + cmd);
 				if (err) {
@@ -61,12 +61,16 @@
 						callback(err);
 					}
 				}).on('data', function (data) {
+					/*
+					console.log("hogehoge", data);
+					console.log(data);
 					if (dataCallback) {
 						dataCallback(data);
 					}
+					*/
 				});
 			};
-		}(callback)));
+		}(callback, dataCallback)));
 	};
 
 	LFTPClass = function () {
