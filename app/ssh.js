@@ -506,7 +506,7 @@
 	}
 
 	if (process.argv.length > 3) {
-		console.error(process.argv);
+		//console.error(process.argv);
 		if (process.argv[2] === 'sshforward') {
 			sendCommand({
 				commandName : process.argv[2],
