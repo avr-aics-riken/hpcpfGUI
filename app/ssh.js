@@ -266,7 +266,7 @@
 	 * key for auth
 	 * commandStr 'ssh' or 'sftpget' or 'sftpsend'
 	 */
-	function sendCommand(commandName, tempPath, key, hostType, commandStr, targetPath) {
+	function sendCommand(commandName, tempPath, key, hostType, commandStr, targetPath, port) {
 		console.log("connecting..", commandName, "\r\n");
 		var data = {
 				cid : hostType
@@ -284,7 +284,7 @@
 		}
 
 		file = fs.readFileSync(tempPath);
-		console.log(file);
+		//console.log(file);
 		parsed = JSON.parse(file);
 		if (parsed.hasOwnProperty(hostType)) {
 			info = parsed[hostType];
@@ -300,6 +300,9 @@
 			}
 			if (info.hasOwnProperty('sshkey')) {
 				info.privateKeyFile = info.sshkey;
+			}
+			if (port !== undefined && port) {
+				info.port = port;
 			}
 		}
 
@@ -392,14 +395,14 @@
 	}
 
 	if (process.argv.length > 3) {
-		if (process.argv.length > 6) {
+		if (process.argv.length === 8) {
 			//console.log("run sftp\r\n");
 			// sendCommand(commandName, tempPath, key, hostType, srcPath, dstPath, port:option )
 			sendCommand(process.argv[2], process.argv[3], process.argv[4], process.argv[5], process.argv[6], process.argv[7], process.argv[8]);
-		} else {
+		} else if (process.argv.length === 7) {
 			//console.log("run ssh\r\n");
 			// sendCommand(commandName, tempPath, key, hostType, commandStr)
-			sendCommand(process.argv[2], process.argv[3], process.argv[4], process.argv[5], process.argv[6]);
+			sendCommand(process.argv[2], process.argv[3], process.argv[4], process.argv[5], process.argv[6], "", process.argv[7]);
 		}
 	}
 }());
