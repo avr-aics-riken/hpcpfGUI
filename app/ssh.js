@@ -466,7 +466,7 @@
 				return;
 			}
 
-			if (param.commandName === 'sshforward' || param.commandName === 'sftpsendforward' || param.comandName === 'sftpgetforward') {
+			if (param.commandName === 'sshforward' || param.commandName === 'sftpsendforward' || param.commandName === 'sftpgetforward') {
 				sendForwardCommand(param, info);
 			} else {
 				sfc = new SFTPClass();
@@ -548,7 +548,5 @@
 				port : process.argv[7]
 			});
 		}
-		setTimeout(function () {
-		}, 2 * 1000);
 	}
 }());

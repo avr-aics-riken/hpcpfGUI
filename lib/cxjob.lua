@@ -212,9 +212,9 @@ end
 
 function cxjob:sshCmd(cmd, disableErr)
 	if self.jobinfo.portForwarding then
-		--local forwardingInfo = self.jobinfo.portForwardingInfo
-		--return sshNodePortForwardCmd(self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
-		return sshLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
+		local forwardingInfo = self.jobinfo.portForwardingInfo
+		return sshNodePortForwardCmd(self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
+		--return sshLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 	else
 		return sshNodeCmd(self.user, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 	end
@@ -223,13 +223,14 @@ end
 function cxjob:scpCmd(mode, localfile, remotefile)
     local fromfile = self.workdir .. remotefile
     local tofile = localfile
-
+--[[
 	if self.jobinfo.portForwarding then
 		fromfile = self.server .. ':' .. fromfile
 		if self.user ~= nil and self.user ~= "" then
 			fromfile = self.user .. '@' .. fromfile;
 		end
 	end
+	]]
 	
 	if mode == "sftpsend" then
 		local tmp = fromfile
@@ -238,9 +239,9 @@ function cxjob:scpCmd(mode, localfile, remotefile)
 	end
 	
 	if self.jobinfo.portForwarding  then
-		--local forwardingInfo = self.jobinfo.portForwardingInfo
-		--return scpNodePortForwardCmd(mode, self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
-		return scpLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
+		local forwardingInfo = self.jobinfo.portForwardingInfo
+		return scpNodePortForwardCmd(mode, self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
+		--return scpLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 	else
 		return scpNodeCmd(mode, self.user, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 	end
