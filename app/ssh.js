@@ -524,7 +524,7 @@
 				targetInfo : process.argv[3],
 				tempPath : process.argv[4],
 				key : process.argv[5],
-				hostType : process.argv[6],
+				hostType : process.argv[6].split('\'').join(''),
 				commandStr : process.argv[7],
 				port : process.argv[8]
 			});
@@ -534,7 +534,7 @@
 				targetInfo : process.argv[3],
 				tempPath : process.argv[4],
 				key : process.argv[5],
-				hostType : process.argv[6],
+				hostType : process.argv[6].split('\'').join(''),
 				srcPath : process.argv[7],
 				dstPath : process.argv[8],
 				port : process.argv[9]
@@ -544,7 +544,7 @@
 				commandName : process.argv[2],
 				tempPath : process.argv[3],
 				key : process.argv[4],
-				hostType : process.argv[5],
+				hostType : process.argv[5].split('\'').join(''),
 				srcPath : process.argv[6],
 				dstPath : process.argv[7],
 				port : process.argv[8]
@@ -554,7 +554,7 @@
 				commandName : process.argv[2],
 				tempPath : process.argv[3],
 				key : process.argv[4],
-				hostType : process.argv[5],
+				hostType : process.argv[5].split('\'').join(''),
 				commandStr : process.argv[6],
 				port : process.argv[7]
 			});
