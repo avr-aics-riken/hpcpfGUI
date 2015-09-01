@@ -211,8 +211,8 @@ local function scpNodePortForwardCmd(mode, user, port, forwardingInfo, projectdi
 end
 
 function cxjob:sshCmd(cmd, disableErr)
-	if self.jobinfo.portForwarding then
-		local forwardingInfo = self.jobinfo.portForwardingInfo
+	local forwardingInfo = self.jobinfo.portForwardingInfo
+	if forwardingInfo ~= nil then
 		return sshNodePortForwardCmd(self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 		--return sshLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 	else
@@ -238,8 +238,8 @@ function cxjob:scpCmd(mode, localfile, remotefile)
 		tofile = tmp
 	end
 	
-	if self.jobinfo.portForwarding  then
-		local forwardingInfo = self.jobinfo.portForwardingInfo
+	local forwardingInfo = self.jobinfo.portForwardingInfo
+	if forwardingInfo ~= nil then
 		return scpNodePortForwardCmd(mode, self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 		--return scpLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 	else

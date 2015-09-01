@@ -263,50 +263,81 @@
 	}; // SFTPClass
 
 	function sendForwardCommand(param, info) {
-		var stepInfo = null,
+		var targetInfo = null,
 			stepConn = null,
-			stepServer = null,
-			stepServerLogin = null,
-			stepServerLogin = null;
+			stepServer = null;
 
-		
 		try {
-			stepInfo = JSON.parse(param.stepInfo);
+			targetInfo = JSON.parse(param.targetInfo);
+			if (targetInfo.port !== undefined && targetInfo.port) {
+				targetInfo.port = targetInfo.port;
+			} else {
+				targetInfo.port = 22;
+			}
+			if (targetInfo.privateKey) {
+				targetInfo.privateKey = fs.readFileSync(targetInfo.privateKey);
+				delete targetInfo.password;
+			}
 		} catch (e) {
 			console.error(e);
 			return;
 		}
 		
-		stepServerLogin = {
-			host : stepInfo.host,
-			port : 22,
-			username : stepInfo.user,
-			password : stepInfo.password
-		};
-		if (stepInfo.privateKey) {
-			stepServerLogin.privateKey = stepInfo.privateKey;
-			stepServerLogin.passphrase = stepInfo.passphrase;
-			delete stepServerLogin.password;
+		if (!info.port) {
+			info.port = 22;
 		}
-
+		
+		//console.log(info, targetInfo);
+		
 		stepConn = new ssh2();
-		stepConn.on('ready', (function (stepInfo) {
+		stepConn.on('ready', (function (info, targetInfo) {
 			return function () {
 				var forwardLogin = {
-					host: stepInfo.host,
-					port: stepInfo.port,
-					username: info.username,
-					password: info.password
+					host : targetInfo.host
 				};
+				if (info.user) {
+					forwardLogin.user = info.user;
+				}
+				if (info.port) {
+					forwardLogin.port = info.port;
+				}
+				if (info.path) {
+					forwardLogin.path = info.path;
+				}
+				if (info.password) {
+					forwardLogin.password = info.password;
+				}
+				if (info.passphrase) {
+					forwardLogin.passphrase = info.passphrase;
+				}
 				if (info.privateKey) {
 					forwardLogin.privateKey = info.privateKey;
-					forwardLogin.passphrase = info.passphrase;
-					delete forwardLogin.password;
 				}
-
+				
+				if (targetInfo.user) {
+					forwardLogin.user = targetInfo.user;
+				}
+				if (targetInfo.port) {
+					forwardLogin.port = targetInfo.port;
+				}
+				if (targetInfo.path) {
+					forwardLogin.path = targetInfo.path;
+				}
+				if (targetInfo.password) {
+					forwardLogin.password = targetInfo.password;
+				}
+				if (targetInfo.passphrase) {
+					forwardLogin.passphrase = targetInfo.passphrase;
+				}
+				if (targetInfo.privateKey) {
+					forwardLogin.privateKey = targetInfo.privateKey;
+				}
+				
+				//console.log("forwardLogin", forwardLogin);
+				
 				stepServer = net.createServer(function (sock) {
 					// console.log(param.stepServer, sock.remotePort, info.host, info.port);
-					stepConn.forwardOut(stepInfo.host, sock.remotePort, info.host, info.port, function (err, stream) {
+					stepConn.forwardOut(info.host, sock.remotePort, targetInfo.host, targetInfo.port, function (err, stream) {
 						if (err) {
 							console.log('Error forwarding connection: ' + err);
 							return sock.end();
@@ -314,8 +345,8 @@
 						sock.pipe(stream).pipe(sock);
 					});
 				});
-				stepServer.listen(stepInfo.port, function () {
-					// console.log('Forwarding connections on ' + stepInfo.port + ' to ' + info.host + ':' + info.port);
+				stepServer.listen(forwardLogin.port, function () {
+					console.log('Forwarding connections on ' + forwardLogin.port + ' to ' + targetInfo.host + ':' + targetInfo.port);
 					
 					var sfc = new SFTPClass();
 					sfc.Connect(forwardLogin, (function (sfc) {
@@ -347,33 +378,13 @@
 							}
 						};
 					}(sfc)));
-
-					/*
-					var newconnection = new ssh2();
-					newconnection.on('ready', function () {
-						newconnection.shell(function (err, stream) {
-							stream.on('close', function () {
-								console.log('connection closed');
-								newconnection.end();
-								stepConn.end();
-							}).on('data', function (data) {
-								console.log('stdout: ' + data);
-							}).stderr.on('data', function (data) {
-								console.log('stderr: ' + data);
-							});
-							stream.end(param.commandStr + '\nexit\n');
-						});
-					}).on('close', function () {
-						//console.log('close');
-					}).connect(forwardLogin);
-					*/
 				});
 			};
-		}(stepInfo))).on('close', function () {
+		}(info, targetInfo))).on('close', function () {
 			if (stepServer) {
 				stepServer.close();
 			}
-		}).connect(stepServerLogin);
+		}).connect(info);
 	}
 
 	/**
@@ -510,7 +521,7 @@
 		if (process.argv[2] === 'sshforward') {
 			sendCommand({
 				commandName : process.argv[2],
-				stepInfo : process.argv[3],
+				targetInfo : process.argv[3],
 				tempPath : process.argv[4],
 				key : process.argv[5],
 				hostType : process.argv[6],
@@ -520,7 +531,7 @@
 		} else if (process.argv[2] === 'sftpsendforward' || process.argv[2] === 'sftpgetforward') {
 			sendCommand({
 				commandName : process.argv[2],
-				stepInfo : process.argv[3],
+				targetInfo : process.argv[3],
 				tempPath : process.argv[4],
 				key : process.argv[5],
 				hostType : process.argv[6],

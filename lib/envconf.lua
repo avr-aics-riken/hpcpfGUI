@@ -67,6 +67,11 @@ local localhostSetting = {
     submitCmd = 'sh',
     submitIDRow = 2,
     delCmd = 'kill',
+    --	portForwardingInfo = [[
+    --{
+    --	"host" : "192.168.1.25"
+    --}
+    --	]],
     --statCmd = 'fjstat',
     --statStateColumn = 5,
     --statStateRow = 4,
@@ -80,6 +85,8 @@ JOB.OPTION
 sh JOB.JOB
 ]]    
 }
+
+	
 
 local function getServerInfo(server)
     local info = {
