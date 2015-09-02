@@ -843,6 +843,14 @@
 			}
 		});
 		nui.nodeDeleteEvent(deleteNode);
+		
+		nodecanvas.onclick = function () {
+			nui.unselect();
+			updateProperty('');
+			if (propertyTabFunc) {
+				propertyTabFunc(false);
+			}
+		};
 	}
 	
 	function init() {

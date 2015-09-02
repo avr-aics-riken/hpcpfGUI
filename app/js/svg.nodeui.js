@@ -310,6 +310,12 @@ function svgNodeUI(draw) {
 		}
 	}
 	
+	function unselect() {
+		if (preNode) {
+			preNode.changeColor('#72ca29');
+		}
+	}
+	
 	function moveAll(mx, my) {
 		var i;
 		for (i in nodeArray) {
@@ -751,7 +757,8 @@ function svgNodeUI(draw) {
 		setNodeMovedFunction : setNodeMovedFunction,
 		setHeaderCode: setHeaderCode,
 		setFooterCode: setFooterCode,
-		moveAll: moveAll
+		moveAll: moveAll,
+		unselect : unselect
 	};
 }
 
