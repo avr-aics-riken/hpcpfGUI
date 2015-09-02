@@ -421,6 +421,7 @@
 			info.host = info.server;
 			info.path = info.workpath;
 			info.username = info.userid;
+			info.readyTimeout = 99999;
 			delete info.server;
 			if (info.hasOwnProperty('password')) {
 				info.password = decrypt(info.password, param.key);

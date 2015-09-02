@@ -776,6 +776,7 @@ if (typeof window === 'undefined') { // Node.js
 				}
 				// create copy.
 				info = JSON.parse(JSON.stringify(target));
+				info.readyTimeout = 99999;
 
 				if (isTest) {
 					info.workpath = "";
