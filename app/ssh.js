@@ -333,6 +333,50 @@
 				
 				//console.log("forwardLogin", forwardLogin);
 				
+				stepConn.exec('nc ' + forwardLogin.host + ' ' + forwardLogin.port, (function (forwardLogin, param) {
+					return function (err, stream) {
+						var sfc = new SFTPClass();
+						if (err) {
+							console.error(err);
+							return;
+						}
+						forwardLogin.sock = stream;
+						delete forwardLogin.host;
+						delete forwardLogin.port;
+						sfc.Connect(forwardLogin, (function (sfc) {
+							return function (err) {
+								if (err) {
+									console.log("Connection Failed " + err);
+									return;
+								}
+								if (param.commandName === 'sshforward') {
+									sfc.RemoteCommand(param.commandStr, function (err) {
+										if (err) {
+											console.log("Error:", err);
+										}
+									}, function (data) {
+										console.log(data);
+									});
+								} else if (param.commandName === 'sftpgetforward') {
+									sfc.DownloadFile(param.srcPath, param.dstPath, function (err) {
+										if (err) {
+											console.log("Error:", err);
+										}
+									});
+								} else if (param.commandName === 'sftpsendforward') {
+									sfc.UploadFile(param.srcPath, param.dstPath, function (err) {
+										if (err) {
+											console.log("Error:", err);
+										}
+									});
+								}
+							};
+						}(sfc)));
+					};
+				}(forwardLogin, param)));
+				
+				
+				/*
 				stepServer = net.createServer(function (sock) {
 					// console.log(param.stepServer, sock.remotePort, info.host, info.port);
 					stepConn.forwardOut(info.host, sock.remotePort, targetInfo.host, targetInfo.port, function (err, stream) {
@@ -377,6 +421,7 @@
 						};
 					}(sfc)));
 				});
+				*/
 			};
 		}(info, targetInfo))).on('close', function () {
 			if (stepServer) {
