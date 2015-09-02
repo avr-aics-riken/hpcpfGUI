@@ -269,9 +269,7 @@
 
 		try {
 			targetInfo = JSON.parse(param.targetInfo);
-			if (targetInfo.port !== undefined && targetInfo.port) {
-				targetInfo.port = targetInfo.port;
-			} else {
+			if (targetInfo.port === undefined || !targetInfo.port) {
 				targetInfo.port = 22;
 			}
 			if (targetInfo.privateKey) {
@@ -283,7 +281,7 @@
 			return;
 		}
 		
-		if (!info.port) {
+		if (info.port === undefined || !info.port) {
 			info.port = 22;
 		}
 		
