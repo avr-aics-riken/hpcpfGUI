@@ -1065,9 +1065,9 @@
 				showOKCancelDialog(function (isOK) {
 					if (isOK) {
 						hiddenOKCancelDialog();
+						nui.clearNodes();
 						editor.socket.emit('resetWorkflow');
 						editor.socket.once('doneResetWorkflow', function () {
-							//nui.clearNodes();
 							initNode();
 							load();
 							console.log("doneResetWorkflow");
