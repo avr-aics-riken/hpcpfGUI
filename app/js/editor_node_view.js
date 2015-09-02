@@ -921,10 +921,16 @@
 							if (ioval.hasOwnProperty('type')) {
 								inputtype = ioval.type;
 							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('machine')) {
+							if (inputtype === 'target_machine') {
 								if (targetMachineList.hasOwnProperty("hpcpf") && targetMachineList.hpcpf.hasOwnProperty("targets")) {
 									targets = targetMachineList.hpcpf.targets;
-									if (targets.length > 0) {
+									if (ioval.hasOwnProperty('machine')) {
+										for (i = 0; i < targets.length; i = i + 1) {
+											if (ioval.machine.type === targets[i].type) {
+												ioval.machine = targets[i];
+											}
+										}
+									} else if (targets.length > 0) {
 										ioval.machine = targets[0];
 									}
 								}
@@ -1026,25 +1032,34 @@
 		});
 	}
 	
-	function gatherPasswordNeedMachines(parentNodes, sortedNodes) {
+	function gatherPasswordNeedMachines(parentNodes, sortedNodes, endCallback) {
 		var i,
 			node,
 			nodeData,
 			password_need_machines = [];
 		
-		for (i = 0; i < sortedNodes.length; i = i + 1) {
-			node = sortedNodes[i];
-			nodeData = node.nodeData;
-			insertInitialParam(nodeData, []);
+		editor.socket.emit('reqGetTargetMachineList');
+		editor.socket.once('doneGetTargetMachineList', function (data) {
+			try {
+				var targetMachineList = JSON.parse(data);
+				for (i = 0; i < sortedNodes.length; i = i + 1) {
+					node = sortedNodes[i];
+					nodeData = node.nodeData;
+					insertInitialParam(nodeData, targetMachineList);
 
-			if (parentNodes.hasOwnProperty(nodeData.varname)) {
-				gatherPasswordNeedMachine(i, parentNodes[nodeData.varname], nodeData, password_need_machines);
-			} else {
-				gatherPasswordNeedMachine(i, null, nodeData, password_need_machines);
+					if (parentNodes.hasOwnProperty(nodeData.varname)) {
+						gatherPasswordNeedMachine(i, parentNodes[nodeData.varname], nodeData, password_need_machines);
+					} else {
+						gatherPasswordNeedMachine(i, null, nodeData, password_need_machines);
+					}
+				}
+				if (endCallback) {
+					endCallback(password_need_machines);
+				}
+			} catch (e) {
+				console.log(e);
 			}
-		}
-
-		return password_need_machines;
+		});
 	}
 	
 	function addResetWorkflowButton() {
@@ -1087,7 +1102,6 @@
 			nui.exportLua(function (parents, sorted, exportEndCallback) {
 				var i = 0,
 					nodeData,
-					password_need_machines = [],
 					node,
 					inputIDs = [],
 					sortedDatas = [],
@@ -1113,39 +1127,40 @@
 				}
 				
 				// gather password,passphrase machine
-				password_need_machines = gatherPasswordNeedMachines(parents, sorted);
+				gatherPasswordNeedMachines(parents, sorted, function (password_need_machines) {
+					// show password,passphrase input dialog
+					password_input.createPasswordInputView(editor.socket, password_need_machines, function (password_need_machines) {
+						var node,
+							nodeData,
+							script = "require('hpcpf')\n",
+							i,
+							dst_machines_with_pass = {};
 
-				// show password,passphrase input dialog
-				password_input.createPasswordInputView(editor.socket, password_need_machines, function (password_need_machines) {
-					var node,
-						nodeData,
-						script = "require('hpcpf')\n",
-						i,
-						dst_machines_with_pass = {};
-					
-					for (i = 0; i < password_need_machines.length; i = i + 1) {
-						password_input.saveConnection(password_need_machines[i]);
-					}
-					
-					// create lua script
-					for (i = 0; i < sorted.length; i = i + 1) {
-						node = sorted[i];
-						nodeData = node.nodeData;
-						if (parents.hasOwnProperty(nodeData.varname)) {
-							// has parents
-							inputIDs = createInputIDList(sortedDatas, parents[nodeData.varname]);
-							script = script + exportTargetMachine(i, inputIDs, nodeData, password_need_machines, dst_machines_with_pass);
-							script = script + exportOneNode(i, inputIDs, nodeData, isDryRun);
-						} else {
-							// root node
-							script = script + exportTargetMachine(i, null, nodeData, password_need_machines, dst_machines_with_pass);
-							script = script + exportOneNode(i, null, nodeData, isDryRun);
+						for (i = 0; i < password_need_machines.length; i = i + 1) {
+							password_input.saveConnection(password_need_machines[i]);
 						}
-					}
-					if (exportEndCallback) {
-						exportEndCallback(script, dst_machines_with_pass);
-					}
+
+						// create lua script
+						for (i = 0; i < sorted.length; i = i + 1) {
+							node = sorted[i];
+							nodeData = node.nodeData;
+							if (parents.hasOwnProperty(nodeData.varname)) {
+								// has parents
+								inputIDs = createInputIDList(sortedDatas, parents[nodeData.varname]);
+								script = script + exportTargetMachine(i, inputIDs, nodeData, password_need_machines, dst_machines_with_pass);
+								script = script + exportOneNode(i, inputIDs, nodeData, isDryRun);
+							} else {
+								// root node
+								script = script + exportTargetMachine(i, null, nodeData, password_need_machines, dst_machines_with_pass);
+								script = script + exportOneNode(i, null, nodeData, isDryRun);
+							}
+						}
+						if (exportEndCallback) {
+							exportEndCallback(script, dst_machines_with_pass);
+						}
+					});
 				});
+
 			}, function (script, machines_with_pass) {
 				//console.log("finish creating script:\n", script);
 				if (endCallback) {
