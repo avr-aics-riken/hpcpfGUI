@@ -158,6 +158,26 @@
 		}
 		valueSelect.options[initialIndex].selected = "true";
 		node.machine = targets[initialIndex];
+		valueSelect.onclick = (function (preTargets, nodeData) {
+			return function (evt) {
+				editor.socket.emit('reqGetTargetMachineList');
+				editor.socket.once('doneGetTargetMachineList', function (data) {
+					try {
+						var targetMachineList = JSON.parse(data),
+							targets,
+							k;
+						if (targetMachineList.hasOwnProperty('hpcpf') && targetMachineList.hpcpf.hasOwnProperty('targets')) {
+							targets = targetMachineList.hpcpf.targets;
+							if (targets.length !== preTargets.length) {
+								updateProperty(nodeData);
+							}
+						}
+					} catch (e) {
+						console.log(e);
+					}
+				});
+			};
+		}(targetMachineList.hpcpf.targets, nodeData));
 		valueSelect.onchange = (function (nodeData, node, targets) {
 			return function (e) {
 				node.machine = targets[this.selectedIndex];
