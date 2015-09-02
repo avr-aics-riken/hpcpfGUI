@@ -24,7 +24,7 @@ function updateHostList(socket) {
 			if (host.hasOwnProperty('hpcpf') && host.hpcpf.hasOwnProperty('targets')) {
 				host = host.hpcpf.targets;
 			
-				console.log("host", host);
+				//console.log("host", host);
 				for (k = 0; k < host.length; k = k + 1) {
 					if (host[k]) {
 						if (host[k].userid === undefined) {
@@ -93,7 +93,7 @@ function registerEditorEvent(socket) {
 			var host,
 				k,
 				hst;
-			console.log("filebuf", filebuf.toString());
+			//console.log("filebuf", filebuf.toString());
 			if (err) {
 				console.log(err);
 				host = {};
@@ -105,7 +105,7 @@ function registerEditorEvent(socket) {
 				for (k = 0; k < host.length; k = k + 1) {
 					if (host[k] && host[k].type === data.type) {
 						hst = host[k];
-						console.log("hst", hst);
+						// console.log("hst", hst);
 						if (hst.hasOwnProperty('sshkey')) {
 							socket.emit('updateRemoteInfo', JSON.stringify({
 								name_hr : hst.name_hr,
