@@ -671,7 +671,7 @@
 								delete target_machine.machine.password;
 							}
 							if (target_machine.machine.hasOwnProperty('passphrase')) {
-								delete target_machine.machine.password;
+								delete target_machine.machine.passphrase;
 							}
 						}
 					}
