@@ -483,6 +483,9 @@
 			info.path = info.workpath;
 			info.username = info.userid;
 			info.readyTimeout = 99999;
+			
+			// info.debug = console.log; // print debug messages of ssh2
+			
 			delete info.server;
 			if (info.hasOwnProperty('password')) {
 				info.password = decrypt(info.password, param.key);
