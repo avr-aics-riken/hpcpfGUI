@@ -228,7 +228,6 @@
 			}(this, callback)));
 
 			conn.on('keyboard-interactive', function redo(name, instructions, instructionsLang, prompts, finish, answers) {
-				console.log("keyboardinteractive");
 				if (args.hasOwnProperty('password')) {
 					finish([args.password]);
 				} else {
@@ -288,6 +287,25 @@
 		//console.log(info, targetInfo);
 		
 		stepConn = new ssh2();
+		
+		stepConn.on('keyboard-interactive', function redo(name, instructions, instructionsLang, prompts, finish, answers) {
+			if (info.hasOwnProperty('password')) {
+				finish([info.password]);
+			} else {
+				finish([]);
+			}
+		});
+		stepConn.on('error', function (err) {
+			console.error("- connection error: %s", err);
+		});
+		stepConn.on('close', function (had_error) {
+			//console.log('Connection close');
+			process.exit();
+		});
+		stepConn.on('end', function () {
+			//console.log('End remote session.');
+		});
+
 		stepConn.on('ready', (function (info, targetInfo) {
 			return function () {
 				var forwardLogin = {
