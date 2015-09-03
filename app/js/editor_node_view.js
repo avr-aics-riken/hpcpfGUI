@@ -844,11 +844,16 @@
 		});
 		nui.nodeDeleteEvent(deleteNode);
 		
-		nodecanvas.onclick = function () {
-			nui.unselect();
-			updateProperty('');
-			if (propertyTabFunc) {
-				propertyTabFunc(false);
+		nodecanvas.onclick = function (event) {
+			var elem = document.elementFromPoint(event.clientX, event.clientY);
+			
+			if (elem && elem.id === "nodecanvas") {
+				console.log("hit");
+				nui.unselect();
+				updateProperty('');
+				if (propertyTabFunc) {
+					propertyTabFunc(false);
+				}
 			}
 		};
 	}
