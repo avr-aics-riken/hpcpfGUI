@@ -5,7 +5,37 @@ local focusSetting = {
     statCmd = 'fjstat',
     statStateColumn = 5,
     statStateRow = 4,
-	portForwarding = true,
+   jobEndFunc = function (t)
+        if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
+        else return false end
+    end,
+    bootsh = [[
+#!/bin/bash
+#SBATCH -p ye001uta3m
+#SBATCH -N JOB.NODE
+#SBATCH -n JOB.CORE
+#SBATCH -J JOB.NAME
+#SBATCH -o stdout.%J.log
+#SBATCH -e stderr.%J.log
+JOB.OPTION
+sh JOB.JOB
+]]      
+}
+
+local focusTunnelSetting = {
+    submitCmd = 'sbatch',
+    submitIDRow = 4,
+    delCmd = 'scancel',
+    statCmd = 'fjstat',
+    statStateColumn = 5,
+    statStateRow = 4,
+    --portForwardingInfo = [[
+    --{
+    --  "host" : "ff01",
+    --  "user": "userid",
+    --  "password": "*****"
+    --}
+    --]],
     jobEndFunc = function (t)
         if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
         else return false end
@@ -92,6 +122,7 @@ local function getServerInfo(server)
     local info = {
         ["localhost"] = localhostSetting,
         ["k.aics.riken.jp"] = kSetting,
+        ["ssh.j-focus.jp"]  = focusTunnelSetting,
         ["ff01.j-focus.jp"] = focusSetting,
         ["ff02.j-focus.jp"] = focusSetting,
         ["ff01"] = focusSetting,
