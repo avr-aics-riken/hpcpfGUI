@@ -309,7 +309,8 @@
 		stepConn.on('ready', (function (info, targetInfo) {
 			return function () {
 				var forwardLogin = {
-					host : targetInfo.host
+					host : targetInfo.host,
+					readyTimeout : 99999
 				};
 				if (info.username) {
 					forwardLogin.username = info.username;
@@ -392,54 +393,6 @@
 						}(sfc)));
 					};
 				}(forwardLogin, param)));
-				
-				
-				/*
-				stepServer = net.createServer(function (sock) {
-					// console.log(param.stepServer, sock.remotePort, info.host, info.port);
-					stepConn.forwardOut(info.host, sock.remotePort, targetInfo.host, targetInfo.port, function (err, stream) {
-						if (err) {
-							console.log('Error forwarding connection: ' + err);
-							return sock.end();
-						}
-						sock.pipe(stream).pipe(sock);
-					});
-				});
-				stepServer.listen(forwardLogin.port, function () {
-					console.log('Forwarding connections on ' + forwardLogin.port + ' to ' + targetInfo.host + ':' + targetInfo.port);
-					
-					var sfc = new SFTPClass();
-					sfc.Connect(forwardLogin, (function (sfc) {
-						return function (err) {
-							if (err) {
-								console.log("Connection Failed " + err);
-								return;
-							}
-							if (param.commandName === 'sshforward') {
-								sfc.RemoteCommand(param.commandStr, function (err) {
-									if (err) {
-										console.log("Error:", err);
-									}
-								}, function (data) {
-									console.log(data);
-								});
-							} else if (param.commandName === 'sftpgetforward') {
-								sfc.DownloadFile(param.srcPath, param.dstPath, function (err) {
-									if (err) {
-										console.log("Error:", err);
-									}
-								});
-							} else if (param.commandName === 'sftpsendforward') {
-								sfc.UploadFile(param.srcPath, param.dstPath, function (err) {
-									if (err) {
-										console.log("Error:", err);
-									}
-								});
-							}
-						};
-					}(sfc)));
-				});
-				*/
 			};
 		}(info, targetInfo))).on('close', function () {
 			if (stepServer) {
