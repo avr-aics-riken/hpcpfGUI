@@ -179,8 +179,8 @@ end
 
 local function sshNodePortForwardCmd(user, port, forwardingInfo, projectdir, authkey, hosttype, cmd, disableErr)
 	local sshcmd = 'node ' .. HPCPF_BIN_DIR .. '/ssh.js sshforward ';
-	sshcmd = sshcmd .. '\'' .. forwardingInfo .. '\' ';
-	sshcmd = sshcmd .. '"' .. projectdir .. '/tmpfile" ' .. authkey .. ' \'' .. hosttype .. '\' "' .. cmd ..'" ';
+	sshcmd = sshcmd .. "\"" .. forwardingInfo .. "\" ";
+	sshcmd = sshcmd .. '"' .. projectdir .. '/tmpfile" ' .. authkey .. ' \"' .. hosttype .. '\" "' .. cmd ..'" ';
 	if (port ~= nil) then
 		sshcmd = sshcmd .. port;
 	end
@@ -195,8 +195,8 @@ end
 
 local function scpNodePortForwardCmd(mode, user, port, forwardingInfo, projectdir, authkey, hosttype, fromfile, tofile)
 	local scpcmd = 'node ' .. HPCPF_BIN_DIR .. '/ssh.js ' ..  mode .. 'forward ';
-	scpcmd = scpcmd .. '\'' .. forwardingInfo .. '\' ';
-	scpcmd = scpcmd .. '"' ..projectdir .. '/tmpfile" ' .. authkey .. ' \'' .. hosttype .. '\' ';
+	scpcmd = scpcmd .. "\"" .. forwardingInfo .. "\" ";
+	scpcmd = scpcmd .. '"' ..projectdir .. '/tmpfile" ' .. authkey .. ' \"' .. hosttype .. '\" ';
 	scpcmd = scpcmd .. ' "' .. fromfile ..'" "' .. tofile .. '" ';
 	if (port ~= nil) then
 		sshcmd = sshcmd .. port;
@@ -214,6 +214,7 @@ function cxjob:sshCmd(cmd, disableErr)
 	local forwardingInfo = self.jobinfo.portForwardingInfo
 	if forwardingInfo ~= nil then
 		forwardingInfo = forwardingInfo:gsub("\n", " ")
+		forwardingInfo = forwardingInfo:gsub("\"", "\\\"")
 		return sshNodePortForwardCmd(self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 		--return sshLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, cmd, disableErr);
 	else
@@ -242,6 +243,7 @@ function cxjob:scpCmd(mode, localfile, remotefile)
 	local forwardingInfo = self.jobinfo.portForwardingInfo
 	if forwardingInfo ~= nil then
 		forwardingInfo = forwardingInfo:gsub("\n", " ")
+		forwardingInfo = forwardingInfo:gsub("\"", "\\\"")
 		return scpNodePortForwardCmd(mode, self.user, self.port, forwardingInfo, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 		--return scpLuaCmd(self.user, self.server, self.port, self.projectdir, self.authkey, self.hosttype, fromfile, tofile);
 	else

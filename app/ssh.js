@@ -276,7 +276,7 @@
 				delete targetInfo.password;
 			}
 		} catch (e) {
-			console.error(e);
+			console.error('Error on sendForwardCommand', e);
 			return;
 		}
 		
@@ -311,8 +311,8 @@
 				var forwardLogin = {
 					host : targetInfo.host
 				};
-				if (info.user) {
-					forwardLogin.user = info.user;
+				if (info.username) {
+					forwardLogin.username = info.username;
 				}
 				if (info.port) {
 					forwardLogin.port = info.port;
@@ -330,8 +330,8 @@
 					forwardLogin.privateKey = info.privateKey;
 				}
 				
-				if (targetInfo.user) {
-					forwardLogin.user = targetInfo.user;
+				if (targetInfo.username) {
+					forwardLogin.username = targetInfo.username;
 				}
 				if (targetInfo.port) {
 					forwardLogin.port = targetInfo.port;
@@ -589,7 +589,7 @@
 				targetInfo : process.argv[3],
 				tempPath : process.argv[4],
 				key : process.argv[5],
-				hostType : process.argv[6].split('\'').join(''),
+				hostType : process.argv[6],
 				commandStr : process.argv[7],
 				port : process.argv[8]
 			});
@@ -599,7 +599,7 @@
 				targetInfo : process.argv[3],
 				tempPath : process.argv[4],
 				key : process.argv[5],
-				hostType : process.argv[6].split('\'').join(''),
+				hostType : process.argv[6],
 				srcPath : process.argv[7],
 				dstPath : process.argv[8],
 				port : process.argv[9]
@@ -609,7 +609,7 @@
 				commandName : process.argv[2],
 				tempPath : process.argv[3],
 				key : process.argv[4],
-				hostType : process.argv[5].split('\'').join(''),
+				hostType : process.argv[5],
 				srcPath : process.argv[6],
 				dstPath : process.argv[7],
 				port : process.argv[8]
@@ -619,7 +619,7 @@
 				commandName : process.argv[2],
 				tempPath : process.argv[3],
 				key : process.argv[4],
-				hostType : process.argv[5].split('\'').join(''),
+				hostType : process.argv[5],
 				commandStr : process.argv[6],
 				port : process.argv[7]
 			});
