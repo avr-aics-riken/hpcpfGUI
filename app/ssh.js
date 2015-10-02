@@ -429,6 +429,11 @@
 			console.error(e);
 			return;
 		}
+		
+		if (!parsed.hasOwnProperty(param.hostType)) {
+			param.hostType = param.hostType.split("'").join('');
+		}
+		
 		if (parsed.hasOwnProperty(param.hostType)) {
 			info = parsed[param.hostType];
 			info.usepassword = !info.hasOwnProperty('sshkey');

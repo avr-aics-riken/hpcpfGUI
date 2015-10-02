@@ -831,6 +831,7 @@
 		}
 		
 		function tryRemoveTmpfile() {
+			if (!getSession(socket.id)) { return; }
 			var srcdir = getSession(socket.id).dir,
 				tmpFile = path.join(srcdir, "tmpfile");
 			if (fs.existsSync(tmpFile)) {
@@ -955,11 +956,13 @@
 						updateFileList(srcdir);
 						session.proc = null;
 						if (session.hasOwnProperty('canRemoveID') && session.canRemoveID) {
+							tryRemoveTmpfile();
 							delete idTable[socket.id];
 							delete socketTable[socket.id];
 							session.canRemoveID = false;
+						} else {
+							tryRemoveTmpfile();
 						}
-						tryRemoveTmpfile();
 						emitToAllSessions(srcdir, 'exit');
 					};
 				}(session)));
