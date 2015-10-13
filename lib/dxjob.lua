@@ -190,7 +190,7 @@ function dxjob:GetCaseDir()
 end
 
 function dxjob:Command(cmd)
-	self.m_jobmgr:remoteCommand(cmd)
+	return self.m_jobmgr:remoteCommand(cmd)
 end
 
 function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
