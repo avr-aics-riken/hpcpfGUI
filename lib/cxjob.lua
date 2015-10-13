@@ -350,7 +350,7 @@ end
 
 function cxjob:remoteCommand(cmd)
     local cmd = cmd
-    return self:sshCmd(self.user, self.server, self.port, self.sshkey, self.password, cmd)
+    return self:sshCmd(cmd)
 end
 
 ---------------------
