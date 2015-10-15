@@ -934,8 +934,6 @@
 					}
 				}
 			}
-						
-			nui.relocate();
 		});
 	}
 	
@@ -1256,5 +1254,8 @@
 	window.node_edit_view.init = init;
 	window.node_edit_view.save = save;
 	window.node_edit_view.load = load;
+	window.node_edit_view.fit = function () {
+		nui.relocate();
+	}
 	
 }(window.editor, window.password_input));
