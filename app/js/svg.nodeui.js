@@ -328,6 +328,46 @@ function svgNodeUI(draw) {
 		}
 	}
 	
+	function relocate() {
+		var i,
+			offset = 50,
+			ndata,
+			x, y, w, h,
+			relocated = false,
+			rect = draw.node.getBoundingClientRect();
+
+		for (i in nodeArray) {
+			if (nodeArray.hasOwnProperty(i)) {
+				ndata = nodeArray[i];
+				x = ndata.nodeData.pos[0];
+				y = ndata.nodeData.pos[1];
+				if (x < 0) {
+					ndata.nodeData.pos[0] = offset;
+					ndata.move(ndata.nodeData.pos[0], ndata.nodeData.pos[1]);
+					relocated = true;
+				}
+				if (x > rect.width - 400) {
+					ndata.nodeData.pos[0] = rect.width - 400;
+					ndata.move(ndata.nodeData.pos[0], ndata.nodeData.pos[1]);
+					relocated = true;
+				}
+				if (y < 0) {
+					ndata.nodeData.pos[1] = offset;
+					ndata.move(ndata.nodeData.pos[0], ndata.nodeData.pos[1]);
+					relocated = true;
+				}
+				if (y > rect.height - 100) {
+					ndata.nodeData.pos[1] = rect.top + rect.height - 300 - offset;
+					ndata.move(ndata.nodeData.pos[0], ndata.nodeData.pos[1]);
+					relocated = true;
+				}
+			}
+		}
+		if (relocated && nodeMovedFunction) {
+			nodeMovedFunction();
+		}
+	}
+	
 	function Node(inouts) {
 		var varName = inouts.varname,
 			nodeback1 = draw.rect(305, 60).radius(4).attr({'fill': "#72ca29", 'fill-opacity': "1.0", 'stroke': "none"}).move(14, 0),
@@ -359,6 +399,7 @@ function svgNodeUI(draw) {
 			groupDragEnd = function (self) {
 				return function (delta, event) {
 					event.stopPropagation();
+					relocate();
 					if (self.orgPos[0] !== self.nodeData.pos[0] && self.orgPos[1] !== self.nodeData.pos[1]) {
 						if (nodeMovedFunction) {
 							nodeMovedFunction();
@@ -758,6 +799,7 @@ function svgNodeUI(draw) {
 		setHeaderCode: setHeaderCode,
 		setFooterCode: setFooterCode,
 		moveAll: moveAll,
+		relocate : relocate,
 		unselect : unselect
 	};
 }

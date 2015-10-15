@@ -455,6 +455,8 @@
 			outputtype,
 			propertyRows,
 			i;
+		
+		nui.relocate();
 
 		property.innerHTML = "";
 		if (!nodeData) {
@@ -932,6 +934,8 @@
 					}
 				}
 			}
+						
+			nui.relocate();
 		});
 	}
 	

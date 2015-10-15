@@ -256,6 +256,16 @@
 	bottom:0px;
 	/*overflow: auto;*/
 }
+
+/*
+.NodeCanvas
+{
+	position:absolute;
+	width:4000px;
+	height:4000px;
+}
+*/
+
 .buttons_remotehost{
 	text-align:center;
 	width:410px;
