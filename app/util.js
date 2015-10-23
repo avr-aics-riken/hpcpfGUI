@@ -181,13 +181,18 @@ function deleteFolderRecursive(target) {
 
 function deleteFiles(target, callback) {
 	"use strict";
-	var rmFileCmd = 'rm';
+	var rmFileCmd;
 	
 	if (os.platform().indexOf('win') === 0) { // win setting
 		rmFileCmd = 'del /Q';
+		rmFileCmd += ' "' + target + '"';
+	} else {
+		target = target.replace(" ", "\\ ");
+		rmFileCmd = 'rm';
+		rmFileCmd += ' ' + target;
 	}
-	console.log("util.deleteFiles:", rmFileCmd + ' "' + target + '"');
-	exec(rmFileCmd + ' "' + target + '"', (function (cb) {
+	console.log("util.deleteFiles:", rmFileCmd);
+	exec(rmFileCmd, (function (cb) {
 		return function (error, stdout, stderr) {
 			console.log('stdout: ' + stdout);
 			console.log('stderr: ' + stderr);
@@ -203,10 +208,12 @@ function deleteFiles(target, callback) {
 
 function deleteDirectory(target, callback) {
 	"use strict";
-	var rmDirCmd  = 'rm -rf' + ' "' + target + '"';
-	
+	var rmDirCmd;
 	if (os.platform().indexOf('win') === 0) {
 		rmDirCmd  = 'for /d %1 in ("' + target + '") do rmdir /q /s %1';
+	} else {
+		target = target.replace(" ", "\\ ");
+		rmDirCmd  = 'rm -rf' + ' ' + target;
 	}
 	console.log("util.deleteDirectory:", rmDirCmd);
 	exec(rmDirCmd, (function (cb) {
