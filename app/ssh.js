@@ -134,7 +134,8 @@
 
 			writeStream.on('error', (function (self) {
 				return function (err) {
-					console.error('UploadFile error!', err);	
+					console.error('UploadFile error!', err);
+					process.exit();
 				};
 			}(this)));
 			// what to do when transfer finishes
