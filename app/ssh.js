@@ -18,7 +18,7 @@
 		remoteCmd,
 		LFTPClass,
 		SFTPClass,
-		getRealPath = function (p) { return p; };;
+		getRealPath = function (p) { return p; };
 
 	function decrypt(text, key) {
 		var decipher = crypto.createDecipher('aes-256-ctr', key),
@@ -58,23 +58,26 @@
 	};
 
 	var localCopyFile     = function (src, dst, callback) {
-		if (!fs.existsSync(src)) {
-			console.log('not found path>' + src);
+		//console.log("LOCAL COPY FILE", src, dst);
+		var realSrc = getRealPath(src);
+		/*
+		if (!fs.existsSync(realSrc)) {
+			console.log('not found path aa>' + realSrc);
 			return;
 		}
-		//console.log("LOCAL COPY FILE", src, dst);
+		*/
 		if (os.platform().indexOf('win') === 0) {
-			if (fs.lstatSync(src).isDirectory()) {
-				localCmd(cpDirCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
-			} else {
+			//if (fs.lstatSync(src).isDirectory()) {
+			//	localCmd(cpDirCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
+			//} else {
 				localCmd(cpFileCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
-			}
+			//}
 		} else {
-			if (fs.lstatSync(src).isDirectory()) {
-				localCmd(cpDirCmd + ' ' + getRealPath(src) + ' ' + getRealPath(dst), callback);
-			} else {
+			//if (fs.lstatSync(src).isDirectory()) {
+			//	localCmd(cpDirCmd + ' ' + getRealPath(src) + ' ' + getRealPath(dst), callback);
+			//} else {
+			//}
 				localCmd(cpFileCmd + ' ' + getRealPath(src) + ' ' + getRealPath(dst), callback);
-			}
 		}
 	};
 
