@@ -441,7 +441,7 @@
 	 * commandStr 'ssh' or 'sftpget' or 'sftpsend'
 	 */
 	function sendCommand(param) {
-		console.log("connecting..", param, "\r\n");
+		//console.log("connecting..", param.commandName, "\r\n");
 		var data = {
 				cid : param.hostType
 			},
