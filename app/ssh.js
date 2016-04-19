@@ -63,10 +63,18 @@
 			return;
 		}
 		//console.log("LOCAL COPY FILE", src, dst);
-		if (fs.lstatSync(src).isDirectory()) {
-			localCmd(cpDirCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
+		if (os.platform().indexOf('win') === 0) {
+			if (fs.lstatSync(src).isDirectory()) {
+				localCmd(cpDirCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
+			} else {
+				localCmd(cpFileCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
+			}
 		} else {
-			localCmd(cpFileCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
+			if (fs.lstatSync(src).isDirectory()) {
+				localCmd(cpDirCmd + ' ' + getRealPath(src) + ' ' + getRealPath(dst), callback);
+			} else {
+				localCmd(cpFileCmd + ' ' + getRealPath(src) + ' ' + getRealPath(dst), callback);
+			}
 		}
 	};
 
