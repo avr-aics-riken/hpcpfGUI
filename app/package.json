@@ -8,6 +8,6 @@
   "dependencies": {
     "socket.io": "*",
     "ansi_up":"*",
-    "ssh2":"*"
+    "ssh2":"0.4.10"
   }
 }
