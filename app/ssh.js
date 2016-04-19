@@ -12,16 +12,30 @@
 		crypto = require('crypto'),
 		excludePath = require('./js/exclude_path'),
 		ftparray = {},
+		cpFileCmd = 'cp',
+		cpDirCmd  = 'cp -r',
 		localCmd,
 		remoteCmd,
 		LFTPClass,
-		SFTPClass;
+		SFTPClass,
+		getRealPath = function (p) { return p; };;
 
 	function decrypt(text, key) {
 		var decipher = crypto.createDecipher('aes-256-ctr', key),
 			dec = decipher.update(text, 'hex', 'utf8');
 		dec += decipher.final('utf8');
 		return dec;
+	}
+
+	if (os.platform().indexOf('win') === 0) { // win setting
+		cpFileCmd = 'copy';
+		cpDirCmd  = 'xcopy /s /R /Y /I';
+		getRealPath = function (p) {
+			if (p.split(':').length > 1) {
+				return p;
+			}
+			return path.join(process.cwd().split(':')[0] + ':', p);
+		};
 	}
 
 	/*
@@ -41,6 +55,19 @@
 					}
 				};
 			}(callback)));
+	};
+
+	var localCopyFile     = function (src, dst, callback) {
+		if (!fs.existsSync(src)) {
+			console.log('not found path>' + src);
+			return;
+		}
+		//console.log("LOCAL COPY FILE", src, dst);
+		if (fs.lstatSync(src).isDirectory()) {
+			localCmd(cpDirCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
+		} else {
+			localCmd(cpFileCmd + ' "' + getRealPath(src) + '" "' + getRealPath(dst) + '"', callback);
+		}
 	};
 
 	/*
@@ -72,12 +99,13 @@
 
 	LFTPClass = function () {
 		this.LocalCommand = function (command, callback) {
-			if (!this.isConnected) {
-				this.errorLog('Not established connection.', callback);
-				return;
-			}
-			// console.log('LocalCommand>', command);
-			localCmd(this.conn, command, callback);
+			 console.log('LocalCommand>', command);
+			localCmd(command, callback);
+		};
+
+		this.CopyFile = function (srcpath, destpath, callback) {
+			console.log('local:CopyFile>', srcpath, destpath);
+			localCopyFile(srcpath, destpath, callback);
 		};
 
 		this.errorLog = function (msg, callback) {
@@ -285,15 +313,15 @@
 			console.error('Error on sendForwardCommand', e);
 			return;
 		}
-		
+
 		if (info.port === undefined || !info.port) {
 			info.port = 22;
 		}
-		
+
 		//console.log(info, targetInfo);
-		
+
 		stepConn = new ssh2();
-		
+
 		stepConn.on('keyboard-interactive', function redo(name, instructions, instructionsLang, prompts, finish, answers) {
 			if (info.hasOwnProperty('password')) {
 				finish([info.password]);
@@ -336,7 +364,7 @@
 				if (info.privateKey) {
 					forwardLogin.privateKey = info.privateKey;
 				}
-				
+
 				if (targetInfo.username) {
 					forwardLogin.username = targetInfo.username;
 				}
@@ -355,9 +383,9 @@
 				if (targetInfo.privateKey) {
 					forwardLogin.privateKey = targetInfo.privateKey;
 				}
-				
+
 				//console.log("forwardLogin", forwardLogin);
-				
+
 				stepConn.exec('nc ' + forwardLogin.host + ' ' + forwardLogin.port, (function (forwardLogin, param) {
 					return function (err, stream) {
 						var sfc = new SFTPClass();
@@ -413,7 +441,7 @@
 	 * commandStr 'ssh' or 'sftpget' or 'sftpsend'
 	 */
 	function sendCommand(param) {
-		//console.log("connecting..", param.commandName, "\r\n");
+		console.log("connecting..", param, "\r\n");
 		var data = {
 				cid : param.hostType
 			},
@@ -435,11 +463,11 @@
 			console.error(e);
 			return;
 		}
-		
+
 		if (!parsed.hasOwnProperty(param.hostType)) {
 			param.hostType = param.hostType.split("'").join('');
 		}
-		
+
 		if (parsed.hasOwnProperty(param.hostType)) {
 			info = parsed[param.hostType];
 			info.usepassword = !info.hasOwnProperty('sshkey');
@@ -447,9 +475,9 @@
 			info.path = info.workpath;
 			info.username = info.userid;
 			info.readyTimeout = 99999;
-			
+
 			// info.debug = console.log; // print debug messages of ssh2
-			
+
 			delete info.server;
 			if (info.hasOwnProperty('password')) {
 				info.password = decrypt(info.password, param.key);
@@ -477,9 +505,32 @@
 			delete info.usepassword;
 		}
 
+
 		if (info.type === 'local') {
 			sfc = new LFTPClass();
 			ftparray[data.cid] = sfc;
+
+			if (param.commandName === 'ssh') {
+				sfc.LocalCommand(param.commandStr, function (err) {
+					if (err) {
+						console.log("Error:", err);
+					}
+				}, function (data) {
+					console.log(data);
+				});
+			} else if (param.commandName === 'sftpget') {
+				sfc.CopyFile(param.srcPath, param.dstPath, function (err) {
+					if (err) {
+						console.log("Error:", err);
+					}
+				});
+			} else if (param.commandName === 'sftpsend') {
+				sfc.CopyFile(param.srcPath, param.dstPath, function (err) {
+					if (err) {
+						console.log("Error:", err);
+					}
+				});
+			}
 		} else {
 
 			try {
