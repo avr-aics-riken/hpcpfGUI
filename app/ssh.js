@@ -134,7 +134,7 @@
 
 			writeStream.on('error', (function (self) {
 				return function (err) {
-					console.error('UploadFile error!', err);
+					console.error('UploadFile error!', err, 'tar_path=', tar_path);
 					process.exit();
 				};
 			}(this)));
