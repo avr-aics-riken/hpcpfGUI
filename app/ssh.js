@@ -132,6 +132,11 @@
 			readStream = fs.createReadStream(local_path);
 			writeStream = this.sftp.createWriteStream(tar_path);
 
+			writeStream.on('error', (function (self) {
+				return function (err) {
+					console.error('UploadFile error!', err);	
+				};
+			}(this)));
 			// what to do when transfer finishes
 			writeStream.on('close', (function (self) {
 				return function () {
