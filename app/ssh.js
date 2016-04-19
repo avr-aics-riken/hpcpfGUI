@@ -45,8 +45,8 @@
 		var child = exec(cmd,
 			(function (cb) {
 				return function (error, stdout, stderr) {
-					console.log('stdout: ' + stdout);
-					console.log('stderr: ' + stderr);
+					//console.log('stdout: ' + stdout);
+					//console.log('stderr: ' + stderr);
 					if (error !== null) {
 						console.log('exec error: ' + error);
 					}
@@ -99,12 +99,12 @@
 
 	LFTPClass = function () {
 		this.LocalCommand = function (command, callback) {
-			 console.log('LocalCommand>', command);
+			 //console.log('LocalCommand>', command);
 			localCmd(command, callback);
 		};
 
 		this.CopyFile = function (srcpath, destpath, callback) {
-			console.log('local:CopyFile>', srcpath, destpath);
+			//console.log('local:CopyFile>', srcpath, destpath);
 			localCopyFile(srcpath, destpath, callback);
 		};
 
