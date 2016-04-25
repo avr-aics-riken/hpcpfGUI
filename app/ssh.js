@@ -41,7 +41,7 @@
 	/*
 	 * local command
 	 */
-	localCmd = function (cmd, callback) {
+	localCmd = function (cmd, callback, dataCallback) {
 		var child = exec(cmd,
 			(function (cb) {
 				return function (error, stdout, stderr) {
@@ -52,6 +52,9 @@
 					}
 					if (cb) {
 						cb(error);
+					}
+					if (dataCallback) {
+						dataCallback(stdout.toString());
 					}
 				};
 			}(callback)));
@@ -109,9 +112,9 @@
 	};
 
 	LFTPClass = function () {
-		this.LocalCommand = function (command, callback) {
-			 //console.log('LocalCommand>', command);
-			localCmd(command, callback);
+		this.LocalCommand = function (command, callback, dataCallback) {
+			//console.log('LocalCommand>', command);
+			localCmd(command, callback, dataCallback);
 		};
 
 		this.CopyFile = function (srcpath, destpath, callback) {
