@@ -398,7 +398,7 @@
 			if (type === 'target_machine') {
 				return makeBoolNode(key, val, nodeData, inputNode);
 			}
-		} else if (key === 'file') {
+		} else if (key === 'file' || key === 'string') {
 			return [makeItemTextNode(key, val, inputNode)];
 		} else {
 			return [makeItemNode(key, val)];
