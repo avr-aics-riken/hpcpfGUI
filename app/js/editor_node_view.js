@@ -16,7 +16,7 @@
 		str_constclass = 'nodePropertyConst',
 		prePropertyNodeName = null,
 		propertyTabFunc;
-	
+
 	function defaultLocalHost() {
 		return {
 			type : "local",
@@ -26,7 +26,7 @@
 			name_hr : ""
 		};
 	}
-	
+
 	function $(id) {
 		return document.getElementById(id);
 	}
@@ -34,7 +34,7 @@
 	function clone(obj) {
 		return JSON.parse(JSON.stringify(obj));
 	}
-	
+
 	/// hidden open warning messsage
 	function hiddenOKCancelDialog(callback) {
 		document.getElementById("confirm_area").style.visibility = "hidden";
@@ -68,7 +68,7 @@
 		ok.addEventListener("click",  okfunc, true);
 		cancel.addEventListener("click", cancelfunc, true);
 	}
-	
+
 	function makeItemNode(name, text, top) {
 		var itemRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
@@ -87,7 +87,7 @@
 		itemRow.appendChild(textProp);
 		return itemRow;
 	}
-	
+
 	function makeItemTextNode(name, text, node, type) {
 		var itemRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
@@ -104,20 +104,20 @@
 		textProp.classList.add(str_textclass);
 		itemRow.appendChild(nameProp);
 		itemRow.appendChild(textProp);
-		
+
 		textProp.addEventListener('keyup', (function (nodeData, txt) {
 			return function (e) {
 				nodeData[name] = txt.value;
 			};
 		}(node, textProp)));
-		
+
 		textProp.onchange = function (evt) {
 			save();
 		};
-		
+
 		return itemRow;
 	}
-	
+
 	function makeTargetMachineNode(name, value, nodeData, node, targetMachineList) {
 		var valueRow = document.createElement('div'),
 			nameProp = document.createElement('div'),
@@ -128,28 +128,28 @@
 			targets,
 			initialIndex = 0,
 			i;
-		
+
 		valueRow.classList.add(str_rowclass);
 		nameProp.innerHTML = name;
 		nameProp.classList.add(str_nameclass);
 		valueRow.appendChild(nameProp);
 		valueProp.className = str_constclass;
 		valueRow.appendChild(valueProp);
-		
+
 		// select box
 		targets = targetMachineList.hpcpf.targets;
 		valueSelect.className = "nodePropertyTargetMachine";
 		for (i = 0; i < targets.length; i = i + 1) {
 			target = targets[i];
 			optionElem = document.createElement('option');
-			
+
 			if (target.server === 'localhost') {
 				optionElem.innerHTML = 'localhost';
 			} else {
 				optionElem.innerHTML = target.name_hr;
 			}
 			valueSelect.appendChild(optionElem);
-			
+
 			if (node.machine && node.machine.hasOwnProperty('type')) {
 				if (node.machine.type === target.type) {
 					initialIndex = i;
@@ -200,14 +200,14 @@
 			targets,
 			initialIndex = 0,
 			i;
-		
+
 		valueRow.classList.add(str_rowclass);
 		nameProp.innerHTML = name;
 		nameProp.classList.add(str_nameclass);
 		valueRow.appendChild(nameProp);
 		valueProp.className = str_constclass;
 		valueRow.appendChild(valueProp);
-		
+
 		// select box
 		targets = [false, true];
 		valueSelect.className = "nodePropertyTargetMachine";
@@ -217,7 +217,7 @@
 			optionElem.innerHTML = target;
 
 			valueSelect.appendChild(optionElem);
-			
+
 			if (node.hasOwnProperty('cleanup')) {
 				if (node.cleanup) {
 					initialIndex = 1;
@@ -258,14 +258,14 @@
 		nui.clearNodes();
 		nui.makeNodes(nodeData);
 	}
-	
+
 	function deleteNode(node) {
 		var nodeData = nui.getNodeData(),
 			data = nodeData.nodeData,
 			i;
-		
+
 		console.log('DELETE:', node, data);
-		
+
 		for (i = 0; i < data.length; i = i + 1) {
 			if (data[i].varname === node.varname) {
 				data.splice(i, 1);
@@ -275,14 +275,14 @@
 		nui.clearNodes();
 		nui.makeNodes(nodeData);
 	}
-	
+
 	function clearNode() {
 		var nodeData;
 		nui.clearNodes();
 		nodeData = nui.getNodeData();
 		document.getElementById("property").innerHTML = '';
 	}
-	
+
 	function colorFunction(type) {
 		if (type === "string") {
 			return "#14a271";
@@ -314,23 +314,23 @@
 			return "#c12417";
 		}
 	}
-	
+
 	function updateSelectNodeList(listElement, txtval) {
 		var i,
 			name,
 			visible,
 			item,
 			nodelist = systemNodeListTable;
-		
+
 		if (!listElement) { return; }
-		
+
 		listElement.innerHTML = ''; // clear
 		for (i in nodelist) {
 			if (nodelist.hasOwnProperty(i)) {
 				//console.log(nodeListTable[i]);
 				name = nodelist[i].name;
 				visible = nodelist[i].visible;
-				
+
 				if ((txtval === '' || name.toLowerCase().indexOf(txtval.toLocaleLowerCase()) >= 0) && visible !== false) {
 					item = document.createElement('option');
 					item.setAttribute('value', name);
@@ -352,13 +352,13 @@
 			hr;
 
 		property.innerHTML = "";
-		
+
 		for (key in nodeData) {
 			if (nodeData.hasOwnProperty(key)) {
 				value = nodeData[key];
-				
+
 				property.appendChild(makeItemNode(key, "", true));
-				
+
 				if (key === 'input' || key === 'output') {
 					for (iokey in value) {
 						if (value.hasOwnProperty(iokey)) {
@@ -377,7 +377,7 @@
 			}
 		}
 	}
-	
+
 	function makePropertyInputRow(nodeData, type, key, val, inputNode, targetMachineList) {
 		//console.log("type key val", type, key, val);
 		if (key === 'machine') {
@@ -404,11 +404,11 @@
 			return [makeItemNode(key, val)];
 		}
 	}
-	
+
 	function makePropertyOutputRow(type, key, val, inputNode, targetMachineList) {
 		return [makeItemNode(key, val)];
 	}
-	
+
 	function addCleanButton(nodeData) {
 		var property = document.getElementById('nodeProperty'),
 			button = document.createElement('button'),
@@ -444,7 +444,7 @@
 		}(nodeData.varname));
 		property.appendChild(button);
 	}
-	
+
 	function updateProperty(nodeData, endCallback) {
 		var property = document.getElementById('nodeProperty'),
 			value,
@@ -455,7 +455,7 @@
 			outputtype,
 			propertyRows,
 			i;
-		
+
 		nui.relocate();
 
 		property.innerHTML = "";
@@ -463,12 +463,12 @@
 			prePropertyNodeName = null;
 			return;
 		}
-		
+
 		addCleanButton(nodeData);
-		
+
 		prePropertyNodeName = nodeData.name;
 		property.appendChild(makeItemNode('Property', 'Value', true));
-		
+
 		if (nodeData.hasOwnProperty('name')) {
 			value = nodeData.name;
 			property.appendChild(makeItemNode('name', value));
@@ -485,7 +485,7 @@
 			value = nodeData.status;
 			property.appendChild(makeItemNode('status', value));
 		}
-		
+
 		editor.socket.emit('reqGetTargetMachineList');
 		editor.socket.once('doneGetTargetMachineList', function (data) {
 			var key,
@@ -581,20 +581,20 @@
 			}
 		});
 	}
-	
+
 	editor.socket.on('connect', function () {
 	});
-	
+
 	function to_lua_json(json) {
 		var res = "{ \n",
 			i,
 			index = 0,
 			jsonLength = Object.keys(json).length;
-		
+
 		if (!json) {
 			return "''";
 		}
-		
+
 		for (i in json) {
 			if (json.hasOwnProperty(i)) {
 				if (i === 'userid') {
@@ -641,13 +641,13 @@
 		res = res + " }";
 		return res;
 	}
-	
+
 	function to_lua_list(json) {
 		var res = "{ \n",
 			i,
 			index = 0,
 			jsonLength = Object.keys(json).length;
-		
+
 		for (i in json) {
 			if (json.hasOwnProperty(i)) {
 				if (typeof json[i] === "object") {
@@ -680,7 +680,7 @@
 			target_machine = {},
 			hasTargetMachine = false,
 			targets = targetMachineList;
-				
+
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			innode = nodeData.input[i];
 			if (innode.type === 'target_machine') {
@@ -724,7 +724,7 @@
 		}
 		return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
 	}
-	
+
 	function getValueFromNode(id, nodeParam) {
 		var res = {},
 			i;
@@ -742,12 +742,13 @@
 
 	// local result_0 = executeCASE(name, luajson_0, isDryRun);
 	// result_0 is a table of { node_varname : value, node_varname : value ... }
-	function exportOneNode(id, inputIDs, nodeData, isDryRun) {
+	function exportOneNode(id, inputNodeIDs, nodeData, isDryRun, inputIDs) {
 		var i,
 			innode,
 			strid = id.toString(),
 			strdryrun = isDryRun.toString(),
 			inputVar = null,
+			inputIndex = 0,
 			inputVars = {},
 			nodeVal,
 			input,
@@ -755,13 +756,14 @@
 			inputPrefix = "luainput_",
 			resultPrefix = "luaresult_";
 
-		//console.log(nodeData.varname, inputIDs, nodeData);
+		console.log("exportOneNode", nodeData.varname, inputNodeIDs, nodeData);
 		// create input scripts
-		if (inputIDs) {
-			for (i = 0; i < inputIDs.length; i = i + 1) {
-				if (inputIDs[i] !== null) {
-					inputVar = resultPrefix + (inputIDs[i]).toString();
-					inputVars[inputPrefix + (parseInt(i, 10) + 1)] = inputVar + "[" + (i + 1).toString() + "]";
+		if (inputNodeIDs) {
+			for (i = 0; i < inputNodeIDs.length; i = i + 1) {
+				if (inputNodeIDs[i] !== null) {
+					inputVar = resultPrefix + (inputNodeIDs[i]).toString();
+					inputIndex = (inputIDs[i] + 1).toString();
+					inputVars[inputPrefix + (parseInt(i, 10) + 1)] = inputVar + "[" + inputIndex + "]";
 				} else {
 					nodeVal = getValueFromNode(id, nodeData.input[i]);
 					if (nodeVal) {
@@ -770,13 +772,13 @@
 				}
 			}
 		}
-		//console.log("inputIDs", inputIDs);
+		//console.log("inputNodeIDs", inputNodeIDs);
 		//console.log("inputVars", inputVars);
 		input = "local " + inputPrefix + strid + " = " + to_lua_list(inputVars) + ";\n";
 		exec = "local " + resultPrefix + strid + " = executeCASE('" + nodeData.name + "', luajson_" + strid + ", " + strdryrun + ", " + inputPrefix + strid + ", arg[1])\n";
 		return input + exec;
 	}
-	
+
 	// gather password,passphrase machine
 	function gatherPasswordNeedMachine(id, parents, nodeData, password_need_machines) {
 		var i,
@@ -794,7 +796,7 @@
 		}
 		for (i in target_name_to_machine) {
 			if (target_name_to_machine.hasOwnProperty(i)) {
-				
+
 				hasSameMachine = false;
 				for (k = 0; k < password_need_machines.length; k = k + 1) {
 					if (password_need_machines[k].type === target_name_to_machine[i].type) {
@@ -802,26 +804,26 @@
 						break;
 					}
 				}
-				
+
 				if (!hasSameMachine) {
 					password_need_machines.push(target_name_to_machine[i]);
 				}
 			}
 		}
 	}
-	
+
 	// callback of connect changed
 	function connectChangedFunction() {
 		console.log("connect changed");
 		save();
 	}
-	
+
 	// callback of node moved
 	function nodeMovedFunction() {
 		console.log("node moved");
 		save();
 	}
-	
+
 	function initNode() {
 		var draw = SVG('nodecanvas'),
 			nodecanvas   = document.getElementById('nodecanvas');
@@ -839,16 +841,16 @@
 			if (prePropertyNodeName !== nodeData.name) {
 				updateProperty(nodeData);
 			}
-			
+
 			if (propertyTabFunc) {
 				propertyTabFunc(true);
 			}
 		});
 		nui.nodeDeleteEvent(deleteNode);
-		
+
 		nodecanvas.onclick = function (event) {
 			var elem = document.elementFromPoint(event.clientX, event.clientY);
-			
+
 			if (elem && elem.id === "nodecanvas") {
 				console.log("hit");
 				nui.unselect();
@@ -859,22 +861,22 @@
 			}
 		};
 	}
-	
+
 	function init() {
 		var pos = { x : 0, y : 0 },
 			onMiddleButtonDown = false,
 			nodecanvas   = document.getElementById('nodecanvas'),
 			selectNodeList;
-		
+
 		propertyTabFunc = window.animtab.create('right', {
 			'rightTab' : { min : '0px', max : 'auto' }
 		}, {
 			'nodePropertyTab' : { min : '0px', max : '330px' }
 		}, 'property');
 		propertyTabFunc(false);
-		
+
 		initNode();
-		
+
 		document.getElementById('node_area').onmousedown = function (evt) {
 			onMiddleButtonDown = (evt.button === 1);
 			if (onMiddleButtonDown) {
@@ -902,7 +904,7 @@
 			onMiddleButtonDown = false;
 		};
 	}
-	
+
 	function updateStatus() {
 		editor.socket.emit('reqReloadNodeList');
 		editor.socket.once('reloadNodeList', function (caseNodeList) {
@@ -911,10 +913,10 @@
 				node,
 				nodes,
 				caseNodes = JSON.parse(caseNodeList);
-			
+
 			if (!nui) { return; }
 			nodes = nui.getNodeData();
-			
+
 			//console.log(caseNodeList);
 			for (i = 0; i < caseNodes.length; i = i + 1) {
 				if (nodeListTable.hasOwnProperty(caseNodes[i].name)) {
@@ -936,7 +938,7 @@
 			}
 		});
 	}
-	
+
 	function insertInitialParam(nodeData, targetMachineList) {
 		var i,
 			key,
@@ -988,12 +990,12 @@
 			}
 		}
 	}
-	
+
 	function save(endCallback) {
 		var data = nui.getNodeData(),
 			strData,
 			prettyprintFunc = function (key, val) { return val;	};
-		
+
 		try {
 			// detect modified data
 			strData = JSON.stringify(data, prettyprintFunc, '    ');
@@ -1008,7 +1010,7 @@
 			console.log(e);
 		}
 	}
-	
+
 	function load() {
 		editor.socket.emit('reqLoadNode');
 		editor.socket.once('doneLoadNode', function (nodeData) {
@@ -1060,19 +1062,19 @@
 						});
 					});
 				}
-				
+
 			} catch (e) {
 				console.error(e);
 			}
 		});
 	}
-	
+
 	function gatherPasswordNeedMachines(parentNodes, sortedNodes, endCallback) {
 		var i,
 			node,
 			nodeData,
 			password_need_machines = [];
-		
+
 		editor.socket.emit('reqGetTargetMachineList');
 		editor.socket.once('doneGetTargetMachineList', function (data) {
 			try {
@@ -1096,7 +1098,7 @@
 			}
 		});
 	}
-	
+
 	function addResetWorkflowButton() {
 		var property = document.getElementById('nodediv'),
 			button = document.createElement('button'),
@@ -1131,16 +1133,20 @@
 		}());
 		property.appendChild(button);
 	}
-	
+
 	function executeWorkflow(isDryRun, endCallback) {
 		save(function () {
 			nui.exportLua(function (parents, sorted, exportEndCallback) {
 				var i = 0,
+					k,
+					n,
 					nodeData,
 					node,
+					parentNode,
+					inputNodeIDs = [],
 					inputIDs = [],
 					sortedDatas = [],
-					createInputIDList = function (sortedDatas, parents) {
+					createInputNodeIDList= function (nodeData, sortedDatas, parents) {
 						var ids = [],
 							i,
 							index;
@@ -1153,14 +1159,49 @@
 							}
 						}
 						return ids;
+					},
+					createInputIDList = function (nodeData, sorteddatas, parents) {
+						var ids = [],
+							i,
+							k,
+							m,
+							index,
+							connector,
+							connectorName;
+						for (i = 0; i < parents.length; i = i + 1) {
+							index = sortedDatas.indexOf(parents[i]);
+							if (index >= 0) {
+								node = nui.getNode(nodeData.name);
+								parentNode = nui.getNode(parents[i].name);
+								for (connectorName in parentNode.plugConnectors) {
+									connector = parentNode.plugConnectors[connectorName];
+									if (!connector.line) {
+										continue;
+									}
+									for (k = 0; k < connector.line.length; k = k + 1) {
+										if (connector.line[k].connected) {
+											for (m = 0; m < parentNode.nodeData.output.length; m = m + 1) {
+												if (parentNode.nodeData.output[m].name === connectorName) {
+													ids.push(m);
+													break;
+												}
+											}
+										}
+									}
+								}
+							} else {
+								ids.push(null);
+							}
+						}
+						return ids;
 					};
 
-				
+
 				// create sorted node datas
 				for (i = 0; i < sorted.length; i = i + 1) {
 					sortedDatas.push(sorted[i].nodeData);
 				}
-				
+
 				// gather password,passphrase machine
 				gatherPasswordNeedMachines(parents, sorted, function (password_need_machines) {
 					// show password,passphrase input dialog
@@ -1181,9 +1222,11 @@
 							nodeData = node.nodeData;
 							if (parents.hasOwnProperty(nodeData.varname)) {
 								// has parents
-								inputIDs = createInputIDList(sortedDatas, parents[nodeData.varname]);
-								script = script + exportTargetMachine(i, inputIDs, nodeData, password_need_machines, dst_machines_with_pass);
-								script = script + exportOneNode(i, inputIDs, nodeData, isDryRun);
+								//console.log(sortedDatas, parents, nodeData.varname)
+								inputNodeIDs = createInputNodeIDList(nodeData, sortedDatas, parents[nodeData.varname]);
+								inputIDs = createInputIDList(nodeData, sortedDatas, parents[nodeData.varname]);
+								script = script + exportTargetMachine(i, inputNodeIDs, nodeData, password_need_machines, dst_machines_with_pass);
+								script = script + exportOneNode(i, inputNodeIDs, nodeData, isDryRun, inputIDs);
 							} else {
 								// root node
 								script = script + exportTargetMachine(i, null, nodeData, password_need_machines, dst_machines_with_pass);
@@ -1204,10 +1247,10 @@
 			});
 		});
 	}
-	
+
 	function cleanWorkflow(endCallback) {
 		console.log("cleanworkflow");
-		
+
 		showOKCancelDialog(function (isOK) {
 			if (isOK) {
 				hiddenOKCancelDialog();
@@ -1227,20 +1270,20 @@
 			}
 		}, "Are you sure you want to clean workflow ?");
 	}
-	
+
 	editor.socket.on('init', function () {
 		init();
 		addResetWorkflowButton();
 		load();
 		updateStatus();
 	});
-	
+
 	// override
 	window.editor.ceiJSONChanged = function (fd, dirpath) {
 		console.log("ceiJSONChanged called:", dirpath);
 		updateStatus();
 	};
-	
+
 	window.node_edit_view = edit_view;
 	window.node_edit_view.executeWorkflow = function (endcallback) {
 		return executeWorkflow(false, endcallback);
@@ -1257,5 +1300,5 @@
 	window.node_edit_view.fit = function () {
 		nui.relocate();
 	}
-	
+
 }(window.editor, window.password_input));
