@@ -41,6 +41,7 @@ end
 
 function dxjob:SetMaxSubmit(num)
     self.m_maxsubmitnum = num
+    print("DEBUG: m_maxsubmitnum = "..self.m_maxsubmitnum)
 end
 
 function dxjob:Cancel()
@@ -82,8 +83,9 @@ function dxjob:GenerateBootSh()
 		else
 			local str = self.m_jobmgr:getBootSh() --self.m_targetconf.bootsh;
 			-- replace template
-			str = str:gsub("JOB.NODE", v.node)
-			str = str:gsub("JOB.CORE", v.core)
+			str = str:gsub("JOB.NODE", v.nodes)
+			str = str:gsub("JOB.PROC", v.procs)
+			str = str:gsub("JOB.THRED", v.threads)
 			str = str:gsub("JOB.NAME", v.name)
 			if v.option ~= nil then
 				str = str:gsub("JOB.OPTION", v.option)

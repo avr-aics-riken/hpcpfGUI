@@ -77,14 +77,24 @@ local kSetting = {
     submitCmd = 'pjsub',
     submitIDRow = 6,
     delCmd = 'pjdel',
-    statCmd = 'pjstat',
-    statStateColumn = 6,
-    statStateRow = 4,
+    statCmd = 'pjstat --choose=jid,st -H day=7',
+    statStateColumn = 2,
+    statStateRow = 6,
     jobEndFunc = function(t)
-        -- TODO: 'END'
-        return false
+      if (t[1][2] == "EXT") then return true
+      else  return false end
     end,
-    bootsh = [[echo "TODO:"]]
+    bootsh = [[
+#!/bin/sh
+#PJM --rsc-list "node=JOB.NODE"
+#PJM --mpi "proc=JOB.PROC"
+#PJM --rsc-list "rscgrp=micro"
+#PJM --rsc-list "elapse=00:28:00"
+#PJM -S
+export OMP_NUM_THREADS=JOB.THREADS
+JOB.OPTION
+sh JOB.JOB
+]]
 }
 
 local localhostSetting = {
