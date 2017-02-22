@@ -81,7 +81,7 @@ local kSetting = {
     statStateColumn = 2,
     statStateRow = 6,
     jobEndFunc = function(t)
-      if (t[1][2] == "EXT") then return true
+      if (t[5][2] == "EXT") then return true
       else  return false end
     end,
     bootsh = [[

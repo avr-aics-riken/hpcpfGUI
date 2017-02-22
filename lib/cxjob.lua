@@ -374,7 +374,9 @@ local function statSplit(res)
         for k in ss do
             statColumn[#statColumn + 1] = k;
         end
-        statTable[#statTable+1] = statColumn
+        if #statColumn > 0 then
+          statTable[#statTable+1] = statColumn
+        end
     end
     return statTable
 end
