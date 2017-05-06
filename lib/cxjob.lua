@@ -93,7 +93,15 @@ function cxjob.new(username_or_table, sshkey, server, port, workdir)
 end
 
 function cxjob:getBootSh()
-    return self.jobinfo.bootsh;
+    local fp = io.open(HPCPF_BIN_DIR .. '../conf/bootsh/' .. self.jobinfo.bootsh,'r');
+    bootsh=""
+    if (fp) then
+      bootsh=fp:read("*all")
+      print("DEBUG: bootsh = \n", bootsh)
+    else
+      print("bootsh open failed ", self.jobinfo.bootsh)
+    end
+    return bootsh
 end
 
 local function scpLuaCmd(user, server, port, projectdir, authkey, hosttype, fromfile, tofile)
@@ -389,27 +397,17 @@ end
 
 local function parseJobStat(conf, cmdret, jobid)
     local t = statSplit(cmdret)
-    --[[
-    print('===============')
-    for i,j in pairs(t) do
-        io.write(i .. ',')
-        for k,w in pairs(j) do
-            io.write(k .. ':　' .. w .. ' ')
-        end
-        io.write('\n')
-    end
-    print('===============')
-    --]]
-    if conf.jobEndFunc(t) then
-    --if (t[1][1] == 'Invalid' and t[1][2] == 'job') then -- END 
+    for status in conf.exitCode.finished do
+      if (t[conf.statStateColumn][conf.statStateRow] == status) then
         return 'END'
+      end
     end
-    
-    if (#t >= conf.statStateColumn and #(t[conf.statStateColumn]) >= conf.statStateRow) then
-        return t[conf.statStateColumn][conf.statStateRow];
-    else
-        return 'END' -- not found job
+    for status in conf.exitCode.running do
+      if (t[conf.statStateColumn][conf.statStateRow] == status) then
+        return 'RUNNING'
+      end
     end
+    return 'FAILED'
 end
 
 function cxjob:remoteJobSubmit(jobdata, pathtojob, jobsh)

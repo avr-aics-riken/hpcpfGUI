@@ -25,6 +25,7 @@ function dxjob.new(excase)
     	m_jobque    = {}, -- job queue
 		m_submitque = {}, -- submitting job
 		m_doneque   = {}, -- ended job
+		m_failedque = {}, -- failed job
 		m_maxsubmitnum = 5,
 		m_targetconf = targetConf,
 		m_jobstartdate = "",
@@ -206,13 +207,16 @@ function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
         -- check ended job
 		for i = #self.m_submitque, 1, -1 do
 		    local v = self.m_submitque[i]
-		    if self.m_jobmgr:remoteJobStat(v) == 'END' then
+            local stat = self.m_jobmgr:remoteJobStat(v)
+		    if stat == 'END' then
 		        self.m_doneque[#self.m_doneque + 1] = v
 				table.remove(self.m_submitque, i)
-
 				if jobCompleteFunc then		        	
 					jobCompleteFunc(v)
 		        end
+            elseif stat == 'FAILED' then
+		        self.m_failedque[#self.m_doneque + 1] = v
+				table.remove(self.m_submitque, i)
 		    end
 		    sleep(1) -- wait
 		end
@@ -235,6 +239,7 @@ function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
 			poolingFunc()
 		end
 	end
+	print('Finished job='.. #self.m_doneque .. ' / Failed job='.. #self.m_failedque)
 end
 
 function dxjob:SubmitAndWaitWithCollectionJobFiles()

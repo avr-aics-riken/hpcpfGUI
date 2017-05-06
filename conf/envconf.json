@@ -1,0 +1,23 @@
+{
+  "focusSetting":
+  {
+    "batchSystem": "slurm",
+    "bootsh": "focus.sh"
+  }
+  "focusSettingFFV":
+  {
+    "batchSystem": "slurm",
+    "bootsh": "focus.sh",
+    "server": "ff01"
+  }
+  "kSetting": 
+  {
+    "batchSystem": "ParallelNavi",
+    "bootsh": "k.sh"
+  }
+  "localhostSetting":
+  {
+    "batchSystem": "none",
+    "bootsh": "boot.sh"
+  }
+}
