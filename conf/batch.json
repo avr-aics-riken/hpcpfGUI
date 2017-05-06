@@ -1,0 +1,30 @@
+{
+  "slurm":
+  {
+    "submitCmd": "sbatch",
+    "submitIDRow": 4,
+    "delCmd": "scancel",
+    "statCmd": "squeue -h -o=%t -j",
+    "statStateColumn": 5,
+    "statStateRow": 4,
+    "exitCode":
+    {
+      "finished": ["CD"],
+      "running": ["CF","CG","PD","PR","R","SE"]
+    }
+  },
+  "ParallelNavi":
+  {
+    "submitCmd": "pjsub",
+    "submitIDRow": 6,
+    "delCmd": "pjdel",
+    "statCmd": "pjstat --choose=jid,st -H day=7",
+    "statStateColumn": 2,
+    "statStateRow": 6,
+    "exitCode":
+    {
+      "finished": ["EXT"],
+      "running": ["ACC","QUE","SIN","RDY","RNA","RUN","RNO","SOT"]
+    }
+  }
+}

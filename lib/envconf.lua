@@ -1,132 +1,41 @@
-local focusSetting = {
-    submitCmd = 'sbatch',
-    submitIDRow = 4,
-    delCmd = 'scancel',
-    statCmd = 'fjstat',
-    statStateColumn = 5,
-    statStateRow = 4,
-   jobEndFunc = function (t)
-        if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
-        else return false end
-    end,
-    bootsh = [[
-#!/bin/bash
-#SBATCH -p ye001uta3m
-#SBATCH -N JOB.NODE
-#SBATCH -n JOB.CORE
-#SBATCH -J JOB.NAME
-#SBATCH -o stdout.%J.log
-#SBATCH -e stderr.%J.log
-JOB.OPTION
-sh JOB.JOB
-]]      
-}
-
-local focusTunnelSetting = {
-    submitCmd = 'sbatch',
-    submitIDRow = 4,
-    delCmd = 'scancel',
-    statCmd = 'fjstat',
-    statStateColumn = 5,
-    statStateRow = 4,
-    --portForwardingInfo = [[{"host" : "ff01","user": "userid","password": "*****"}]],
-    jobEndFunc = function (t)
-        if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
-        else return false end
-    end,
-    bootsh = [[
-#!/bin/bash
-#SBATCH -p ye001uta3m
-#SBATCH -N JOB.NODE
-#SBATCH -n JOB.CORE
-#SBATCH -J JOB.NAME
-#SBATCH -o stdout.%J.log
-#SBATCH -e stderr.%J.log
-JOB.OPTION
-sh JOB.JOB
-]]      
-}
-
-local focusSettingFFV = {
-    submitCmd = 'fjsub',
-    submitIDRow = 4,
-    delCmd = 'fjdel',
-    statCmd = 'fjstat',
-    statStateColumn = 5,
-    statStateRow = 4,
-    jobEndFunc = function (t)
-        if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
-        else return false end
-    end,
-    bootsh = [[
-#!/bin/bash
-#SBATCH -p ye016uta72h
-#SBATCH -N JOB.NODE
-#SBATCH -n JOB.CORE
-#SBATCH -J JOB.NAME
-#SBATCH -o stdout.%J.log
-#SBATCH -e stderr.%J.log
-module load PrgEnv-intel
-module load intel/openmpi165
-JOB.OPTION
-sh JOB.JOB
-]]
-}
-
-local kSetting = {
-    submitCmd = 'pjsub',
-    submitIDRow = 6,
-    delCmd = 'pjdel',
-    statCmd = 'pjstat',
-    statStateColumn = 6,
-    statStateRow = 4,
-    jobEndFunc = function(t)
-        -- TODO: 'END'
-        return false
-    end,
-    bootsh = [[echo "TODO:"]]
-}
-
-local localhostSetting = {
-    submitCmd = 'sh',
-    submitIDRow = 2,
-    delCmd = 'kill',
-    --	portForwardingInfo = [[
-    --{
-    --	"host" : "192.168.1.25"
-    --}
-    --	]],
-    --statCmd = 'fjstat',
-    --statStateColumn = 5,
-    --statStateRow = 4,
-    --jobEndFunc = function (t)
-    --   if (t[1][1] == 'Invalid' and t[1][2] == 'job' and t[1][3] == 'ID') then return true
-    --    else return false end
-    --end,
-    bootsh = [[
-#!/bin/bash
-JOB.OPTION
-sh JOB.JOB
-]]    
-}
-
-	
+function readJSON(filename)
+  local json = require('dkjson')
+  local fp = io.open(filename,'r');
+  local jst = nil
+  if (fp) then
+    --print("DEBUG: successfully opened", filename)
+    filestr = fp:read("*all")
+    jst = json.decode (filestr, 1, nil)
+  else
+    print('JSON file open failed!!', filename)
+  end
+  return jst;
+end
 
 local function getServerInfo(server)
+    local envconf=readJSON(HPCPF_BIN_DIR .. "/../conf/envconf.json")
     local info = {
-        ["localhost"] = localhostSetting,
-        ["k.aics.riken.jp"] = kSetting,
-        ["ssh.j-focus.jp"]  = focusTunnelSetting,
-        ["ff01.j-focus.jp"] = focusSetting,
-        ["ff02.j-focus.jp"] = focusSetting,
-        ["ff01"] = focusSetting,
-        ["ff02"] = focusSetting,
-        ["ff01ffv"] = focusSettingFFV,
+        ["localhost"] = envconf.localhostSetting,
+        ["k.aics.riken.jp"] = envconf.kSetting,
+        ["ssh.j-focus.jp"]  = envconf.focusTunnelSetting,
+        ["ff01.j-focus.jp"] = envconf.focusSetting,
+        ["ff02.j-focus.jp"] = envconf.focusSetting,
+        ["ff01"] = envconf.focusSetting,
+        ["ff02"] = envconf.focusSetting,
+        ["ff01ffv"] = envconf.focusSettingFFV,
     }
-    info["ff01ffv"].server = "ff01"
 	if info[server] ~= nil then
+        local batch=readJSON(HPCPF_BIN_DIR .. "/../conf/batch.json")
+        info[server].submitCmd=batch.submitCmd
+        info[server].delCmd=batch.delCmd
+        info[server].statCmd=batch.statCmd
+        info[server].submitIDRow=batch.submitIDRow
+        info[server].statStateColumn=batch.statStateColumn
+        info[server].statStateRow=batch.statStateRow
+        info[server].exitCode=batch.exitCode
     	return info[server]
 	else
+        print('DEBUG: server does not match any settings')
 		return localhostSetting
 	end
 end

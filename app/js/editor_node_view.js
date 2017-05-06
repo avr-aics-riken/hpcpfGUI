@@ -386,11 +386,15 @@
 			}
 		} else if (key === 'value') {
 			return [makeItemNode(key, val)];
-		} else if (key === 'cores') {
+		} else if (key === 'nodes') {
 			if (type === 'target_machine') {
 				return [makeItemTextNode(key, val, inputNode)];
 			}
-		} else if (key === 'nodes') {
+		} else if (key === 'procs') {
+			if (type === 'target_machine') {
+				return [makeItemTextNode(key, val, inputNode)];
+			}
+		} else if (key === 'threads') {
 			if (type === 'target_machine') {
 				return [makeItemTextNode(key, val, inputNode)];
 			}
@@ -521,11 +525,14 @@
 										ioval.machine = defaultLocalHost();
 									}
 								}
-								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
-									ioval.cores = 1;
-								}
 								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
 									ioval.nodes = 1;
+								}
+								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('procs')) {
+									ioval.procs= 1;
+								}
+								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('threads')) {
+									ioval.threads= 1;
 								}
 								if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cleanup')) {
 									ioval.cleanup = false;
@@ -698,15 +705,20 @@
 						}
 					}
 				}
-				if (innode.hasOwnProperty('cores') && innode.cores) {
-					target_machine.cores = innode.cores;
-				} else {
-					target_machine.cores = "1";
-				}
 				if (innode.hasOwnProperty('nodes') && innode.nodes) {
 					target_machine.nodes = innode.nodes;
 				} else {
 					target_machine.nodes = "1";
+				}
+				if (innode.hasOwnProperty('procs') && innode.procs) {
+					target_machine.procs = innode.procs;
+				} else {
+					target_machine.procs= "1";
+				}
+				if (innode.hasOwnProperty('threads') && innode.threads) {
+					target_machine.threads = innode.threads;
+				} else {
+					target_machine.threads = "1";
 				}
 				if (innode.hasOwnProperty('cleanup') && innode.cleanup) {
 					target_machine.cleanup = innode.cleanup;
@@ -718,8 +730,9 @@
 		}
 		if (!hasTargetMachine) {
 			target_machine.machine = defaultLocalHost();
-			target_machine.cores = 1;
 			target_machine.nodes = 1;
+			target_machine.procs= 1;
+			target_machine.threads= 1;
 			target_machine.cleanup = false;
 		}
 		return "local luajson_" + id.toString() + " = " + to_lua_json(target_machine) + ";\n";
@@ -975,9 +988,9 @@
 									ioval.machine = defaultLocalHost();
 								}
 							}
-							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
-								ioval.cores = 1;
-							}
+							// if (inputtype === 'target_machine' && !ioval.hasOwnProperty('cores')) {
+							// 	ioval.cores = 1;
+							// }
 							if (inputtype === 'target_machine' && !ioval.hasOwnProperty('nodes')) {
 								ioval.nodes = 1;
 							}

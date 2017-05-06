@@ -25,6 +25,7 @@ function dxjob.new(excase)
     	m_jobque    = {}, -- job queue
 		m_submitque = {}, -- submitting job
 		m_doneque   = {}, -- ended job
+		m_failedque = {}, -- failed job
 		m_maxsubmitnum = 5,
 		m_targetconf = targetConf,
 		m_jobstartdate = "",
@@ -41,6 +42,7 @@ end
 
 function dxjob:SetMaxSubmit(num)
     self.m_maxsubmitnum = num
+    print("DEBUG: m_maxsubmitnum = "..self.m_maxsubmitnum)
 end
 
 function dxjob:Cancel()
@@ -82,8 +84,9 @@ function dxjob:GenerateBootSh()
 		else
 			local str = self.m_jobmgr:getBootSh() --self.m_targetconf.bootsh;
 			-- replace template
-			str = str:gsub("JOB.NODE", v.node)
-			str = str:gsub("JOB.CORE", v.core)
+			str = str:gsub("JOB.NODE", v.nodes)
+			str = str:gsub("JOB.PROC", v.procs)
+			str = str:gsub("JOB.THRED", v.threads)
 			str = str:gsub("JOB.NAME", v.name)
 			if v.option ~= nil then
 				str = str:gsub("JOB.OPTION", v.option)
@@ -204,13 +207,16 @@ function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
         -- check ended job
 		for i = #self.m_submitque, 1, -1 do
 		    local v = self.m_submitque[i]
-		    if self.m_jobmgr:remoteJobStat(v) == 'END' then
+            local stat = self.m_jobmgr:remoteJobStat(v)
+		    if stat == 'END' then
 		        self.m_doneque[#self.m_doneque + 1] = v
 				table.remove(self.m_submitque, i)
-
 				if jobCompleteFunc then		        	
 					jobCompleteFunc(v)
 		        end
+            elseif stat == 'FAILED' then
+		        self.m_failedque[#self.m_doneque + 1] = v
+				table.remove(self.m_submitque, i)
 		    end
 		    sleep(1) -- wait
 		end
@@ -233,6 +239,7 @@ function dxjob:SubmitAndWait(poolingFunc, jobCompleteFunc)
 			poolingFunc()
 		end
 	end
+	print('Finished job='.. #self.m_doneque .. ' / Failed job='.. #self.m_failedque)
 end
 
 function dxjob:SubmitAndWaitWithCollectionJobFiles()

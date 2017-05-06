@@ -15,11 +15,23 @@ function generateTargetConf(args_table)
 	end
 end
 
-function getCores(args_table)
+function getProcs(args_table)
 	for i, k in pairs(args_table) do
 		if (i == 1) and next(k) then
 			for n, m in pairs(k) do
-				if n == "cores" then
+				if n == "procs" then
+					return m;
+				end
+			end
+		end
+	end
+	return 1;
+end
+function getThreads(args_table)
+	for i, k in pairs(args_table) do
+		if (i == 1) and next(k) then
+			for n, m in pairs(k) do
+				if n == "threads" then
 					return m;
 				end
 			end
@@ -151,7 +163,8 @@ function excase(args_table)
 
 	local inst = {
 		targetConf = generateTargetConf(args_table),
-		cores = getCores(args_table),
+		procs = getProcs(args_table),
+		threads = getThreads(args_table),
 		nodes = getNodes(args_table),
 		cleanup = getCleanUp(args_table),
 		inputNodes = getInputNodes(args_table),
