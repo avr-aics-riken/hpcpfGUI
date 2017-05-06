@@ -1,1 +1,4 @@
 project
+conf/targetconf.json
+conf/project_history.json
+app/node_modules/
